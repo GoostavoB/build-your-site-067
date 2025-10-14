@@ -15,48 +15,28 @@ const Hero = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Calculate parallax positions
-  const bullTransform = Math.min(scrollY * 0.3, 200); // Bull moves right as you scroll
-  const bearTransform = Math.min(scrollY * 0.5, 300); // Bear moves faster (attacks)
-  const opacity = Math.max(0.15 - scrollY * 0.0003, 0.05); // Fade out slightly
-
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a]">
       {/* Unified Background */}
       <div className="absolute inset-0 bg-[#0a0a0a]"></div>
 
-      {/* Bull - Defending (moves slower) */}
+      {/* Bull vs Bear - Full Scene with Parallax */}
       <div 
-        className="absolute z-0 left-[15%] top-1/2 -translate-y-1/2 w-[35vw] h-[35vw] transition-all duration-100"
+        className="absolute inset-0 z-0 flex items-center justify-center"
         style={{
-          transform: `translate(${bullTransform}px, -50%)`,
-          opacity: opacity,
+          transform: `scale(${1 + scrollY * 0.0002}) translateY(${scrollY * 0.15}px)`,
+          opacity: Math.max(0.12 - scrollY * 0.00015, 0.04),
+          transition: 'transform 0.1s ease-out',
         }}
       >
         <img 
           src={bullBearRealistic} 
-          alt="Bull defending"
-          className="w-full h-full object-contain"
+          alt="Bull vs Bear battle"
+          className="w-full h-full object-cover"
           style={{
-            clipPath: 'inset(0 50% 0 0)', // Show only left half (bull)
-          }}
-        />
-      </div>
-
-      {/* Bear - Attacking (moves faster) */}
-      <div 
-        className="absolute z-0 right-[15%] top-1/2 -translate-y-1/2 w-[35vw] h-[35vw] transition-all duration-100"
-        style={{
-          transform: `translate(-${bearTransform}px, -50%)`,
-          opacity: opacity,
-        }}
-      >
-        <img 
-          src={bullBearRealistic} 
-          alt="Bear attacking"
-          className="w-full h-full object-contain"
-          style={{
-            clipPath: 'inset(0 0 0 50%)', // Show only right half (bear)
+            minWidth: '100vw',
+            minHeight: '100vh',
+            objectPosition: 'center',
           }}
         />
       </div>

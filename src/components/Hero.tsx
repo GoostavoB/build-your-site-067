@@ -1,33 +1,65 @@
 import { Button } from "@/components/ui/button";
 import { TrendingUp, BarChart3, LineChart } from "lucide-react";
-import heroBg from "@/assets/hero-bg.jpg";
-import bullBearFight from "@/assets/bull-bear-fight.png";
+import { useEffect, useState } from "react";
+import bullBearRealistic from "@/assets/bull-bear-realistic.png";
 
 const Hero = () => {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Calculate parallax positions
+  const bullTransform = Math.min(scrollY * 0.3, 200); // Bull moves right as you scroll
+  const bearTransform = Math.min(scrollY * 0.5, 300); // Bear moves faster (attacks)
+  const opacity = Math.max(0.15 - scrollY * 0.0003, 0.05); // Fade out slightly
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image with Overlay */}
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a]">
+      {/* Unified Background */}
+      <div className="absolute inset-0 bg-[#0a0a0a]"></div>
+
+      {/* Bull - Defending (moves slower) */}
       <div 
-        className="absolute inset-0 z-0"
+        className="absolute z-0 left-[15%] top-1/2 -translate-y-1/2 w-[35vw] h-[35vw] transition-all duration-100"
         style={{
-          backgroundImage: `url(${heroBg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          transform: `translate(${bullTransform}px, -50%)`,
+          opacity: opacity,
         }}
       >
-        <div className="absolute inset-0 bg-background/98"></div>
+        <img 
+          src={bullBearRealistic} 
+          alt="Bull defending"
+          className="w-full h-full object-contain"
+          style={{
+            clipPath: 'inset(0 50% 0 0)', // Show only left half (bull)
+          }}
+        />
       </div>
 
-      {/* Bull vs Bear Silhouette */}
+      {/* Bear - Attacking (moves faster) */}
       <div 
-        className="absolute inset-0 z-0 flex items-center justify-center opacity-8"
+        className="absolute z-0 right-[15%] top-1/2 -translate-y-1/2 w-[35vw] h-[35vw] transition-all duration-100"
         style={{
-          backgroundImage: `url(${bullBearFight})`,
-          backgroundSize: 'contain',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
+          transform: `translate(-${bearTransform}px, -50%)`,
+          opacity: opacity,
         }}
-      ></div>
+      >
+        <img 
+          src={bullBearRealistic} 
+          alt="Bear attacking"
+          className="w-full h-full object-contain"
+          style={{
+            clipPath: 'inset(0 0 0 50%)', // Show only right half (bear)
+          }}
+        />
+      </div>
 
       {/* Subtle Ambient Glow */}
       <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-neon-green/5 rounded-full blur-[150px]"></div>

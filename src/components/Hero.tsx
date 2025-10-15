@@ -54,7 +54,7 @@ const Hero = () => {
         </div>
         
         <h1 className="text-6xl md:text-8xl font-bold mb-6 tracking-tight">
-          <span className="gradient-text">The Trade</span>
+          <span className="gradient-text">The Trading</span>
           <br />
           Diary
         </h1>

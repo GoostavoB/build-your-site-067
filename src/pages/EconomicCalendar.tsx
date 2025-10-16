@@ -4,8 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, TrendingUp, TrendingDown } from "lucide-react";
+import { Calendar, TrendingUp, TrendingDown, Clock } from "lucide-react";
+import { formatInTimeZone } from "date-fns-tz";
 
 interface EconomicEvent {
   CalendarId: string;
@@ -25,9 +27,25 @@ interface EconomicEvent {
   Source: string;
 }
 
+const TIMEZONES = [
+  { value: "America/New_York", label: "Eastern Time (ET)" },
+  { value: "America/Chicago", label: "Central Time (CT)" },
+  { value: "America/Denver", label: "Mountain Time (MT)" },
+  { value: "America/Los_Angeles", label: "Pacific Time (PT)" },
+  { value: "Europe/London", label: "London (GMT/BST)" },
+  { value: "Europe/Paris", label: "Paris (CET/CEST)" },
+  { value: "Asia/Tokyo", label: "Tokyo (JST)" },
+  { value: "Asia/Shanghai", label: "Shanghai (CST)" },
+  { value: "Asia/Hong_Kong", label: "Hong Kong (HKT)" },
+  { value: "Asia/Singapore", label: "Singapore (SGT)" },
+  { value: "Australia/Sydney", label: "Sydney (AEDT/AEST)" },
+  { value: "UTC", label: "UTC" },
+];
+
 const EconomicCalendar = () => {
   const [events, setEvents] = useState<EconomicEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [timezone, setTimezone] = useState<string>("America/New_York");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -113,11 +131,28 @@ const EconomicCalendar = () => {
   return (
     <AppLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Economic Calendar</h1>
-          <p className="text-muted-foreground mt-2">
-            Stay updated with important economic events and indicators
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Economic Calendar</h1>
+            <p className="text-muted-foreground mt-2">
+              Stay updated with important economic events and indicators
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <Select value={timezone} onValueChange={setTimezone}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Select timezone" />
+              </SelectTrigger>
+              <SelectContent>
+                {TIMEZONES.map((tz) => (
+                  <SelectItem key={tz.value} value={tz.value}>
+                    {tz.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <Card>
@@ -168,12 +203,7 @@ const EconomicCalendar = () => {
                     {events.map((event) => (
                       <TableRow key={event.CalendarId} className="hover:bg-muted/50">
                         <TableCell className="font-medium">
-                          {new Date(event.Date).toLocaleString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
+                          {formatInTimeZone(new Date(event.Date), timezone, 'MMM d, h:mm a')}
                         </TableCell>
                         <TableCell className="max-w-xs">
                           <div className="flex flex-col">

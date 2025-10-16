@@ -72,6 +72,8 @@ const EconomicCalendar = () => {
         return date.toISOString().split('T')[0];
       };
       
+      console.log('Fetching calendar from:', formatDate(today), 'to:', formatDate(futureDate));
+      
       const response = await fetch(
         `https://api.tradingeconomics.com/calendar/country/united states/${formatDate(today)}/${formatDate(futureDate)}?c=${apiKey}&importance=3`
       );
@@ -81,7 +83,17 @@ const EconomicCalendar = () => {
       }
       
       const data = await response.json();
-      setEvents(data.slice(0, 50)); // Limit to 50 events
+      console.log('Received events:', data.length, 'First event date:', data[0]?.Date);
+      
+      // Filter only future events (after now)
+      const now = new Date();
+      const futureEvents = data.filter((event: EconomicEvent) => {
+        const eventDate = new Date(event.Date);
+        return eventDate > now;
+      });
+      
+      console.log('Future events:', futureEvents.length);
+      setEvents(futureEvents.slice(0, 50)); // Limit to 50 events
     } catch (error) {
       console.error("Error fetching economic calendar:", error);
       toast({
@@ -235,7 +247,7 @@ const EconomicCalendar = () => {
                     {events.map((event) => (
                       <TableRow key={event.CalendarId} className="hover:bg-muted/50">
                         <TableCell className="font-medium">
-                          {formatInTimeZone(new Date(event.Date), timezone, 'MMM d, h:mm a')}
+                          {formatInTimeZone(new Date(event.Date), timezone, 'MMM dd, yyyy h:mm a')}
                         </TableCell>
                         <TableCell className="max-w-xs">
                           <div className="flex flex-col">

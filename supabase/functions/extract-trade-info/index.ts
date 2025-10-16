@@ -53,12 +53,18 @@ CRITICAL RULES:
    - duration_days: full days (24h = 1 day)
    - duration_hours: remaining hours after days
    - duration_minutes: remaining minutes after hours
-5. Extract ALL available information including:
+5. CRITICAL - Extract position_size (Size, Qty, Amount, Quantity):
+   - Look for labels like "Size:", "Qty:", "Amount:", "Quantity:", "Contracts:", "Units:"
+   - This is the NUMBER OF CONTRACTS or UNITS traded (e.g., 0.001, 1.5, 100)
+   - If you cannot find it explicitly, try to calculate from: margin / entry_price for futures
+   - NEVER leave position_size as null - calculate it if needed
+   - Common locations: near entry/exit price, in trade details, beside margin
+6. Extract ALL available information including:
    - broker: trading platform/broker name if visible
    - setup: trading strategy/setup type if visible (e.g., "Breakout", "Reversal", "Scalp")
    - emotional_tag: emotional state if visible or inferable (leave empty if not available)
    - notes: any additional observations or notes visible (leave empty if not available)
-6. Return an array of trades even if there's only one trade
+7. Return an array of trades even if there's only one trade
 
 Return ONLY valid JSON with this structure (as an array):
 [{

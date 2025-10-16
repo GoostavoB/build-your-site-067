@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/layout/AppLayout';
-import { TrendingUp, TrendingDown, DollarSign, Target, Sparkles } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Target, Flame } from 'lucide-react';
 import { DashboardCharts } from '@/components/DashboardCharts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TradeHistory } from '@/components/TradeHistory';
@@ -120,7 +120,7 @@ const Dashboard = () => {
     <AppLayout>
       <div className="space-y-6">
         <Alert className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/20">
-          <Sparkles className="h-5 w-5 text-primary" />
+          <Flame className="h-5 w-5 text-primary" />
           <AlertDescription className="text-foreground ml-2">
             <strong>REMEMBER:</strong> Protect your capital, stay disciplined, and trust your setups. Keep it simple and you'll be on the right path.
           </AlertDescription>

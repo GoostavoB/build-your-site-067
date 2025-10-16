@@ -316,8 +316,9 @@ const Upload = () => {
 
         if (error) {
           console.error('Extraction error:', error);
-          toast.error('Failed to extract trade information', {
-            description: 'Please try again or enter manually'
+          const msg = (data as any)?.error || 'Failed to extract trade information';
+          toast.error(msg, {
+            description: msg.includes('credits') ? 'Please try again later.' : 'Please try again or enter manually'
           });
           return;
         }

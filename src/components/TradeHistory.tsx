@@ -227,10 +227,31 @@ export const TradeHistory = ({ onTradesChange }: TradeHistoryProps = {}) => {
     if (error) {
       toast.error('Failed to load trades');
     } else {
-      setTrades((data || []).map(trade => ({
-        ...trade,
-        position_type: trade.position_type as 'long' | 'short' | undefined
-      })));
+      // Load signed URLs for screenshots
+      const tradesWithSignedUrls = await Promise.all((data || []).map(async (trade) => {
+        let signedUrl = trade.screenshot_url;
+        
+        if (trade.screenshot_url && user) {
+          // Extract file name from URL or construct it
+          const fileName = `${user.id}/${trade.id}.${trade.screenshot_url.split('.').pop()}`;
+          
+          const { data: urlData } = await supabase.storage
+            .from('trade-screenshots')
+            .createSignedUrl(fileName, 3600); // 1 hour expiry
+          
+          if (urlData) {
+            signedUrl = urlData.signedUrl;
+          }
+        }
+        
+        return {
+          ...trade,
+          screenshot_url: signedUrl,
+          position_type: trade.position_type as 'long' | 'short' | undefined
+        };
+      }));
+      
+      setTrades(tradesWithSignedUrls);
     }
     setLoading(false);
   };

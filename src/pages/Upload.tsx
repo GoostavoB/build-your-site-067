@@ -352,11 +352,17 @@ const Upload = () => {
       return null;
     }
 
-    const { data } = supabase.storage
+    // Create signed URL with 24-hour expiry
+    const { data, error: signedUrlError } = await supabase.storage
       .from('trade-screenshots')
-      .getPublicUrl(fileName);
+      .createSignedUrl(fileName, 86400); // 24 hours
 
-    return data.publicUrl;
+    if (signedUrlError) {
+      console.error('Error creating signed URL:', signedUrlError);
+      return null;
+    }
+
+    return data.signedUrl;
   };
 
   const updateTradeField = (index: number, field: keyof ExtractedTrade, value: string | number) => {

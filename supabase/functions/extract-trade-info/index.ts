@@ -18,6 +18,19 @@ serve(async (req) => {
       throw new Error('No image data provided');
     }
 
+    // Validate image size (max 10MB base64)
+    const base64Size = imageBase64.length * 0.75; // Approximate decoded size
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (base64Size > maxSize) {
+      return new Response(
+        JSON.stringify({ error: 'Image size exceeds 10MB limit' }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Log request for monitoring
+    console.log('Trade extraction request received at:', new Date().toISOString());
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");

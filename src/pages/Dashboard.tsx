@@ -3,11 +3,12 @@ import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/layout/AppLayout';
-import { TrendingUp, TrendingDown, DollarSign, Target } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Target, Sparkles } from 'lucide-react';
 import { DashboardCharts } from '@/components/DashboardCharts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TradeHistory } from '@/components/TradeHistory';
 import { AdvancedAnalytics } from '@/components/AdvancedAnalytics';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface TradeStats {
   total_pnl: number;
@@ -118,9 +119,32 @@ const Dashboard = () => {
   return (
     <AppLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
-          <p className="text-muted-foreground">Track your trading performance and analytics</p>
+        <Alert className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/20">
+          <Sparkles className="h-5 w-5 text-primary" />
+          <AlertDescription className="text-foreground ml-2">
+            <strong>You're doing great!</strong> Remember to protect your capital, don't be greedy, follow your setups.
+          </AlertDescription>
+        </Alert>
+
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
+            <p className="text-muted-foreground">Track your trading performance and analytics</p>
+          </div>
+          {stats && stats.win_rate > 70 && (
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-neon-green/20 to-primary/20 blur-xl animate-pulse"></div>
+              <div className="relative flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-neon-green/10 to-primary/10 border-2 border-neon-green/30 rounded-lg shadow-lg">
+                <span className="text-4xl animate-bounce">👹</span>
+                <div>
+                  <div className="text-xs font-medium text-neon-green uppercase tracking-wider">Unlocked</div>
+                  <div className="text-2xl font-bold bg-gradient-to-r from-neon-green to-primary bg-clip-text text-transparent">
+                    BEAST MODE
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {loading ? (
@@ -145,9 +169,17 @@ const Dashboard = () => {
               />
               <StatCard
                 title="Win Rate"
-                value={`${stats?.win_rate.toFixed(1) || 0}%`}
+                value={
+                  <div className="flex items-center gap-2">
+                    <span>{`${stats?.win_rate.toFixed(1) || 0}%`}</span>
+                    {stats && stats.win_rate > 70 && (
+                      <span className="text-xl">👹</span>
+                    )}
+                  </div>
+                }
                 icon={Target}
                 trend="neutral"
+                valueColor={stats && stats.win_rate > 70 ? 'text-neon-green' : ''}
               />
               <StatCard
                 title="Total Trades"

@@ -120,7 +120,7 @@ const Dashboard = () => {
     <AppLayout>
       <div className="space-y-6">
         <Alert className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/20">
-          <Flame className="h-5 w-5 text-primary" />
+          <span className="text-2xl">👹</span>
           <AlertDescription className="text-foreground ml-2">
             <strong>REMEMBER:</strong> Protect your capital, stay disciplined, and trust your setups. Keep it simple and you'll be on the right path.
           </AlertDescription>

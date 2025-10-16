@@ -109,14 +109,33 @@ const LongShortRatio = () => {
     
     return {
       time: new Date(parseInt(item.timestamp)).toLocaleString(),
+      timestamp: parseInt(item.timestamp),
       longShortRatio: longShortRatio,
       longAccount: buyRatio,
       shortAccount: sellRatio,
     };
   });
 
+  // Calculate combined average data
+  const combinedChartData = binanceChartData.map((binanceItem, index) => {
+    const bybitItem = bybitChartData.find(b => 
+      Math.abs(b.timestamp - parseInt(binanceData[index]?.timestamp || "0")) < 3600000 // Within 1 hour
+    );
+    
+    if (bybitItem) {
+      return {
+        time: binanceItem.time,
+        longShortRatio: (binanceItem.longShortRatio + bybitItem.longShortRatio) / 2,
+        longAccount: (binanceItem.longAccount + bybitItem.longAccount) / 2,
+        shortAccount: (binanceItem.shortAccount + bybitItem.shortAccount) / 2,
+      };
+    }
+    return null;
+  }).filter(item => item !== null);
+
   const latestBinanceData = binanceData[binanceData.length - 1];
   const latestBybitData = bybitData[bybitData.length - 1];
+  const latestCombinedData = combinedChartData[combinedChartData.length - 1];
 
   return (
     <AppLayout>
@@ -128,12 +147,16 @@ const LongShortRatio = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="binance" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
+        <Tabs defaultValue="combined" className="w-full">
+          <TabsList className="grid w-full max-w-2xl grid-cols-3">
+            <TabsTrigger value="combined">Combined LSR</TabsTrigger>
             <TabsTrigger value="binance">Binance LSR</TabsTrigger>
             <TabsTrigger value="bybit">Bybit LSR</TabsTrigger>
           </TabsList>
 
+          <TabsContent value="combined" className="space-y-6 mt-6">
+            <CombinedContent />
+          </TabsContent>
           <TabsContent value="binance" className="space-y-6 mt-6">
             <BinanceContent />
           </TabsContent>
@@ -144,6 +167,200 @@ const LongShortRatio = () => {
       </div>
     </AppLayout>
   );
+
+  function CombinedContent() {
+    const isLoading = loadingBinance || loadingBybit;
+    
+    return (
+      <>
+        <div className="flex gap-4">
+          <Card className="flex-1">
+            <CardHeader>
+              <CardTitle>Symbol</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Select value={symbol} onValueChange={setSymbol}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="BTCUSDT">BTC/USDT</SelectItem>
+                  <SelectItem value="ETHUSDT">ETH/USDT</SelectItem>
+                  <SelectItem value="BNBUSDT">BNB/USDT</SelectItem>
+                  <SelectItem value="SOLUSDT">SOL/USDT</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardContent>
+          </Card>
+
+          <Card className="flex-1">
+            <CardHeader>
+              <CardTitle>Time Period</CardTitle>
+              <CardDescription>Synced across both sources</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Select value={period} onValueChange={(value) => {
+                setPeriod(value);
+                setBybitPeriod(value === "1h" ? "1h" : value === "4h" ? "4h" : value === "1d" ? "1d" : "1h");
+              }}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1h">1 Hour</SelectItem>
+                  <SelectItem value="4h">4 Hours</SelectItem>
+                  <SelectItem value="1d">1 Day</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardContent>
+          </Card>
+        </div>
+
+        {isLoading ? (
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-8 w-48" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-[400px] w-full" />
+            </CardContent>
+          </Card>
+        ) : combinedChartData.length === 0 ? (
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-center text-muted-foreground">
+                No combined data available. Please ensure both data sources are loaded.
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Avg Long/Short Ratio</CardTitle>
+                  <CardDescription>Combined average</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-3xl font-bold">
+                    {latestCombinedData ? latestCombinedData.longShortRatio.toFixed(4) : "N/A"}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Avg Long Accounts</CardTitle>
+                  <CardDescription>Combined percentage</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-3xl font-bold text-neon-green">
+                    {latestCombinedData ? latestCombinedData.longAccount.toFixed(2) : "N/A"}%
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Avg Short Accounts</CardTitle>
+                  <CardDescription>Combined percentage</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-3xl font-bold text-neon-red">
+                    {latestCombinedData ? latestCombinedData.shortAccount.toFixed(2) : "N/A"}%
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Combined Long/Short Ratio History</CardTitle>
+                <CardDescription>Average of Binance and Bybit data</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart data={combinedChartData}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis 
+                      dataKey="time" 
+                      className="text-xs text-muted-foreground"
+                      tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                    />
+                    <YAxis 
+                      className="text-xs text-muted-foreground"
+                      tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--background))', 
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Legend />
+                    <Line 
+                      type="monotone" 
+                      dataKey="longShortRatio" 
+                      stroke="hsl(var(--primary))" 
+                      name="Avg Long/Short Ratio"
+                      strokeWidth={2}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Combined Account Distribution</CardTitle>
+                <CardDescription>Average percentage of long vs short accounts</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart data={combinedChartData}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis 
+                      dataKey="time" 
+                      className="text-xs text-muted-foreground"
+                      tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                    />
+                    <YAxis 
+                      className="text-xs text-muted-foreground"
+                      tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                      domain={[0, 100]}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--background))', 
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Legend />
+                    <Line 
+                      type="monotone" 
+                      dataKey="longAccount" 
+                      stroke="#10b981" 
+                      name="Avg Long Accounts %"
+                      strokeWidth={2}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="shortAccount" 
+                      stroke="#ef4444" 
+                      name="Avg Short Accounts %"
+                      strokeWidth={2}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </>
+        )}
+      </>
+    );
+  }
 
   function BinanceContent() {
     return (

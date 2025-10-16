@@ -168,7 +168,7 @@ const Dashboard = () => {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="relative">
+              <div className="space-y-2">
                 <StatCard
                   title="Total P&L"
                   value={`$${stats?.total_pnl.toFixed(2) || 0}`}
@@ -182,8 +182,8 @@ const Dashboard = () => {
                       : 'text-foreground'
                   }
                 />
-                <div className="absolute top-2 right-2 flex items-center gap-2 bg-card/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-border">
-                  <Label htmlFor="fees-toggle" className="text-xs cursor-pointer">
+                <div className="flex items-center justify-center gap-2 bg-card/50 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-border">
+                  <Label htmlFor="fees-toggle" className="text-xs cursor-pointer text-muted-foreground">
                     {includeFeesInPnL ? 'Com Fees' : 'Sem Fees'}
                   </Label>
                   <Switch

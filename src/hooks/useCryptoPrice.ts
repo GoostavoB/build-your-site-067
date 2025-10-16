@@ -4,6 +4,7 @@ interface CryptoPrice {
   symbol: string;
   price: string;
   displaySymbol: string;
+  priceChangePercent: number;
 }
 
 export const useCryptoPrice = (symbols: string[] = [
@@ -18,13 +19,14 @@ export const useCryptoPrice = (symbols: string[] = [
     const fetchPrices = async () => {
       try {
         const promises = symbols.map(async (symbol) => {
-          const response = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
+          const response = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
           if (!response.ok) throw new Error('Failed to fetch price');
           const data = await response.json();
           return {
             symbol: data.symbol,
-            price: parseFloat(data.price).toFixed(2),
-            displaySymbol: symbol.replace('USDT', '')
+            price: parseFloat(data.lastPrice).toFixed(2),
+            displaySymbol: symbol.replace('USDT', ''),
+            priceChangePercent: parseFloat(data.priceChangePercent)
           };
         });
 

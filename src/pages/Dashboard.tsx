@@ -122,7 +122,7 @@ const Dashboard = () => {
         <Alert className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/20">
           <Sparkles className="h-5 w-5 text-primary" />
           <AlertDescription className="text-foreground ml-2">
-            <strong>You're doing great!</strong> Remember to protect your capital, don't be greedy, follow your setups.
+            <strong>REMEMBER:</strong> Protect your capital, stay disciplined, and trust your setups. Keep it simple and you'll be on the right path.
           </AlertDescription>
         </Alert>
 

@@ -15,22 +15,21 @@ interface BinanceLongShortData {
   timestamp: string;
 }
 
-interface CoinglassLongShortData {
-  time: number;
-  global_account_long_percent: number;
-  global_account_short_percent: number;
-  global_account_long_short_ratio: number;
+interface BybitLongShortData {
+  symbol: string;
+  buyRatio: string;
+  sellRatio: string;
+  timestamp: string;
 }
 
 const LongShortRatio = () => {
   const [binanceData, setBinanceData] = useState<BinanceLongShortData[]>([]);
-  const [coinglassData, setCoinglassData] = useState<CoinglassLongShortData[]>([]);
+  const [bybitData, setBybitData] = useState<BybitLongShortData[]>([]);
   const [loadingBinance, setLoadingBinance] = useState(true);
-  const [loadingCoinglass, setLoadingCoinglass] = useState(true);
+  const [loadingBybit, setLoadingBybit] = useState(true);
   const [period, setPeriod] = useState("1h");
-  const [coinglassInterval, setCoinglassInterval] = useState("1h");
+  const [bybitPeriod, setBybitPeriod] = useState("1h");
   const [symbol, setSymbol] = useState("BTCUSDT");
-  const [coinglassExchange, setCoinglassExchange] = useState("Binance");
   const { toast } = useToast();
 
   const fetchBinanceData = async () => {
@@ -58,33 +57,33 @@ const LongShortRatio = () => {
     }
   };
 
-  const fetchCoinglassData = async () => {
-    setLoadingCoinglass(true);
+  const fetchBybitData = async () => {
+    setLoadingBybit(true);
     try {
       const response = await fetch(
-        `https://open-api-v4.coinglass.com/api/futures/global-long-short-account-ratio/history?exchange=${coinglassExchange}&symbol=${symbol}&interval=${coinglassInterval}&limit=100`
+        `https://api.bybit.com/v5/market/account-ratio?category=linear&symbol=${symbol}&period=${bybitPeriod}&limit=100`
       );
       
       if (!response.ok) {
-        throw new Error("Failed to fetch Coinglass data");
+        throw new Error("Failed to fetch Bybit data");
       }
       
       const result = await response.json();
-      if (result.code === "0" && result.data) {
-        setCoinglassData(result.data);
+      if (result.retCode === 0 && result.result?.list) {
+        setBybitData(result.result.list.reverse());
       } else {
-        throw new Error(result.msg || "Failed to fetch data");
+        throw new Error(result.retMsg || "Failed to fetch data");
       }
     } catch (error) {
-      console.error("Error fetching Coinglass long/short ratio:", error);
+      console.error("Error fetching Bybit long/short ratio:", error);
       toast({
         title: "Error",
-        description: "Failed to fetch Coinglass data. API may require authentication.",
+        description: "Failed to fetch Bybit data",
         variant: "destructive",
       });
-      setCoinglassData([]);
+      setBybitData([]);
     } finally {
-      setLoadingCoinglass(false);
+      setLoadingBybit(false);
     }
   };
 
@@ -93,8 +92,8 @@ const LongShortRatio = () => {
   }, [period, symbol]);
 
   useEffect(() => {
-    fetchCoinglassData();
-  }, [coinglassInterval, symbol, coinglassExchange]);
+    fetchBybitData();
+  }, [bybitPeriod, symbol]);
 
   const binanceChartData = binanceData.map((item) => ({
     time: new Date(parseInt(item.timestamp)).toLocaleString(),
@@ -103,15 +102,21 @@ const LongShortRatio = () => {
     shortAccount: parseFloat(item.shortAccount) * 100,
   }));
 
-  const coinglassChartData = coinglassData.map((item) => ({
-    time: new Date(item.time).toLocaleString(),
-    longShortRatio: item.global_account_long_short_ratio,
-    longAccount: item.global_account_long_percent,
-    shortAccount: item.global_account_short_percent,
-  }));
+  const bybitChartData = bybitData.map((item) => {
+    const buyRatio = parseFloat(item.buyRatio) * 100;
+    const sellRatio = parseFloat(item.sellRatio) * 100;
+    const longShortRatio = parseFloat(item.buyRatio) / parseFloat(item.sellRatio);
+    
+    return {
+      time: new Date(parseInt(item.timestamp)).toLocaleString(),
+      longShortRatio: longShortRatio,
+      longAccount: buyRatio,
+      shortAccount: sellRatio,
+    };
+  });
 
   const latestBinanceData = binanceData[binanceData.length - 1];
-  const latestCoinglassData = coinglassData[coinglassData.length - 1];
+  const latestBybitData = bybitData[bybitData.length - 1];
 
   return (
     <AppLayout>
@@ -126,14 +131,14 @@ const LongShortRatio = () => {
         <Tabs defaultValue="binance" className="w-full">
           <TabsList className="grid w-full max-w-md grid-cols-2">
             <TabsTrigger value="binance">Binance LSR</TabsTrigger>
-            <TabsTrigger value="coinglass">Coinglass LSR</TabsTrigger>
+            <TabsTrigger value="bybit">Bybit LSR</TabsTrigger>
           </TabsList>
 
           <TabsContent value="binance" className="space-y-6 mt-6">
             <BinanceContent />
           </TabsContent>
-          <TabsContent value="coinglass" className="space-y-6 mt-6">
-            <CoinglassContent />
+          <TabsContent value="bybit" className="space-y-6 mt-6">
+            <BybitContent />
           </TabsContent>
         </Tabs>
       </div>
@@ -326,29 +331,11 @@ const LongShortRatio = () => {
     );
   }
 
-  function CoinglassContent() {
+  function BybitContent() {
     return (
       <>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Exchange</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Select value={coinglassExchange} onValueChange={setCoinglassExchange}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Binance">Binance</SelectItem>
-                  <SelectItem value="OKX">OKX</SelectItem>
-                  <SelectItem value="Bybit">Bybit</SelectItem>
-                </SelectContent>
-              </Select>
-            </CardContent>
-          </Card>
-
-          <Card>
+        <div className="flex gap-4">
+          <Card className="flex-1">
             <CardHeader>
               <CardTitle>Symbol</CardTitle>
             </CardHeader>
@@ -367,33 +354,29 @@ const LongShortRatio = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="flex-1">
             <CardHeader>
-              <CardTitle>Interval</CardTitle>
+              <CardTitle>Time Period</CardTitle>
             </CardHeader>
             <CardContent>
-              <Select value={coinglassInterval} onValueChange={setCoinglassInterval}>
+              <Select value={bybitPeriod} onValueChange={setBybitPeriod}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="5m">5 Minutes</SelectItem>
-                  <SelectItem value="15m">15 Minutes</SelectItem>
-                  <SelectItem value="30m">30 Minutes</SelectItem>
+                  <SelectItem value="5min">5 Minutes</SelectItem>
+                  <SelectItem value="15min">15 Minutes</SelectItem>
+                  <SelectItem value="30min">30 Minutes</SelectItem>
                   <SelectItem value="1h">1 Hour</SelectItem>
                   <SelectItem value="4h">4 Hours</SelectItem>
-                  <SelectItem value="6h">6 Hours</SelectItem>
-                  <SelectItem value="8h">8 Hours</SelectItem>
-                  <SelectItem value="12h">12 Hours</SelectItem>
                   <SelectItem value="1d">1 Day</SelectItem>
-                  <SelectItem value="1w">1 Week</SelectItem>
                 </SelectContent>
               </Select>
             </CardContent>
           </Card>
         </div>
 
-        {loadingCoinglass ? (
+        {loadingBybit ? (
           <Card>
             <CardHeader>
               <Skeleton className="h-8 w-48" />
@@ -402,11 +385,11 @@ const LongShortRatio = () => {
               <Skeleton className="h-[400px] w-full" />
             </CardContent>
           </Card>
-        ) : coinglassData.length === 0 ? (
+        ) : bybitData.length === 0 ? (
           <Card>
             <CardContent className="pt-6">
               <p className="text-center text-muted-foreground">
-                No data available. The Coinglass API may require authentication or the selected parameters may not have data.
+                No data available. Please try different parameters.
               </p>
             </CardContent>
           </Card>
@@ -420,7 +403,7 @@ const LongShortRatio = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-3xl font-bold">
-                    {latestCoinglassData ? latestCoinglassData.global_account_long_short_ratio.toFixed(4) : "N/A"}
+                    {latestBybitData ? (parseFloat(latestBybitData.buyRatio) / parseFloat(latestBybitData.sellRatio)).toFixed(4) : "N/A"}
                   </p>
                 </CardContent>
               </Card>
@@ -432,7 +415,7 @@ const LongShortRatio = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-3xl font-bold text-neon-green">
-                    {latestCoinglassData ? latestCoinglassData.global_account_long_percent.toFixed(2) : "N/A"}%
+                    {latestBybitData ? (parseFloat(latestBybitData.buyRatio) * 100).toFixed(2) : "N/A"}%
                   </p>
                 </CardContent>
               </Card>
@@ -444,7 +427,7 @@ const LongShortRatio = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-3xl font-bold text-neon-red">
-                    {latestCoinglassData ? latestCoinglassData.global_account_short_percent.toFixed(2) : "N/A"}%
+                    {latestBybitData ? (parseFloat(latestBybitData.sellRatio) * 100).toFixed(2) : "N/A"}%
                   </p>
                 </CardContent>
               </Card>
@@ -453,11 +436,11 @@ const LongShortRatio = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Long/Short Ratio History</CardTitle>
-                <CardDescription>Historical trend of long/short account ratio from Coinglass</CardDescription>
+                <CardDescription>Historical trend of long/short account ratio from Bybit</CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={400}>
-                  <LineChart data={coinglassChartData}>
+                  <LineChart data={bybitChartData}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis 
                       dataKey="time" 
@@ -495,7 +478,7 @@ const LongShortRatio = () => {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={400}>
-                  <LineChart data={coinglassChartData}>
+                  <LineChart data={bybitChartData}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis 
                       dataKey="time" 

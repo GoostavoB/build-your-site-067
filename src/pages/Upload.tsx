@@ -107,6 +107,7 @@ const Upload = () => {
   const [openExtractedSetup, setOpenExtractedSetup] = useState<number | null>(null);
   const [setupSearch, setSetupSearch] = useState('');
   const [extractedSetupSearches, setExtractedSetupSearches] = useState<Record<number, string>>({});
+  const [savedTradeIds, setSavedTradeIds] = useState<Record<number, string>>({});
   
   const [formData, setFormData] = useState({
     asset: '',
@@ -489,26 +490,45 @@ const Upload = () => {
         notes: finalTrade.notes || null
       };
 
-      const { error } = await supabase
-        .from('trades')
-        .insert(tradeData);
+      const existingTradeId = savedTradeIds[index];
 
-      if (error) {
-        toast.error(`Failed to save trade ${index + 1}`);
+      if (existingTradeId) {
+        // Update existing trade
+        const { error } = await supabase
+          .from('trades')
+          .update(tradeData)
+          .eq('id', existingTradeId);
+
+        if (error) {
+          toast.error(`Failed to update trade ${index + 1}`);
+        } else {
+          toast.success(`Trade ${index + 1} updated successfully!`);
+        }
       } else {
-        // Create upload batch for single trade
-        await supabase.from('upload_batches').insert({
-          user_id: user.id,
-          trade_count: 1,
-          assets: [finalTrade.asset],
-          total_entry_value: finalTrade.entry_price * finalTrade.position_size,
-          most_recent_trade_asset: finalTrade.asset,
-          most_recent_trade_value: finalTrade.profit_loss
-        });
+        // Insert new trade
+        const { data, error } = await supabase
+          .from('trades')
+          .insert(tradeData)
+          .select('id')
+          .single();
 
-        toast.success(`Trade ${index + 1} saved successfully!`);
-        // Remove the saved trade from the list
-        setExtractedTrades(prev => prev.filter((_, i) => i !== index));
+        if (error) {
+          toast.error(`Failed to save trade ${index + 1}`);
+        } else {
+          // Create upload batch for single trade
+          await supabase.from('upload_batches').insert({
+            user_id: user.id,
+            trade_count: 1,
+            assets: [finalTrade.asset],
+            total_entry_value: finalTrade.entry_price * finalTrade.position_size,
+            most_recent_trade_asset: finalTrade.asset,
+            most_recent_trade_value: finalTrade.profit_loss
+          });
+
+          // Save the trade ID for future updates
+          setSavedTradeIds(prev => ({ ...prev, [index]: data.id }));
+          toast.success(`Trade ${index + 1} saved successfully!`);
+        }
       }
     } catch (error) {
       console.error('Error saving trade:', error);
@@ -1155,6 +1175,8 @@ const Upload = () => {
                                     </svg>
                                     Saving...
                                   </>
+                                ) : savedTradeIds[index] ? (
+                                  'Changes saved. Click again to update any new edits in this trade.'
                                 ) : (
                                   'Save This Trade'
                                 )}

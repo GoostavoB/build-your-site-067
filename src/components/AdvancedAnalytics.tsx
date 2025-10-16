@@ -140,6 +140,11 @@ export const AdvancedAnalytics = ({ trades, initialInvestment, userId, onInitial
   }, {} as Record<string, number>);
   const topSetupByWins = Object.entries(setupWins)
     .sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
+  const topSetupByWinsCount = topSetupByWins !== 'N/A' ? setupWins[topSetupByWins] : 0;
+  const topSetupByWinsROI = topSetupByWins !== 'N/A'
+    ? trades.filter(t => t.setup === topSetupByWins && t.pnl > 0)
+        .reduce((sum, t) => sum + (t.roi || 0), 0) / topSetupByWinsCount
+    : 0;
 
   // Top setup by ROI
   const setupROI = trades.reduce((acc, trade) => {
@@ -152,9 +157,11 @@ export const AdvancedAnalytics = ({ trades, initialInvestment, userId, onInitial
     }
     return acc;
   }, {} as Record<string, { total: number; count: number }>);
-  const topSetupByROI = Object.entries(setupROI)
+  const topSetupByROIEntry = Object.entries(setupROI)
     .map(([setup, data]) => ({ setup, avgROI: data.total / data.count }))
-    .sort((a, b) => b.avgROI - a.avgROI)[0]?.setup || 'N/A';
+    .sort((a, b) => b.avgROI - a.avgROI)[0];
+  const topSetupByROI = topSetupByROIEntry?.setup || 'N/A';
+  const topSetupByROIAvg = topSetupByROIEntry?.avgROI || 0;
 
   const StatCard = ({ title, value, subtitle, icon: Icon, trend }: any) => (
     <Card className="p-6 bg-card border-border hover:border-foreground/20 transition-all duration-300">
@@ -301,14 +308,24 @@ export const AdvancedAnalytics = ({ trades, initialInvestment, userId, onInitial
 
           <Card className="p-6 bg-card border-border">
             <h3 className="text-lg font-semibold mb-4">Setup Performance</h3>
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
-                <p className="text-sm text-muted-foreground">Top Setup by Wins</p>
-                <p className="font-medium">{topSetupByWins}</p>
+                <p className="text-sm text-muted-foreground mb-1">Top Setup by Wins</p>
+                <p className="text-xl font-medium mb-1">{topSetupByWins}</p>
+                <p className="text-sm font-medium">
+                  Avg ROI: <span className={topSetupByWinsROI >= 0 ? 'text-neon-green' : 'text-neon-red'}>
+                    {topSetupByWinsROI >= 0 ? '+' : ''}{topSetupByWinsROI.toFixed(2)}%
+                  </span>
+                </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Top Setup by ROI</p>
-                <p className="font-medium">{topSetupByROI}</p>
+                <p className="text-sm text-muted-foreground mb-1">Top Setup by ROI</p>
+                <p className="text-xl font-medium mb-1">{topSetupByROI}</p>
+                <p className="text-sm font-medium">
+                  Avg ROI: <span className={topSetupByROIAvg >= 0 ? 'text-neon-green' : 'text-neon-red'}>
+                    {topSetupByROIAvg >= 0 ? '+' : ''}{topSetupByROIAvg.toFixed(2)}%
+                  </span>
+                </p>
               </div>
             </div>
           </Card>

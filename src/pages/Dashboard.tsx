@@ -64,7 +64,8 @@ const Dashboard = () => {
     const { data: trades } = await supabase
       .from('trades')
       .select('*')
-      .eq('user_id', user.id);
+      .eq('user_id', user.id)
+      .is('deleted_at', null);
 
     if (trades) {
       setTrades(trades.map(trade => ({

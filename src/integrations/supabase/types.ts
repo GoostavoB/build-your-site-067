@@ -47,6 +47,7 @@ export type Database = {
           broker: string | null
           closed_at: string | null
           created_at: string | null
+          deleted_at: string | null
           duration_days: number | null
           duration_hours: number | null
           duration_minutes: number | null
@@ -76,6 +77,7 @@ export type Database = {
           broker?: string | null
           closed_at?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           duration_days?: number | null
           duration_hours?: number | null
           duration_minutes?: number | null
@@ -105,6 +107,7 @@ export type Database = {
           broker?: string | null
           closed_at?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           duration_days?: number | null
           duration_hours?: number | null
           duration_minutes?: number | null
@@ -187,6 +190,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_deleted_trades: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -91,6 +91,7 @@ export const TradeHistory = ({ onTradesChange }: TradeHistoryProps = {}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'date' | 'pnl' | 'roi'>('date');
   const [filterType, setFilterType] = useState<'all' | 'wins' | 'losses'>('all');
+  const [showDeleted, setShowDeleted] = useState(false);
   const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [selectedTradeIds, setSelectedTradeIds] = useState<Set<string>>(new Set());
@@ -101,7 +102,7 @@ export const TradeHistory = ({ onTradesChange }: TradeHistoryProps = {}) => {
 
   useEffect(() => {
     fetchTrades();
-  }, [user]);
+  }, [user, showDeleted]);
 
   useEffect(() => {
     filterAndSortTrades();
@@ -144,19 +145,59 @@ export const TradeHistory = ({ onTradesChange }: TradeHistoryProps = {}) => {
   const handleBulkDelete = async () => {
     if (selectedTradeIds.size === 0) return;
 
-    if (!confirm(`Are you sure you want to delete ${selectedTradeIds.size} trade(s)?`)) {
-      return;
+    if (showDeleted) {
+      // Permanently delete
+      if (!confirm(`Are you sure you want to permanently delete ${selectedTradeIds.size} trade(s)? This cannot be undone.`)) {
+        return;
+      }
+
+      const { error } = await supabase
+        .from('trades')
+        .delete()
+        .in('id', Array.from(selectedTradeIds));
+
+      if (error) {
+        toast.error('Failed to delete trades');
+      } else {
+        toast.success(`${selectedTradeIds.size} trade(s) permanently deleted`);
+        setSelectedTradeIds(new Set());
+        fetchTrades();
+        onTradesChange?.();
+      }
+    } else {
+      // Soft delete
+      if (!confirm(`Are you sure you want to delete ${selectedTradeIds.size} trade(s)? You can recover them within 48 hours.`)) {
+        return;
+      }
+
+      const { error } = await supabase
+        .from('trades')
+        .update({ deleted_at: new Date().toISOString() })
+        .in('id', Array.from(selectedTradeIds));
+
+      if (error) {
+        toast.error('Failed to delete trades');
+      } else {
+        toast.success(`${selectedTradeIds.size} trade(s) deleted successfully`);
+        setSelectedTradeIds(new Set());
+        fetchTrades();
+        onTradesChange?.();
+      }
     }
+  };
+
+  const handleBulkUndelete = async () => {
+    if (selectedTradeIds.size === 0) return;
 
     const { error } = await supabase
       .from('trades')
-      .delete()
+      .update({ deleted_at: null })
       .in('id', Array.from(selectedTradeIds));
 
     if (error) {
-      toast.error('Failed to delete trades');
+      toast.error('Failed to restore trades');
     } else {
-      toast.success(`${selectedTradeIds.size} trade(s) deleted successfully`);
+      toast.success(`${selectedTradeIds.size} trade(s) restored successfully`);
       setSelectedTradeIds(new Set());
       fetchTrades();
       onTradesChange?.();
@@ -166,11 +207,21 @@ export const TradeHistory = ({ onTradesChange }: TradeHistoryProps = {}) => {
   const fetchTrades = async () => {
     if (!user) return;
 
-    const { data, error } = await supabase
+    let query = supabase
       .from('trades')
       .select('*')
-      .eq('user_id', user.id)
-      .order('trade_date', { ascending: false });
+      .eq('user_id', user.id);
+
+    // Filter by deleted status
+    if (showDeleted) {
+      query = query.not('deleted_at', 'is', null);
+    } else {
+      query = query.is('deleted_at', null);
+    }
+
+    query = query.order('trade_date', { ascending: false });
+
+    const { data, error } = await query;
 
     if (error) {
       toast.error('Failed to load trades');
@@ -219,14 +270,46 @@ export const TradeHistory = ({ onTradesChange }: TradeHistoryProps = {}) => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this trade?')) return;
+    if (showDeleted) {
+      if (!confirm('Are you sure you want to permanently delete this trade? This cannot be undone.')) return;
+      
+      const { error } = await supabase.from('trades').delete().eq('id', id);
 
-    const { error } = await supabase.from('trades').delete().eq('id', id);
+      if (error) {
+        toast.error('Failed to delete trade');
+      } else {
+        toast.success('Trade permanently deleted');
+        fetchTrades();
+        onTradesChange?.();
+      }
+    } else {
+      if (!confirm('Are you sure you want to delete this trade? You can recover it within 48 hours.')) return;
+
+      const { error } = await supabase
+        .from('trades')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', id);
+
+      if (error) {
+        toast.error('Failed to delete trade');
+      } else {
+        toast.success('Trade deleted');
+        fetchTrades();
+        onTradesChange?.();
+      }
+    }
+  };
+
+  const handleUndelete = async (id: string) => {
+    const { error } = await supabase
+      .from('trades')
+      .update({ deleted_at: null })
+      .eq('id', id);
 
     if (error) {
-      toast.error('Failed to delete trade');
+      toast.error('Failed to restore trade');
     } else {
-      toast.success('Trade deleted');
+      toast.success('Trade restored');
       fetchTrades();
       onTradesChange?.();
     }
@@ -276,6 +359,16 @@ export const TradeHistory = ({ onTradesChange }: TradeHistoryProps = {}) => {
           </SelectContent>
         </Select>
 
+        <Button
+          variant={showDeleted ? "default" : "outline"}
+          onClick={() => {
+            setShowDeleted(!showDeleted);
+            setSelectedTradeIds(new Set());
+          }}
+        >
+          {showDeleted ? "Show Active" : "Show Deleted"}
+        </Button>
+
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" size="icon">
@@ -307,19 +400,48 @@ export const TradeHistory = ({ onTradesChange }: TradeHistoryProps = {}) => {
         </Popover>
       </div>
 
+      {showDeleted && (
+        <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-md">
+          <p className="text-sm text-amber-600 dark:text-amber-400">
+            ⚠️ <strong>Deleted Trades:</strong> These trades are available for recovery for 48 hours. 
+            After that, they will be permanently removed from the system.
+          </p>
+        </div>
+      )}
+
       {selectedTradeIds.size > 0 && (
         <div className="flex items-center gap-3 p-3 bg-muted rounded-md">
           <span className="text-sm text-muted-foreground">
             {selectedTradeIds.size} trade(s) selected
           </span>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={handleBulkDelete}
-          >
-            <Trash2 className="w-4 h-4 mr-2" />
-            Delete Selected
-          </Button>
+          {showDeleted ? (
+            <>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={handleBulkUndelete}
+              >
+                Restore Selected
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleBulkDelete}
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete Permanently
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleBulkDelete}
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete Selected
+            </Button>
+          )}
         </div>
       )}
 
@@ -421,27 +543,55 @@ export const TradeHistory = ({ onTradesChange }: TradeHistoryProps = {}) => {
                   )}
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleView(trade)}
-                      >
-                        <Eye size={16} />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => window.location.href = `/upload?edit=${trade.id}`}
-                      >
-                        <Pencil size={16} />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(trade.id)}
-                      >
-                        <Trash2 size={16} className="text-destructive" />
-                      </Button>
+                      {showDeleted ? (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleView(trade)}
+                          >
+                            <Eye size={16} />
+                          </Button>
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => handleUndelete(trade.id)}
+                          >
+                            Restore
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            onClick={() => handleDelete(trade.id)}
+                          >
+                            <Trash2 size={16} />
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleView(trade)}
+                          >
+                            <Eye size={16} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => window.location.href = `/upload?edit=${trade.id}`}
+                          >
+                            <Pencil size={16} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(trade.id)}
+                          >
+                            <Trash2 size={16} className="text-destructive" />
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>

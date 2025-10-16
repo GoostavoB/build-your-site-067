@@ -41,7 +41,8 @@ const Forecast = () => {
     const { data: trades } = await supabase
       .from('trades')
       .select('pnl, trade_date')
-      .eq('user_id', user.id);
+      .eq('user_id', user.id)
+      .is('deleted_at', null);
 
     if (trades && trades.length > 0) {
       const totalPnl = trades.reduce((sum, t) => sum + (t.pnl || 0), 0);

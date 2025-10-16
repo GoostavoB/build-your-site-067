@@ -81,6 +81,7 @@ const Upload = () => {
       .from('trades')
       .select('*')
       .eq('id', id)
+      .is('deleted_at', null)
       .single();
 
     if (error) {

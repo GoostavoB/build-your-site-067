@@ -3,20 +3,27 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/components/layout/AppLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { X, Plus, Edit2, Check } from 'lucide-react';
 
 const Settings = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({ full_name: '', email: '' });
   const [settings, setSettings] = useState({ blur_enabled: false, sidebar_style: 'matte', initial_investment: 0 });
+  const [setups, setSetups] = useState<{ id: string; name: string }[]>([]);
+  const [newSetupName, setNewSetupName] = useState('');
+  const [editingSetupId, setEditingSetupId] = useState<string | null>(null);
+  const [editingSetupName, setEditingSetupName] = useState('');
 
   useEffect(() => {
     fetchProfile();
     fetchSettings();
+    fetchSetups();
   }, [user]);
 
   const fetchProfile = async () => {
@@ -104,6 +111,81 @@ const Settings = () => {
     }
   };
 
+  const fetchSetups = async () => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from('user_setups')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('name');
+    
+    if (data && !error) {
+      setSetups(data);
+    }
+  };
+
+  const handleAddSetup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !newSetupName.trim()) return;
+
+    const { error } = await supabase
+      .from('user_setups')
+      .insert({ user_id: user.id, name: newSetupName.trim() });
+
+    if (error) {
+      if (error.code === '23505') {
+        toast.error('This setup already exists');
+      } else {
+        toast.error('Failed to add setup');
+      }
+    } else {
+      toast.success('Setup added!');
+      setNewSetupName('');
+      fetchSetups();
+    }
+  };
+
+  const handleUpdateSetup = async (id: string) => {
+    if (!editingSetupName.trim()) return;
+
+    const { error } = await supabase
+      .from('user_setups')
+      .update({ name: editingSetupName.trim() })
+      .eq('id', id);
+
+    if (error) {
+      if (error.code === '23505') {
+        toast.error('This setup name already exists');
+      } else {
+        toast.error('Failed to update setup');
+      }
+    } else {
+      toast.success('Setup updated!');
+      setEditingSetupId(null);
+      setEditingSetupName('');
+      fetchSetups();
+    }
+  };
+
+  const handleDeleteSetup = async (id: string) => {
+    const { error } = await supabase
+      .from('user_setups')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast.error('Failed to delete setup');
+    } else {
+      toast.success('Setup deleted!');
+      fetchSetups();
+    }
+  };
+
+  const startEditingSetup = (id: string, name: string) => {
+    setEditingSetupId(id);
+    setEditingSetupName(name);
+  };
+
   return (
     <AppLayout>
       <div className="max-w-2xl mx-auto space-y-6">
@@ -169,6 +251,89 @@ const Settings = () => {
               {loading ? 'Saving...' : 'Save Investment'}
             </Button>
           </form>
+        </Card>
+
+        <Card className="p-6 bg-card border-border">
+          <h2 className="text-xl font-semibold mb-4">Trade Setups</h2>
+          <p className="text-sm text-muted-foreground mb-4">Manage your custom trade setup tags. These will be available when logging trades.</p>
+          
+          <form onSubmit={handleAddSetup} className="mb-4">
+            <div className="flex gap-2">
+              <Input
+                value={newSetupName}
+                onChange={(e) => setNewSetupName(e.target.value)}
+                placeholder="Enter new setup name (e.g., Breakout, Reversal)"
+                className="flex-1"
+              />
+              <Button type="submit" disabled={!newSetupName.trim()}>
+                <Plus className="w-4 h-4 mr-1" />
+                Add
+              </Button>
+            </div>
+          </form>
+
+          <div className="space-y-2">
+            {setups.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                No setups yet. Add your first setup above.
+              </p>
+            ) : (
+              setups.map((setup) => (
+                <div key={setup.id} className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
+                  {editingSetupId === setup.id ? (
+                    <>
+                      <Input
+                        value={editingSetupName}
+                        onChange={(e) => setEditingSetupName(e.target.value)}
+                        className="flex-1 h-8"
+                        autoFocus
+                      />
+                      <Button
+                        size="sm"
+                        onClick={() => handleUpdateSetup(setup.id)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Check className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          setEditingSetupId(null);
+                          setEditingSetupName('');
+                        }}
+                        className="h-8 w-8 p-0"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Badge variant="secondary" className="flex-1 justify-start">
+                        {setup.name}
+                      </Badge>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => startEditingSetup(setup.id, setup.name)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleDeleteSetup(setup.id)}
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
         </Card>
 
         <Card className="p-6 bg-card border-border">

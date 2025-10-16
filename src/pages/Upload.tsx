@@ -5,12 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/layout/AppLayout';
 import { toast } from 'sonner';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Upload as UploadIcon, X, Sparkles, Check, ChevronsUpDown } from 'lucide-react';
+import { Upload as UploadIcon, X, Sparkles, Check, ChevronsUpDown, Plus } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from "@/lib/utils";
@@ -100,6 +101,10 @@ const Upload = () => {
   const [tradeEdits, setTradeEdits] = useState<Record<number, Partial<ExtractedTrade>>>({});
   const [openBroker, setOpenBroker] = useState(false);
   const [openExtractedBroker, setOpenExtractedBroker] = useState<number | null>(null);
+  const [userSetups, setUserSetups] = useState<{ id: string; name: string }[]>([]);
+  const [openSetup, setOpenSetup] = useState(false);
+  const [openExtractedSetup, setOpenExtractedSetup] = useState<number | null>(null);
+  const [setupSearch, setSetupSearch] = useState('');
   
   const [formData, setFormData] = useState({
     asset: '',
@@ -125,6 +130,7 @@ const Upload = () => {
     if (editId) {
       fetchTrade(editId);
     }
+    fetchUserSetups();
   }, [editId]);
 
   const fetchTrade = async (id: string) => {
@@ -164,6 +170,42 @@ const Upload = () => {
         setScreenshotPreview(data.screenshot_url);
       }
     }
+  };
+
+  const fetchUserSetups = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('user_setups')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('name');
+    
+    if (data) {
+      setUserSetups(data);
+    }
+  };
+
+  const handleCreateSetup = async (name: string) => {
+    if (!user || !name.trim()) return null;
+
+    const { data, error } = await supabase
+      .from('user_setups')
+      .insert({ user_id: user.id, name: name.trim() })
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === '23505') {
+        toast.error('This setup already exists');
+      } else {
+        toast.error('Failed to create setup');
+      }
+      return null;
+    }
+
+    toast.success('Setup created!');
+    fetchUserSetups();
+    return data;
   };
 
   const handleScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -882,12 +924,50 @@ const Upload = () => {
                               </div>
                               <div>
                                 <Label className="text-xs text-muted-foreground">Setup</Label>
-                                <Input
-                                  placeholder="Breakout, Reversal..."
-                                  value={edits.setup ?? trade.setup ?? ''}
-                                  onChange={(e) => updateTradeField(index, 'setup', e.target.value)}
-                                  className="mt-1 h-8 text-sm"
-                                />
+                                <Popover open={openExtractedSetup === index} onOpenChange={(open) => setOpenExtractedSetup(open ? index : null)}>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      role="combobox"
+                                      aria-expanded={openExtractedSetup === index}
+                                      className="w-full justify-between mt-1 h-8 text-sm"
+                                    >
+                                      {(edits.setup ?? trade.setup) || "Select or create setup..."}
+                                      <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-[300px] p-0" align="start">
+                                    <Command shouldFilter={false}>
+                                      <CommandInput placeholder="Search or type new setup..." />
+                                      <CommandList>
+                                        {userSetups.length === 0 ? (
+                                          <CommandEmpty>Type to create your first setup.</CommandEmpty>
+                                        ) : (
+                                          <CommandGroup>
+                                            {userSetups.map((setup) => (
+                                              <CommandItem
+                                                key={setup.id}
+                                                value={setup.name}
+                                                onSelect={() => {
+                                                  updateTradeField(index, 'setup', setup.name);
+                                                  setOpenExtractedSetup(null);
+                                                }}
+                                              >
+                                                <Check
+                                                  className={cn(
+                                                    "mr-2 h-4 w-4",
+                                                    (edits.setup ?? trade.setup) === setup.name ? "opacity-100" : "opacity-0"
+                                                  )}
+                                                />
+                                                {setup.name}
+                                              </CommandItem>
+                                            ))}
+                                          </CommandGroup>
+                                        )}
+                                      </CommandList>
+                                    </Command>
+                                  </PopoverContent>
+                                </Popover>
                               </div>
                               <div>
                                 <Label className="text-xs text-muted-foreground">Emotional Tag</Label>
@@ -956,12 +1036,78 @@ const Upload = () => {
 
                   <div>
                     <label className="text-sm font-medium">Setup</label>
-                    <Input
-                      value={formData.setup}
-                      onChange={(e) => setFormData({...formData, setup: e.target.value})}
-                      placeholder="Breakout, Reversal..."
-                      className="mt-1"
-                    />
+                    <Popover open={openSetup} onOpenChange={setOpenSetup}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={openSetup}
+                          className="w-full justify-between mt-1"
+                        >
+                          {formData.setup || "Select or create setup..."}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[400px] p-0" align="start">
+                        <Command shouldFilter={false}>
+                          <CommandInput 
+                            placeholder="Search or type new setup..." 
+                            value={setupSearch}
+                            onValueChange={setSetupSearch}
+                          />
+                          <CommandList>
+                            {userSetups.length === 0 && !setupSearch ? (
+                              <CommandEmpty>No setups yet. Type to create one.</CommandEmpty>
+                            ) : (
+                              <>
+                                {setupSearch && !userSetups.some(s => s.name.toLowerCase() === setupSearch.toLowerCase()) && (
+                                  <CommandGroup heading="Create New">
+                                    <CommandItem
+                                      onSelect={async () => {
+                                        const newSetup = await handleCreateSetup(setupSearch);
+                                        if (newSetup) {
+                                          setFormData({...formData, setup: newSetup.name});
+                                        }
+                                        setSetupSearch('');
+                                        setOpenSetup(false);
+                                      }}
+                                    >
+                                      <Plus className="mr-2 h-4 w-4" />
+                                      Create "{setupSearch}"
+                                    </CommandItem>
+                                  </CommandGroup>
+                                )}
+                                {userSetups.filter(s => !setupSearch || s.name.toLowerCase().includes(setupSearch.toLowerCase())).length > 0 && (
+                                  <CommandGroup heading="Your Setups">
+                                    {userSetups
+                                      .filter(s => !setupSearch || s.name.toLowerCase().includes(setupSearch.toLowerCase()))
+                                      .map((setup) => (
+                                        <CommandItem
+                                          key={setup.id}
+                                          value={setup.name}
+                                          onSelect={() => {
+                                            setFormData({...formData, setup: setup.name});
+                                            setSetupSearch('');
+                                            setOpenSetup(false);
+                                          }}
+                                        >
+                                          <Check
+                                            className={cn(
+                                              "mr-2 h-4 w-4",
+                                              formData.setup === setup.name ? "opacity-100" : "opacity-0"
+                                            )}
+                                          />
+                                          {setup.name}
+                                        </CommandItem>
+                                      ))}
+                                  </CommandGroup>
+                                )}
+                              </>
+                            )}
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                   </div>
 
                   <div>

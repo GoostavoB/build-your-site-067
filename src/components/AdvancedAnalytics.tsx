@@ -219,6 +219,10 @@ export const AdvancedAnalytics = ({ trades, initialInvestment, userId, onInitial
   const totalFundingFees = trades.reduce((sum, t) => sum + (t.funding_fee || 0), 0);
   const totalTradingFees = trades.reduce((sum, t) => sum + (t.trading_fee || 0), 0);
   const totalFees = totalFundingFees + totalTradingFees;
+  
+  // Calculate Total Assets (P&L minus fees)
+  const netPnl = totalPnl - totalFees;
+  const totalAssets = initialInvestment + netPnl;
 
   // Broker fee statistics
   const brokerStats = trades.reduce((acc, trade) => {
@@ -257,9 +261,6 @@ export const AdvancedAnalytics = ({ trades, initialInvestment, userId, onInitial
     </Card>
   );
 
-  // Calculate Total Assets
-  const totalAssets = initialInvestment + totalPnl;
-
   return (
     <div className="space-y-6">
       <div>
@@ -274,7 +275,7 @@ export const AdvancedAnalytics = ({ trades, initialInvestment, userId, onInitial
                 ${totalAssets.toFixed(2)}
               </p>
               <p className="text-sm text-muted-foreground mt-2">
-                Initial Capital: ${initialInvestment.toFixed(2)} + Total P&L: ${totalPnl.toFixed(2)}
+                Initial Capital: ${initialInvestment.toFixed(2)} + Total P&L: ${totalPnl.toFixed(2)} - Fees: ${totalFees.toFixed(2)}
               </p>
             </div>
             <div className="text-right">

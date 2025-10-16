@@ -14,24 +14,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface ExtractedTrade {
   asset: string;
+  broker?: string;
+  setup?: string;
+  emotional_tag?: string;
   entry_price: number;
   exit_price: number;
   position_size: number;
   position_type: 'long' | 'short';
-  profit_loss: number;
   funding_fee: number;
   trading_fee: number;
-  roi: number;
   margin: number;
   opened_at: string;
   closed_at: string;
   period_of_day: 'morning' | 'afternoon' | 'night';
+  profit_loss: number;
+  roi: number;
   duration_days: number;
   duration_hours: number;
   duration_minutes: number;
-  setup?: string;
   notes?: string;
-  emotional_tag?: string;
 }
 
 const Upload = () => {
@@ -270,6 +271,9 @@ const Upload = () => {
       const tradeData = {
         user_id: user.id,
         asset: finalTrade.asset,
+        broker: finalTrade.broker || null,
+        setup: finalTrade.setup || null,
+        emotional_tag: finalTrade.emotional_tag || null,
         entry_price: finalTrade.entry_price,
         exit_price: finalTrade.exit_price,
         position_size: finalTrade.position_size,
@@ -287,9 +291,7 @@ const Upload = () => {
         duration_minutes: finalTrade.duration_minutes,
         pnl: finalTrade.profit_loss,
         trade_date: finalTrade.opened_at,
-        setup: finalTrade.setup || null,
-        notes: finalTrade.notes || null,
-        emotional_tag: finalTrade.emotional_tag || null
+        notes: finalTrade.notes || null
       };
 
       const { error } = await supabase
@@ -328,6 +330,9 @@ const Upload = () => {
         return {
           user_id: user.id,
           asset: finalTrade.asset,
+          broker: finalTrade.broker || null,
+          setup: finalTrade.setup || null,
+          emotional_tag: finalTrade.emotional_tag || null,
           entry_price: finalTrade.entry_price,
           exit_price: finalTrade.exit_price,
           position_size: finalTrade.position_size,
@@ -345,9 +350,7 @@ const Upload = () => {
           duration_minutes: finalTrade.duration_minutes,
           pnl: finalTrade.profit_loss,
           trade_date: finalTrade.opened_at,
-          setup: finalTrade.setup || null,
-          notes: finalTrade.notes || null,
-          emotional_tag: finalTrade.emotional_tag || null
+          notes: finalTrade.notes || null
         };
       });
 
@@ -656,7 +659,16 @@ const Upload = () => {
                               </div>
                             </div>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div>
+                                <Label className="text-xs text-muted-foreground">Broker</Label>
+                                <Input
+                                  placeholder="Binance, Bybit..."
+                                  value={edits.broker ?? trade.broker ?? ''}
+                                  onChange={(e) => updateTradeField(index, 'broker', e.target.value)}
+                                  className="mt-1 h-8 text-sm"
+                                />
+                              </div>
                               <div>
                                 <Label className="text-xs text-muted-foreground">Setup</Label>
                                 <Input
@@ -675,7 +687,7 @@ const Upload = () => {
                                   className="mt-1 h-8 text-sm"
                                 />
                               </div>
-                              <div className="md:col-span-1">
+                              <div>
                                 <Label className="text-xs text-muted-foreground">Notes</Label>
                                 <Input
                                   placeholder="Trade observations..."

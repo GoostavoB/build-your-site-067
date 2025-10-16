@@ -53,11 +53,19 @@ CRITICAL RULES:
    - duration_days: full days (24h = 1 day)
    - duration_hours: remaining hours after days
    - duration_minutes: remaining minutes after hours
-5. Return an array of trades even if there's only one trade
+5. Extract ALL available information including:
+   - broker: trading platform/broker name if visible
+   - setup: trading strategy/setup type if visible (e.g., "Breakout", "Reversal", "Scalp")
+   - emotional_tag: emotional state if visible or inferable (leave empty if not available)
+   - notes: any additional observations or notes visible (leave empty if not available)
+6. Return an array of trades even if there's only one trade
 
 Return ONLY valid JSON with this structure (as an array):
 [{
   "asset": "BTCUSDT",
+  "broker": "Binance",
+  "setup": "Breakout",
+  "emotional_tag": "",
   "entry_price": 45000.50,
   "exit_price": 46000.00,
   "position_size": 0.5,
@@ -72,8 +80,11 @@ Return ONLY valid JSON with this structure (as an array):
   "period_of_day": "morning",
   "duration_days": 0,
   "duration_hours": 4,
-  "duration_minutes": 15
-}]`
+  "duration_minutes": 15,
+  "notes": ""
+}]
+
+IMPORTANT: All text fields (broker, setup, emotional_tag, notes) should be extracted if visible in the image. Leave them as empty strings "" if not available.`
           },
           {
             role: "user",

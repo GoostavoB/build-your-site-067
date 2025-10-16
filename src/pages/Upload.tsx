@@ -195,16 +195,11 @@ const Upload = () => {
       reader.onloadend = async () => {
         const base64Image = reader.result as string;
 
-        toast.loading('🤖 AI is reading your trades...', {
-          description: 'This may take a few seconds',
-          id: 'extraction-loading'
-        });
 
         const { data, error } = await supabase.functions.invoke('extract-trade-info', {
           body: { imageBase64: base64Image }
         });
 
-        toast.dismiss('extraction-loading');
 
         if (error) {
           console.error('Extraction error:', error);
@@ -544,6 +539,12 @@ const Upload = () => {
                                 </>
                               )}
                             </Button>
+                            {extracting && (
+                              <div className="mt-3 flex items-center justify-center gap-2 text-sm font-medium">
+                                <div className="w-4 h-4 border-2 border-foreground/30 border-t-foreground rounded-full animate-spin" />
+                                <span>AI is reading your trades... This may take a few seconds</span>
+                              </div>
+                            )}
                           </>
                         )}
                       </div>

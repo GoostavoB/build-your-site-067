@@ -13,7 +13,7 @@ interface UploadBatch {
   created_at: string;
   trade_count: number;
   assets: string[];
-  total_entry_value: number;
+  total_pnl: number;
   trades?: BatchTrade[];
   position_types?: string[];
   brokers?: string[];
@@ -93,12 +93,23 @@ export const UploadHistory = () => {
           const positionTypes = trades ? [...new Set(trades.map(t => t.position_type).filter(Boolean))] : [];
           const brokers = trades ? [...new Set(trades.map(t => t.broker).filter(Boolean))] : [];
           const mostRecentTradeDate = trades && trades.length > 0 ? trades[0].trade_date : batch.created_at;
+          
+          // Calculate total P&L from trades
+          const { data: pnlTrades } = await supabase
+            .from('trades')
+            .select('profit_loss')
+            .eq('user_id', user.id)
+            .gte('created_at', new Date(new Date(batch.created_at).getTime() - 5000).toISOString())
+            .lte('created_at', new Date(new Date(batch.created_at).getTime() + 5000).toISOString());
+          
+          const totalPnl = pnlTrades ? pnlTrades.reduce((sum, t) => sum + (t.profit_loss || 0), 0) : 0;
 
           return {
             ...batch,
             most_recent_trade_date: mostRecentTradeDate,
             position_types: positionTypes as string[],
-            brokers: brokers as string[]
+            brokers: brokers as string[],
+            total_pnl: totalPnl
           };
         })
       );
@@ -254,8 +265,10 @@ export const UploadHistory = () => {
                       <span className="font-medium">{batch.assets.join(', ')}</span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Total Entry: </span>
-                      <span className="font-medium">${batch.total_entry_value.toFixed(2)}</span>
+                      <span className="text-muted-foreground">Total P&L: </span>
+                      <span className={`font-medium ${batch.total_pnl >= 0 ? 'text-neon-green' : 'text-neon-red'}`}>
+                        ${batch.total_pnl.toFixed(2)}
+                      </span>
                     </div>
                   </div>
                   

@@ -154,7 +154,12 @@ const Dashboard = () => {
                 </TabsContent>
 
                 <TabsContent value="advanced" className="space-y-6">
-                  <AdvancedAnalytics trades={trades} initialInvestment={initialInvestment} />
+                  <AdvancedAnalytics 
+                    trades={trades} 
+                    initialInvestment={initialInvestment}
+                    userId={user?.id || ''}
+                    onInitialInvestmentUpdate={setInitialInvestment}
+                  />
                 </TabsContent>
 
                 <TabsContent value="history">

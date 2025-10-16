@@ -44,6 +44,7 @@ const Upload = () => {
   const [extractionPreview, setExtractionPreview] = useState<string | null>(null);
   const [extractedTrades, setExtractedTrades] = useState<ExtractedTrade[]>([]);
   const [savingTrades, setSavingTrades] = useState<Set<number>>(new Set());
+  const [isDragging, setIsDragging] = useState(false);
   
   const [formData, setFormData] = useState({
     asset: '',
@@ -109,23 +110,51 @@ const Upload = () => {
     }
   };
 
-  const handleExtractionImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleExtractionImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error('Image must be less than 10MB');
-        return;
-      }
-      setExtractionImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setExtractionPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-
-      // Automatically start extraction
-      await extractTradeInfo(file);
+      processImageFile(file);
     }
+  };
+
+  const processImageFile = (file: File) => {
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Image must be less than 10MB');
+      return;
+    }
+    setExtractionImage(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setExtractionPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      processImageFile(file);
+    } else {
+      toast.error('Please drop an image file');
+    }
+  };
+
+  const handleConfirmExtraction = async () => {
+    if (!extractionImage) return;
+    await extractTradeInfo(extractionImage);
   };
 
   const extractTradeInfo = async (file: File) => {
@@ -396,51 +425,81 @@ const Upload = () => {
                   </p>
                   <div className="mt-2">
                     {extractionPreview ? (
-                      <div className="relative">
-                        <img
-                          src={extractionPreview}
-                          alt="Extraction preview"
-                          className="w-full h-64 object-contain rounded-md border border-border bg-muted"
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-2 right-2"
-                          onClick={removeExtractionImage}
-                        >
-                          <X size={16} />
-                        </Button>
+                      <div className="space-y-3">
+                        <div className="relative">
+                          <img
+                            src={extractionPreview}
+                            alt="Extraction preview"
+                            className="w-full h-64 object-contain rounded-md border border-border bg-muted"
+                          />
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            className="absolute top-2 right-2"
+                            onClick={removeExtractionImage}
+                          >
+                            <X size={16} />
+                          </Button>
+                        </div>
+                        {!extracting && extractedTrades.length === 0 && (
+                          <Button
+                            onClick={handleConfirmExtraction}
+                            className="w-full bg-primary text-primary-foreground"
+                          >
+                            <Sparkles className="w-4 h-4 mr-2" />
+                            Confirm & Extract Trade Information
+                          </Button>
+                        )}
                       </div>
                     ) : (
-                      <label
-                        htmlFor="extraction-image"
-                        className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-border rounded-md cursor-pointer hover:border-foreground/50 transition-colors"
+                      <div
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                        className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md cursor-pointer transition-colors ${
+                          isDragging 
+                            ? 'border-primary bg-primary/5' 
+                            : 'border-border hover:border-foreground/50'
+                        }`}
                       >
-                        <UploadIcon className="w-12 h-12 text-muted-foreground mb-2" />
-                        <p className="text-sm text-muted-foreground mb-1">
-                          Click to upload trade screenshot
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Supports PNG, JPG, WEBP (max 10MB)
-                        </p>
-                        <Input
-                          id="extraction-image"
-                          type="file"
-                          accept="image/jpeg,image/png,image/webp"
-                          onChange={handleExtractionImageChange}
-                          className="hidden"
-                        />
-                      </label>
+                        <label
+                          htmlFor="extraction-image"
+                          className="flex flex-col items-center justify-center w-full h-full cursor-pointer"
+                        >
+                          <UploadIcon className="w-12 h-12 text-muted-foreground mb-2" />
+                          <p className="text-sm text-muted-foreground mb-1">
+                            Click to upload or drag and drop
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Supports PNG, JPG, WEBP (max 10MB)
+                          </p>
+                          <Input
+                            id="extraction-image"
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            onChange={handleExtractionImageChange}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
                     )}
                   </div>
                 </div>
 
                 {extracting && (
-                  <div className="flex items-center justify-center py-8">
-                    <div className="flex flex-col items-center space-y-3">
-                      <Sparkles className="w-8 h-8 animate-pulse text-primary" />
-                      <p className="text-sm text-muted-foreground">Extracting trade information...</p>
+                  <div className="flex items-center justify-center py-12">
+                    <div className="flex flex-col items-center space-y-4">
+                      <div className="relative">
+                        <Sparkles className="w-12 h-12 animate-pulse text-primary" />
+                        <div className="absolute inset-0 animate-ping">
+                          <Sparkles className="w-12 h-12 text-primary/30" />
+                        </div>
+                      </div>
+                      <div className="text-center space-y-2">
+                        <p className="text-base font-medium">Analyzing your trade screenshot...</p>
+                        <p className="text-sm text-muted-foreground">AI is extracting trade information</p>
+                      </div>
                     </div>
                   </div>
                 )}

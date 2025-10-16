@@ -3,14 +3,17 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/layout/AppLayout';
 import { toast } from 'sonner';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Upload as UploadIcon, X, Sparkles, Check } from 'lucide-react';
+import { Upload as UploadIcon, X, Sparkles, Check, ChevronsUpDown } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from "@/lib/utils";
 
 interface ExtractedTrade {
   asset: string;
@@ -36,6 +39,50 @@ interface ExtractedTrade {
   notes?: string;
 }
 
+const BROKERS = [
+  "AJ Bell YouInvest",
+  "Binance",
+  "BingX",
+  "Bithumb",
+  "Bitfinex",
+  "Bitget",
+  "Bitstamp",
+  "Bybit",
+  "Capital.com",
+  "Charles Schwab",
+  "CoinMENA",
+  "Coinbase",
+  "Crypto.com Exchange",
+  "E*TRADE (Morgan Stanley)",
+  "Fidelity Investments",
+  "Gate.io",
+  "Gemini",
+  "Hargreaves Lansdown",
+  "HSBC InvestDirect",
+  "Huobi",
+  "IG",
+  "Interactive Brokers",
+  "J.P. Morgan (Self-Directed Investing)",
+  "Jupiter",
+  "KGI Securities",
+  "Kraken",
+  "KuCoin",
+  "Lim & Tan",
+  "MEXC",
+  "Merrill Edge",
+  "Moomoo",
+  "OANDA",
+  "Plus500",
+  "Saxo Bank / Saxo Markets",
+  "Swissquote",
+  "TradeStation",
+  "Uniswap",
+  "Vanguard",
+  "eToro",
+  "No Broker",
+  "Other"
+].sort();
+
 const Upload = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -51,6 +98,7 @@ const Upload = () => {
   const [savingTrades, setSavingTrades] = useState<Set<number>>(new Set());
   const [isDragging, setIsDragging] = useState(false);
   const [tradeEdits, setTradeEdits] = useState<Record<number, Partial<ExtractedTrade>>>({});
+  const [openBroker, setOpenBroker] = useState(false);
   
   const [formData, setFormData] = useState({
     asset: '',
@@ -800,12 +848,55 @@ const Upload = () => {
 
                   <div>
                     <label className="text-sm font-medium">Broker</label>
-                    <Input
-                      value={formData.broker}
-                      onChange={(e) => setFormData({...formData, broker: e.target.value})}
-                      placeholder="Your broker"
-                      className="mt-1"
-                    />
+                    <Popover open={openBroker} onOpenChange={setOpenBroker}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={openBroker}
+                          className="w-full justify-between mt-1"
+                        >
+                          {formData.broker || "Select broker..."}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[400px] p-0" align="start">
+                        <Command>
+                          <CommandInput placeholder="Search broker..." />
+                          <CommandList>
+                            <CommandEmpty>No broker found.</CommandEmpty>
+                            <CommandGroup>
+                              {BROKERS.map((broker) => (
+                                <CommandItem
+                                  key={broker}
+                                  value={broker}
+                                  onSelect={(currentValue) => {
+                                    const selectedBroker = BROKERS.find(b => b.toLowerCase() === currentValue);
+                                    if (selectedBroker === "Other") {
+                                      const custom = prompt("Enter broker name:");
+                                      if (custom && custom.trim()) {
+                                        setFormData({...formData, broker: custom.trim()});
+                                      }
+                                    } else if (selectedBroker) {
+                                      setFormData({...formData, broker: selectedBroker});
+                                    }
+                                    setOpenBroker(false);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      formData.broker === broker ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  {broker}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                   </div>
 
                   <div>

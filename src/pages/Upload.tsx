@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/layout/AppLayout';
 import { toast } from 'sonner';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Upload as UploadIcon, X, Sparkles, Check, ChevronsUpDown, Plus } from 'lucide-react';
+import { Upload as UploadIcon, X, Sparkles, Check, ChevronsUpDown, Plus, Trash2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from "@/lib/utils";
@@ -107,7 +107,6 @@ const Upload = () => {
   const [openExtractedSetup, setOpenExtractedSetup] = useState<number | null>(null);
   const [setupSearch, setSetupSearch] = useState('');
   const [extractedSetupSearches, setExtractedSetupSearches] = useState<Record<number, string>>({});
-  const [savedTradeIds, setSavedTradeIds] = useState<Record<number, string>>({});
   
   const [formData, setFormData] = useState({
     asset: '',
@@ -454,92 +453,26 @@ const Upload = () => {
     }));
   };
 
-  const saveExtractedTrade = async (trade: ExtractedTrade, index: number) => {
-    if (!user) return;
-
-    setSavingTrades(prev => new Set(prev).add(index));
-
-    const edits = tradeEdits[index] || {};
-    const finalTrade = { ...trade, ...edits };
-
-    try {
-      const tradeData = {
-        user_id: user.id,
-        asset: finalTrade.asset,
-        broker: finalTrade.broker || null,
-        setup: finalTrade.setup || null,
-        emotional_tag: finalTrade.emotional_tag || null,
-        entry_price: finalTrade.entry_price,
-        exit_price: finalTrade.exit_price,
-        position_size: finalTrade.position_size,
-        position_type: finalTrade.position_type,
-        leverage: finalTrade.leverage || 1,
-        profit_loss: finalTrade.profit_loss,
-        funding_fee: finalTrade.funding_fee,
-        trading_fee: finalTrade.trading_fee,
-        roi: finalTrade.roi,
-        margin: finalTrade.margin,
-        opened_at: finalTrade.opened_at,
-        closed_at: finalTrade.closed_at,
-        period_of_day: finalTrade.period_of_day,
-        duration_days: finalTrade.duration_days,
-        duration_hours: finalTrade.duration_hours,
-        duration_minutes: finalTrade.duration_minutes,
-        pnl: finalTrade.profit_loss,
-        trade_date: finalTrade.opened_at,
-        notes: finalTrade.notes || null
-      };
-
-      const existingTradeId = savedTradeIds[index];
-
-      if (existingTradeId) {
-        // Update existing trade
-        const { error } = await supabase
-          .from('trades')
-          .update(tradeData)
-          .eq('id', existingTradeId);
-
-        if (error) {
-          toast.error(`Failed to update trade ${index + 1}`);
-        } else {
-          toast.success(`Trade ${index + 1} updated successfully!`);
-        }
-      } else {
-        // Insert new trade
-        const { data, error } = await supabase
-          .from('trades')
-          .insert(tradeData)
-          .select('id')
-          .single();
-
-        if (error) {
-          toast.error(`Failed to save trade ${index + 1}`);
-        } else {
-          // Create upload batch for single trade
-          await supabase.from('upload_batches').insert({
-            user_id: user.id,
-            trade_count: 1,
-            assets: [finalTrade.asset],
-            total_entry_value: finalTrade.entry_price * finalTrade.position_size,
-            most_recent_trade_asset: finalTrade.asset,
-            most_recent_trade_value: finalTrade.profit_loss
-          });
-
-          // Save the trade ID for future updates
-          setSavedTradeIds(prev => ({ ...prev, [index]: data.id }));
-          toast.success(`Trade ${index + 1} saved successfully!`);
-        }
-      }
-    } catch (error) {
-      console.error('Error saving trade:', error);
-      toast.error(`Failed to save trade ${index + 1}`);
-    } finally {
-      setSavingTrades(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(index);
-        return newSet;
+  const removeExtractedTrade = (index: number) => {
+    setExtractedTrades(prev => prev.filter((_, i) => i !== index));
+    // Clean up any edits for this trade
+    setTradeEdits(prev => {
+      const newEdits = { ...prev };
+      delete newEdits[index];
+      // Reindex remaining edits
+      const reindexed: Record<number, Partial<ExtractedTrade>> = {};
+      Object.keys(newEdits).forEach(key => {
+        const oldIndex = parseInt(key);
+        const newIndex = oldIndex > index ? oldIndex - 1 : oldIndex;
+        reindexed[newIndex] = newEdits[oldIndex];
       });
-    }
+      return reindexed;
+    });
+    toast.info('Trade removed from batch');
+  };
+
+  const saveExtractedTrade = async (trade: ExtractedTrade, index: number) => {
+    // This function is no longer needed as we only save all trades at once
   };
 
   const saveAllExtractedTrades = async () => {
@@ -855,9 +788,19 @@ const Upload = () => {
                         const edits = tradeEdits[index] || {};
                         return (
                           <Card key={index} className="p-4 bg-muted/50 border-border space-y-4">
-                            <div className="mb-3 pb-2 border-b border-border">
-                              <h4 className="font-semibold text-sm">Trade #{index + 1} - Review & Edit</h4>
-                              <p className="text-xs text-muted-foreground">AI extracted this data. Please verify and correct if needed.</p>
+                            <div className="mb-3 pb-2 border-b border-border flex items-center justify-between">
+                              <div>
+                                <h4 className="font-semibold text-sm">Trade #{index + 1} - Review & Edit</h4>
+                                <p className="text-xs text-muted-foreground">AI extracted this data. Please verify and correct if needed.</p>
+                              </div>
+                              <Button
+                                onClick={() => removeExtractedTrade(index)}
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
                             </div>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -1158,29 +1101,6 @@ const Upload = () => {
                                   className="mt-1 h-8 text-sm"
                                 />
                               </div>
-                            </div>
-
-                            <div className="pt-3 border-t border-border">
-                              <Button
-                                onClick={() => saveExtractedTrade(trade, index)}
-                                disabled={savingTrades.has(index)}
-                                size="sm"
-                                className="w-full"
-                              >
-                                {savingTrades.has(index) ? (
-                                  <>
-                                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Saving...
-                                  </>
-                                ) : savedTradeIds[index] ? (
-                                  'Changes saved. Click again to update any new edits in this trade.'
-                                ) : (
-                                  'Save This Trade'
-                                )}
-                              </Button>
                             </div>
                           </Card>
                         );

@@ -12,8 +12,6 @@ interface UploadBatch {
   trade_count: number;
   assets: string[];
   total_entry_value: number;
-  most_recent_trade_asset: string | null;
-  most_recent_trade_value: number | null;
   trades?: BatchTrade[];
 }
 
@@ -74,11 +72,36 @@ export const UploadHistory = () => {
       .from('upload_batches')
       .select('*')
       .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(20);
+      .limit(50);
 
     if (!error && data) {
-      setBatches(data);
+      // Sort by most recent trade, not upload date
+      // We'll need to fetch the most recent trade date for each batch
+      const batchesWithMostRecentTrade = await Promise.all(
+        data.map(async (batch) => {
+          const { data: trades } = await supabase
+            .from('trades')
+            .select('trade_date')
+            .eq('user_id', user.id)
+            .gte('created_at', new Date(new Date(batch.created_at).getTime() - 5000).toISOString())
+            .lte('created_at', new Date(new Date(batch.created_at).getTime() + 5000).toISOString())
+            .order('trade_date', { ascending: false })
+            .limit(1)
+            .single();
+
+          return {
+            ...batch,
+            most_recent_trade_date: trades?.trade_date || batch.created_at
+          };
+        })
+      );
+
+      // Sort by most recent trade date
+      batchesWithMostRecentTrade.sort((a, b) => 
+        new Date(b.most_recent_trade_date).getTime() - new Date(a.most_recent_trade_date).getTime()
+      );
+
+      setBatches(batchesWithMostRecentTrade.slice(0, 20));
     }
   };
 
@@ -134,13 +157,15 @@ export const UploadHistory = () => {
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-muted-foreground">
-                      {format(new Date(batch.created_at), 'MMM dd, yyyy • HH:mm')}
-                    </span>
-                    <Badge variant="outline" className="text-xs">
-                      {batch.trade_count} {batch.trade_count === 1 ? 'trade' : 'trades'}
-                    </Badge>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-muted-foreground">
+                        {format(new Date(batch.created_at), 'MMM dd, yyyy • HH:mm')}
+                      </span>
+                      <Badge variant="outline" className="text-xs">
+                        {batch.trade_count} {batch.trade_count === 1 ? 'trade' : 'trades'}
+                      </Badge>
+                    </div>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-2 text-sm">
@@ -154,19 +179,11 @@ export const UploadHistory = () => {
                     </div>
                   </div>
                   
-                  {batch.most_recent_trade_asset && (
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">Most Recent: </span>
-                      <span className="font-medium">{batch.most_recent_trade_asset}</span>
-                      {batch.most_recent_trade_value !== null && (
-                        <span className={`ml-2 ${
-                          batch.most_recent_trade_value >= 0 ? 'text-neon-green' : 'text-neon-red'
-                        }`}>
-                          ${batch.most_recent_trade_value.toFixed(2)}
-                        </span>
-                      )}
-                    </div>
-                  )}
+                  <div className="flex justify-end">
+                    <span className="text-xs text-muted-foreground">
+                      Uploaded: {format(new Date(batch.created_at), 'MM/dd/yyyy HH:mm')}
+                    </span>
+                  </div>
                 </div>
                 
                 <div className="ml-4">
@@ -185,8 +202,9 @@ export const UploadHistory = () => {
                       key={trade.id}
                       className="flex items-center justify-between py-2 px-3 rounded-md bg-muted/50 text-sm"
                     >
-                      <div className="flex items-center gap-3">
-                        <span className="font-medium">{trade.asset}</span>
+                      <div className="flex items-center gap-4 flex-1">
+                        <span className="font-medium min-w-[100px]">{trade.asset}</span>
+                        <span className="text-muted-foreground">${trade.entry_price.toFixed(2)}</span>
                         <Badge
                           variant="outline"
                           className={
@@ -198,19 +216,13 @@ export const UploadHistory = () => {
                           {trade.position_type.toUpperCase()}
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <span className="text-muted-foreground">
-                          {format(new Date(trade.trade_date), 'MMM dd')}
-                        </span>
-                        <span className="font-medium">${trade.entry_price.toFixed(2)}</span>
-                        <span
-                          className={`font-medium ${
-                            trade.profit_loss >= 0 ? 'text-neon-green' : 'text-neon-red'
-                          }`}
-                        >
-                          ${trade.profit_loss.toFixed(2)}
-                        </span>
-                      </div>
+                      <span
+                        className={`font-medium ${
+                          trade.profit_loss >= 0 ? 'text-neon-green' : 'text-neon-red'
+                        }`}
+                      >
+                        ${trade.profit_loss.toFixed(2)}
+                      </span>
                     </div>
                   ))}
                 </div>

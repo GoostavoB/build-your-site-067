@@ -1,21 +1,143 @@
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/components/layout/AppLayout';
+import { blogArticles } from '@/data/blogArticles';
+import { ArrowLeft, Calendar, Clock, User, Share2 } from 'lucide-react';
+import { toast } from 'sonner';
+import ReactMarkdown from 'react-markdown';
 
 const BlogPost = () => {
   const { slug } = useParams();
+  const article = blogArticles.find(a => a.slug === slug);
+
+  const handleShare = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url);
+    toast.success('Link copied to clipboard!');
+  };
+
+  if (!article) {
+    return (
+      <AppLayout>
+        <div className="max-w-4xl mx-auto text-center py-12">
+          <h1 className="text-3xl font-bold mb-4">Article Not Found</h1>
+          <p className="text-muted-foreground mb-6">
+            The article you're looking for doesn't exist.
+          </p>
+          <Link to="/blog">
+            <Button variant="outline" className="gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Blog
+            </Button>
+          </Link>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <Link to="/blog">
+          <Button variant="ghost" className="gap-2 mb-4">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Blog
+          </Button>
+        </Link>
+
         <Card className="p-8 bg-card border-border">
-          <h1 className="text-4xl font-bold mb-4">Blog Post: {slug}</h1>
-          <p className="text-muted-foreground mb-6">Article content coming soon...</p>
-          <div className="prose prose-invert max-w-none">
-            <p>
-              This is a placeholder for the full blog post content. In a complete implementation, 
-              this would contain the full article with rich content, images, and formatting.
+          {/* Article Header */}
+          <div className="mb-8">
+            <Badge variant="secondary" className="mb-4">
+              {article.category}
+            </Badge>
+            <h1 className="text-4xl font-bold mb-4 leading-tight">
+              {article.title}
+            </h1>
+            <p className="text-lg text-muted-foreground mb-6">
+              {article.description}
             </p>
+            
+            {/* Meta Information */}
+            <div className="flex items-center justify-between border-t border-b border-border py-4">
+              <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                <span className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  {article.author}
+                </span>
+                <span className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  {new Date(article.date).toLocaleDateString('en-US', { 
+                    month: 'long', 
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </span>
+                <span className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  {article.readTime}
+                </span>
+              </div>
+              <Button variant="outline" size="sm" onClick={handleShare} className="gap-2">
+                <Share2 className="w-4 h-4" />
+                Share
+              </Button>
+            </div>
+          </div>
+
+          {/* Article Content */}
+          <div className="prose prose-invert prose-lg max-w-none">
+            <ReactMarkdown
+              components={{
+                h1: ({node, ...props}) => <h1 className="text-3xl font-bold mt-8 mb-4" {...props} />,
+                h2: ({node, ...props}) => <h2 className="text-2xl font-bold mt-6 mb-3" {...props} />,
+                h3: ({node, ...props}) => <h3 className="text-xl font-semibold mt-5 mb-2" {...props} />,
+                p: ({node, ...props}) => <p className="text-muted-foreground leading-relaxed mb-4" {...props} />,
+                ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-4 space-y-2" {...props} />,
+                ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-4 space-y-2" {...props} />,
+                li: ({node, ...props}) => <li className="text-muted-foreground" {...props} />,
+                strong: ({node, ...props}) => <strong className="font-semibold text-foreground" {...props} />,
+                code: ({node, ...props}) => <code className="bg-muted px-1.5 py-0.5 rounded text-sm" {...props} />,
+                pre: ({node, ...props}) => <pre className="bg-muted p-4 rounded-lg overflow-x-auto mb-4" {...props} />,
+                blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-primary pl-4 italic my-4" {...props} />,
+              }}
+            >
+              {article.content}
+            </ReactMarkdown>
+          </div>
+        </Card>
+
+        {/* Related Articles Section */}
+        <Card className="p-6 bg-card border-border">
+          <h3 className="text-xl font-semibold mb-4">More Articles</h3>
+          <div className="grid gap-4">
+            {blogArticles
+              .filter(a => a.slug !== slug)
+              .slice(0, 3)
+              .map((relatedArticle) => (
+                <Link 
+                  key={relatedArticle.slug} 
+                  to={`/blog/${relatedArticle.slug}`}
+                  className="p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="secondary" className="text-xs">
+                      {relatedArticle.category}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      {relatedArticle.readTime}
+                    </span>
+                  </div>
+                  <h4 className="font-semibold hover:text-primary transition-colors">
+                    {relatedArticle.title}
+                  </h4>
+                  <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                    {relatedArticle.description}
+                  </p>
+                </Link>
+              ))}
           </div>
         </Card>
       </div>

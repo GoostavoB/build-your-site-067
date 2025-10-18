@@ -8,6 +8,8 @@ import { DashboardCharts } from '@/components/DashboardCharts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TradeHistory } from '@/components/TradeHistory';
 import { AdvancedAnalytics } from '@/components/AdvancedAnalytics';
+import { PerformanceInsights } from '@/components/PerformanceInsights';
+import { DashboardSkeleton } from '@/components/DashboardSkeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -249,9 +251,7 @@ const Dashboard = () => {
         />
 
         {loading ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">Loading your stats...</p>
-          </div>
+          <DashboardSkeleton />
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -453,11 +453,18 @@ const Dashboard = () => {
             )}
 
             {stats && stats.total_trades > 0 && (
-              <Tabs defaultValue="advanced" className="space-y-6 mt-6">
+              <Tabs defaultValue="insights" className="space-y-6 mt-6">
                 <TabsList>
+                  <TabsTrigger value="insights">Insights</TabsTrigger>
                   <TabsTrigger value="advanced">Advanced Analytics</TabsTrigger>
                   <TabsTrigger value="history">Trade History</TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="insights" className="space-y-6">
+                  <PerformanceInsights 
+                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                  />
+                </TabsContent>
 
                 <TabsContent value="advanced" className="space-y-6">
                   <AdvancedAnalytics

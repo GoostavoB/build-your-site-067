@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { UploadHistory } from '@/components/UploadHistory';
 import { UploadProgress, getRandomThinkingPhrase } from '@/components/UploadProgress';
 import { DuplicateTradeDialog } from '@/components/DuplicateTradeDialog';
+import { SuccessFeedback } from '@/components/SuccessFeedback';
 
 interface ExtractedTrade {
   symbol: string;
@@ -101,6 +102,8 @@ const Upload = () => {
     trade?: ExtractedTrade & { existingDate?: string; existingSymbol?: string; existingPnl?: number };
     index?: number;
   }>({ open: false });
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [savedTradesCount, setSavedTradesCount] = useState(0);
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
   const [extractionImage, setExtractionImage] = useState<File | null>(null);
@@ -609,12 +612,11 @@ const Upload = () => {
           console.error('Batch creation error:', batchError);
         }
 
-        toast.success(`✅ ${extractedTrades.length} trade${extractedTrades.length > 1 ? 's' : ''} saved to database!`, {
-          description: 'Your trades are now in the upload history below',
-          duration: 4000
-        });
+        // Show success feedback
+        setSavedTradesCount(extractedTrades.length);
+        setShowSuccess(true);
         
-        // Clear the extraction image and trades
+        // Clear the extraction data
         setExtractionImage(null);
         setExtractionPreview(null);
         setExtractedTrades([]);
@@ -838,7 +840,7 @@ const Upload = () => {
                 </div>
 
 
-                {extractedTrades.length > 0 && !extracting && (
+                {extractedTrades.length > 0 && !extracting && !showSuccess && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-semibold">Extracted Trades ({extractedTrades.length})</h3>
@@ -1188,6 +1190,18 @@ const Upload = () => {
                       })}
                     </div>
                   </div>
+                )}
+
+                {/* Success Feedback */}
+                {showSuccess && (
+                  <SuccessFeedback
+                    tradesCount={savedTradesCount}
+                    onViewDashboard={() => navigate('/dashboard')}
+                    onViewHistory={() => {
+                      setShowSuccess(false);
+                      navigate('/dashboard?tab=history');
+                    }}
+                  />
                 )}
               </div>
             </Card>

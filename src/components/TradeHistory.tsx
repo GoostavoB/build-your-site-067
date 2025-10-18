@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Pencil, Trash2, Eye, Search, Settings2, X } from 'lucide-react';
+import { Pencil, Trash2, Eye, Search, Settings2, X, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import {
@@ -46,6 +46,7 @@ import {
 } from '@/components/ui/command';
 import { Textarea } from '@/components/ui/textarea';
 import { Trade } from '@/types/trade';
+import { ShareTradeCard } from '@/components/ShareTradeCard';
 
 type ColumnKey = 'date' | 'symbol' | 'setup' | 'broker' | 'type' | 'entry' | 'exit' | 'size' | 'pnl' | 'roi' | 'fundingFee' | 'tradingFee';
 
@@ -100,6 +101,8 @@ export const TradeHistory = ({ onTradesChange }: TradeHistoryProps = {}) => {
   const [brokerSearch, setBrokerSearch] = useState('');
   const [brokerPopoverOpen, setBrokerPopoverOpen] = useState(false);
   const [userBrokers, setUserBrokers] = useState<string[]>([]);
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [tradeToShare, setTradeToShare] = useState<Trade | null>(null);
 
   useEffect(() => {
     fetchTrades();
@@ -875,13 +878,26 @@ export const TradeHistory = ({ onTradesChange }: TradeHistoryProps = {}) => {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleView(trade)}
+                            title="View Details"
                           >
                             <Eye size={16} />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
+                            onClick={() => {
+                              setTradeToShare(trade);
+                              setShareDialogOpen(true);
+                            }}
+                            title="Share Trade"
+                          >
+                            <Share2 size={16} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={() => handleEdit(trade)}
+                            title="Edit Trade"
                           >
                             <Pencil size={16} />
                           </Button>
@@ -889,6 +905,7 @@ export const TradeHistory = ({ onTradesChange }: TradeHistoryProps = {}) => {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleDelete(trade.id)}
+                            title="Delete Trade"
                           >
                             <Trash2 size={16} className="text-destructive" />
                           </Button>
@@ -1175,6 +1192,13 @@ export const TradeHistory = ({ onTradesChange }: TradeHistoryProps = {}) => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Share Trade Card Dialog */}
+      <ShareTradeCard
+        open={shareDialogOpen}
+        onOpenChange={setShareDialogOpen}
+        trade={tradeToShare}
+      />
     </div>
   );
 };

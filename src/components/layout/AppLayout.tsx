@@ -20,16 +20,16 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
+      <div className="min-h-screen flex w-full bg-gradient-to-br from-background via-secondary/30 to-background">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
           <CryptoPrices />
-          <header className="h-14 border-b border-border flex items-center justify-end gap-3 px-6">
+          <header className="h-14 border-b border-border/50 backdrop-blur-xl bg-card/50 flex items-center justify-end gap-3 px-6">
             <KeyboardShortcutsHelp />
             <ThemeToggle />
             <UserMenu />
           </header>
-          <main className="flex-1 p-6 overflow-auto pb-20 md:pb-6">
+          <main className="flex-1 p-6 overflow-auto pb-20 md:pb-6 custom-scrollbar">
             {children}
           </main>
           <MobileNav />

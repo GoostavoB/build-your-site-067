@@ -44,8 +44,8 @@ export function AppSidebar() {
       : 'hover:bg-muted/50 text-muted-foreground hover:text-foreground';
 
   return (
-    <Sidebar collapsible="icon">
-      <div className="p-4 border-b border-border flex items-center gap-2">
+    <Sidebar collapsible="icon" className="border-r border-border/50 backdrop-blur-xl bg-card/50">
+      <div className="p-4 border-b border-border/50 flex items-center gap-2">
         <TrendingDown className="text-neon-red" size={24} />
         {open && <span className="font-bold text-lg">The Trading Diary</span>}
         <TrendingUp className="text-neon-green ml-auto" size={24} />

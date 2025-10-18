@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { X, Plus, Edit2, Check, Upload, Download, User, Bell, Palette } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AccentColorPicker } from '@/components/AccentColorPicker';
 
 const Settings = () => {
   const { user } = useAuth();
@@ -383,7 +384,9 @@ const Settings = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="trading" className="space-y-6">`
+          <TabsContent value="trading" className="space-y-6">
+            <AccentColorPicker />
+            
             <Card className="p-6 bg-card border-border">
               <h2 className="text-xl font-semibold mb-4">Trading Settings</h2>
               <form onSubmit={handleSaveInvestment} className="space-y-4">

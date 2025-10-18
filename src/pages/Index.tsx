@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { CryptoPrices } from "@/components/CryptoPrices";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -14,7 +15,8 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <CryptoPrices />
-      <div className="absolute top-14 right-6 z-50">
+      <div className="absolute top-14 right-6 z-50 flex items-center gap-3">
+        <ThemeToggle />
         <Button
           onClick={() => navigate('/auth')}
           className="bg-foreground text-background hover:bg-foreground/90"

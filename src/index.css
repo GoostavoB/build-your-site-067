@@ -8,40 +8,87 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 6%;
-    --foreground: 0 0% 98%;
+    /* Light mode - Premium Trading UI */
+    --background: 0 0% 97%;
+    --foreground: 0 0% 8%;
 
-    --card: 0 0% 9%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 8%;
 
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 8%;
 
-    --primary: 0 0% 95%;
-    --primary-foreground: 0 0% 10%;
+    --primary: 0 0% 10%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 0 0% 94%;
+    --secondary-foreground: 0 0% 10%;
 
-    --muted: 0 0% 18%;
-    --muted-foreground: 0 0% 60%;
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 280 20% 25%;
+    --accent: 217 91% 60%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 0 0% 40%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 217 91% 60%;
 
     --radius: 0.75rem;
 
-    /* Custom theme tokens - Subtle accents */
+    /* Custom theme tokens */
+    --neon-green: 140 100% 40%;
+    --neon-red: 0 100% 50%;
+    --chart-1: 217 91% 60%;
+    --chart-2: 280 65% 60%;
+    --chart-3: 160 60% 45%;
+    --chart-4: 30 80% 55%;
+    --chart-5: 340 75% 55%;
+  }
+
+  .dark {
+    /* Dark mode - Cinematic Trading UI */
+    --background: 222 47% 4%;
+    --foreground: 0 0% 98%;
+
+    --card: 222 47% 6%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 222 47% 6%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 95%;
+    --primary-foreground: 0 0% 10%;
+
+    --secondary: 217 19% 12%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 215 20% 14%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 215 20% 16%;
+    --input: 215 20% 16%;
+    --ring: 217 91% 60%;
+
+    --radius: 0.75rem;
+
+    /* Custom theme tokens - Dark mode */
     --neon-green: 140 100% 50%;
     --neon-red: 0 100% 60%;
-    --purple-accent: 280 20% 30%;
+    --chart-1: 217 91% 60%;
+    --chart-2: 280 65% 60%;
+    --chart-3: 160 60% 45%;
+    --chart-4: 30 80% 55%;
+    --chart-5: 340 75% 55%;
   }
 }
 
@@ -52,10 +99,10 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Space Grotesk', 'Inter', sans-serif;
-    background: #0a0a0a;
+    font-family: 'Inter', 'Space Grotesk', sans-serif;
     background-attachment: fixed;
     min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   @keyframes glow-pulse {

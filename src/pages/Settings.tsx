@@ -12,6 +12,8 @@ import { toast } from 'sonner';
 import { X, Plus, Edit2, Check, Upload, Download, User, Bell, Palette } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AccentColorPicker } from '@/components/AccentColorPicker';
+import { NotificationPreferences } from '@/components/NotificationPreferences';
+import { DataManagement } from '@/components/DataManagement';
 
 const Settings = () => {
   const { user } = useAuth();

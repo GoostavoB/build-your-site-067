@@ -262,37 +262,55 @@ export type Database = {
           accent_color: string | null
           blur_enabled: boolean | null
           created_at: string | null
+          email_notifications: boolean | null
+          event_reminders: boolean | null
           id: string
           initial_investment: number | null
           layout_json: Json | null
+          monthly_report: boolean | null
+          performance_alerts: boolean | null
           sidebar_style: string | null
           theme: string | null
+          trade_reminders: boolean | null
           updated_at: string | null
           user_id: string
+          weekly_summary: boolean | null
         }
         Insert: {
           accent_color?: string | null
           blur_enabled?: boolean | null
           created_at?: string | null
+          email_notifications?: boolean | null
+          event_reminders?: boolean | null
           id?: string
           initial_investment?: number | null
           layout_json?: Json | null
+          monthly_report?: boolean | null
+          performance_alerts?: boolean | null
           sidebar_style?: string | null
           theme?: string | null
+          trade_reminders?: boolean | null
           updated_at?: string | null
           user_id: string
+          weekly_summary?: boolean | null
         }
         Update: {
           accent_color?: string | null
           blur_enabled?: boolean | null
           created_at?: string | null
+          email_notifications?: boolean | null
+          event_reminders?: boolean | null
           id?: string
           initial_investment?: number | null
           layout_json?: Json | null
+          monthly_report?: boolean | null
+          performance_alerts?: boolean | null
           sidebar_style?: string | null
           theme?: string | null
+          trade_reminders?: boolean | null
           updated_at?: string | null
           user_id?: string
+          weekly_summary?: boolean | null
         }
         Relationships: []
       }

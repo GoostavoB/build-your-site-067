@@ -58,7 +58,21 @@ export const ForecastScenarioCard = ({
 
   const formatGrowth = (value: number) => {
     const sign = value >= 0 ? '+' : '';
-    return `${sign}${value.toFixed(2)}%`;
+    const absValue = Math.abs(value);
+    
+    // Format large numbers with k, M, B suffixes
+    let formattedValue: string;
+    if (absValue >= 1000000000) {
+      formattedValue = (value / 1000000000).toFixed(2) + 'B';
+    } else if (absValue >= 1000000) {
+      formattedValue = (value / 1000000).toFixed(2) + 'M';
+    } else if (absValue >= 1000) {
+      formattedValue = (value / 1000).toFixed(2) + 'k';
+    } else {
+      formattedValue = value.toFixed(2);
+    }
+    
+    return `${sign}${formattedValue}%`;
   };
 
   const getGrowthColor = (value: number) => {
@@ -68,39 +82,39 @@ export const ForecastScenarioCard = ({
   };
 
   return (
-    <Card className={`p-6 border-2 ${config.borderColor} ${config.bgColor}`}>
+    <Card className={`p-5 border-2 ${config.borderColor} ${config.bgColor} glass`}>
       <div className="flex items-start gap-3 mb-4">
-        <div className={`p-2 rounded-lg bg-background/50`}>
+        <div className={`p-2 rounded-xl bg-background/50`}>
           <Icon className={`h-5 w-5 ${config.iconColor}`} />
         </div>
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold mb-1">{config.title}</h3>
-          <p className="text-sm text-muted-foreground">{config.description}</p>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base font-semibold mb-1">{config.title}</h3>
+          <p className="text-xs text-muted-foreground leading-tight">{config.description}</p>
         </div>
       </div>
 
-      <div className="space-y-3 mt-6">
-        <div className="flex justify-between items-center">
-          <span className="text-sm text-muted-foreground">Daily Growth</span>
-          <span className={`text-lg font-bold ${getGrowthColor(dailyGrowth)}`}>
+      <div className="space-y-2.5 mt-5">
+        <div className="flex justify-between items-center gap-3">
+          <span className="text-xs text-muted-foreground">Daily Growth</span>
+          <span className={`text-base font-bold ${getGrowthColor(dailyGrowth)} break-all text-right`}>
             {formatGrowth(dailyGrowth)}
           </span>
         </div>
-        <div className="flex justify-between items-center">
-          <span className="text-sm text-muted-foreground">Monthly Growth</span>
-          <span className={`text-lg font-bold ${getGrowthColor(monthlyGrowth)}`}>
+        <div className="flex justify-between items-center gap-3">
+          <span className="text-xs text-muted-foreground">Monthly Growth</span>
+          <span className={`text-base font-bold ${getGrowthColor(monthlyGrowth)} break-all text-right`}>
             {formatGrowth(monthlyGrowth)}
           </span>
         </div>
-        <div className="flex justify-between items-center">
-          <span className="text-sm text-muted-foreground">Annual Growth</span>
-          <span className={`text-lg font-bold ${getGrowthColor(yearlyGrowth)}`}>
+        <div className="flex justify-between items-center gap-3">
+          <span className="text-xs text-muted-foreground">Annual Growth</span>
+          <span className={`text-base font-bold ${getGrowthColor(yearlyGrowth)} break-all text-right`}>
             {formatGrowth(yearlyGrowth)}
           </span>
         </div>
-        <div className="flex justify-between items-center pt-2 border-t border-border">
-          <span className="text-sm font-medium">5-Year Projection</span>
-          <span className={`text-xl font-bold ${getGrowthColor(fiveYearGrowth)}`}>
+        <div className="flex justify-between items-center gap-3 pt-2 border-t border-border/50">
+          <span className="text-xs font-medium">5-Year Projection</span>
+          <span className={`text-lg font-bold ${getGrowthColor(fiveYearGrowth)} break-all text-right`}>
             {formatGrowth(fiveYearGrowth)}
           </span>
         </div>

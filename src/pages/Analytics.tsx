@@ -71,11 +71,14 @@ export default function Analytics() {
 
   return (
     <AppLayout>
-      <div className="container mx-auto p-6 max-w-7xl space-y-6">
-        <h1 className="text-3xl font-bold mb-6">Advanced Analytics</h1>
+      <div className="container mx-auto p-4 max-w-7xl space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Advanced Analytics</h1>
+          <p className="text-muted-foreground mt-1">Deep dive into your trading performance</p>
+        </div>
 
         <Tabs defaultValue="charts" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full max-w-2xl grid-cols-4 glass">
             <TabsTrigger value="charts" className="gap-2">
               <BarChart3 className="h-4 w-4" />
               Charts

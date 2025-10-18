@@ -160,14 +160,14 @@ const LongShortRatio = () => {
     <AppLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Long/Short Ratio</h1>
-          <p className="text-muted-foreground mt-2">
+          <h1 className="text-3xl font-bold">Long/Short Ratio</h1>
+          <p className="text-muted-foreground mt-1">
             Monitor the long/short account ratio from multiple data sources
           </p>
         </div>
 
         <Tabs defaultValue="combined" className="w-full">
-          <TabsList className="grid w-full max-w-2xl grid-cols-3">
+          <TabsList className="grid w-full max-w-xl grid-cols-3 glass">
             <TabsTrigger value="combined">Combined LSR</TabsTrigger>
             <TabsTrigger value="binance">Binance LSR</TabsTrigger>
             <TabsTrigger value="bybit">Bybit LSR</TabsTrigger>
@@ -192,17 +192,17 @@ const LongShortRatio = () => {
     
     return (
       <>
-        <div className="flex gap-4">
-          <Card className="flex-1">
-            <CardHeader>
-              <CardTitle>Symbol</CardTitle>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card className="glass">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Symbol</CardTitle>
             </CardHeader>
             <CardContent>
               <Select value={symbol} onValueChange={setSymbol}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="glass-strong">
                   <SelectItem value="BTCUSDT">BTC/USDT</SelectItem>
                   <SelectItem value="ETHUSDT">ETH/USDT</SelectItem>
                   <SelectItem value="BNBUSDT">BNB/USDT</SelectItem>
@@ -212,10 +212,10 @@ const LongShortRatio = () => {
             </CardContent>
           </Card>
 
-          <Card className="flex-1">
-            <CardHeader>
-              <CardTitle>Time Period</CardTitle>
-              <CardDescription>Synced across both sources</CardDescription>
+          <Card className="glass">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Time Period</CardTitle>
+              <CardDescription className="text-xs">Synced across both sources</CardDescription>
             </CardHeader>
             <CardContent>
               <Select value={period} onValueChange={(value) => {
@@ -225,7 +225,7 @@ const LongShortRatio = () => {
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="glass-strong">
                   <SelectItem value="1h">1 Hour</SelectItem>
                   <SelectItem value="4h">4 Hours</SelectItem>
                   <SelectItem value="1d">1 Day</SelectItem>
@@ -236,18 +236,18 @@ const LongShortRatio = () => {
         </div>
 
         {isLoading ? (
-          <Card>
+          <Card className="glass">
             <CardHeader>
-              <Skeleton className="h-8 w-48" />
+              <Skeleton className="h-6 w-32" />
             </CardHeader>
             <CardContent>
-              <Skeleton className="h-[400px] w-full" />
+              <Skeleton className="h-[300px] w-full" />
             </CardContent>
           </Card>
         ) : combinedChartData.length === 0 ? (
-          <Card>
+          <Card className="glass">
             <CardContent className="pt-6">
-              <p className="text-center text-muted-foreground">
+              <p className="text-center text-muted-foreground text-sm">
                 No combined data available. Please ensure both data sources are loaded.
               </p>
             </CardContent>
@@ -255,14 +255,14 @@ const LongShortRatio = () => {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Market Sentiment</CardTitle>
-                  <CardDescription>Visual indicator</CardDescription>
+              <Card className="glass">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">Market Sentiment</CardTitle>
+                  <CardDescription className="text-xs">Visual indicator</CardDescription>
                 </CardHeader>
-                <CardContent className="flex items-center justify-center">
+                <CardContent className="flex items-center justify-center py-2">
                   {latestCombinedData && (
-                    <div className="w-24 h-24 rounded-full overflow-hidden bg-black flex items-center justify-center">
+                    <div className="w-20 h-20 rounded-full overflow-hidden bg-black/50 flex items-center justify-center">
                       <img 
                         src={getMarketSentimentImage(latestCombinedData.longAccount, latestCombinedData.shortAccount)} 
                         alt="Market sentiment"
@@ -274,50 +274,50 @@ const LongShortRatio = () => {
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Avg Long/Short Ratio</CardTitle>
-                  <CardDescription>Combined average</CardDescription>
+              <Card className="glass">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">Avg Long/Short Ratio</CardTitle>
+                  <CardDescription className="text-xs">Combined average</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-bold">
+                  <p className="text-2xl font-bold">
                     {latestCombinedData ? latestCombinedData.longShortRatio.toFixed(4) : "N/A"}
                   </p>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Avg Long Accounts</CardTitle>
-                  <CardDescription>Combined percentage</CardDescription>
+              <Card className="glass">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">Avg Long Accounts</CardTitle>
+                  <CardDescription className="text-xs">Combined percentage</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-bold text-neon-green">
+                  <p className="text-2xl font-bold text-neon-green">
                     {latestCombinedData ? latestCombinedData.longAccount.toFixed(2) : "N/A"}%
                   </p>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Avg Short Accounts</CardTitle>
-                  <CardDescription>Combined percentage</CardDescription>
+              <Card className="glass">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">Avg Short Accounts</CardTitle>
+                  <CardDescription className="text-xs">Combined percentage</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-bold text-neon-red">
+                  <p className="text-2xl font-bold text-neon-red">
                     {latestCombinedData ? latestCombinedData.shortAccount.toFixed(2) : "N/A"}%
                   </p>
                 </CardContent>
               </Card>
             </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Combined Long/Short Ratio History</CardTitle>
-                <CardDescription>Average of Binance and Bybit data</CardDescription>
+            <Card className="glass">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Combined Long/Short Ratio History</CardTitle>
+                <CardDescription className="text-xs">Average of Binance and Bybit data</CardDescription>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={400}>
+                <ResponsiveContainer width="100%" height={350}>
                   <LineChart data={combinedChartData}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis 
@@ -331,9 +331,10 @@ const LongShortRatio = () => {
                     />
                     <Tooltip 
                       contentStyle={{ 
-                        backgroundColor: 'hsl(var(--background))', 
+                        backgroundColor: 'hsl(var(--card))', 
                         border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px'
+                        borderRadius: '12px',
+                        backdropFilter: 'blur(12px)'
                       }}
                     />
                     <Legend />
@@ -349,13 +350,13 @@ const LongShortRatio = () => {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Combined Account Distribution</CardTitle>
-                <CardDescription>Average percentage of long vs short accounts</CardDescription>
+            <Card className="glass">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Combined Account Distribution</CardTitle>
+                <CardDescription className="text-xs">Average percentage of long vs short accounts</CardDescription>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={400}>
+                <ResponsiveContainer width="100%" height={350}>
                   <LineChart data={combinedChartData}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis 
@@ -370,9 +371,10 @@ const LongShortRatio = () => {
                     />
                     <Tooltip 
                       contentStyle={{ 
-                        backgroundColor: 'hsl(var(--background))', 
+                        backgroundColor: 'hsl(var(--card))', 
                         border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px'
+                        borderRadius: '12px',
+                        backdropFilter: 'blur(12px)'
                       }}
                     />
                     <Legend />

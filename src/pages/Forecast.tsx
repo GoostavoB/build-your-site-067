@@ -115,12 +115,12 @@ const Forecast = () => {
           </div>
         ) : (
           <>
-            <Card className="p-6 bg-card border-border">
+            <Card className="p-5 glass">
               <div className="space-y-6">
                 <div>
-                  <div className="flex justify-between items-center mb-4">
+                  <div className="flex justify-between items-center mb-3">
                     <label className="text-sm font-medium">Time Period</label>
-                    <span className="text-2xl font-bold">{formatDays(days[0])}</span>
+                    <span className="text-xl font-bold">{formatDays(days[0])}</span>
                   </div>
                   <Slider
                     value={days}
@@ -136,9 +136,9 @@ const Forecast = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
-                  <div className="p-4 bg-muted/50 rounded-lg">
-                    <p className="text-sm text-muted-foreground mb-1">Avg Daily P&L</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                  <div className="p-4 glass-subtle rounded-xl">
+                    <p className="text-xs text-muted-foreground mb-1">Avg Daily P&L</p>
                     <p className={`text-2xl font-bold ${
                       avgDailyPnl === 0 
                         ? 'text-foreground' 
@@ -149,8 +149,8 @@ const Forecast = () => {
                       ${avgDailyPnl.toFixed(2)}
                     </p>
                   </div>
-                  <div className="p-4 bg-muted/50 rounded-lg">
-                    <p className="text-sm text-muted-foreground mb-1">Projected Equity</p>
+                  <div className="p-4 glass-subtle rounded-xl">
+                    <p className="text-xs text-muted-foreground mb-1">Projected Equity</p>
                     <p className={`text-2xl font-bold ${
                       projectedEquity === 0 
                         ? 'text-foreground' 
@@ -165,9 +165,9 @@ const Forecast = () => {
               </div>
             </Card>
 
-            <Card className="p-6 bg-card border-border">
-              <h3 className="text-lg font-semibold mb-3">Disclaimer</h3>
-              <p className="text-sm text-muted-foreground">
+            <Card className="p-5 glass">
+              <h3 className="text-base font-semibold mb-2">Disclaimer</h3>
+              <p className="text-xs text-muted-foreground">
                 This forecast is based on your historical trading performance and assumes consistent trading behavior. 
                 Past performance does not guarantee future results. Markets are unpredictable, and actual results may vary significantly.
               </p>

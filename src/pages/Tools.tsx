@@ -10,14 +10,14 @@ const Tools = () => {
     <AppLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-4xl font-bold mb-2">Trading Tools</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold">Trading Tools</h1>
+          <p className="text-muted-foreground mt-1">
             Journal your trades and calculate risk metrics
           </p>
         </div>
 
         <Tabs defaultValue="journal" className="space-y-6">
-          <TabsList className="grid w-full max-w-lg grid-cols-3">
+          <TabsList className="grid w-full max-w-lg grid-cols-3 glass">
             <TabsTrigger value="journal" className="gap-2">
               <BookOpen className="w-4 h-4" />
               Journal

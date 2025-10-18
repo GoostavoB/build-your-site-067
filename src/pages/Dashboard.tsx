@@ -272,123 +272,40 @@ const Dashboard = () => {
 
         {loading ? (
           <DashboardSkeleton />
+        ) : stats && stats.total_trades === 0 ? (
+          <Card className="p-8 text-center glass">
+            <h3 className="text-xl font-semibold mb-2">No trades yet</h3>
+            <p className="text-muted-foreground mb-4">
+              Start by uploading your first trade to see analytics and insights
+            </p>
+            <a href="/upload" className="text-primary hover:underline">
+              Upload Trade →
+            </a>
+          </Card>
         ) : (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="space-y-2">
-                <StatCard
-                  title="Total P&L"
-                  value={
-                    <AnimatedCounter 
-                      value={stats?.total_pnl || 0}
-                      prefix="$"
-                      decimals={2}
-                    />
-                  }
-                  animated
-                  numericValue={stats?.total_pnl || 0}
-                  icon={DollarSign}
-                  trend={stats && stats.total_pnl > 0 ? 'up' : stats && stats.total_pnl < 0 ? 'down' : 'neutral'}
-                  valueColor={
-                    stats && stats.total_pnl > 0 
-                      ? 'text-neon-green' 
-                      : stats && stats.total_pnl < 0 
-                      ? 'text-neon-red' 
-                      : 'text-foreground'
-                  }
-                />
-                <div className="flex items-center justify-center gap-2 glass-subtle px-3 py-1.5 rounded-lg">
-                  <Label htmlFor="fees-toggle" className="text-xs cursor-pointer text-muted-foreground">
-                    {includeFeesInPnL ? 'With Fees' : 'Without Fees'}
-                  </Label>
-                  <Switch
-                    id="fees-toggle"
-                    checked={includeFeesInPnL}
-                    onCheckedChange={setIncludeFeesInPnL}
-                    className="scale-75"
-                  />
-                </div>
-              </div>
-              <StatCard
-                title="Win Rate"
-                value={
-                  <AnimatedCounter 
-                    value={stats?.win_rate || 0}
-                    suffix="%"
-                    decimals={1}
-                  />
-                }
-                animated
-                numericValue={stats?.win_rate || 0}
-                icon={Target}
-                trend="neutral"
-                valueColor={stats && stats.win_rate > 70 ? 'text-neon-green' : ''}
-              />
-              <StatCard
-                title="Total Trades"
-                value={
-                  <AnimatedCounter 
-                    value={stats?.total_trades || 0}
-                    decimals={0}
-                  />
-                }
-                animated
-                numericValue={stats?.total_trades || 0}
-                icon={TrendingUp}
-                trend="neutral"
-              />
-              <StatCard
-                title="Avg Duration"
-                value={
-                  <>
-                    <AnimatedCounter 
-                      value={Math.round(stats?.avg_duration || 0)}
-                      decimals={0}
-                    />
-                    <span>m</span>
-                  </>
-                }
-                animated
-                numericValue={stats?.avg_duration || 0}
-                icon={TrendingDown}
-                trend="neutral"
-              />
-            </div>
-
-            {stats && stats.total_trades === 0 ? (
-              <Card className="p-8 text-center glass">
-                <h3 className="text-xl font-semibold mb-2">No trades yet</h3>
-                <p className="text-muted-foreground mb-4">
-                  Start by uploading your first trade to see analytics and insights
-                </p>
-                <a href="/upload" className="text-primary hover:underline">
-                  Upload Trade →
-                </a>
-              </Card>
-            ) : (
-              <ResponsiveGridLayout
-                className="layout"
-                layouts={{ 
-                  lg: layout.filter(item => isCustomizing || isWidgetVisible(item.i)),
-                  md: layout.filter(item => isCustomizing || isWidgetVisible(item.i)),
-                  sm: layout.filter(item => isCustomizing || isWidgetVisible(item.i)),
-                  xs: layout.filter(item => isCustomizing || isWidgetVisible(item.i)),
-                  xxs: layout.filter(item => isCustomizing || isWidgetVisible(item.i))
-                }}
-                breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-                cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-                rowHeight={70}
-                isDraggable={isCustomizing}
-                isResizable={isCustomizing}
-                onLayoutChange={(newLayout) => {
-                  if (isCustomizing) updateLayout(newLayout);
-                }}
-                draggableHandle=".drag-handle"
-                compactType="vertical"
-                preventCollision={false}
-                margin={[16, 16]}
-                containerPadding={[0, 0]}
-              >
+          <ResponsiveGridLayout
+            className="layout"
+            layouts={{ 
+              lg: layout.filter(item => isCustomizing || isWidgetVisible(item.i)),
+              md: layout.filter(item => isCustomizing || isWidgetVisible(item.i)),
+              sm: layout.filter(item => isCustomizing || isWidgetVisible(item.i)),
+              xs: layout.filter(item => isCustomizing || isWidgetVisible(item.i)),
+              xxs: layout.filter(item => isCustomizing || isWidgetVisible(item.i))
+            }}
+            breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+            cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+            rowHeight={70}
+            isDraggable={isCustomizing}
+            isResizable={isCustomizing}
+            onLayoutChange={(newLayout) => {
+              if (isCustomizing) updateLayout(newLayout);
+            }}
+            draggableHandle=".drag-handle"
+            compactType="vertical"
+            preventCollision={false}
+            margin={[16, 16]}
+            containerPadding={[0, 0]}
+          >
                 {/* Stats Widget */}
                 {(isCustomizing || isWidgetVisible('stats')) && (
                   <div key="stats">

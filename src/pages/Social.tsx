@@ -7,6 +7,7 @@ import { UserCard } from "@/components/social/UserCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import AppLayout from "@/components/layout/AppLayout";
 
 export default function Social() {
   const [posts, setPosts] = useState<SocialPost[]>([]);
@@ -87,14 +88,17 @@ export default function Social() {
   const displayPosts = activeTab === "following" ? followingPosts : posts;
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-6">Trading Community</h1>
+    <AppLayout>
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Trading Community</h1>
+          <p className="text-muted-foreground mt-1">Connect, share, and learn from fellow traders</p>
+        </div>
 
-      <div className="space-y-6">
         <PostComposer onPostCreated={fetchPosts} />
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full max-w-md grid-cols-2 glass">
             <TabsTrigger value="all">All Posts</TabsTrigger>
             <TabsTrigger value="following">Following</TabsTrigger>
           </TabsList>
@@ -132,6 +136,6 @@ export default function Social() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </AppLayout>
   );
 }

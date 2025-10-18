@@ -12,6 +12,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { AnimatedCounter } from '@/components/AnimatedCounter';
+import { DateRangeFilter, DateRange } from '@/components/DateRangeFilter';
 import type { Trade } from '@/types/trade';
 
 interface TradeStats {
@@ -29,10 +31,14 @@ const Dashboard = () => {
   const [initialInvestment, setInitialInvestment] = useState(0);
   const [includeFeesInPnL, setIncludeFeesInPnL] = useState(true);
   const [beastModeDays, setBeastModeDays] = useState(0);
+  const [dateRange, setDateRange] = useState<DateRange>(undefined);
+  const [filteredTrades, setFilteredTrades] = useState<Trade[]>([]);
 
   useEffect(() => {
-    fetchStats();
-    fetchInitialInvestment();
+    if (user) {
+      fetchStats();
+      fetchInitialInvestment();
+    }
     
     // Set up realtime subscription for trades changes
     const channel = supabase
@@ -48,7 +54,30 @@ const Dashboard = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, includeFeesInPnL]); // Added includeFeesInPnL to dependencies
+  }, [user, includeFeesInPnL]);
+
+  // Filter trades based on date range
+  useEffect(() => {
+    if (!trades.length) {
+      setFilteredTrades([]);
+      return;
+    }
+
+    if (!dateRange?.from) {
+      setFilteredTrades(trades);
+      return;
+    }
+
+    const filtered = trades.filter(trade => {
+      const tradeDate = new Date(trade.trade_date);
+      const from = dateRange.from!;
+      const to = dateRange.to || new Date();
+      
+      return tradeDate >= from && tradeDate <= to;
+    });
+
+    setFilteredTrades(filtered);
+  }, [trades, dateRange]);
 
   const fetchStats = async () => {
     if (!user) return;
@@ -119,12 +148,18 @@ const Dashboard = () => {
     }
   };
 
-  const StatCard = ({ title, value, icon: Icon, trend, valueColor }: any) => (
-    <Card className="p-6 bg-card border-border hover:border-foreground/20 transition-all duration-300">
+  const StatCard = ({ title, value, icon: Icon, trend, valueColor, animated = false, numericValue }: any) => (
+    <Card className="p-6 bg-card border-border hover:border-foreground/20 transition-all duration-300 hover:shadow-lg">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-muted-foreground mb-1">{title}</p>
-          <p className={`text-3xl font-bold ${valueColor || ''}`}>{value}</p>
+          <div className={`text-3xl font-bold ${valueColor || ''}`}>
+            {animated && typeof numericValue === 'number' ? (
+              value
+            ) : (
+              value
+            )}
+          </div>
         </div>
         <Icon 
           className={trend === 'up' ? 'text-neon-green' : trend === 'down' ? 'text-neon-red' : 'text-foreground'} 
@@ -144,10 +179,13 @@ const Dashboard = () => {
           </AlertDescription>
         </Alert>
 
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
             <p className="text-muted-foreground">Track your trading performance and analytics</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <DateRangeFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
           </div>
           {beastModeDays > 0 && (
             <TooltipProvider>
@@ -188,7 +226,15 @@ const Dashboard = () => {
               <div className="space-y-2">
                 <StatCard
                   title="Total P&L"
-                  value={`$${stats?.total_pnl.toFixed(2) || 0}`}
+                  value={
+                    <AnimatedCounter 
+                      value={stats?.total_pnl || 0}
+                      prefix="$"
+                      decimals={2}
+                    />
+                  }
+                  animated
+                  numericValue={stats?.total_pnl || 0}
                   icon={DollarSign}
                   trend={stats && stats.total_pnl > 0 ? 'up' : stats && stats.total_pnl < 0 ? 'down' : 'neutral'}
                   valueColor={
@@ -215,25 +261,48 @@ const Dashboard = () => {
                 title="Win Rate"
                 value={
                   <div className="flex items-center gap-2">
-                    <span>{`${stats?.win_rate.toFixed(1) || 0}%`}</span>
+                    <AnimatedCounter 
+                      value={stats?.win_rate || 0}
+                      suffix="%"
+                      decimals={1}
+                    />
                     {stats && stats.win_rate > 70 && (
                       <span className="text-xl">👹</span>
                     )}
                   </div>
                 }
+                animated
+                numericValue={stats?.win_rate || 0}
                 icon={Target}
                 trend="neutral"
                 valueColor={stats && stats.win_rate > 70 ? 'text-neon-green' : ''}
               />
               <StatCard
                 title="Total Trades"
-                value={stats?.total_trades || 0}
+                value={
+                  <AnimatedCounter 
+                    value={stats?.total_trades || 0}
+                    decimals={0}
+                  />
+                }
+                animated
+                numericValue={stats?.total_trades || 0}
                 icon={TrendingUp}
                 trend="neutral"
               />
               <StatCard
                 title="Avg Duration"
-                value={`${Math.round(stats?.avg_duration || 0)}m`}
+                value={
+                  <>
+                    <AnimatedCounter 
+                      value={Math.round(stats?.avg_duration || 0)}
+                      decimals={0}
+                    />
+                    <span>m</span>
+                  </>
+                }
+                animated
+                numericValue={stats?.avg_duration || 0}
                 icon={TrendingDown}
                 trend="neutral"
               />
@@ -258,12 +327,12 @@ const Dashboard = () => {
                 </TabsList>
 
                 <TabsContent value="analytics" className="space-y-6">
-                  <DashboardCharts trades={trades} />
+                  <DashboardCharts trades={filteredTrades.length > 0 ? filteredTrades : trades} />
                 </TabsContent>
 
                 <TabsContent value="advanced" className="space-y-6">
                   <AdvancedAnalytics 
-                    trades={trades} 
+                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
                     initialInvestment={initialInvestment}
                     userId={user?.id || ''}
                     onInitialInvestmentUpdate={setInitialInvestment}

@@ -45,10 +45,9 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border/50 backdrop-blur-xl bg-card/50 glass">
-      <div className="p-4 border-b border-border/50 flex items-center gap-2">
-        <TrendingDown className="text-neon-red" size={24} />
+      <div className="p-4 border-b border-border/50 flex items-center justify-center">
         {open && <span className="font-bold text-lg">The Trading Diary</span>}
-        <TrendingUp className="text-neon-green ml-auto" size={24} />
+        {!open && <span className="font-bold text-xs">TTD</span>}
       </div>
 
       <SidebarContent>

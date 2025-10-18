@@ -11,6 +11,8 @@ import { AdvancedAnalytics } from '@/components/AdvancedAnalytics';
 import { PerformanceInsights } from '@/components/PerformanceInsights';
 import { DashboardSkeleton } from '@/components/DashboardSkeleton';
 import { ExportTradesDialog } from '@/components/ExportTradesDialog';
+import { StatisticsComparison } from '@/components/StatisticsComparison';
+import { TradingStreaks } from '@/components/TradingStreaks';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -467,6 +469,12 @@ const Dashboard = () => {
                 </TabsList>
 
                 <TabsContent value="insights" className="space-y-6">
+                  <StatisticsComparison 
+                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                  />
+                  <TradingStreaks 
+                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                  />
                   <PerformanceInsights 
                     trades={filteredTrades.length > 0 ? filteredTrades : trades}
                   />

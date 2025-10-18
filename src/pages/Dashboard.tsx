@@ -471,12 +471,14 @@ const Dashboard = () => {
                 </TabsList>
 
                 <TabsContent value="insights" className="space-y-6">
-                  <GoalsTracker 
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                  />
-                  <AchievementBadges 
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                  />
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <GoalsTracker 
+                      trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                    />
+                    <AchievementBadges 
+                      trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                    />
+                  </div>
                   <StatisticsComparison 
                     trades={filteredTrades.length > 0 ? filteredTrades : trades}
                   />

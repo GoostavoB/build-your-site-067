@@ -13,6 +13,7 @@ import Forecast from "./pages/Forecast";
 import EconomicCalendar from "./pages/EconomicCalendar";
 import LongShortRatio from "./pages/LongShortRatio";
 import Settings from "./pages/Settings";
+import Tools from "./pages/Tools";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import FAQ from "./pages/FAQ";
@@ -48,6 +49,7 @@ const App = () => (
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/upload" element={<ProtectedRoute><Upload /></ProtectedRoute>} />
               <Route path="/forecast" element={<ProtectedRoute><Forecast /></ProtectedRoute>} />
+              <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
               <Route path="/economic-calendar" element={<ProtectedRoute><EconomicCalendar /></ProtectedRoute>} />
               <Route path="/long-short-ratio" element={<ProtectedRoute><LongShortRatio /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />

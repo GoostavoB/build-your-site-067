@@ -61,7 +61,7 @@ export const TradingJournal = () => {
       return;
     }
 
-    setEntries((data || []) as JournalEntry[]);
+    setEntries((data || []) as unknown as JournalEntry[]);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

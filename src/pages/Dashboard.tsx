@@ -21,6 +21,7 @@ import { TradingHeatmap } from '@/components/TradingHeatmap';
 import { DashboardWidget } from '@/components/DashboardWidget';
 import { CustomizeDashboardControls } from '@/components/CustomizeDashboardControls';
 import { useDashboardLayout } from '@/hooks/useDashboardLayout';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import type { Trade } from '@/types/trade';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
@@ -36,6 +37,7 @@ interface TradeStats {
 }
 
 const Dashboard = () => {
+  useKeyboardShortcuts();
   const { user } = useAuth();
   const [stats, setStats] = useState<TradeStats | null>(null);
   const [trades, setTrades] = useState<Trade[]>([]);

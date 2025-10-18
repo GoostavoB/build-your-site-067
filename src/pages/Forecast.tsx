@@ -10,9 +10,11 @@ import { CalculationModal } from '@/components/forecast/CalculationModal';
 import { GoalSimulator } from '@/components/forecast/GoalSimulator';
 import { ForecastChart } from '@/components/forecast/ForecastChart';
 import { calculateAdvancedStats, AdvancedStats } from '@/lib/forecastCalculations';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { Sparkles } from 'lucide-react';
 
 const Forecast = () => {
+  useKeyboardShortcuts();
   const { user } = useAuth();
   const [days, setDays] = useState([30]);
   const [avgDailyPnl, setAvgDailyPnl] = useState(0);

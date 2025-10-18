@@ -5,6 +5,7 @@ import { UserMenu } from './UserMenu';
 import { CryptoPrices } from '@/components/CryptoPrices';
 import { useReminderNotifications } from '@/hooks/useReminderNotifications';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { KeyboardShortcutsHelp } from '@/components/KeyboardShortcutsHelp';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -21,6 +22,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         <div className="flex-1 flex flex-col">
           <CryptoPrices />
           <header className="h-14 border-b border-border flex items-center justify-end gap-3 px-6">
+            <KeyboardShortcutsHelp />
             <ThemeToggle />
             <UserMenu />
           </header>

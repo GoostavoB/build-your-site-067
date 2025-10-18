@@ -19,6 +19,7 @@ import { UploadHistory } from '@/components/UploadHistory';
 import { UploadProgress, getRandomThinkingPhrase } from '@/components/UploadProgress';
 import { DuplicateTradeDialog } from '@/components/DuplicateTradeDialog';
 import { SuccessFeedback } from '@/components/SuccessFeedback';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 
 interface ExtractedTrade {
   symbol: string;
@@ -89,6 +90,7 @@ const BROKERS = [
 ].sort();
 
 const Upload = () => {
+  useKeyboardShortcuts();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();

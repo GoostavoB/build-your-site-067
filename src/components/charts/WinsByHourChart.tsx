@@ -275,7 +275,9 @@ const WinsByHourChartComponent = ({ trades }: WinsByHourChartProps) => {
                 tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
                 tickLine={false}
                 axisLine={{ stroke: 'hsl(var(--border))' }}
-                interval={isMobile ? 2 : 0}
+                interval={isMobile ? 3 : 1}
+                angle={0}
+                height={50}
               />
               <YAxis 
                 tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}

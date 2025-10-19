@@ -328,6 +328,58 @@ const Dashboard = () => {
           </Card>
         ) : (
           <>
+            {/* Trading Streaks - Top of Dashboard */}
+            {stats && stats.total_trades > 0 && (
+              <div className="mb-6">
+                <TradingStreaks trades={processedTrades} />
+              </div>
+            )}
+
+            {/* Achievement Badges - Show if user has unlocked any */}
+            {stats && stats.total_trades > 0 && (() => {
+              // Calculate unlocked badges count
+              const totalTrades = processedTrades.length;
+              const winningTrades = processedTrades.filter(t => (t.pnl || 0) > 0);
+              const winRate = totalTrades > 0 ? (winningTrades.length / totalTrades) * 100 : 0;
+              const totalPnl = processedTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+              
+              const sortedTrades = [...processedTrades].sort((a, b) => 
+                new Date(a.trade_date).getTime() - new Date(b.trade_date).getTime()
+              );
+              
+              let maxWinStreak = 0;
+              let currentWinStreak = 0;
+              
+              sortedTrades.forEach(trade => {
+                if ((trade.pnl || 0) > 0) {
+                  currentWinStreak++;
+                  maxWinStreak = Math.max(maxWinStreak, currentWinStreak);
+                } else {
+                  currentWinStreak = 0;
+                }
+              });
+
+              // Check if any badge is unlocked
+              const hasUnlockedBadges = totalTrades >= 1 || 
+                                       totalTrades >= 10 || 
+                                       totalTrades >= 100 || 
+                                       maxWinStreak >= 3 || 
+                                       maxWinStreak >= 5 || 
+                                       maxWinStreak >= 10 || 
+                                       totalPnl >= 100 || 
+                                       totalPnl >= 1000 || 
+                                       totalPnl >= 10000 || 
+                                       (winRate >= 70 && totalTrades >= 20);
+
+              return hasUnlockedBadges ? (
+                <div className="mb-6">
+                  <Suspense fallback={<div className="h-32 glass rounded-2xl animate-pulse" />}>
+                    <AchievementBadges trades={processedTrades} />
+                  </Suspense>
+                </div>
+              ) : null;
+            })()}
+
             {/* Draggable Dashboard Grid */}
             <ResponsiveGridLayout
               className="layout"
@@ -672,13 +724,6 @@ const Dashboard = () => {
                 </div>
               )}
             </ResponsiveGridLayout>
-
-            {/* Trading Streaks */}
-            {stats && stats.total_trades > 0 && (
-              <div className="mb-6">
-                <TradingStreaks trades={processedTrades} />
-              </div>
-            )}
 
             {/* Charts Section - Flexible Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">

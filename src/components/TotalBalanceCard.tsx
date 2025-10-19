@@ -116,16 +116,23 @@ export const TotalBalanceCard = memo(({
                   isAnimationActive={false}
                 />
                 <Tooltip 
-                  content={({ active, payload }) => {
+                  content={({ active, payload }: any) => {
                     if (active && payload && payload.length) {
                       return (
-                        <div className="glass-strong px-2 py-1 rounded-lg text-xs">
+                        <div 
+                          className="glass-strong px-3 py-2 rounded-lg text-sm font-semibold border border-border/50 shadow-lg"
+                          style={{ 
+                            backgroundColor: 'hsl(var(--background))',
+                            backdropFilter: 'blur(12px)'
+                          }}
+                        >
                           {formatCurrency(payload[0].value as number)}
                         </div>
                       );
                     }
                     return null;
                   }}
+                  cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '3 3' }}
                 />
               </LineChart>
             </ResponsiveContainer>

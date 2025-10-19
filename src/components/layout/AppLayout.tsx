@@ -57,14 +57,14 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                       variant="ghost"
                       size="sm"
                       className={cn(
-                        "gap-2 rounded-xl px-4 py-2 transition-all duration-200",
+                        "gap-2 rounded-xl px-4 py-2 transition-all duration-200 flex items-center justify-center",
                         isActive(item.path)
                           ? "bg-background shadow-sm text-foreground"
                           : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                       )}
                     >
-                      <Icon className="h-4 w-4" />
-                      <span className="text-sm font-medium">{item.label}</span>
+                      <Icon className="h-4 w-4 flex-shrink-0" />
+                      <span className="text-sm font-medium whitespace-nowrap">{item.label}</span>
                     </Button>
                   );
                 })}

@@ -461,6 +461,25 @@ const Dashboard = () => {
                                 dot={false}
                                 isAnimationActive={false}
                               />
+                              <RechartsTooltip 
+                                content={({ active, payload }: any) => {
+                                  if (active && payload && payload.length) {
+                                    return (
+                                      <div 
+                                        className="glass-strong px-3 py-2 rounded-lg text-sm font-semibold border border-border/50 shadow-lg"
+                                        style={{ 
+                                          backgroundColor: 'hsl(var(--background))',
+                                          backdropFilter: 'blur(12px)'
+                                        }}
+                                      >
+                                        {(payload[0].value as number).toFixed(1)}%
+                                      </div>
+                                    );
+                                  }
+                                  return null;
+                                }}
+                                cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '3 3' }}
+                              />
                             </LineChart>
                           </ResponsiveContainer>
                         </div>
@@ -487,6 +506,25 @@ const Dashboard = () => {
                                 strokeWidth={2}
                                 dot={false}
                                 isAnimationActive={false}
+                              />
+                              <RechartsTooltip 
+                                content={({ active, payload }: any) => {
+                                  if (active && payload && payload.length) {
+                                    return (
+                                      <div 
+                                        className="glass-strong px-3 py-2 rounded-lg text-sm font-semibold border border-border/50 shadow-lg"
+                                        style={{ 
+                                          backgroundColor: 'hsl(var(--background))',
+                                          backdropFilter: 'blur(12px)'
+                                        }}
+                                      >
+                                        {Math.round(payload[0].value as number)} trades
+                                      </div>
+                                    );
+                                  }
+                                  return null;
+                                }}
+                                cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '3 3' }}
                               />
                             </LineChart>
                           </ResponsiveContainer>

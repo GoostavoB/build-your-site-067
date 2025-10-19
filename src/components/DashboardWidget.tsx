@@ -28,7 +28,7 @@ export function DashboardWidget({
   return (
     <Card 
       className={cn(
-        "relative glass h-full transition-all duration-200",
+        "relative glass h-full transition-all duration-200 overflow-hidden",
         !isVisible && isCustomizing && "opacity-50 ring-2 ring-destructive/50",
         isCustomizing && "cursor-move hover:shadow-xl hover:border-primary/30",
         className
@@ -63,7 +63,10 @@ export function DashboardWidget({
       </CardHeader>
 
       {/* Widget Content */}
-      <CardContent className={cn("pb-4 overflow-hidden", !isVisible && isCustomizing && "pointer-events-none")}>
+      <CardContent className={cn(
+        "pb-4",
+        !isVisible && isCustomizing && "pointer-events-none"
+      )}>
         {children}
       </CardContent>
 

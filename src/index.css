@@ -21,6 +21,45 @@
       min-width: 44px;
     }
   }
+  
+  /* React Grid Layout fixes - Proper stacking */
+  .react-grid-layout {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  .react-grid-item {
+    transition: all 200ms ease;
+    transition-property: left, top, width, height;
+    z-index: auto !important;
+  }
+  
+  .react-grid-item.cssTransforms {
+    transition-property: transform, width, height;
+  }
+  
+  .react-grid-item.resizing {
+    transition: none;
+    z-index: 100 !important;
+  }
+  
+  .react-grid-item.react-draggable-dragging {
+    transition: none;
+    z-index: 100 !important;
+  }
+  
+  .react-grid-item.react-grid-placeholder {
+    background: hsl(var(--primary) / 0.15);
+    opacity: 0.2;
+    transition-duration: 100ms;
+    z-index: 2 !important;
+    border-radius: 0.5rem;
+  }
+  
+  /* Ensure content stays within bounds */
+  .layout {
+    min-height: 100px;
+  }
 }
 
 @layer base {

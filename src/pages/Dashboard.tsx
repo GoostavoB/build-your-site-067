@@ -277,39 +277,41 @@ const Dashboard = () => {
           </Card>
         ) : (
           <>
-            <ResponsiveGridLayout
-              className="layout"
-              layouts={{
-              lg: layout.filter(item => isCustomizing || isWidgetVisible(item.i)),
-              md: layout.filter(item => isCustomizing || isWidgetVisible(item.i)),
-              sm: layout.filter(item => isCustomizing || isWidgetVisible(item.i)).map(item => ({
-                ...item,
-                x: 0,
-                w: 6,
-                static: !isCustomizing
-              })),
-              xs: layout.filter(item => isCustomizing || isWidgetVisible(item.i)).map(item => ({
-                ...item,
-                x: 0,
-                w: 1,
-                static: true
-              }))
-            }}
-            breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 0 }}
-            cols={{ lg: 12, md: 10, sm: 6, xs: 1 }}
-            rowHeight={70}
-            isDraggable={isCustomizing}
-            isResizable={isCustomizing}
-            onLayoutChange={(newLayout) => {
-              if (isCustomizing) updateLayout(newLayout);
-            }}
-            draggableHandle=".drag-handle"
-            compactType="vertical"
-             preventCollision={true}
-             isBounded={true}
-            margin={[16, 16]}
-            containerPadding={[0, 0]}
-          >
+            {/* Grid Layout Container - Isolated stacking context */}
+            <div className="relative w-full mb-6">
+              <ResponsiveGridLayout
+                className="layout"
+                layouts={{
+                lg: layout.filter(item => isCustomizing || isWidgetVisible(item.i)),
+                md: layout.filter(item => isCustomizing || isWidgetVisible(item.i)),
+                sm: layout.filter(item => isCustomizing || isWidgetVisible(item.i)).map(item => ({
+                  ...item,
+                  x: 0,
+                  w: 6,
+                  static: !isCustomizing
+                })),
+                xs: layout.filter(item => isCustomizing || isWidgetVisible(item.i)).map(item => ({
+                  ...item,
+                  x: 0,
+                  w: 1,
+                  static: true
+                }))
+              }}
+              breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 0 }}
+              cols={{ lg: 12, md: 10, sm: 6, xs: 1 }}
+              rowHeight={70}
+              isDraggable={isCustomizing}
+              isResizable={isCustomizing}
+              onLayoutChange={(newLayout) => {
+                if (isCustomizing) updateLayout(newLayout);
+              }}
+              draggableHandle=".drag-handle"
+              compactType="vertical"
+              preventCollision={true}
+              isBounded={true}
+              margin={[16, 16]}
+              containerPadding={[0, 0]}
+            >
                 {/* Stats Widget */}
                 {(isCustomizing || isWidgetVisible('stats')) && (
                   <div key="stats">
@@ -404,16 +406,19 @@ const Dashboard = () => {
                   </div>
                 )}
               </ResponsiveGridLayout>
+            </div>
 
-              {stats && stats.total_trades > 0 && (
-              <Tabs defaultValue="insights" className="space-y-4 md:space-y-6 mt-4 md:mt-6">
-                <TabsList className="w-full grid grid-cols-3 h-auto gap-1">
+            {/* Tabs Section - Separate stacking context */}
+            {stats && stats.total_trades > 0 && (
+            <div className="relative z-10 w-full">
+              <Tabs defaultValue="insights" className="space-y-4 md:space-y-6">
+                <TabsList className="w-full grid grid-cols-3 h-auto gap-1 sticky top-0 z-20 bg-background/95 backdrop-blur-sm">
                   <TabsTrigger value="insights" className="text-xs md:text-sm py-2">Insights</TabsTrigger>
                   <TabsTrigger value="advanced" className="text-xs md:text-sm py-2">Advanced Analytics</TabsTrigger>
                   <TabsTrigger value="history" className="text-xs md:text-sm py-2">Trade History</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="insights" className="space-y-4 md:space-y-6">
+                <TabsContent value="insights" className="space-y-4 md:space-y-6 relative">
                   <MonthlyReport 
                     trades={filteredTrades.length > 0 ? filteredTrades : trades}
                   />
@@ -439,7 +444,7 @@ const Dashboard = () => {
                   />
                 </TabsContent>
 
-                <TabsContent value="advanced" className="space-y-6">
+                <TabsContent value="advanced" className="space-y-4 md:space-y-6 relative">
                   <DrawdownAnalysis
                     trades={filteredTrades.length > 0 ? filteredTrades : trades}
                     initialInvestment={initialInvestment}
@@ -456,13 +461,14 @@ const Dashboard = () => {
                   />
                 </TabsContent>
 
-              <TabsContent value="history">
+              <TabsContent value="history" className="relative">
                 <TradeHistory onTradesChange={fetchStats} />
               </TabsContent>
-            </Tabs>
-          )}
-        </>
-      )}
+              </Tabs>
+            </div>
+            )}
+          </>
+        )}
       </div>
     </AppLayout>
   );

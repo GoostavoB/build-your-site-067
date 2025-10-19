@@ -23,9 +23,10 @@ export const ForecastChart = ({
     const interval = Math.ceil(selectedPeriod / points);
 
     for (let day = 0; day <= selectedPeriod; day += interval) {
-      const conservative = currentBalance * Math.pow(1 + dailyGrowthConservative / 100, day);
-      const base = currentBalance * Math.pow(1 + dailyGrowthBase / 100, day);
-      const optimistic = currentBalance * Math.pow(1 + dailyGrowthOptimistic / 100, day);
+      // Growth rates are now decimals (e.g., 0.0117 for 1.17% growth)
+      const conservative = currentBalance * Math.pow(1 + dailyGrowthConservative, day);
+      const base = currentBalance * Math.pow(1 + dailyGrowthBase, day);
+      const optimistic = currentBalance * Math.pow(1 + dailyGrowthOptimistic, day);
 
       data.push({
         day,

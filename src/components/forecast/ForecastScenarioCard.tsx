@@ -1,5 +1,7 @@
 import { Card } from '@/components/ui/card';
-import { TrendingDown, Activity, TrendingUp, LucideIcon } from 'lucide-react';
+import { TrendingDown, Activity, TrendingUp, LucideIcon, Info } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { formatGrowth, getMetricTooltip } from '@/utils/growthFormatting';
 
 interface ForecastScenarioCardProps {
   scenario: 'conservative' | 'base' | 'optimistic';
@@ -22,27 +24,27 @@ const scenarioConfig: Record<
 > = {
   conservative: {
     title: 'Conservative Scenario',
-    description: 'Accounts for higher volatility and potential drawdowns based on your trading history',
+    description: 'Accounts for higher volatility and potential drawdowns.',
     icon: TrendingDown,
-    borderColor: 'border-neon-red/50',
-    iconColor: 'text-neon-red',
-    bgColor: 'bg-neon-red/5',
+    borderColor: 'border-red-500/30',
+    iconColor: 'text-red-500',
+    bgColor: 'bg-red-500/5',
   },
   base: {
     title: 'Base Scenario',
-    description: 'Reflects your current average performance and consistency',
+    description: 'Reflects your current average consistency.',
     icon: Activity,
-    borderColor: 'border-blue-500/50',
+    borderColor: 'border-blue-500/30',
     iconColor: 'text-blue-500',
     bgColor: 'bg-blue-500/5',
   },
   optimistic: {
     title: 'Optimistic Scenario',
-    description: 'Projects growth with improved consistency and reduced losses',
+    description: 'Projects growth assuming improved consistency.',
     icon: TrendingUp,
-    borderColor: 'border-neon-green/50',
-    iconColor: 'text-neon-green',
-    bgColor: 'bg-neon-green/5',
+    borderColor: 'border-green-500/30',
+    iconColor: 'text-green-500',
+    bgColor: 'bg-green-500/5',
   },
 };
 
@@ -56,68 +58,114 @@ export const ForecastScenarioCard = ({
   const config = scenarioConfig[scenario];
   const Icon = config.icon;
 
-  const formatGrowth = (value: number) => {
-    const sign = value >= 0 ? '+' : '';
-    const absValue = Math.abs(value);
-    
-    // Format large numbers with k, M, B suffixes
-    let formattedValue: string;
-    if (absValue >= 1000000000) {
-      formattedValue = (value / 1000000000).toFixed(2) + 'B';
-    } else if (absValue >= 1000000) {
-      formattedValue = (value / 1000000).toFixed(2) + 'M';
-    } else if (absValue >= 1000) {
-      formattedValue = (value / 1000).toFixed(2) + 'k';
-    } else {
-      formattedValue = value.toFixed(2);
-    }
-    
-    return `${sign}${formattedValue}%`;
-  };
-
   const getGrowthColor = (value: number) => {
-    if (value > 0) return 'text-neon-green';
-    if (value < 0) return 'text-neon-red';
+    if (value > 0) return 'text-green-500';
+    if (value < 0) return 'text-red-500';
     return 'text-foreground';
   };
 
+  const MetricRow = ({ 
+    label, 
+    value, 
+    tooltipKey, 
+    isHighlight = false 
+  }: { 
+    label: string; 
+    value: number; 
+    tooltipKey: string; 
+    isHighlight?: boolean;
+  }) => (
+    <div className={`flex justify-between items-center gap-3 ${isHighlight ? 'pt-3 border-t border-border/50' : ''}`}>
+      <div className="flex items-center gap-1.5">
+        <span className={`text-xs ${isHighlight ? 'font-medium' : 'text-muted-foreground'}`}>
+          {label}
+        </span>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-3 w-3 text-muted-foreground/60 cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent 
+              side="top" 
+              className="max-w-xs text-xs glass-strong"
+              style={{
+                backgroundColor: 'hsl(var(--background))',
+                backdropFilter: 'blur(12px)'
+              }}
+            >
+              {getMetricTooltip(tooltipKey)}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+      <span 
+        className={`
+          ${isHighlight ? 'text-lg' : 'text-sm'} 
+          font-bold 
+          ${getGrowthColor(value)} 
+          text-right
+          bg-gradient-to-r 
+          ${value > 0 ? 'from-green-500 to-emerald-600' : 'from-red-500 to-rose-600'}
+          bg-clip-text
+          ${value > 0 || value < 0 ? 'text-transparent' : ''}
+        `}
+      >
+        {formatGrowth(value, isHighlight)}
+      </span>
+    </div>
+  );
+
   return (
-    <Card className={`p-5 border-2 ${config.borderColor} ${config.bgColor} glass`}>
-      <div className="flex items-start gap-3 mb-4">
-        <div className={`p-2 rounded-xl bg-background/50`}>
+    <Card 
+      className={`
+        p-6 
+        border-2 
+        ${config.borderColor} 
+        ${config.bgColor} 
+        backdrop-blur-xl
+        rounded-[1.25rem]
+        shadow-[0_4px_30px_rgba(0,0,0,0.05)]
+        hover:shadow-[0_8px_40px_rgba(0,0,0,0.1)]
+        transition-all
+        duration-300
+        animate-fade-in
+        h-full
+        flex
+        flex-col
+      `}
+    >
+      <div className="flex items-start gap-3 mb-5">
+        <div className={`p-2.5 rounded-xl bg-background/50 flex-shrink-0`}>
           <Icon className={`h-5 w-5 ${config.iconColor}`} />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-base font-semibold mb-1">{config.title}</h3>
-          <p className="text-xs text-muted-foreground leading-tight">{config.description}</p>
+          <h3 className="text-base font-semibold mb-1 text-foreground">{config.title}</h3>
+          <p className="text-xs text-muted-foreground leading-relaxed">{config.description}</p>
         </div>
       </div>
 
-      <div className="space-y-2.5 mt-5">
-        <div className="flex justify-between items-center gap-3">
-          <span className="text-xs text-muted-foreground">Daily Growth</span>
-          <span className={`text-base font-bold ${getGrowthColor(dailyGrowth)} break-all text-right`}>
-            {formatGrowth(dailyGrowth)}
-          </span>
-        </div>
-        <div className="flex justify-between items-center gap-3">
-          <span className="text-xs text-muted-foreground">Monthly Growth</span>
-          <span className={`text-base font-bold ${getGrowthColor(monthlyGrowth)} break-all text-right`}>
-            {formatGrowth(monthlyGrowth)}
-          </span>
-        </div>
-        <div className="flex justify-between items-center gap-3">
-          <span className="text-xs text-muted-foreground">Annual Growth</span>
-          <span className={`text-base font-bold ${getGrowthColor(yearlyGrowth)} break-all text-right`}>
-            {formatGrowth(yearlyGrowth)}
-          </span>
-        </div>
-        <div className="flex justify-between items-center gap-3 pt-2 border-t border-border/50">
-          <span className="text-xs font-medium">5-Year Projection</span>
-          <span className={`text-lg font-bold ${getGrowthColor(fiveYearGrowth)} break-all text-right`}>
-            {formatGrowth(fiveYearGrowth)}
-          </span>
-        </div>
+      <div className="space-y-3 flex-1">
+        <MetricRow 
+          label="Daily Growth" 
+          value={dailyGrowth} 
+          tooltipKey="daily"
+        />
+        <MetricRow 
+          label="Monthly Growth" 
+          value={monthlyGrowth} 
+          tooltipKey="monthly"
+        />
+        <MetricRow 
+          label="Annual Growth" 
+          value={yearlyGrowth} 
+          tooltipKey="annual"
+        />
+        <MetricRow 
+          label="5-Year Projection" 
+          value={fiveYearGrowth} 
+          tooltipKey="fiveYear"
+          isHighlight
+        />
       </div>
     </Card>
   );

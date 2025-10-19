@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import AppLayout from '@/components/layout/AppLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,9 +11,11 @@ import { ForecastScenarioCard } from '@/components/forecast/ForecastScenarioCard
 import { CalculationModal } from '@/components/forecast/CalculationModal';
 import { GoalSimulator } from '@/components/forecast/GoalSimulator';
 import { ForecastChart } from '@/components/forecast/ForecastChart';
+import { AIForecastCommentary } from '@/components/forecast/AIForecastCommentary';
 import { calculateAdvancedStats, AdvancedStats } from '@/lib/forecastCalculations';
+import { calculateGrowth } from '@/utils/growthFormatting';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Settings2, TrendingDown } from 'lucide-react';
 
 const Forecast = () => {
   useKeyboardShortcuts();
@@ -23,6 +27,9 @@ const Forecast = () => {
   const [advancedStats, setAdvancedStats] = useState<AdvancedStats | null>(null);
   const [currentBalance, setCurrentBalance] = useState(0);
   const [showCalculationModal, setShowCalculationModal] = useState(false);
+  const [customDailyGrowth, setCustomDailyGrowth] = useState<number | null>(null);
+  const [includeDrawdown, setIncludeDrawdown] = useState(false);
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
 
   useEffect(() => {
     fetchAvgPnl();
@@ -187,10 +194,86 @@ const Forecast = () => {
 
               {advancedStats ? (
                 <>
+                  {/* Advanced Settings Card */}
+                  <Card className="p-6 glass-strong">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <Settings2 className="h-5 w-5 text-primary" />
+                        <h3 className="text-base font-semibold">Advanced Settings</h3>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
+                      >
+                        {showAdvancedSettings ? 'Hide' : 'Show'}
+                      </Button>
+                    </div>
+
+                    {showAdvancedSettings && (
+                      <div className="space-y-6 mt-4">
+                        {/* Daily Growth Simulator */}
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <Label htmlFor="daily-growth-slider" className="text-sm font-medium">
+                              Expected Daily Growth
+                            </Label>
+                            <span className="text-lg font-bold text-primary">
+                              {((customDailyGrowth ?? advancedStats.daily_growth_base) * 100).toFixed(2)}%
+                            </span>
+                          </div>
+                          <Slider
+                            id="daily-growth-slider"
+                            value={[((customDailyGrowth ?? advancedStats.daily_growth_base) * 100)]}
+                            onValueChange={(val) => setCustomDailyGrowth(val[0] / 100)}
+                            min={-5}
+                            max={10}
+                            step={0.1}
+                            className="w-full"
+                          />
+                          <div className="flex justify-between text-xs text-muted-foreground">
+                            <span>-5%</span>
+                            <span>+10%</span>
+                          </div>
+                          {customDailyGrowth !== null && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setCustomDailyGrowth(null)}
+                              className="w-full"
+                            >
+                              Reset to Calculated Value
+                            </Button>
+                          )}
+                        </div>
+
+                        {/* Include Drawdown Toggle */}
+                        <div className="flex items-center justify-between p-4 rounded-lg bg-muted/30">
+                          <div className="flex items-center gap-3">
+                            <TrendingDown className="h-4 w-4 text-muted-foreground" />
+                            <div>
+                              <Label htmlFor="drawdown-toggle" className="text-sm font-medium cursor-pointer">
+                                Include Historical Drawdown
+                              </Label>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                Adjust projections for average historical losses
+                              </p>
+                            </div>
+                          </div>
+                          <Switch
+                            id="drawdown-toggle"
+                            checked={includeDrawdown}
+                            onCheckedChange={setIncludeDrawdown}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </Card>
+
                   {/* Growth Chart */}
                   <ForecastChart
                     currentBalance={currentBalance}
-                    dailyGrowthBase={advancedStats.daily_growth_base}
+                    dailyGrowthBase={customDailyGrowth ?? advancedStats.daily_growth_base}
                     dailyGrowthOptimistic={advancedStats.daily_growth_optimistic}
                     dailyGrowthConservative={advancedStats.daily_growth_conservative}
                     selectedPeriod={days[0]}
@@ -200,26 +283,100 @@ const Forecast = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <ForecastScenarioCard
                       scenario="conservative"
-                      dailyGrowth={advancedStats.daily_growth_conservative}
-                      monthlyGrowth={advancedStats.monthly_growth_conservative}
-                      yearlyGrowth={advancedStats.yearly_growth_conservative}
-                      fiveYearGrowth={advancedStats.five_year_growth_conservative}
+                      dailyGrowth={
+                        customDailyGrowth !== null 
+                          ? customDailyGrowth * (includeDrawdown ? 0.7 : 1)
+                          : advancedStats.daily_growth_conservative * (includeDrawdown ? 0.7 : 1)
+                      }
+                      monthlyGrowth={
+                        (() => {
+                          const dailyRate = customDailyGrowth !== null 
+                            ? customDailyGrowth * (includeDrawdown ? 0.7 : 1)
+                            : advancedStats.daily_growth_conservative * (includeDrawdown ? 0.7 : 1);
+                          return calculateGrowth(dailyRate).monthlyGrowth;
+                        })()
+                      }
+                      yearlyGrowth={
+                        (() => {
+                          const dailyRate = customDailyGrowth !== null 
+                            ? customDailyGrowth * (includeDrawdown ? 0.7 : 1)
+                            : advancedStats.daily_growth_conservative * (includeDrawdown ? 0.7 : 1);
+                          return calculateGrowth(dailyRate).annualGrowth;
+                        })()
+                      }
+                      fiveYearGrowth={
+                        (() => {
+                          const dailyRate = customDailyGrowth !== null 
+                            ? customDailyGrowth * (includeDrawdown ? 0.7 : 1)
+                            : advancedStats.daily_growth_conservative * (includeDrawdown ? 0.7 : 1);
+                          return calculateGrowth(dailyRate).fiveYearGrowth;
+                        })()
+                      }
                     />
                     <ForecastScenarioCard
                       scenario="base"
-                      dailyGrowth={advancedStats.daily_growth_base}
-                      monthlyGrowth={advancedStats.monthly_growth_base}
-                      yearlyGrowth={advancedStats.yearly_growth_base}
-                      fiveYearGrowth={advancedStats.five_year_growth_base}
+                      dailyGrowth={
+                        customDailyGrowth !== null 
+                          ? customDailyGrowth * (includeDrawdown ? 0.85 : 1)
+                          : advancedStats.daily_growth_base * (includeDrawdown ? 0.85 : 1)
+                      }
+                      monthlyGrowth={
+                        (() => {
+                          const dailyRate = customDailyGrowth !== null 
+                            ? customDailyGrowth * (includeDrawdown ? 0.85 : 1)
+                            : advancedStats.daily_growth_base * (includeDrawdown ? 0.85 : 1);
+                          return calculateGrowth(dailyRate).monthlyGrowth;
+                        })()
+                      }
+                      yearlyGrowth={
+                        (() => {
+                          const dailyRate = customDailyGrowth !== null 
+                            ? customDailyGrowth * (includeDrawdown ? 0.85 : 1)
+                            : advancedStats.daily_growth_base * (includeDrawdown ? 0.85 : 1);
+                          return calculateGrowth(dailyRate).annualGrowth;
+                        })()
+                      }
+                      fiveYearGrowth={
+                        (() => {
+                          const dailyRate = customDailyGrowth !== null 
+                            ? customDailyGrowth * (includeDrawdown ? 0.85 : 1)
+                            : advancedStats.daily_growth_base * (includeDrawdown ? 0.85 : 1);
+                          return calculateGrowth(dailyRate).fiveYearGrowth;
+                        })()
+                      }
                     />
                     <ForecastScenarioCard
                       scenario="optimistic"
-                      dailyGrowth={advancedStats.daily_growth_optimistic}
-                      monthlyGrowth={advancedStats.monthly_growth_optimistic}
-                      yearlyGrowth={advancedStats.yearly_growth_optimistic}
-                      fiveYearGrowth={advancedStats.five_year_growth_optimistic}
+                      dailyGrowth={customDailyGrowth ?? advancedStats.daily_growth_optimistic}
+                      monthlyGrowth={
+                        customDailyGrowth !== null
+                          ? calculateGrowth(customDailyGrowth).monthlyGrowth
+                          : advancedStats.monthly_growth_optimistic
+                      }
+                      yearlyGrowth={
+                        customDailyGrowth !== null
+                          ? calculateGrowth(customDailyGrowth).annualGrowth
+                          : advancedStats.yearly_growth_optimistic
+                      }
+                      fiveYearGrowth={
+                        customDailyGrowth !== null
+                          ? calculateGrowth(customDailyGrowth).fiveYearGrowth
+                          : advancedStats.five_year_growth_optimistic
+                      }
                     />
                   </div>
+
+                  {/* AI Commentary */}
+                  <AIForecastCommentary
+                    dailyGrowth={customDailyGrowth ?? advancedStats.daily_growth_base}
+                    fiveYearGrowth={
+                      customDailyGrowth !== null
+                        ? calculateGrowth(customDailyGrowth * (includeDrawdown ? 0.85 : 1)).fiveYearGrowth
+                        : advancedStats.five_year_growth_base * (includeDrawdown ? 0.85 : 1)
+                    }
+                    winRate={advancedStats.success_rate / 100}
+                    volatility={advancedStats.roi_std_dev / 100}
+                  />
 
                   {/* Understand the Calculation Button */}
                   <div className="flex justify-center">

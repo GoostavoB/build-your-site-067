@@ -7,10 +7,13 @@ import { SetupPerformanceChart } from "@/components/charts/SetupPerformanceChart
 import { TradeReplay } from "@/components/TradeReplay";
 import { TradeComparison } from "@/components/TradeComparison";
 import { LazyChart } from "@/components/LazyChart";
+import { CapitalManagement } from "@/components/CapitalManagement";
+import { CapitalHistoryChart } from "@/components/CapitalHistoryChart";
+import { PeriodBasedROI } from "@/components/PeriodBasedROI";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Trade } from "@/types/trade";
-import { BarChart3, TrendingUp, Clock, Target } from "lucide-react";
+import { BarChart3, TrendingUp, Clock, Target, DollarSign, Percent } from "lucide-react";
 import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
 
 export default function Analytics() {
@@ -89,7 +92,7 @@ export default function Analytics() {
         </div>
 
         <Tabs defaultValue="charts" className="space-y-6">
-          <TabsList className="grid w-full max-w-2xl grid-cols-4 glass">
+          <TabsList className="grid w-full max-w-3xl grid-cols-5 glass">
             <TabsTrigger value="charts" className="gap-2">
               <BarChart3 className="h-4 w-4" />
               Charts
@@ -97,6 +100,10 @@ export default function Analytics() {
             <TabsTrigger value="performance" className="gap-2">
               <TrendingUp className="h-4 w-4" />
               Performance
+            </TabsTrigger>
+            <TabsTrigger value="capital" className="gap-2">
+              <DollarSign className="h-4 w-4" />
+              Capital & ROI
             </TabsTrigger>
             <TabsTrigger value="replay" className="gap-2">
               <Clock className="h-4 w-4" />
@@ -126,6 +133,12 @@ export default function Analytics() {
             <LazyChart height={400}>
               <SetupPerformanceChart data={setupData} />
             </LazyChart>
+          </TabsContent>
+
+          <TabsContent value="capital" className="space-y-6">
+            <CapitalManagement />
+            <CapitalHistoryChart />
+            <PeriodBasedROI />
           </TabsContent>
 
           <TabsContent value="replay">

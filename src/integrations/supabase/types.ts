@@ -82,6 +82,39 @@ export type Database = {
         }
         Relationships: []
       }
+      capital_log: {
+        Row: {
+          amount_added: number
+          created_at: string
+          id: string
+          log_date: string
+          notes: string | null
+          total_after: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_added: number
+          created_at?: string
+          id?: string
+          log_date?: string
+          notes?: string | null
+          total_after: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_added?: number
+          created_at?: string
+          id?: string
+          log_date?: string
+          notes?: string | null
+          total_after?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       event_reminders: {
         Row: {
           created_at: string | null

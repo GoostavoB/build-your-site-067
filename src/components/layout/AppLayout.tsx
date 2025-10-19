@@ -2,7 +2,6 @@ import { ReactNode } from 'react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from './AppSidebar';
 import { UserMenu } from './UserMenu';
-import { CryptoPrices } from '@/components/CryptoPrices';
 import { useReminderNotifications } from '@/hooks/useReminderNotifications';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { KeyboardShortcutsHelp } from '@/components/KeyboardShortcutsHelp';
@@ -23,7 +22,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       <div className="min-h-screen flex w-full bg-gradient-to-br from-background via-secondary/30 to-background mobile-safe">
         <AppSidebar />
         <div className="flex-1 flex flex-col mobile-safe">
-          <CryptoPrices />
           <header className="h-14 border-b border-border/50 backdrop-blur-xl bg-card/50 flex items-center justify-between gap-2 px-3 md:px-6">
             <div className="flex items-center gap-2 md:gap-3">
               <SidebarTrigger className="hover:bg-muted/50 rounded-lg p-2 transition-colors" />

@@ -13,6 +13,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { useAuth } from '@/contexts/AuthContext';
+import { SidebarCryptoWidget } from '@/components/SidebarCryptoWidget';
 
 const mainItems = [
   { title: 'Dashboard', url: '/dashboard', icon: BarChart3 },
@@ -87,7 +88,12 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup className="mt-auto">
+        {/* Crypto Prices Widget */}
+        <div className="mt-auto border-t border-border/50">
+          <SidebarCryptoWidget />
+        </div>
+
+        <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>

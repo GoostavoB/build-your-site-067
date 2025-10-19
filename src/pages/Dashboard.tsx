@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -57,7 +57,17 @@ const Dashboard = () => {
   const [beastModeDays, setBeastModeDays] = useState(0);
   const [dateRange, setDateRange] = useState<DateRange>(undefined);
   const [filteredTrades, setFilteredTrades] = useState<Trade[]>([]);
-  
+  const [activeTab, setActiveTab] = useState<string>('insights');
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const handleTabChange = (val: string) => {
+    const container = tabsContainerRef.current?.closest('main') as HTMLElement | null;
+    const prevScrollTop = container ? container.scrollTop : window.scrollY;
+    setActiveTab(val);
+    requestAnimationFrame(() => {
+      if (container) container.scrollTop = prevScrollTop;
+      else window.scrollTo({ top: prevScrollTop });
+    });
+  };
   const {
     widgets,
     layout,
@@ -425,8 +435,8 @@ const Dashboard = () => {
 
             {/* Tabs Section - Separate stacking context */}
             {stats && stats.total_trades > 0 && (
-            <div className="relative z-10 w-full" style={{ overflowAnchor: 'none' }}>
-              <Tabs defaultValue="insights" className="space-y-4 md:space-y-6">
+            <div ref={tabsContainerRef} className="relative z-10 w-full no-scroll-anchoring">
+              <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4 md:space-y-6">
                 <div className="scroll-mt-20">
                   <TabsList className="w-full grid grid-cols-3 h-auto gap-1 sticky top-0 z-20 bg-background/95 backdrop-blur-sm">
                     <TabsTrigger value="insights" className="text-xs md:text-sm py-2">Insights</TabsTrigger>

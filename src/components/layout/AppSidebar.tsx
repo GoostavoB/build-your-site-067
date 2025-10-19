@@ -1,4 +1,4 @@
-import { BarChart3, Upload, TrendingUp, Settings, BookOpen, HelpCircle, LogOut, TrendingDown, Calendar, Scale, Wrench, Users, Brain } from 'lucide-react';
+import { BarChart3, Upload, TrendingUp, Settings, BookOpen, HelpCircle, LogOut, TrendingDown, Calendar, Scale, Wrench, Users, Brain, Trophy } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   Sidebar,
@@ -20,6 +20,7 @@ const mainItems = [
   { title: 'Upload Trade', url: '/upload', icon: Upload },
   { title: 'Analytics', url: '/analytics', icon: TrendingUp },
   { title: 'Forecast', url: '/forecast', icon: TrendingUp },
+  { title: 'Achievements', url: '/achievements', icon: Trophy },
   { title: 'Social', url: '/social', icon: Users },
   { title: 'AI Tools', url: '/ai-tools', icon: Brain },
   { title: 'Tools', url: '/tools', icon: Wrench },

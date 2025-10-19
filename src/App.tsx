@@ -23,6 +23,7 @@ import BlogPost from "./pages/BlogPost";
 import FAQ from "./pages/FAQ";
 import Social from "./pages/Social";
 import AITools from "./pages/AITools";
+import Achievements from "./pages/Achievements";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -58,6 +59,7 @@ const App = () => (
                   <Route path="/upload" element={<ProtectedRoute><Upload /></ProtectedRoute>} />
                   <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                   <Route path="/forecast" element={<ProtectedRoute><Forecast /></ProtectedRoute>} />
+                  <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
                   <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
                   <Route path="/economic-calendar" element={<ProtectedRoute><EconomicCalendar /></ProtectedRoute>} />
                   <Route path="/long-short-ratio" element={<ProtectedRoute><LongShortRatio /></ProtectedRoute>} />

@@ -44,12 +44,10 @@ import 'react-resizable/css/styles.css';
 const TradeHistory = lazy(() => import('@/components/TradeHistory').then(m => ({ default: m.TradeHistory })));
 const AdvancedAnalytics = lazy(() => import('@/components/AdvancedAnalytics').then(m => ({ default: m.AdvancedAnalytics })));
 const GoalsTracker = lazy(() => import('@/components/GoalsTracker').then(m => ({ default: m.GoalsTracker })));
-const AchievementBadges = lazy(() => import('@/components/AchievementBadges').then(m => ({ default: m.AchievementBadges })));
 const WeeklyReview = lazy(() => import('@/components/WeeklyReview').then(m => ({ default: m.WeeklyReview })));
 const ExpenseTracker = lazy(() => import('@/components/ExpenseTracker').then(m => ({ default: m.ExpenseTracker })));
 const MonthlyReport = lazy(() => import('@/components/MonthlyReport').then(m => ({ default: m.MonthlyReport })));
 const StatisticsComparison = lazy(() => import('@/components/StatisticsComparison').then(m => ({ default: m.StatisticsComparison })));
-
 const SetupManager = lazy(() => import('@/components/SetupManager').then(m => ({ default: m.SetupManager })));
 const DrawdownAnalysis = lazy(() => import('@/components/DrawdownAnalysis').then(m => ({ default: m.DrawdownAnalysis })));
 const TradingHeatmap = lazy(() => import('@/components/TradingHeatmap').then(m => ({ default: m.TradingHeatmap })));
@@ -334,51 +332,6 @@ const Dashboard = () => {
                 <TradingStreaks trades={processedTrades} />
               </div>
             )}
-
-            {/* Achievement Badges - Show if user has unlocked any */}
-            {stats && stats.total_trades > 0 && (() => {
-              // Calculate unlocked badges count
-              const totalTrades = processedTrades.length;
-              const winningTrades = processedTrades.filter(t => (t.pnl || 0) > 0);
-              const winRate = totalTrades > 0 ? (winningTrades.length / totalTrades) * 100 : 0;
-              const totalPnl = processedTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-              
-              const sortedTrades = [...processedTrades].sort((a, b) => 
-                new Date(a.trade_date).getTime() - new Date(b.trade_date).getTime()
-              );
-              
-              let maxWinStreak = 0;
-              let currentWinStreak = 0;
-              
-              sortedTrades.forEach(trade => {
-                if ((trade.pnl || 0) > 0) {
-                  currentWinStreak++;
-                  maxWinStreak = Math.max(maxWinStreak, currentWinStreak);
-                } else {
-                  currentWinStreak = 0;
-                }
-              });
-
-              // Check if any badge is unlocked
-              const hasUnlockedBadges = totalTrades >= 1 || 
-                                       totalTrades >= 10 || 
-                                       totalTrades >= 100 || 
-                                       maxWinStreak >= 3 || 
-                                       maxWinStreak >= 5 || 
-                                       maxWinStreak >= 10 || 
-                                       totalPnl >= 100 || 
-                                       totalPnl >= 1000 || 
-                                       totalPnl >= 10000 || 
-                                       (winRate >= 70 && totalTrades >= 20);
-
-              return hasUnlockedBadges ? (
-                <div className="mb-6">
-                  <Suspense fallback={<div className="h-32 glass rounded-2xl animate-pulse" />}>
-                    <AchievementBadges trades={processedTrades} />
-                  </Suspense>
-                </div>
-              ) : null;
-            })()}
 
             {/* Draggable Dashboard Grid */}
             <ResponsiveGridLayout
@@ -936,14 +889,9 @@ const Dashboard = () => {
 
               <TabsContent value="goals" className="space-y-4 md:space-y-6 glass rounded-2xl p-6">
                 <Suspense fallback={<DashboardSkeleton />}>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <GoalsTracker 
-                      trades={processedTrades}
-                    />
-                    <AchievementBadges 
-                      trades={processedTrades}
-                    />
-                  </div>
+                  <GoalsTracker 
+                    trades={processedTrades}
+                  />
                   <ExpenseTracker />
                 </Suspense>
               </TabsContent>

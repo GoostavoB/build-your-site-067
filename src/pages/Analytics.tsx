@@ -2,7 +2,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InteractivePnLChart } from "@/components/charts/InteractivePnLChart";
 import { AssetPerformanceRadar } from "@/components/charts/AssetPerformanceRadar";
-import { TimeDistributionChart } from "@/components/charts/TimeDistributionChart";
+import { WinsByHourChart } from "@/components/charts/WinsByHourChart";
 import { SetupPerformanceChart } from "@/components/charts/SetupPerformanceChart";
 import { TradeReplay } from "@/components/TradeReplay";
 import { TradeComparison } from "@/components/TradeComparison";
@@ -66,15 +66,6 @@ export default function Analytics() {
     { asset: "SOLUSDT", winRate: 72, avgProfit: 320, tradeCount: 28, roi: 22 },
   ], []);
 
-  const timeData = useMemo(() => 
-    Array.from({ length: 24 }, (_, i) => ({
-      hour: i,
-      wins: Math.floor(Math.random() * 10),
-      losses: Math.floor(Math.random() * 8),
-      winRate: 50 + Math.random() * 30
-    })),
-    []
-  );
 
   const setupData = useMemo(() => [
     { setup: "Breakout", winRate: 68, roi: 18, tradeCount: 32 },
@@ -123,8 +114,8 @@ export default function Analytics() {
               <LazyChart height={350}>
                 <AssetPerformanceRadar data={assetData} />
               </LazyChart>
-              <LazyChart height={350}>
-                <TimeDistributionChart data={timeData} />
+              <LazyChart height={450}>
+                <WinsByHourChart trades={trades} />
               </LazyChart>
             </div>
           </TabsContent>

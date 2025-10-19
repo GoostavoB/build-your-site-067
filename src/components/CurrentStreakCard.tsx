@@ -24,7 +24,7 @@ const CurrentStreakCardComponent = ({ streak, type, className }: CurrentStreakCa
       aria-labelledby="current-streak-title"
       aria-describedby="current-streak-value"
     >
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 id="current-streak-title" className="text-sm font-medium text-muted-foreground">
             Current Streak
@@ -46,7 +46,7 @@ const CurrentStreakCardComponent = ({ streak, type, className }: CurrentStreakCa
           </div>
         </div>
         
-        <div className="space-y-1">
+        <div className="space-y-2">
           <p 
             id="current-streak-value"
             className="text-3xl font-bold tracking-tight"

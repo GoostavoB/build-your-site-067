@@ -21,7 +21,7 @@ const MaxDrawdownCardComponent = ({ value, percentage, className }: MaxDrawdownC
       role="article"
       aria-labelledby="max-drawdown-title"
     >
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 id="max-drawdown-title" className="text-sm font-medium text-muted-foreground">
             Max Drawdown
@@ -39,7 +39,7 @@ const MaxDrawdownCardComponent = ({ value, percentage, className }: MaxDrawdownC
           </div>
         </div>
         
-        <div className="space-y-1">
+        <div className="space-y-2">
           <p 
             className="text-3xl font-bold tracking-tight text-secondary"
             aria-label={`Max drawdown value: ${formatCurrency(value)}`}

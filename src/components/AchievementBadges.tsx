@@ -240,7 +240,7 @@ const AchievementBadgesComponent = ({ trades }: AchievementBadgesProps) => {
             >
               <div className="flex items-start gap-3 mb-3">
                 <div
-                  className={`p-2 rounded-lg ${
+                  className={`p-2 rounded-lg flex-shrink-0 ${
                     achievement.unlocked
                       ? 'bg-primary/20'
                       : 'bg-muted/50'
@@ -252,17 +252,15 @@ const AchievementBadgesComponent = ({ trades }: AchievementBadgesProps) => {
                     }`}
                   />
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-semibold text-sm">{achievement.title}</h4>
-                  </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-semibold text-sm mb-1">{achievement.title}</h4>
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     {achievement.description}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
                 <Badge
                   variant="outline"
                   className={`text-xs ${getRarityBadgeStyles(achievement.rarity)}`}
@@ -270,13 +268,13 @@ const AchievementBadgesComponent = ({ trades }: AchievementBadgesProps) => {
                   {achievement.rarity}
                 </Badge>
                 {achievement.unlocked ? (
-                  <Badge className="bg-neon-green/20 text-neon-green border-neon-green/30 text-xs">
+                  <Badge className="bg-neon-green/20 text-neon-green border-neon-green/30 text-xs whitespace-nowrap">
                     <Star className="w-3 h-3 mr-1" />
                     Unlocked
                   </Badge>
                 ) : (
                   achievement.maxProgress && (
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">
                       {progressPercent.toFixed(0)}%
                     </span>
                   )

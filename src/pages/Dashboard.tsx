@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/layout/AppLayout';
-import { TrendingUp, TrendingDown, DollarSign, Target, Flame } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Target, Flame, Eye, EyeOff } from 'lucide-react';
 import { DashboardCharts } from '@/components/DashboardCharts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TradeHistory } from '@/components/TradeHistory';
@@ -314,65 +315,79 @@ const Dashboard = () => {
             >
                 {/* Stats Widget */}
                 {(isCustomizing || isWidgetVisible('stats')) && (
-                  <div key="stats">
-                    <DashboardWidget
-                      id="stats"
-                      title="Statistics Overview"
-                      isCustomizing={isCustomizing}
-                      isVisible={isWidgetVisible('stats')}
-                      onToggleVisibility={toggleWidgetVisibility}
-                    >
-                      {/* Stats Cards Grid - Mobile optimized */}
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
-                        <div className="p-3 lg:p-4 rounded-xl glass-subtle flex flex-col justify-center items-start min-h-[80px] lg:min-h-[100px]">
-                          <div className="text-xs lg:text-sm text-muted-foreground mb-1 lg:mb-2 w-full">Total P&L</div>
-                          <div className={`text-lg lg:text-2xl font-bold w-full ${
-                            stats && stats.total_pnl > 0 ? 'text-neon-green' : 
-                            stats && stats.total_pnl < 0 ? 'text-neon-red' : 'text-foreground'
-                          }`}>
-                            <AnimatedCounter value={stats?.total_pnl || 0} prefix="$" decimals={2} />
-                          </div>
+                  <div key="stats" className="space-y-3">
+                    {/* Title and Controls */}
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-base lg:text-lg font-semibold">Statistics Overview</h3>
+                      {isCustomizing && (
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 hover:bg-primary/10 hover:text-primary"
+                            onClick={() => toggleWidgetVisibility('stats')}
+                            title={isWidgetVisible('stats') ? "Hide widget" : "Show widget"}
+                          >
+                            {isWidgetVisible('stats') ? (
+                              <Eye className="w-4 h-4" />
+                            ) : (
+                              <EyeOff className="w-4 h-4" />
+                            )}
+                          </Button>
                         </div>
-                        
-                        <div className="p-3 lg:p-4 rounded-xl glass-subtle flex flex-col justify-center items-start min-h-[80px] lg:min-h-[100px]">
-                          <div className="text-xs lg:text-sm text-muted-foreground mb-1 lg:mb-2 w-full">Win Rate</div>
-                          <div className={`text-lg lg:text-2xl font-bold w-full ${
-                            stats && stats.win_rate > 70 ? 'text-neon-green' : 'text-foreground'
-                          }`}>
-                            <AnimatedCounter value={stats?.win_rate || 0} suffix="%" decimals={1} />
-                          </div>
-                        </div>
-                        
-                        <div className="p-3 lg:p-4 rounded-xl glass-subtle flex flex-col justify-center items-start min-h-[80px] lg:min-h-[100px]">
-                          <div className="text-xs lg:text-sm text-muted-foreground mb-1 lg:mb-2 w-full">Total Trades</div>
-                          <div className="text-lg lg:text-2xl font-bold w-full">
-                            <AnimatedCounter value={stats?.total_trades || 0} decimals={0} />
-                          </div>
-                        </div>
-                        
-                        <div className="p-3 lg:p-4 rounded-xl glass-subtle flex flex-col justify-center items-start min-h-[80px] lg:min-h-[100px]">
-                          <div className="text-xs lg:text-sm text-muted-foreground mb-1 lg:mb-2 w-full">Avg Duration</div>
-                          <div className="text-lg lg:text-2xl font-bold w-full">
-                            <AnimatedCounter value={Math.round(stats?.avg_duration || 0)} decimals={0} />
-                            <span className="text-sm lg:text-base ml-1">m</span>
-                          </div>
+                      )}
+                    </div>
+                    
+                    {/* Stats Cards Grid - Mobile optimized */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+                      <div className="p-3 lg:p-4 rounded-xl glass-subtle flex flex-col justify-center items-start min-h-[80px] lg:min-h-[100px]">
+                        <div className="text-xs lg:text-sm text-muted-foreground mb-1 lg:mb-2 w-full">Total P&L</div>
+                        <div className={`text-lg lg:text-2xl font-bold w-full ${
+                          stats && stats.total_pnl > 0 ? 'text-neon-green' : 
+                          stats && stats.total_pnl < 0 ? 'text-neon-red' : 'text-foreground'
+                        }`}>
+                          <AnimatedCounter value={stats?.total_pnl || 0} prefix="$" decimals={2} />
                         </div>
                       </div>
                       
-                      {/* Fees Toggle - Mobile optimized */}
-                      <div className="flex justify-center mt-3 lg:mt-4">
-                        <div className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-lg glass-subtle">
-                          <Label htmlFor="fees-toggle-grid" className="cursor-pointer text-xs lg:text-sm text-muted-foreground">
-                            {includeFeesInPnL ? 'Including Fees' : 'Excluding Fees'}
-                          </Label>
-                          <Switch
-                            id="fees-toggle-grid"
-                            checked={includeFeesInPnL}
-                            onCheckedChange={setIncludeFeesInPnL}
-                          />
+                      <div className="p-3 lg:p-4 rounded-xl glass-subtle flex flex-col justify-center items-start min-h-[80px] lg:min-h-[100px]">
+                        <div className="text-xs lg:text-sm text-muted-foreground mb-1 lg:mb-2 w-full">Win Rate</div>
+                        <div className={`text-lg lg:text-2xl font-bold w-full ${
+                          stats && stats.win_rate > 70 ? 'text-neon-green' : 'text-foreground'
+                        }`}>
+                          <AnimatedCounter value={stats?.win_rate || 0} suffix="%" decimals={1} />
                         </div>
                       </div>
-                    </DashboardWidget>
+                      
+                      <div className="p-3 lg:p-4 rounded-xl glass-subtle flex flex-col justify-center items-start min-h-[80px] lg:min-h-[100px]">
+                        <div className="text-xs lg:text-sm text-muted-foreground mb-1 lg:mb-2 w-full">Total Trades</div>
+                        <div className="text-lg lg:text-2xl font-bold w-full">
+                          <AnimatedCounter value={stats?.total_trades || 0} decimals={0} />
+                        </div>
+                      </div>
+                      
+                      <div className="p-3 lg:p-4 rounded-xl glass-subtle flex flex-col justify-center items-start min-h-[80px] lg:min-h-[100px]">
+                        <div className="text-xs lg:text-sm text-muted-foreground mb-1 lg:mb-2 w-full">Avg Duration</div>
+                        <div className="text-lg lg:text-2xl font-bold w-full">
+                          <AnimatedCounter value={Math.round(stats?.avg_duration || 0)} decimals={0} />
+                          <span className="text-sm lg:text-base ml-1">m</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Fees Toggle - Mobile optimized */}
+                    <div className="flex justify-center">
+                      <div className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-lg glass-subtle">
+                        <Label htmlFor="fees-toggle-grid" className="cursor-pointer text-xs lg:text-sm text-muted-foreground">
+                          {includeFeesInPnL ? 'Including Fees' : 'Excluding Fees'}
+                        </Label>
+                        <Switch
+                          id="fees-toggle-grid"
+                          checked={includeFeesInPnL}
+                          onCheckedChange={setIncludeFeesInPnL}
+                        />
+                      </div>
+                    </div>
                   </div>
                 )}
 

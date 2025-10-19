@@ -211,13 +211,6 @@ const Dashboard = () => {
   return (
     <AppLayout>
       <div className="space-y-6">
-        <Alert className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/20">
-          <Flame className="h-5 w-5 text-primary" />
-          <AlertDescription className="text-foreground ml-2 text-base">
-            <strong>REMEMBER:</strong> Protect your capital, stay disciplined, and trust your setups. Keep it simple and you'll be on the right path.
-          </AlertDescription>
-        </Alert>
-
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-4xl font-bold mb-2">Dashboard</h1>

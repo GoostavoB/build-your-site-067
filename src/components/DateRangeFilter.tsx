@@ -5,6 +5,7 @@ import { Calendar as CalendarIcon, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 export type DateRange = {
   from: Date | undefined;
@@ -18,6 +19,7 @@ interface DateRangeFilterProps {
 
 export const DateRangeFilter = ({ dateRange, onDateRangeChange }: DateRangeFilterProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [tempRange, setTempRange] = useState<DateRange>(dateRange);
 
   const presetRanges = [
     {
@@ -54,8 +56,26 @@ export const DateRangeFilter = ({ dateRange, onDateRangeChange }: DateRangeFilte
   ];
 
   const handleClear = () => {
+    setTempRange(undefined);
     onDateRangeChange(undefined);
     setIsOpen(false);
+  };
+
+  const handleApply = () => {
+    onDateRangeChange(tempRange);
+    setIsOpen(false);
+    if (tempRange?.from && tempRange?.to) {
+      toast.success(`Showing data for ${format(tempRange.from, 'MMM dd')} - ${format(tempRange.to, 'MMM dd, yyyy')}`);
+    }
+  };
+
+  const handleCancel = () => {
+    setTempRange(dateRange);
+    setIsOpen(false);
+  };
+
+  const handlePresetSelect = (range: DateRange) => {
+    setTempRange(range);
   };
 
   return (
@@ -84,32 +104,48 @@ export const DateRangeFilter = ({ dateRange, onDateRangeChange }: DateRangeFilte
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 bg-card border-border" align="start">
-          <div className="flex">
-            <div className="border-r border-border p-3 space-y-2">
-              <div className="text-sm font-semibold mb-2 text-muted-foreground">Quick Select</div>
+        <PopoverContent className="w-auto p-0 glass rounded-3xl shadow-xl" align="start">
+          <div className="flex flex-col lg:flex-row">
+            <div className="border-r border-border/50 p-4 space-y-2 min-w-[140px]">
+              <div className="text-sm font-semibold mb-3 text-foreground">Quick Select</div>
               {presetRanges.map((preset) => (
                 <Button
                   key={preset.label}
                   variant="ghost"
                   size="sm"
-                  className="w-full justify-start"
-                  onClick={() => {
-                    onDateRangeChange(preset.getValue());
-                    setIsOpen(false);
-                  }}
+                  className="w-full justify-start hover:bg-primary/10 hover:text-primary transition-colors"
+                  onClick={() => handlePresetSelect(preset.getValue())}
                 >
                   {preset.label}
                 </Button>
               ))}
             </div>
-            <div className="p-3">
+            <div className="p-4">
               <Calendar
                 mode="range"
-                selected={dateRange}
-                onSelect={onDateRangeChange}
+                selected={tempRange}
+                onSelect={(range) => setTempRange(range as DateRange)}
                 numberOfMonths={2}
+                className="pointer-events-auto"
               />
+              <div className="flex gap-2 mt-4 pt-4 border-t border-border/50">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCancel}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleApply}
+                  className="flex-1 bg-primary hover:bg-primary/90"
+                  disabled={!tempRange?.from || !tempRange?.to}
+                >
+                  Apply
+                </Button>
+              </div>
             </div>
           </div>
         </PopoverContent>

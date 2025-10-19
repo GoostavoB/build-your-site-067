@@ -248,109 +248,114 @@ export const UploadHistory = () => {
           return (
             <Card
               key={batch.id}
-              className={`p-4 border-border cursor-pointer hover:border-foreground/20 transition-all ${
+              className={`glass rounded-2xl p-5 cursor-pointer hover-lift transition-all ${
                 isNew ? 'animate-slide-in-top' : ''
               }`}
               onClick={() => toggleExpand(batch.id, batch.created_at)}
             >
-              <div className="flex items-start justify-between">
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm text-muted-foreground">
-                        {format(new Date(batch.created_at), 'MMM dd, yyyy • HH:mm')}
-                      </span>
-                      <Badge variant="outline" className="text-xs">
-                        {batch.trade_count} {batch.trade_count === 1 ? 'trade' : 'trades'}
-                      </Badge>
-                      {batch.position_types && batch.position_types.length > 0 && (
-                        <div className="flex gap-1">
-                          {batch.position_types.map((type) => (
-                            <Badge
-                              key={type}
-                              variant="outline"
-                              className={`text-xs ${
-                                type === 'long'
-                                  ? 'border-neon-green text-neon-green'
-                                  : 'border-neon-red text-neon-red'
-                              }`}
-                            >
-                              {type.toUpperCase()}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                      onClick={(e) => handleDeleteBatch(batch.id, e)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <span className="text-muted-foreground">Assets: </span>
-                      <span className="font-medium">{batch.assets.join(', ')}</span>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Total P&L: </span>
-                      <span className={`font-medium ${(batch.total_pnl || 0) >= 0 ? 'text-neon-green' : 'text-neon-red'}`}>
-                        ${(batch.total_pnl || 0).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm">
-                      {batch.brokers && batch.brokers.length > 0 && (
-                        <span>
-                          <span className="text-muted-foreground">Broker: </span>
-                          <span className="font-medium">{batch.brokers.join(', ')}</span>
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-xs text-muted-foreground">
-                      Uploaded: {format(new Date(batch.created_at), 'MM/dd/yyyy HH:mm')}
-                    </span>
-                  </div>
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-base font-medium text-foreground">
+                    {format(new Date(batch.created_at), 'MMM dd, yyyy')}
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    {format(new Date(batch.created_at), 'HH:mm')}
+                  </span>
                 </div>
-                
-                <div className="ml-4">
+                <div className="flex items-center gap-2">
                   {isExpanded ? (
                     <ChevronUp className="w-5 h-5 text-muted-foreground" />
                   ) : (
                     <ChevronDown className="w-5 h-5 text-muted-foreground" />
                   )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-opacity"
+                    onClick={(e) => handleDeleteBatch(batch.id, e)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Body */}
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  {batch.brokers && batch.brokers.length > 0 && (
+                    <span className="text-sm">
+                      <span className="text-muted-foreground">Broker:</span>{' '}
+                      <span className="font-medium text-foreground">{batch.brokers.join(', ')}</span>
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant="outline" className="text-xs font-medium">
+                    {batch.trade_count} {batch.trade_count === 1 ? 'trade' : 'trades'}
+                  </Badge>
+                  {batch.position_types && batch.position_types.length > 0 && (
+                    <>
+                      {batch.position_types.map((type) => (
+                        <Badge
+                          key={type}
+                          className={`text-xs font-medium ${
+                            type === 'long'
+                              ? 'bg-neon-green/10 text-neon-green border-neon-green/20'
+                              : 'bg-neon-red/10 text-neon-red border-neon-red/20'
+                          }`}
+                        >
+                          {type.toUpperCase()}
+                        </Badge>
+                      ))}
+                    </>
+                  )}
+                </div>
+
+                <div className="text-sm">
+                  <span className="text-muted-foreground">Assets:</span>{' '}
+                  <span className="font-medium text-foreground break-words">
+                    {batch.assets.join(', ')}
+                  </span>
+                </div>
+
+                {/* Footer */}
+                <div className="flex items-center justify-between pt-3 border-t border-border/50">
+                  <div>
+                    <span className="text-sm text-muted-foreground">Total P&L: </span>
+                    <span className={`text-base font-semibold ${(batch.total_pnl || 0) >= 0 ? 'text-neon-green' : 'text-neon-red'}`}>
+                      ${(batch.total_pnl || 0).toFixed(2)}
+                    </span>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    {format(new Date(batch.created_at), 'MM/dd/yyyy HH:mm')}
+                  </span>
                 </div>
               </div>
               
               {isExpanded && batchTrades[batch.id] && (
-                <div className="mt-4 pt-4 border-t border-border space-y-2 animate-fade-in">
+                <div className="mt-4 pt-4 border-t border-border/50 space-y-2 animate-fade-in">
                   {batchTrades[batch.id].map((trade) => (
                     <div
                       key={trade.id}
-                      className="flex items-center justify-between py-2 px-3 rounded-md bg-muted/50 text-sm"
+                      className="flex items-center justify-between py-3 px-4 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors"
                     >
-                      <div className="flex items-center gap-4 flex-1">
-                        <span className="font-medium min-w-[100px]">{trade.symbol}</span>
-                        <span className="text-muted-foreground">${trade.entry_price.toFixed(2)}</span>
+                      <div className="flex items-center gap-4 flex-1 flex-wrap">
+                        <span className="font-semibold text-foreground min-w-[100px]">{trade.symbol}</span>
+                        <span className="text-sm text-muted-foreground">${trade.entry_price.toFixed(2)}</span>
                         <Badge
-                          variant="outline"
-                          className={
+                          className={`text-xs ${
                             trade.side === 'long'
-                              ? 'border-neon-green text-neon-green'
-                              : 'border-neon-red text-neon-red'
-                          }
+                              ? 'bg-neon-green/10 text-neon-green border-neon-green/20'
+                              : 'bg-neon-red/10 text-neon-red border-neon-red/20'
+                          }`}
                         >
                           {trade.side?.toUpperCase()}
                         </Badge>
                       </div>
                       <span
-                        className={`font-medium ${
+                        className={`font-semibold text-sm ${
                           trade.profit_loss >= 0 ? 'text-neon-green' : 'text-neon-red'
                         }`}
                       >

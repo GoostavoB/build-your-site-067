@@ -67,11 +67,11 @@ export const ExportTradesDialog = ({ trades, trigger }: ExportTradesDialogProps)
             className="w-full justify-start gap-3 h-auto py-4"
             onClick={() => handleExport('csv')}
           >
-            <FileSpreadsheet className="w-5 h-5 text-neon-green" />
-            <div className="text-left flex-1">
-              <div className="font-semibold">CSV Format</div>
-              <div className="text-xs text-muted-foreground">
-                Compatible with Excel, Google Sheets, and other spreadsheet tools
+            <FileSpreadsheet className="w-5 h-5 text-neon-green flex-shrink-0" />
+            <div className="text-left flex-1 min-w-0">
+              <div className="font-semibold text-sm">CSV Format</div>
+              <div className="text-xs text-muted-foreground leading-relaxed break-words overflow-wrap-anywhere">
+                Compatible with Excel, Google Sheets, and other spreadsheets
               </div>
             </div>
           </Button>
@@ -81,10 +81,10 @@ export const ExportTradesDialog = ({ trades, trigger }: ExportTradesDialogProps)
             className="w-full justify-start gap-3 h-auto py-4"
             onClick={() => handleExport('summary')}
           >
-            <FileText className="w-5 h-5 text-primary" />
-            <div className="text-left flex-1">
-              <div className="font-semibold">CSV with Summary</div>
-              <div className="text-xs text-muted-foreground">
+            <FileText className="w-5 h-5 text-primary flex-shrink-0" />
+            <div className="text-left flex-1 min-w-0">
+              <div className="font-semibold text-sm">CSV with Summary</div>
+              <div className="text-xs text-muted-foreground leading-relaxed break-words overflow-wrap-anywhere">
                 Includes performance summary at the top
               </div>
             </div>
@@ -95,10 +95,10 @@ export const ExportTradesDialog = ({ trades, trigger }: ExportTradesDialogProps)
             className="w-full justify-start gap-3 h-auto py-4"
             onClick={() => handleExport('json')}
           >
-            <FileJson className="w-5 h-5 text-yellow-500" />
-            <div className="text-left flex-1">
-              <div className="font-semibold">JSON Format</div>
-              <div className="text-xs text-muted-foreground">
+            <FileJson className="w-5 h-5 text-yellow-500 flex-shrink-0" />
+            <div className="text-left flex-1 min-w-0">
+              <div className="font-semibold text-sm">JSON Format</div>
+              <div className="text-xs text-muted-foreground leading-relaxed break-words overflow-wrap-anywhere">
                 For developers and data analysis tools
               </div>
             </div>

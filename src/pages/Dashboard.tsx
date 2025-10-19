@@ -55,7 +55,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [initialInvestment, setInitialInvestment] = useState(0);
   const [includeFeesInPnL, setIncludeFeesInPnL] = useState(true);
-  const [beastModeDays, setBeastModeDays] = useState(0);
+  const [beastModeDays, setBeastModeDays] = useState(0); // Actually used for "Monstro Mode"
   const [dateRange, setDateRange] = useState<DateRange>(undefined);
   const [filteredTrades, setFilteredTrades] = useState<Trade[]>([]);
   const [activeTab, setActiveTab] = useState<string>('insights');
@@ -157,7 +157,7 @@ const Dashboard = () => {
       const winningTrades = trades.filter(t => (t.pnl || 0) > 0).length;
       const avgDuration = trades.reduce((sum, t) => sum + (t.duration_minutes || 0), 0) / (trades.length || 1);
 
-      // Calculate Beast Mode days (days with >70% win rate)
+      // Calculate Monstro Mode days (days with >70% win rate)
       const tradesByDate = trades.reduce((acc, trade) => {
         const date = new Date(trade.trade_date).toDateString();
         if (!acc[date]) acc[date] = [];
@@ -165,13 +165,13 @@ const Dashboard = () => {
         return acc;
       }, {} as Record<string, typeof trades>);
 
-      const daysWithBeastMode = Object.values(tradesByDate).filter(dayTrades => {
+      const daysWithMonstroMode = Object.values(tradesByDate).filter(dayTrades => {
         const wins = dayTrades.filter(t => (t.pnl || 0) > 0).length;
         const winRate = (wins / dayTrades.length) * 100;
         return winRate > 70;
       }).length;
 
-      setBeastModeDays(daysWithBeastMode);
+      setBeastModeDays(daysWithMonstroMode);
 
       setStats({
         total_pnl: includeFeesInPnL ? totalPnlWithFees : totalPnlWithoutFees,
@@ -239,24 +239,23 @@ const Dashboard = () => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="relative cursor-help w-full md:w-auto">
-                    <div className="absolute inset-0 bg-gradient-to-r from-neon-green/20 to-primary/20 blur-xl animate-pulse"></div>
-                    <div className="relative flex items-center gap-2 md:gap-3 px-4 md:px-6 py-2 md:py-3 glass-strong border-2 border-neon-green/30 rounded-2xl shadow-lg">
-                      <Flame className="w-6 h-6 md:w-8 md:h-8 text-neon-green flex-shrink-0" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-primary/5 blur-lg"></div>
+                    <div className="relative flex items-center gap-2 px-4 py-2.5 glass-strong rounded-3xl shadow-md hover:shadow-lg transition-all duration-300">
+                      <Flame className="w-5 h-5 text-primary flex-shrink-0" />
                       <div>
-                        <div className="text-[10px] md:text-xs font-medium text-neon-green uppercase tracking-wider">Unlocked</div>
-                        <div className="text-base md:text-xl font-bold text-neon-green">
-                          BEAST MODE
+                        <div className="text-sm font-semibold text-primary tracking-wide">
+                          Monstro Mode
                         </div>
-                        <div className="text-[10px] md:text-xs text-muted-foreground mt-0.5">
+                        <div className="text-[10px] text-muted-foreground">
                           {beastModeDays} {beastModeDays === 1 ? 'day' : 'days'}
                         </div>
                       </div>
                     </div>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="max-w-xs">
-                  <p className="font-semibold mb-1">Beast Mode Days</p>
-                  <p className="text-sm">Days where you achieved over 70% win rate. Keep pushing for consistency!</p>
+                <TooltipContent side="bottom" className="max-w-xs glass-strong">
+                  <p className="font-semibold mb-1">Monstro Mode</p>
+                  <p className="text-sm">Activates when your win rate and profit exceed target thresholds for 3+ consecutive days. Days shown: {beastModeDays}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

@@ -69,7 +69,7 @@ export function AppSidebar() {
       : 'hover:bg-muted/50 text-muted-foreground hover:text-foreground';
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border/50 backdrop-blur-xl bg-card/50 glass">
+    <Sidebar collapsible="icon" className="border-r border-border/50 backdrop-blur-xl bg-[#0f0f11] glass z-40">
       <div className="p-4 border-b border-border/50 flex items-center justify-center">
         {open && <span className="font-bold text-lg">The Trading Diary</span>}
         {!open && <span className="font-bold text-xs">TTD</span>}
@@ -166,10 +166,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      <div className="p-2 border-t border-border">
-        <SidebarTrigger />
-      </div>
     </Sidebar>
   );
 }

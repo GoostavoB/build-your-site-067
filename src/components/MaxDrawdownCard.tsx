@@ -14,10 +14,17 @@ export const MaxDrawdownCard = ({ value, percentage, className }: MaxDrawdownCar
   const { openWithPrompt } = useAIAssistant();
   
   return (
-    <GlassCard hover className={className}>
+    <GlassCard 
+      hover 
+      className={className}
+      role="article"
+      aria-labelledby="max-drawdown-title"
+    >
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-medium text-muted-foreground">Max Drawdown</p>
+          <h3 id="max-drawdown-title" className="text-sm font-medium text-muted-foreground">
+            Max Drawdown
+          </h3>
           <div className="flex items-center gap-2">
             <ExplainMetricButton 
               metricName="Max Drawdown"
@@ -25,14 +32,17 @@ export const MaxDrawdownCard = ({ value, percentage, className }: MaxDrawdownCar
               context={`Percentage of peak: ${formatPercent(percentage)}`}
               onExplain={openWithPrompt}
             />
-            <div className="p-2 rounded-xl bg-secondary/10">
+            <div className="p-2 rounded-xl bg-secondary/10" aria-hidden="true">
               <TrendingDown className="h-4 w-4 text-secondary" />
             </div>
           </div>
         </div>
         
         <div className="space-y-1">
-          <p className="text-3xl font-bold tracking-tight text-secondary">
+          <p 
+            className="text-3xl font-bold tracking-tight text-secondary"
+            aria-label={`Max drawdown value: ${formatCurrency(value)}`}
+          >
             {formatCurrency(value)}
           </p>
           <p className="text-sm text-muted-foreground">

@@ -42,10 +42,10 @@ export const TopMoversCard = ({ trades, className }: TopMoversCardProps) => {
     .slice(0, 5);
 
   return (
-    <GlassCard className={className}>
+    <GlassCard className={className} role="region" aria-labelledby="top-movers-title">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Top Movers</h3>
+          <h3 id="top-movers-title" className="text-lg font-semibold">Top Movers</h3>
           <ExplainMetricButton 
             metricName="Top Movers"
             metricValue={`${topMovers.length} assets`}
@@ -54,19 +54,24 @@ export const TopMoversCard = ({ trades, className }: TopMoversCardProps) => {
           />
         </div>
         
-        <div className="space-y-2">
+        <ul className="space-y-2" role="list">
           {topMovers.length > 0 ? (
             topMovers.map((asset) => {
               const isPositive = asset.pnl >= 0;
               return (
-                <div 
+                <li 
                   key={asset.symbol} 
                   className="flex items-center justify-between p-2 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                  role="listitem"
+                  aria-label={`${asset.symbol}: ${formatCurrency(asset.pnl)}, ${isPositive ? 'up' : 'down'} ${formatPercent(Math.abs(asset.change))}`}
                 >
                   <div className="flex items-center gap-2">
-                    <div className={`p-1.5 rounded-lg ${
-                      isPositive ? 'bg-primary/10' : 'bg-secondary/10'
-                    }`}>
+                    <div 
+                      className={`p-1.5 rounded-lg ${
+                        isPositive ? 'bg-primary/10' : 'bg-secondary/10'
+                      }`}
+                      aria-hidden="true"
+                    >
                       {isPositive ? (
                         <TrendingUp className="h-3 w-3 text-primary" />
                       ) : (
@@ -90,15 +95,15 @@ export const TopMoversCard = ({ trades, className }: TopMoversCardProps) => {
                       {isPositive ? '+' : ''}{formatPercent(asset.change)}
                     </p>
                   </div>
-                </div>
+                </li>
               );
             })
           ) : (
-            <p className="text-sm text-muted-foreground text-center py-4">
+            <li className="text-sm text-muted-foreground text-center py-4" role="status">
               No data available
-            </p>
+            </li>
           )}
-        </div>
+        </ul>
       </div>
     </GlassCard>
   );

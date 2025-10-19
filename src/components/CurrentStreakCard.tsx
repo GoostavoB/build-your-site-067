@@ -16,10 +16,18 @@ export const CurrentStreakCard = ({ streak, type, className }: CurrentStreakCard
   const isWinning = type === 'winning';
   
   return (
-    <GlassCard hover className={className}>
+    <GlassCard 
+      hover 
+      className={className}
+      role="article"
+      aria-labelledby="current-streak-title"
+      aria-describedby="current-streak-value"
+    >
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-medium text-muted-foreground">Current Streak</p>
+          <h3 id="current-streak-title" className="text-sm font-medium text-muted-foreground">
+            Current Streak
+          </h3>
           <div className="flex items-center gap-2">
             <ExplainMetricButton 
               metricName="Current Streak"
@@ -27,7 +35,7 @@ export const CurrentStreakCard = ({ streak, type, className }: CurrentStreakCard
               context={`Type: ${type}`}
               onExplain={openWithPrompt}
             />
-            <div className={`p-2 rounded-xl ${isWinning ? 'bg-primary/10' : 'bg-secondary/10'}`}>
+            <div className={`p-2 rounded-xl ${isWinning ? 'bg-primary/10' : 'bg-secondary/10'}`} aria-hidden="true">
               {isWinning ? (
                 <Flame className="h-4 w-4 text-primary" />
               ) : (
@@ -39,8 +47,10 @@ export const CurrentStreakCard = ({ streak, type, className }: CurrentStreakCard
         
         <div className="space-y-1">
           <p 
+            id="current-streak-value"
             className="text-3xl font-bold tracking-tight"
             style={{ color: isWinning ? colors.positive : colors.negative }}
+            aria-label={`${streak} ${isWinning ? 'winning' : 'losing'} trades in a row`}
           >
             {streak}
           </p>

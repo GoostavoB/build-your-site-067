@@ -23,12 +23,14 @@ export const TopAssetsByWinRate = ({ assets, limit = 5 }: TopAssetsByWinRateProp
     .slice(0, limit);
 
   return (
-    <Card className="glass-card">
+    <Card className="glass-card" role="region" aria-labelledby="top-assets-title">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-primary" />
-            <CardTitle className="text-lg font-semibold">Top Assets by Win Rate</CardTitle>
+            <TrendingUp className="h-5 w-5 text-primary" aria-hidden="true" />
+            <CardTitle id="top-assets-title" className="text-lg font-semibold">
+              Top Assets by Win Rate
+            </CardTitle>
           </div>
           <ExplainMetricButton 
             metricName="Top Assets by Win Rate"
@@ -39,11 +41,19 @@ export const TopAssetsByWinRate = ({ assets, limit = 5 }: TopAssetsByWinRateProp
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
+        <ul className="space-y-3" role="list">
           {sortedAssets.map((asset, index) => (
-            <div key={asset.asset} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+            <li 
+              key={asset.asset} 
+              className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+              role="listitem"
+              aria-label={`Rank ${index + 1}: ${asset.asset} with ${formatPercent(asset.winRate)} win rate from ${asset.trades} trades`}
+            >
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold text-sm">
+                <div 
+                  className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold text-sm"
+                  aria-label={`Rank ${index + 1}`}
+                >
                   {index + 1}
                 </div>
                 <div>
@@ -54,9 +64,9 @@ export const TopAssetsByWinRate = ({ assets, limit = 5 }: TopAssetsByWinRateProp
               <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
                 {formatPercent(asset.winRate)}
               </Badge>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </CardContent>
     </Card>
   );

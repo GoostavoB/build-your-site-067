@@ -261,16 +261,12 @@ const LongShortRatio = () => {
                   <CardTitle className="text-sm">Market Sentiment</CardTitle>
                   <CardDescription className="text-xs">Visual indicator</CardDescription>
                 </CardHeader>
-                <CardContent className="flex items-center justify-center py-2">
+                <CardContent className="flex items-center justify-center py-4">
                   {latestCombinedData && (
-                    <div className="w-20 h-20 rounded-full flex items-center justify-center bg-primary/10">
-                      <TrendingUp 
-                        className={`w-12 h-12 ${
-                          latestCombinedData.longAccount > latestCombinedData.shortAccount 
-                            ? 'text-neon-green' 
-                            : 'text-red-500 rotate-180'
-                        }`}
-                      />
+                    <div className="relative">
+                      <div className="text-6xl font-bold bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-sm border border-primary/20 rounded-2xl px-6 py-4 shadow-lg">
+                        {latestCombinedData.longAccount > latestCombinedData.shortAccount ? '🐂' : '🐻'}
+                      </div>
                     </div>
                   )}
                 </CardContent>

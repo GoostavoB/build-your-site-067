@@ -29,6 +29,7 @@ import { TopMoversCard } from '@/components/TopMoversCard';
 import { QuickActionCard } from '@/components/QuickActionCard';
 import { RecentTransactionsCard } from '@/components/RecentTransactionsCard';
 import { PremiumCTACard } from '@/components/PremiumCTACard';
+import { AIInsightCard } from '@/components/AIInsightCard';
 import { useDashboardLayout } from '@/hooks/useDashboardLayout';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
@@ -552,6 +553,26 @@ const Dashboard = () => {
                     </div>
                   )}
                   <RecentTransactionsCard trades={processedTrades} />
+                </div>
+              )}
+
+              {/* AI Insight */}
+              {(isCustomizing || isWidgetVisible('insights')) && (
+                <div className={`dash-card ${isCustomizing && !isWidgetVisible('insights') ? 'opacity-50' : ''}`}>
+                  {isCustomizing && (
+                    <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 hover:bg-primary/10"
+                        onClick={() => toggleWidgetVisibility('insights')}
+                        title={isWidgetVisible('insights') ? "Hide widget" : "Show widget"}
+                      >
+                        {isWidgetVisible('insights') ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                      </Button>
+                    </div>
+                  )}
+                  <AIInsightCard trades={processedTrades} />
                 </div>
               )}
 

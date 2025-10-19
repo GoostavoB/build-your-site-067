@@ -403,7 +403,7 @@ const Dashboard = () => {
             </div>
 
             {/* Analytics Row - Charts and Heatmap side by side */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mb-6 -mt-2">
               {/* Cumulative P&L Chart */}
               {(isCustomizing || isWidgetVisible('charts')) && (
                 <DashboardWidget

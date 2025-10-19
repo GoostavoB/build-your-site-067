@@ -6,7 +6,8 @@ import { TimeDistributionChart } from "@/components/charts/TimeDistributionChart
 import { SetupPerformanceChart } from "@/components/charts/SetupPerformanceChart";
 import { TradeReplay } from "@/components/TradeReplay";
 import { TradeComparison } from "@/components/TradeComparison";
-import { useState, useEffect } from "react";
+import { LazyChart } from "@/components/LazyChart";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Trade } from "@/types/trade";
 import { BarChart3, TrendingUp, Clock, Target } from "lucide-react";
@@ -16,11 +17,7 @@ export default function Analytics() {
   const [loading, setLoading] = useState(true);
   const [selectedTrades, setSelectedTrades] = useState<Trade[]>([]);
 
-  useEffect(() => {
-    fetchTrades();
-  }, []);
-
-  const fetchTrades = async () => {
+  const fetchTrades = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -40,34 +37,44 @@ export default function Analytics() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // Generate mock data for charts (in production, calculate from actual trades)
-  const pnlChartData = Array.from({ length: 30 }, (_, i) => ({
-    date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toLocaleDateString(),
-    pnl: Math.random() * 1000 - 300,
-    cumulative: (i + 1) * (Math.random() * 200 - 50)
-  }));
+  useEffect(() => {
+    fetchTrades();
+  }, [fetchTrades]);
 
-  const assetData = [
+  // Memoize chart data to prevent recalculation on every render
+  const pnlChartData = useMemo(() => 
+    Array.from({ length: 30 }, (_, i) => ({
+      date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toLocaleDateString(),
+      pnl: Math.random() * 1000 - 300,
+      cumulative: (i + 1) * (Math.random() * 200 - 50)
+    })),
+    []
+  );
+
+  const assetData = useMemo(() => [
     { asset: "BTCUSDT", winRate: 65, avgProfit: 250, tradeCount: 45, roi: 15 },
     { asset: "ETHUSDT", winRate: 58, avgProfit: 180, tradeCount: 38, roi: 12 },
     { asset: "SOLUSDT", winRate: 72, avgProfit: 320, tradeCount: 28, roi: 22 },
-  ];
+  ], []);
 
-  const timeData = Array.from({ length: 24 }, (_, i) => ({
-    hour: i,
-    wins: Math.floor(Math.random() * 10),
-    losses: Math.floor(Math.random() * 8),
-    winRate: 50 + Math.random() * 30
-  }));
+  const timeData = useMemo(() => 
+    Array.from({ length: 24 }, (_, i) => ({
+      hour: i,
+      wins: Math.floor(Math.random() * 10),
+      losses: Math.floor(Math.random() * 8),
+      winRate: 50 + Math.random() * 30
+    })),
+    []
+  );
 
-  const setupData = [
+  const setupData = useMemo(() => [
     { setup: "Breakout", winRate: 68, roi: 18, tradeCount: 32 },
     { setup: "Reversal", winRate: 55, roi: 12, tradeCount: 28 },
     { setup: "Scalp", winRate: 72, roi: 8, tradeCount: 45 },
     { setup: "Swing", winRate: 62, roi: 25, tradeCount: 18 },
-  ];
+  ], []);
 
   return (
     <AppLayout>
@@ -98,15 +105,23 @@ export default function Analytics() {
           </TabsList>
 
           <TabsContent value="charts" className="space-y-6">
-            <InteractivePnLChart data={pnlChartData} />
+            <LazyChart height={400}>
+              <InteractivePnLChart data={pnlChartData} />
+            </LazyChart>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <AssetPerformanceRadar data={assetData} />
-              <TimeDistributionChart data={timeData} />
+              <LazyChart height={350}>
+                <AssetPerformanceRadar data={assetData} />
+              </LazyChart>
+              <LazyChart height={350}>
+                <TimeDistributionChart data={timeData} />
+              </LazyChart>
             </div>
           </TabsContent>
 
           <TabsContent value="performance">
-            <SetupPerformanceChart data={setupData} />
+            <LazyChart height={400}>
+              <SetupPerformanceChart data={setupData} />
+            </LazyChart>
           </TabsContent>
 
           <TabsContent value="replay">

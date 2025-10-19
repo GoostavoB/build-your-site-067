@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -23,22 +23,33 @@ interface DrawdownAnalysisProps {
   initialInvestment: number;
 }
 
-export const DrawdownAnalysis = ({ trades, initialInvestment }: DrawdownAnalysisProps) => {
+const DrawdownAnalysisComponent = ({ trades, initialInvestment }: DrawdownAnalysisProps) => {
   const [drawdowns, setDrawdowns] = useState<DrawdownPeriod[]>([]);
   const [currentDrawdown, setCurrentDrawdown] = useState<DrawdownPeriod | null>(null);
   const [maxDrawdown, setMaxDrawdown] = useState<DrawdownPeriod | null>(null);
 
+  // Memoize sorted trades
+  const sortedTrades = useMemo(() => 
+    [...trades].sort((a, b) => 
+      new Date(a.trade_date).getTime() - new Date(b.trade_date).getTime()
+    ),
+    [trades]
+  );
+
+  // Memoize current balance and return
+  const { currentBalance, totalReturn } = useMemo(() => {
+    const balance = initialInvestment + trades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+    const returns = ((balance - initialInvestment) / initialInvestment) * 100;
+    return { currentBalance: balance, totalReturn: returns };
+  }, [initialInvestment, trades]);
+
   useEffect(() => {
-    if (trades.length > 0 && initialInvestment > 0) {
+    if (sortedTrades.length > 0 && initialInvestment > 0) {
       calculateDrawdowns();
     }
-  }, [trades, initialInvestment]);
+  }, [sortedTrades, initialInvestment]);
 
   const calculateDrawdowns = () => {
-    // Sort trades by date
-    const sortedTrades = [...trades].sort((a, b) => 
-      new Date(a.trade_date).getTime() - new Date(b.trade_date).getTime()
-    );
 
     let runningBalance = initialInvestment;
     let peak = initialInvestment;
@@ -119,9 +130,6 @@ export const DrawdownAnalysis = ({ trades, initialInvestment }: DrawdownAnalysis
       setMaxDrawdown(max);
     }
   };
-
-  const currentBalance = initialInvestment + trades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-  const totalReturn = ((currentBalance - initialInvestment) / initialInvestment) * 100;
 
   return (
     <Card className="p-6 bg-card border-border">
@@ -337,3 +345,5 @@ export const DrawdownAnalysis = ({ trades, initialInvestment }: DrawdownAnalysis
     </Card>
   );
 };
+
+export const DrawdownAnalysis = memo(DrawdownAnalysisComponent);

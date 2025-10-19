@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp } from "lucide-react";
@@ -16,11 +17,15 @@ interface TopAssetsByWinRateProps {
   limit?: number;
 }
 
-export const TopAssetsByWinRate = ({ assets, limit = 5 }: TopAssetsByWinRateProps) => {
+const TopAssetsByWinRateComponent = ({ assets, limit = 5 }: TopAssetsByWinRateProps) => {
   const { openWithPrompt } = useAIAssistant();
-  const sortedAssets = [...assets]
-    .sort((a, b) => b.winRate - a.winRate)
-    .slice(0, limit);
+  
+  const sortedAssets = useMemo(() => 
+    [...assets]
+      .sort((a, b) => b.winRate - a.winRate)
+      .slice(0, limit),
+    [assets, limit]
+  );
 
   return (
     <Card className="glass-card" role="region" aria-labelledby="top-assets-title">
@@ -71,3 +76,5 @@ export const TopAssetsByWinRate = ({ assets, limit = 5 }: TopAssetsByWinRateProp
     </Card>
   );
 };
+
+export const TopAssetsByWinRate = memo(TopAssetsByWinRateComponent);

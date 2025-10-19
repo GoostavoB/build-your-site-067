@@ -49,7 +49,7 @@ const WeeklyReview = lazy(() => import('@/components/WeeklyReview').then(m => ({
 const ExpenseTracker = lazy(() => import('@/components/ExpenseTracker').then(m => ({ default: m.ExpenseTracker })));
 const MonthlyReport = lazy(() => import('@/components/MonthlyReport').then(m => ({ default: m.MonthlyReport })));
 const StatisticsComparison = lazy(() => import('@/components/StatisticsComparison').then(m => ({ default: m.StatisticsComparison })));
-const MonthSummaryInsights = lazy(() => import('@/components/MonthSummaryInsights').then(m => ({ default: m.MonthSummaryInsights })));
+
 const SetupManager = lazy(() => import('@/components/SetupManager').then(m => ({ default: m.SetupManager })));
 const DrawdownAnalysis = lazy(() => import('@/components/DrawdownAnalysis').then(m => ({ default: m.DrawdownAnalysis })));
 const TradingHeatmap = lazy(() => import('@/components/TradingHeatmap').then(m => ({ default: m.TradingHeatmap })));
@@ -672,13 +672,6 @@ const Dashboard = () => {
                 </div>
               )}
             </ResponsiveGridLayout>
-
-            {/* Month Summary Insights */}
-            {stats && stats.total_trades > 0 && (
-              <div className="mt-6">
-                <MonthSummaryInsights trades={processedTrades} />
-              </div>
-            )}
 
             {/* Trading Streaks */}
             {stats && stats.total_trades > 0 && (

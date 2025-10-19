@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, lazy, Suspense } from 'react';
+import { useEffect, useState, useRef, lazy, Suspense, useMemo, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -31,6 +31,8 @@ import { RecentTransactionsCard } from '@/components/RecentTransactionsCard';
 import { PremiumCTACard } from '@/components/PremiumCTACard';
 import { useDashboardLayout } from '@/hooks/useDashboardLayout';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { useDashboardStats } from '@/hooks/useDashboardStats';
+import { LazyChart } from '@/components/LazyChart';
 import { formatNumber, formatPercent, formatCurrency } from '@/utils/formatNumber';
 import type { Trade } from '@/types/trade';
 import { LineChart, Line, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
@@ -75,7 +77,17 @@ const Dashboard = () => {
   const [filteredTrades, setFilteredTrades] = useState<Trade[]>([]);
   const [activeTab, setActiveTab] = useState<string>('insights');
   const tabsContainerRef = useRef<HTMLDivElement>(null);
-  const handleTabChange = (val: string) => {
+  
+  // Memoize processed trades to prevent unnecessary recalculations
+  const processedTrades = useMemo(() => 
+    filteredTrades.length > 0 ? filteredTrades : trades,
+    [filteredTrades, trades]
+  );
+
+  // Memoize dashboard stats calculations
+  const dashboardStats = useDashboardStats(processedTrades);
+  
+  const handleTabChange = useCallback((val: string) => {
     const container = tabsContainerRef.current?.closest('main') as HTMLElement | null;
     const prevScrollTop = container ? container.scrollTop : window.scrollY;
     setActiveTab(val);
@@ -83,7 +95,7 @@ const Dashboard = () => {
       if (container) container.scrollTop = prevScrollTop;
       else window.scrollTo({ top: prevScrollTop });
     });
-  };
+  }, []);
   const {
     widgets,
     layout,
@@ -269,7 +281,20 @@ const Dashboard = () => {
 
   return (
     <AppLayout>
-      <div className="space-y-6 mobile-safe animate-fade-in">
+      {/* Skip to main content link for keyboard navigation */}
+      <a 
+        href="#main-dashboard-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-lg"
+      >
+        Skip to main content
+      </a>
+
+      {/* Screen reader announcements for dynamic updates */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {stats && `Dashboard updated. Total P&L: ${formatCurrency(stats.total_pnl)}, Win rate: ${stats.win_rate.toFixed(1)}%, Total trades: ${stats.total_trades}`}
+      </div>
+
+      <div id="main-dashboard-content" className="space-y-6 mobile-safe animate-fade-in">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
           <div className="flex items-center gap-4">
             <div>
@@ -312,7 +337,7 @@ const Dashboard = () => {
             <AccentColorPicker />
             <DateRangeFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
             {trades.length > 0 && (
-              <ExportTradesDialog trades={filteredTrades.length > 0 ? filteredTrades : trades} />
+              <ExportTradesDialog trades={processedTrades} />
             )}
           </div>
         </div>
@@ -409,7 +434,7 @@ const Dashboard = () => {
                       balance={stats?.total_pnl || 0}
                       change={stats?.total_pnl || 0}
                       changePercent={initialInvestment > 0 ? ((stats?.total_pnl || 0) / initialInvestment) * 100 : 0}
-                      trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                      trades={processedTrades}
                     />
                   </div>
                 </div>
@@ -540,10 +565,12 @@ const Dashboard = () => {
                       </div>
                     </div>
                     <div className="h-64">
-                      <DashboardCharts 
-                        trades={filteredTrades.length > 0 ? filteredTrades : trades} 
-                        chartType="cumulative" 
-                      />
+                      <LazyChart height={256}>
+                        <DashboardCharts 
+                          trades={processedTrades} 
+                          chartType="cumulative" 
+                        />
+                      </LazyChart>
                     </div>
                   </div>
                 </div>
@@ -578,7 +605,7 @@ const Dashboard = () => {
                       </div>
                     )}
                     <TopMoversCard 
-                      trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                      trades={processedTrades}
                     />
                   </div>
                 </div>
@@ -646,7 +673,7 @@ const Dashboard = () => {
                       </div>
                     )}
                     <RecentTransactionsCard 
-                      trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                      trades={processedTrades}
                     />
                   </div>
                 </div>
@@ -689,14 +716,14 @@ const Dashboard = () => {
             {/* Month Summary Insights */}
             {stats && stats.total_trades > 0 && (
               <div className="mt-6">
-                <MonthSummaryInsights trades={filteredTrades.length > 0 ? filteredTrades : trades} />
+                <MonthSummaryInsights trades={processedTrades} />
               </div>
             )}
 
             {/* Trading Streaks */}
             {stats && stats.total_trades > 0 && (
               <div className="mb-6">
-                <TradingStreaks trades={filteredTrades.length > 0 ? filteredTrades : trades} />
+                <TradingStreaks trades={processedTrades} />
               </div>
             )}
 
@@ -722,7 +749,9 @@ const Dashboard = () => {
                   </TooltipProvider>
                 </div>
                 <div className="chart-wrapper">
-                  <DashboardCharts trades={filteredTrades.length > 0 ? filteredTrades : trades} chartType="cumulative" />
+                  <LazyChart height={280}>
+                    <DashboardCharts trades={processedTrades} chartType="cumulative" />
+                  </LazyChart>
                 </div>
               </div>
               
@@ -746,7 +775,9 @@ const Dashboard = () => {
                   </TooltipProvider>
                 </div>
                 <div className="chart-wrapper">
-                  <DashboardCharts trades={filteredTrades.length > 0 ? filteredTrades : trades} chartType="winsLosses" />
+                  <LazyChart height={280}>
+                    <DashboardCharts trades={processedTrades} chartType="winsLosses" />
+                  </LazyChart>
                 </div>
               </div>
             </div>
@@ -773,7 +804,9 @@ const Dashboard = () => {
                   </TooltipProvider>
                 </div>
                 <div className="chart-wrapper">
-                  <TradingHeatmap trades={filteredTrades.length > 0 ? filteredTrades : trades} />
+                  <LazyChart height={300}>
+                    <TradingHeatmap trades={processedTrades} />
+                  </LazyChart>
                 </div>
               </div>
             )}
@@ -781,7 +814,9 @@ const Dashboard = () => {
             {/* Wins by Hour Chart */}
             {stats && stats.total_trades > 0 && (
               <div className="mb-6">
-                <WinsByHourChart trades={filteredTrades.length > 0 ? filteredTrades : trades} />
+                <LazyChart height={300}>
+                  <WinsByHourChart trades={processedTrades} />
+                </LazyChart>
               </div>
             )}
 
@@ -913,13 +948,13 @@ const Dashboard = () => {
               <TabsContent value="insights" className="space-y-4 md:space-y-6 relative glass rounded-2xl p-6">
                 <Suspense fallback={<DashboardSkeleton />}>
                   <MonthlyReport 
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                    trades={processedTrades}
                   />
                   <PerformanceInsights
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                    trades={processedTrades}
                   />
                   <StatisticsComparison 
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                    trades={processedTrades}
                   />
                 </Suspense>
               </TabsContent>
@@ -935,25 +970,25 @@ const Dashboard = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                   <MaxDrawdownCard value={3500} percentage={12.5} />
                   <CurrentStreakCard 
-                    streak={calculateCurrentStreak(filteredTrades.length > 0 ? filteredTrades : trades)}
-                    type={calculateStreakType(filteredTrades.length > 0 ? filteredTrades : trades)}
+                    streak={calculateCurrentStreak(processedTrades)}
+                    type={calculateStreakType(processedTrades)}
                   />
                   <div className="p-5 glass rounded-2xl">
                     <p className="text-sm text-muted-foreground mb-2">Best Asset</p>
-                    <p className="text-2xl font-bold">{getBestAsset(filteredTrades.length > 0 ? filteredTrades : trades)}</p>
+                    <p className="text-2xl font-bold">{getBestAsset(processedTrades)}</p>
                   </div>
                 </div>
 
                 <Suspense fallback={<DashboardSkeleton />}>
                   <DrawdownAnalysis
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                    trades={processedTrades}
                     initialInvestment={initialInvestment}
                   />
                   <SetupManager
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                    trades={processedTrades}
                   />
                   <AdvancedAnalytics
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                    trades={processedTrades}
                     initialInvestment={initialInvestment}
                     userId={user?.id || ''}
                     onInitialInvestmentUpdate={setInitialInvestment}
@@ -964,7 +999,7 @@ const Dashboard = () => {
               <TabsContent value="weekly" className="glass rounded-2xl p-6">
                 <Suspense fallback={<DashboardSkeleton />}>
                   <WeeklyReview 
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                    trades={processedTrades}
                   />
                 </Suspense>
               </TabsContent>
@@ -972,7 +1007,7 @@ const Dashboard = () => {
               <TabsContent value="monthly" className="glass rounded-2xl p-6">
                 <Suspense fallback={<DashboardSkeleton />}>
                   <MonthlyReport 
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                    trades={processedTrades}
                   />
                 </Suspense>
               </TabsContent>
@@ -981,10 +1016,10 @@ const Dashboard = () => {
                 <Suspense fallback={<DashboardSkeleton />}>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <GoalsTracker 
-                      trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                      trades={processedTrades}
                     />
                     <AchievementBadges 
-                      trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                      trades={processedTrades}
                     />
                   </div>
                   <ExpenseTracker />

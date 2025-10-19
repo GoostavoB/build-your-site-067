@@ -39,14 +39,14 @@ export const TotalBalanceCard = ({
   const isPositive = change >= 0;
 
   return (
-    <GlassCard hover className={className}>
+    <GlassCard hover className={className} role="article" aria-labelledby="total-balance-title">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-primary/10">
+            <div className="p-2 rounded-xl bg-primary/10" aria-hidden="true">
               <DollarSign className="h-5 w-5 text-primary" />
             </div>
-            <p className="text-sm font-medium text-muted-foreground">Total Balance</p>
+            <p id="total-balance-title" className="text-sm font-medium text-muted-foreground">Total Balance</p>
           </div>
           <div className="flex items-center gap-2">
             <ExplainMetricButton 

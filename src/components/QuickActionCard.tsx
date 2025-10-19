@@ -32,9 +32,9 @@ export const QuickActionCard = ({ className }: QuickActionCardProps) => {
   ];
 
   return (
-    <GlassCard className={className}>
+    <GlassCard className={className} role="article" aria-labelledby="quick-actions-title">
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Quick Actions</h3>
+        <h3 id="quick-actions-title" className="text-lg font-semibold">Quick Actions</h3>
         
         <div className="space-y-2">
           {actions.map((action, index) => {
@@ -46,8 +46,9 @@ export const QuickActionCard = ({ className }: QuickActionCardProps) => {
                 variant={action.variant}
                 className="w-full justify-start gap-2"
                 size="sm"
+                aria-label={action.label}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="h-4 w-4" aria-hidden="true" />
                 {action.label}
               </Button>
             );

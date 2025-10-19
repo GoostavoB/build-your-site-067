@@ -56,7 +56,7 @@ export const DashboardCharts = ({ trades, chartType }: DashboardChartsProps) => 
   if (chartType === 'cumulative') {
     const totalPnL = cumulativePnL[cumulativePnL.length - 1]?.pnl || 0;
     return (
-      <div className="w-full">
+      <div className="w-full" role="region" aria-labelledby="cumulative-pnl-chart">
         <div className="flex items-center justify-between mb-2 lg:mb-3">
           <p className="text-xs lg:text-sm text-muted-foreground">
             Track your cumulative profit and loss over time.
@@ -71,7 +71,11 @@ export const DashboardCharts = ({ trades, chartType }: DashboardChartsProps) => 
         </div>
         {cumulativePnL.length > 0 ? (
           <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={cumulativePnL} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
+            <AreaChart 
+              data={cumulativePnL} 
+              margin={{ top: 10, right: 30, left: 10, bottom: 10 }}
+              aria-label={`Cumulative P&L chart showing ${totalPnL >= 0 ? 'profit' : 'loss'} of $${Math.abs(totalPnL).toFixed(2)}`}
+            >
               <defs>
                 <linearGradient id="colorPnl" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
@@ -138,7 +142,7 @@ export const DashboardCharts = ({ trades, chartType }: DashboardChartsProps) => 
     const totalWins = winsLossesData.reduce((sum, d) => sum + d.wins, 0);
     const totalLosses = winsLossesData.reduce((sum, d) => sum + d.losses, 0);
     return (
-      <div className="w-full">
+      <div className="w-full" role="region" aria-labelledby="wins-losses-chart">
         <div className="flex items-center justify-between mb-2 lg:mb-3">
           <p className="text-xs lg:text-sm text-muted-foreground">
             Compare your winning and losing trades by date.
@@ -153,7 +157,11 @@ export const DashboardCharts = ({ trades, chartType }: DashboardChartsProps) => 
         </div>
         {winsLossesData.length > 0 ? (
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={winsLossesData} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
+            <BarChart 
+              data={winsLossesData} 
+              margin={{ top: 10, right: 30, left: 10, bottom: 10 }}
+              aria-label={`Wins vs losses chart showing ${totalWins} winning trades and ${totalLosses} losing trades`}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
               <XAxis 
                 dataKey="date"

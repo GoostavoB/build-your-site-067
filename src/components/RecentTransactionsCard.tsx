@@ -20,10 +20,10 @@ export const RecentTransactionsCard = memo(({ trades, className }: RecentTransac
     .slice(0, 5);
 
   return (
-    <GlassCard className={className}>
+    <GlassCard className={className} role="article" aria-labelledby="recent-transactions-title">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Recent Transactions</h3>
+          <h3 id="recent-transactions-title" className="text-lg font-semibold">Recent Transactions</h3>
           <div className="flex items-center gap-2">
             <ExplainMetricButton 
               metricName="Recent Transactions"
@@ -37,14 +37,15 @@ export const RecentTransactionsCard = memo(({ trades, className }: RecentTransac
           </div>
         </div>
         
-        <div className="space-y-2">
+        <ul className="space-y-2" role="list" aria-label="Recent trading activity">
           {recentTrades.length > 0 ? (
             recentTrades.map((trade) => {
               const isWin = (trade.pnl || 0) > 0;
               return (
-                <div 
+                <li 
                   key={trade.id} 
                   className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                  role="listitem"
                 >
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-lg ${
@@ -76,15 +77,15 @@ export const RecentTransactionsCard = memo(({ trades, className }: RecentTransac
                       {trade.side || 'N/A'}
                     </Badge>
                   </div>
-                </div>
+                </li>
               );
             })
           ) : (
-            <p className="text-sm text-muted-foreground text-center py-4">
+            <li className="text-sm text-muted-foreground text-center py-4">
               No transactions yet
-            </p>
+            </li>
           )}
-        </div>
+        </ul>
       </div>
     </GlassCard>
   );

@@ -6,9 +6,11 @@ import { formatCurrency, formatPercent } from '@/utils/formatNumber';
 
 interface AIInsightCardProps {
   trades: Trade[];
+  capitalLog?: any[];
+  stats?: any;
 }
 
-export const AIInsightCard = memo(({ trades }: AIInsightCardProps) => {
+export const AIInsightCard = memo(({ trades, capitalLog, stats }: AIInsightCardProps) => {
   const insight = useMemo(() => {
     if (!trades.length) {
       return {
@@ -23,6 +25,10 @@ export const AIInsightCard = memo(({ trades }: AIInsightCardProps) => {
     const totalPnl = trades.reduce((sum, t) => sum + (t.pnl || 0), 0);
     const winningTrades = trades.filter(t => (t.pnl || 0) > 0);
     const winRate = (winningTrades.length / trades.length) * 100;
+    
+    // Use stats if available for more accurate calculations
+    const effectiveROI = stats?.overallROI || stats?.avgRoi || 0;
+    const hasCapitalTracking = capitalLog && capitalLog.length > 0;
     
     const avgWin = winningTrades.length > 0
       ? winningTrades.reduce((sum, t) => sum + (t.pnl || 0), 0) / winningTrades.length
@@ -39,6 +45,16 @@ export const AIInsightCard = memo(({ trades }: AIInsightCardProps) => {
     const recentWins = recentTrades.filter(t => (t.pnl || 0) > 0).length;
 
     // Generate dynamic insight
+    if (hasCapitalTracking && effectiveROI > 20) {
+      return {
+        title: "Outstanding ROI! 🚀",
+        message: `${formatPercent(effectiveROI)} period-based ROI considering capital additions. Your capital management strategy is working!`,
+        icon: TrendingUp,
+        color: "text-neon-green",
+        bg: "bg-neon-green/5"
+      };
+    }
+    
     if (totalPnl > 0 && winRate >= 60) {
       return {
         title: "Excellent Performance! 🎯",
@@ -91,12 +107,12 @@ export const AIInsightCard = memo(({ trades }: AIInsightCardProps) => {
 
     return {
       title: "Keep Building",
-      message: `${trades.length} trades logged with ${formatPercent(winRate)} win rate. Consistency matters more than perfection—stay the course!`,
+      message: `${trades.length} trades logged with ${formatPercent(winRate)} win rate.${hasCapitalTracking ? ` Track capital in Analytics for accurate ROI insights.` : ' Add capital history for period-based ROI tracking.'}`,
       icon: Target,
       color: "text-primary",
       bg: "bg-primary/5"
     };
-  }, [trades]);
+  }, [trades, capitalLog, stats]);
 
   const Icon = insight.icon;
 

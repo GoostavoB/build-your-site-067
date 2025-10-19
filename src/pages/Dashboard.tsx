@@ -66,6 +66,7 @@ const Dashboard = () => {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(true);
   const [initialInvestment, setInitialInvestment] = useState(0);
+  const [capitalLog, setCapitalLog] = useState<any[]>([]);
   const [includeFeesInPnL, setIncludeFeesInPnL] = useState(true);
   const [dateRange, setDateRange] = useState<DateRange>(undefined);
   const [filteredTrades, setFilteredTrades] = useState<Trade[]>([]);
@@ -78,8 +79,8 @@ const Dashboard = () => {
     [filteredTrades, trades]
   );
 
-  // Memoize dashboard stats calculations
-  const dashboardStats = useDashboardStats(processedTrades);
+  // Memoize dashboard stats calculations with capital log
+  const dashboardStats = useDashboardStats(processedTrades, capitalLog);
 
   // Enable badge notifications
   useBadgeNotifications(processedTrades);
@@ -107,14 +108,31 @@ const Dashboard = () => {
     isWidgetVisible,
   } = useDashboardLayout();
 
+  const fetchCapitalLog = async () => {
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('capital_log')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('log_date', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching capital log:', error);
+    } else {
+      setCapitalLog(data || []);
+    }
+  };
+
   useEffect(() => {
     if (user) {
       fetchStats();
       fetchInitialInvestment();
+      fetchCapitalLog();
     }
     
-    // Set up realtime subscription for trades changes
-    const channel = supabase
+    // Set up realtime subscription for trades and capital changes
+    const tradesChannel = supabase
       .channel('trades-changes-dashboard')
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'trades', filter: `user_id=eq.${user?.id}` },
@@ -124,8 +142,19 @@ const Dashboard = () => {
       )
       .subscribe();
     
+    const capitalChannel = supabase
+      .channel('capital-changes-dashboard')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'capital_log', filter: `user_id=eq.${user?.id}` },
+        () => {
+          fetchCapitalLog();
+        }
+      )
+      .subscribe();
+    
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(tradesChannel);
+      supabase.removeChannel(capitalChannel);
     };
   }, [user, includeFeesInPnL]);
 
@@ -384,6 +413,18 @@ const Dashboard = () => {
                       <div className="flex items-center gap-2 mb-2">
                         <Target className="h-4 w-4 text-primary" />
                         <div className="text-xs text-muted-foreground font-medium">Win Rate</div>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="cursor-help">
+                                <Info className="h-3 w-3 text-muted-foreground/60" />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              <p>Percentage of winning trades out of total trades</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </div>
                       <div className="text-2xl font-bold text-foreground">
                         <AnimatedCounter value={stats?.win_rate || 0} suffix="%" decimals={1} />
@@ -572,7 +613,11 @@ const Dashboard = () => {
                       </Button>
                     </div>
                   )}
-                  <AIInsightCard trades={processedTrades} />
+                  <AIInsightCard 
+                    trades={processedTrades}
+                    capitalLog={capitalLog}
+                    stats={dashboardStats}
+                  />
                 </div>
               )}
 

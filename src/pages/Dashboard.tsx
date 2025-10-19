@@ -425,13 +425,15 @@ const Dashboard = () => {
 
             {/* Tabs Section - Separate stacking context */}
             {stats && stats.total_trades > 0 && (
-            <div className="relative z-10 w-full">
+            <div className="relative z-10 w-full" style={{ overflowAnchor: 'none' }}>
               <Tabs defaultValue="insights" className="space-y-4 md:space-y-6">
-                <TabsList className="w-full grid grid-cols-3 h-auto gap-1 sticky top-0 z-20 bg-background/95 backdrop-blur-sm">
-                  <TabsTrigger value="insights" className="text-xs md:text-sm py-2">Insights</TabsTrigger>
-                  <TabsTrigger value="advanced" className="text-xs md:text-sm py-2">Advanced Analytics</TabsTrigger>
-                  <TabsTrigger value="history" className="text-xs md:text-sm py-2">Trade History</TabsTrigger>
-                </TabsList>
+                <div className="scroll-mt-20">
+                  <TabsList className="w-full grid grid-cols-3 h-auto gap-1 sticky top-0 z-20 bg-background/95 backdrop-blur-sm">
+                    <TabsTrigger value="insights" className="text-xs md:text-sm py-2">Insights</TabsTrigger>
+                    <TabsTrigger value="advanced" className="text-xs md:text-sm py-2">Advanced Analytics</TabsTrigger>
+                    <TabsTrigger value="history" className="text-xs md:text-sm py-2">Trade History</TabsTrigger>
+                  </TabsList>
+                </div>
 
                 <TabsContent value="insights" className="space-y-4 md:space-y-6 relative">
                   <MonthlyReport 

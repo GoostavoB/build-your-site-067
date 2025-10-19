@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { GripVertical, X, Settings2, Eye, EyeOff } from 'lucide-react';
@@ -14,7 +14,7 @@ interface DashboardWidgetProps {
   className?: string;
 }
 
-export function DashboardWidget({
+const DashboardWidgetComponent = ({
   id,
   title,
   children,
@@ -22,7 +22,7 @@ export function DashboardWidget({
   isVisible = true,
   onToggleVisibility,
   className
-}: DashboardWidgetProps) {
+}: DashboardWidgetProps) => {
   if (!isVisible && !isCustomizing) return null;
 
   return (
@@ -81,4 +81,7 @@ export function DashboardWidget({
       )}
     </Card>
   );
-}
+};
+
+export const DashboardWidget = memo(DashboardWidgetComponent);
+DashboardWidget.displayName = 'DashboardWidget';

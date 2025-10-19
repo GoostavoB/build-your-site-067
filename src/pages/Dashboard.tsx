@@ -403,8 +403,8 @@ const Dashboard = () => {
               </ResponsiveGridLayout>
             </div>
 
-            {/* Analytics Row - Heatmap, Summary, and Charts side by side */}
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6 mb-6">
+            {/* Analytics Row - Heatmap with Summary Sidebar */}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-6 mb-6">
               {/* Heatmap Widget */}
               {(isCustomizing || isWidgetVisible('heatmap')) && (
                 <DashboardWidget
@@ -413,7 +413,7 @@ const Dashboard = () => {
                   isCustomizing={isCustomizing}
                   isVisible={isWidgetVisible('heatmap')}
                   onToggleVisibility={toggleWidgetVisibility}
-                  className="w-full lg:col-span-2"
+                  className="w-full lg:col-span-3"
                 >
                   <TradingHeatmap trades={filteredTrades.length > 0 ? filteredTrades : trades} />
                 </DashboardWidget>
@@ -427,12 +427,16 @@ const Dashboard = () => {
                   isCustomizing={isCustomizing}
                   isVisible={isWidgetVisible('heatmap')}
                   onToggleVisibility={toggleWidgetVisibility}
-                  className="w-full"
+                  className="w-full lg:col-span-2"
                 >
                   <PerformanceSummary trades={filteredTrades.length > 0 ? filteredTrades : trades} />
                 </DashboardWidget>
               )}
 
+            </div>
+
+            {/* Charts Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6">
               {/* Cumulative P&L Chart */}
               {(isCustomizing || isWidgetVisible('charts')) && (
                 <DashboardWidget
@@ -446,10 +450,8 @@ const Dashboard = () => {
                   <DashboardCharts trades={filteredTrades.length > 0 ? filteredTrades : trades} chartType="cumulative" />
                 </DashboardWidget>
               )}
-            </div>
 
-            {/* Wins vs Losses Chart - Full Width */}
-            <div className="mb-6">
+              {/* Wins vs Losses Chart */}
               {(isCustomizing || isWidgetVisible('charts')) && (
                 <DashboardWidget
                   id="wins-losses"

@@ -26,7 +26,13 @@ interface DashboardLayout {
 }
 
 const DEFAULT_WIDGETS: WidgetConfig[] = [
+  { id: 'totalBalance', visible: true },
   { id: 'stats', visible: true },
+  { id: 'portfolio', visible: true },
+  { id: 'topMovers', visible: true },
+  { id: 'quickActions', visible: true },
+  { id: 'recentTransactions', visible: true },
+  { id: 'premiumCTA', visible: true },
   { id: 'insights', visible: true },
   { id: 'streaks', visible: true },
   { id: 'heatmap', visible: true },
@@ -34,11 +40,17 @@ const DEFAULT_WIDGETS: WidgetConfig[] = [
 ];
 
 const DEFAULT_LAYOUT: LayoutItem[] = [
-  { i: 'stats', x: 0, y: 0, w: 12, h: 4, minW: 6, minH: 3, maxH: 6 },
-  { i: 'insights', x: 0, y: 4, w: 12, h: 2, minW: 6, minH: 2, maxH: 4 },
-  { i: 'streaks', x: 0, y: 6, w: 12, h: 2, minW: 6, minH: 2, maxH: 4 },
-  { i: 'heatmap', x: 0, y: 8, w: 12, h: 4, minW: 6, minH: 3, maxH: 8 },
-  { i: 'charts', x: 0, y: 12, w: 12, h: 5, minW: 6, minH: 4, maxH: 10 },
+  { i: 'totalBalance', x: 0, y: 0, w: 6, h: 4, minW: 4, minH: 3, maxH: 6 },
+  { i: 'stats', x: 6, y: 0, w: 6, h: 4, minW: 4, minH: 3, maxH: 6 },
+  { i: 'portfolio', x: 0, y: 4, w: 6, h: 5, minW: 4, minH: 4, maxH: 8 },
+  { i: 'topMovers', x: 6, y: 4, w: 3, h: 5, minW: 3, minH: 4, maxH: 8 },
+  { i: 'quickActions', x: 9, y: 4, w: 3, h: 5, minW: 3, minH: 4, maxH: 8 },
+  { i: 'recentTransactions', x: 0, y: 9, w: 9, h: 4, minW: 6, minH: 3, maxH: 6 },
+  { i: 'premiumCTA', x: 9, y: 9, w: 3, h: 4, minW: 3, minH: 3, maxH: 6 },
+  { i: 'insights', x: 0, y: 13, w: 12, h: 2, minW: 6, minH: 2, maxH: 4 },
+  { i: 'streaks', x: 0, y: 15, w: 12, h: 2, minW: 6, minH: 2, maxH: 4 },
+  { i: 'heatmap', x: 0, y: 17, w: 12, h: 4, minW: 6, minH: 3, maxH: 8 },
+  { i: 'charts', x: 0, y: 21, w: 12, h: 5, minW: 6, minH: 4, maxH: 10 },
 ];
 
 export function useDashboardLayout() {

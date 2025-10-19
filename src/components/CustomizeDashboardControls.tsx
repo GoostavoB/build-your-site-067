@@ -17,7 +17,15 @@ interface CustomizeDashboardControlsProps {
 }
 
 const widgetLabels: Record<string, string> = {
+  totalBalance: 'Total Balance',
   stats: 'Statistics Overview',
+  portfolio: 'Portfolio Overview',
+  topMovers: 'Top Movers',
+  quickActions: 'Quick Actions',
+  recentTransactions: 'Recent Transactions',
+  premiumCTA: 'Premium Upgrade',
+  insights: 'Performance Insights',
+  streaks: 'Trading Streaks',
   heatmap: 'Trading Heatmap',
   charts: 'Performance Charts',
 };

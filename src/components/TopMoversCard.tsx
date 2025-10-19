@@ -1,0 +1,93 @@
+import { GlassCard } from "@/components/ui/glass-card";
+import { TrendingUp, TrendingDown } from "lucide-react";
+import { formatPercent, formatCurrency } from "@/utils/formatNumber";
+import { Trade } from "@/types/trade";
+
+interface AssetMover {
+  symbol: string;
+  pnl: number;
+  change: number;
+  trades: number;
+}
+
+interface TopMoversCardProps {
+  trades: Trade[];
+  className?: string;
+}
+
+export const TopMoversCard = ({ trades, className }: TopMoversCardProps) => {
+  // Calculate top movers by total P&L
+  const assetData: Record<string, AssetMover> = {};
+  
+  trades.forEach(trade => {
+    const symbol = trade.symbol || 'Unknown';
+    if (!assetData[symbol]) {
+      assetData[symbol] = { symbol, pnl: 0, change: 0, trades: 0 };
+    }
+    assetData[symbol].pnl += trade.pnl || 0;
+    assetData[symbol].trades += 1;
+  });
+
+  // Calculate percentage change (simplified)
+  Object.values(assetData).forEach(asset => {
+    asset.change = asset.pnl / (asset.trades * 100) * 100;
+  });
+
+  const topMovers = Object.values(assetData)
+    .sort((a, b) => Math.abs(b.pnl) - Math.abs(a.pnl))
+    .slice(0, 5);
+
+  return (
+    <GlassCard className={className}>
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Top Movers</h3>
+        
+        <div className="space-y-2">
+          {topMovers.length > 0 ? (
+            topMovers.map((asset) => {
+              const isPositive = asset.pnl >= 0;
+              return (
+                <div 
+                  key={asset.symbol} 
+                  className="flex items-center justify-between p-2 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className={`p-1.5 rounded-lg ${
+                      isPositive ? 'bg-primary/10' : 'bg-secondary/10'
+                    }`}>
+                      {isPositive ? (
+                        <TrendingUp className="h-3 w-3 text-primary" />
+                      ) : (
+                        <TrendingDown className="h-3 w-3 text-secondary" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm">{asset.symbol}</p>
+                      <p className="text-xs text-muted-foreground">{asset.trades} trades</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className={`font-semibold text-sm ${
+                      isPositive ? 'text-primary' : 'text-secondary'
+                    }`}>
+                      {formatCurrency(asset.pnl)}
+                    </p>
+                    <p className={`text-xs ${
+                      isPositive ? 'text-primary/70' : 'text-secondary/70'
+                    }`}>
+                      {isPositive ? '+' : ''}{formatPercent(asset.change)}
+                    </p>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <p className="text-sm text-muted-foreground text-center py-4">
+              No data available
+            </p>
+          )}
+        </div>
+      </div>
+    </GlassCard>
+  );
+};

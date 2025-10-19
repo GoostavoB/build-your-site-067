@@ -37,6 +37,11 @@ import { WinsByHourChart } from '@/components/charts/WinsByHourChart';
 import { MaxDrawdownCard } from '@/components/MaxDrawdownCard';
 import { TopAssetsByWinRate } from '@/components/TopAssetsByWinRate';
 import { CurrentStreakCard } from '@/components/CurrentStreakCard';
+import { TotalBalanceCard } from '@/components/TotalBalanceCard';
+import { TopMoversCard } from '@/components/TopMoversCard';
+import { QuickActionCard } from '@/components/QuickActionCard';
+import { RecentTransactionsCard } from '@/components/RecentTransactionsCard';
+import { PremiumCTACard } from '@/components/PremiumCTACard';
 import { useDashboardLayout } from '@/hooks/useDashboardLayout';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { formatNumber, formatPercent, formatCurrency } from '@/utils/formatNumber';
@@ -335,69 +340,106 @@ const Dashboard = () => {
           </Card>
         ) : (
           <>
-            {/* Statistics Overview - Flexible Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6">
-              <div className="glass rounded-2xl p-5 hover-lift cursor-default relative overflow-hidden">
-                {/* Fees Toggle - Minimalistic */}
-                <div className="absolute top-3 right-3 flex items-center gap-1.5">
-                  <Label htmlFor="fees-toggle-grid" className="cursor-pointer text-[10px] text-muted-foreground/70 hidden lg:inline">
-                    {includeFeesInPnL ? 'w/ Fees' : 'w/o Fees'}
-                  </Label>
-                  <Switch
-                    id="fees-toggle-grid"
-                    checked={includeFeesInPnL}
-                    onCheckedChange={setIncludeFeesInPnL}
-                    className="scale-75"
+            {/* New Dashboard Layout - Reference Design */}
+            <div className="space-y-6">
+              {/* Top Row: Large Balance Card + 3 Compact Stats */}
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                {/* Total Balance Card - Spans 2 columns */}
+                <div className="lg:col-span-2">
+                  <TotalBalanceCard 
+                    balance={stats?.total_pnl || 0}
+                    change={stats?.total_pnl || 0}
+                    changePercent={initialInvestment > 0 ? ((stats?.total_pnl || 0) / initialInvestment) * 100 : 0}
+                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
                   />
                 </div>
                 
-                <div className="flex items-center gap-2 mb-2">
-                  <DollarSign className="h-4 w-4 text-primary" />
-                  <div className="text-xs lg:text-sm text-muted-foreground font-medium">Total P&L</div>
+                {/* Compact Stat Cards */}
+                <div className="glass rounded-2xl p-4 hover-lift">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Target className="h-4 w-4 text-primary" />
+                    <div className="text-xs text-muted-foreground font-medium">Win Rate</div>
+                  </div>
+                  <div className="text-2xl font-bold text-foreground">
+                    <AnimatedCounter value={stats?.win_rate || 0} suffix="%" decimals={1} />
+                  </div>
                 </div>
-                <div className={`text-2xl lg:text-3xl font-bold ${
-                  stats && stats.total_pnl > 0 ? 'text-primary' : 
-                  stats && stats.total_pnl < 0 ? 'text-secondary' : 'text-foreground'
-                }`}>
-                  <AnimatedCounter value={stats?.total_pnl || 0} prefix="$" decimals={2} />
-                </div>
-              </div>
-              
-              <div className="glass rounded-2xl p-5 hover-lift cursor-default">
-                <div className="flex items-center gap-2 mb-2">
-                  <Target className="h-4 w-4 text-primary" />
-                  <div className="text-xs lg:text-sm text-muted-foreground font-medium">Win Rate</div>
-                </div>
-                <div className="text-2xl lg:text-3xl font-bold text-foreground">
-                  <AnimatedCounter value={stats?.win_rate || 0} suffix="%" decimals={1} />
-                </div>
-              </div>
-              
-              <div className="glass rounded-2xl p-5 hover-lift cursor-default">
-                <div className="flex items-center gap-2 mb-2">
-                  <TrendingUp className="h-4 w-4 text-primary" />
-                  <div className="text-xs lg:text-sm text-muted-foreground font-medium">Total Trades</div>
-                </div>
-                <div className="text-2xl lg:text-3xl font-bold text-foreground">
-                  <AnimatedCounter value={stats?.total_trades || 0} decimals={0} />
+                
+                <div className="glass rounded-2xl p-4 hover-lift">
+                  <div className="flex items-center gap-2 mb-2">
+                    <TrendingUp className="h-4 w-4 text-primary" />
+                    <div className="text-xs text-muted-foreground font-medium">Total Trades</div>
+                  </div>
+                  <div className="text-2xl font-bold text-foreground">
+                    <AnimatedCounter value={stats?.total_trades || 0} decimals={0} />
+                  </div>
                 </div>
               </div>
-              
-              <div className="glass rounded-2xl p-5 hover-lift cursor-default">
-                <div className="flex items-center gap-2 mb-2">
-                  <TrendingDown className="h-4 w-4 text-primary" />
-                  <div className="text-xs lg:text-sm text-muted-foreground font-medium">Avg Duration</div>
+
+              {/* Middle Row: Portfolio Overview + Top Movers + Quick Actions */}
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                {/* Portfolio Overview Chart - Spans 2 columns */}
+                <div className="lg:col-span-2 glass rounded-2xl p-6 hover-lift">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold">Portfolio Overview</h3>
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-xs h-7 px-2"
+                      >
+                        7D
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-xs h-7 px-2 bg-primary/10 text-primary"
+                      >
+                        30D
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-xs h-7 px-2"
+                      >
+                        90D
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="h-64">
+                    <DashboardCharts 
+                      trades={filteredTrades.length > 0 ? filteredTrades : trades} 
+                      chartType="cumulative" 
+                    />
+                  </div>
                 </div>
-                <div className="text-2xl lg:text-3xl font-bold text-foreground">
-                  <AnimatedCounter value={Math.round(stats?.avg_duration || 0)} decimals={0} />
-                  <span className="text-base ml-1 text-muted-foreground">m</span>
+                
+                {/* Top Movers Card */}
+                <TopMoversCard 
+                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                />
+                
+                {/* Quick Action Card */}
+                <QuickActionCard />
+              </div>
+
+              {/* Bottom Row: Recent Transactions + Premium CTA */}
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                {/* Recent Transactions - Spans 3 columns */}
+                <div className="lg:col-span-3">
+                  <RecentTransactionsCard 
+                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                  />
                 </div>
+                
+                {/* Premium CTA Card */}
+                <PremiumCTACard />
               </div>
             </div>
 
             {/* Month Summary Insights */}
             {stats && stats.total_trades > 0 && (
-              <div className="mb-6">
+              <div className="mt-6">
                 <MonthSummaryInsights trades={filteredTrades.length > 0 ? filteredTrades : trades} />
               </div>
             )}

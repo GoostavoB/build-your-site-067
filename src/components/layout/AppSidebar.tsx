@@ -1,4 +1,4 @@
-import { BarChart3, Upload, TrendingUp, Settings, BookOpen, HelpCircle, LogOut, TrendingDown, Calendar, Scale, Wrench, Users, Brain, Trophy, Circle } from 'lucide-react';
+import { BarChart3, Upload, TrendingUp, Settings, BookOpen, HelpCircle, LogOut, TrendingDown, Calendar, Scale, Wrench, Users, Brain, Trophy, Circle, Star, PieChart, Activity, Target, Zap, Sparkles, LineChart, DollarSign } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import * as LucideIcons from 'lucide-react';
@@ -119,7 +119,12 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {customMenuItems.map((item) => {
-                  const IconComponent = (LucideIcons as any)[item.icon] || Circle;
+                  const iconMap: Record<string, any> = {
+                    Circle, Star, TrendingUp, TrendingDown, BarChart3, 
+                    PieChart, Activity, Target, Zap, Sparkles, LineChart, DollarSign,
+                    ...LucideIcons
+                  };
+                  const IconComponent = iconMap[item.icon] || Circle;
                   return (
                     <SidebarMenuItem key={item.id}>
                       <SidebarMenuButton asChild tooltip={item.label}>

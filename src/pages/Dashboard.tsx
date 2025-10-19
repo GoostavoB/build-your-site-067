@@ -721,7 +721,7 @@ const Dashboard = () => {
             </ResponsiveGridLayout>
 
             {/* Charts Section - Flexible Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 mt-12">
               <div className="glass rounded-2xl p-6 hover-lift widget-card">
                 <div className="flex items-center justify-between mb-4 w-full">
                   <h3 className="text-lg font-semibold">Cumulative P&L</h3>

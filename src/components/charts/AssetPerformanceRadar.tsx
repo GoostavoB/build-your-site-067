@@ -12,12 +12,19 @@ interface AssetPerformanceRadarProps {
 }
 
 export const AssetPerformanceRadar = ({ data }: AssetPerformanceRadarProps) => {
-  // Normalize data for radar chart (scale 0-100)
-  const normalizedData = data.map(item => ({
+  // Limit to top 5 assets by win rate
+  const topAssets = data
+    .sort((a, b) => b.winRate - a.winRate)
+    .slice(0, 5);
+
+  // Normalize data for radar chart with 5 metrics (scale 0-100)
+  const normalizedData = topAssets.map(item => ({
     asset: item.asset,
     'Win Rate': item.winRate,
-    'ROI': Math.min((item.roi / 100) * 100, 100), // Scale to 0-100
-    'Trade Volume': Math.min((item.tradeCount / Math.max(...data.map(d => d.tradeCount))) * 100, 100),
+    'ROI': Math.min((item.roi / 100) * 100, 100),
+    'Trade Volume': Math.min((item.tradeCount / Math.max(...topAssets.map(d => d.tradeCount))) * 100, 100),
+    'Avg Profit': Math.min((item.avgProfit / Math.max(...topAssets.map(d => d.avgProfit))) * 100, 100),
+    'Consistency': Math.min((item.tradeCount * item.winRate) / 100, 100), // Calculated metric
   }));
 
   return (
@@ -40,21 +47,40 @@ export const AssetPerformanceRadar = ({ data }: AssetPerformanceRadarProps) => {
             dataKey="Win Rate" 
             stroke="hsl(var(--primary))" 
             fill="hsl(var(--primary))" 
-            fillOpacity={0.3}
+            fillOpacity={0.18}
+            strokeWidth={2}
           />
           <Radar 
             name="ROI" 
             dataKey="ROI" 
             stroke="hsl(var(--secondary))" 
             fill="hsl(var(--secondary))" 
-            fillOpacity={0.3}
+            fillOpacity={0.18}
+            strokeWidth={2}
           />
           <Radar 
             name="Trade Volume" 
             dataKey="Trade Volume" 
             stroke="hsl(var(--accent))" 
             fill="hsl(var(--accent))" 
-            fillOpacity={0.3}
+            fillOpacity={0.18}
+            strokeWidth={2}
+          />
+          <Radar 
+            name="Avg Profit" 
+            dataKey="Avg Profit" 
+            stroke="hsl(var(--chart-4))" 
+            fill="hsl(var(--chart-4))" 
+            fillOpacity={0.18}
+            strokeWidth={2}
+          />
+          <Radar 
+            name="Consistency" 
+            dataKey="Consistency" 
+            stroke="hsl(var(--chart-5))" 
+            fill="hsl(var(--chart-5))" 
+            fillOpacity={0.18}
+            strokeWidth={2}
           />
           <Tooltip 
             contentStyle={{

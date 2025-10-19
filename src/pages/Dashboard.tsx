@@ -46,6 +46,7 @@ import { useDashboardLayout } from '@/hooks/useDashboardLayout';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { formatNumber, formatPercent, formatCurrency } from '@/utils/formatNumber';
 import type { Trade } from '@/types/trade';
+import { LineChart, Line, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
@@ -340,102 +341,348 @@ const Dashboard = () => {
           </Card>
         ) : (
           <>
-            {/* New Dashboard Layout - Reference Design */}
-            <div className="space-y-6">
-              {/* Top Row: Large Balance Card + 3 Compact Stats */}
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                {/* Total Balance Card - Spans 2 columns */}
-                <div className="lg:col-span-2">
-                  <TotalBalanceCard 
-                    balance={stats?.total_pnl || 0}
-                    change={stats?.total_pnl || 0}
-                    changePercent={initialInvestment > 0 ? ((stats?.total_pnl || 0) / initialInvestment) * 100 : 0}
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                  />
-                </div>
-                
-                {/* Compact Stat Cards */}
-                <div className="glass rounded-2xl p-4 hover-lift">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Target className="h-4 w-4 text-primary" />
-                    <div className="text-xs text-muted-foreground font-medium">Win Rate</div>
-                  </div>
-                  <div className="text-2xl font-bold text-foreground">
-                    <AnimatedCounter value={stats?.win_rate || 0} suffix="%" decimals={1} />
-                  </div>
-                </div>
-                
-                <div className="glass rounded-2xl p-4 hover-lift">
-                  <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp className="h-4 w-4 text-primary" />
-                    <div className="text-xs text-muted-foreground font-medium">Total Trades</div>
-                  </div>
-                  <div className="text-2xl font-bold text-foreground">
-                    <AnimatedCounter value={stats?.total_trades || 0} decimals={0} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Middle Row: Portfolio Overview + Top Movers + Quick Actions */}
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                {/* Portfolio Overview Chart - Spans 2 columns */}
-                <div className="lg:col-span-2 glass rounded-2xl p-6 hover-lift">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold">Portfolio Overview</h3>
-                    <div className="flex items-center gap-2">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="text-xs h-7 px-2"
-                      >
-                        7D
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="text-xs h-7 px-2 bg-primary/10 text-primary"
-                      >
-                        30D
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="text-xs h-7 px-2"
-                      >
-                        90D
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="h-64">
-                    <DashboardCharts 
-                      trades={filteredTrades.length > 0 ? filteredTrades : trades} 
-                      chartType="cumulative" 
+            {/* Draggable Dashboard Grid */}
+            <ResponsiveGridLayout
+              className="layout"
+              layouts={{
+                lg: layout.filter(item => isCustomizing || isWidgetVisible(item.i)),
+                md: layout.filter(item => isCustomizing || isWidgetVisible(item.i)),
+                sm: layout.filter(item => isCustomizing || isWidgetVisible(item.i)).map(item => ({
+                  ...item,
+                  x: 0,
+                  w: 12,
+                  static: !isCustomizing
+                })),
+                xs: layout.filter(item => isCustomizing || isWidgetVisible(item.i)).map(item => ({
+                  ...item,
+                  x: 0,
+                  w: 12,
+                  static: true
+                }))
+              }}
+              breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 0 }}
+              cols={{ lg: 12, md: 12, sm: 12, xs: 12 }}
+              rowHeight={80}
+              isDraggable={isCustomizing}
+              isResizable={isCustomizing}
+              onLayoutChange={(newLayout) => {
+                if (isCustomizing) updateLayout(newLayout);
+              }}
+              draggableHandle=".drag-handle"
+              compactType="vertical"
+              preventCollision={false}
+              margin={[16, 16]}
+              containerPadding={[0, 0]}
+            >
+              {/* Total Balance Card */}
+              {(isCustomizing || isWidgetVisible('totalBalance')) && (
+                <div key="totalBalance" className={isCustomizing && !isWidgetVisible('totalBalance') ? 'opacity-50' : ''}>
+                  <div className="relative h-full">
+                    {isCustomizing && (
+                      <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 drag-handle cursor-move hover:bg-primary/10"
+                          title="Drag to reorder"
+                        >
+                          <GripVertical className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 hover:bg-primary/10"
+                          onClick={() => toggleWidgetVisibility('totalBalance')}
+                          title={isWidgetVisible('totalBalance') ? "Hide widget" : "Show widget"}
+                        >
+                          {isWidgetVisible('totalBalance') ? (
+                            <Eye className="w-4 h-4" />
+                          ) : (
+                            <EyeOff className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                    <TotalBalanceCard 
+                      balance={stats?.total_pnl || 0}
+                      change={stats?.total_pnl || 0}
+                      changePercent={initialInvestment > 0 ? ((stats?.total_pnl || 0) / initialInvestment) * 100 : 0}
+                      trades={filteredTrades.length > 0 ? filteredTrades : trades}
                     />
                   </div>
                 </div>
-                
-                {/* Top Movers Card */}
-                <TopMoversCard 
-                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                />
-                
-                {/* Quick Action Card */}
-                <QuickActionCard />
-              </div>
+              )}
 
-              {/* Bottom Row: Recent Transactions + Premium CTA */}
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                {/* Recent Transactions - Spans 3 columns */}
-                <div className="lg:col-span-3">
-                  <RecentTransactionsCard 
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                  />
+              {/* Stats Overview */}
+              {(isCustomizing || isWidgetVisible('stats')) && (
+                <div key="stats" className={isCustomizing && !isWidgetVisible('stats') ? 'opacity-50' : ''}>
+                  <div className="relative h-full">
+                    {isCustomizing && (
+                      <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 drag-handle cursor-move hover:bg-primary/10"
+                          title="Drag to reorder"
+                        >
+                          <GripVertical className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 hover:bg-primary/10"
+                          onClick={() => toggleWidgetVisibility('stats')}
+                          title={isWidgetVisible('stats') ? "Hide widget" : "Show widget"}
+                        >
+                          {isWidgetVisible('stats') ? (
+                            <Eye className="w-4 h-4" />
+                          ) : (
+                            <EyeOff className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                    <div className="grid grid-cols-2 gap-4 h-full">
+                      <div className="glass rounded-2xl p-4 hover-lift">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Target className="h-4 w-4 text-primary" />
+                          <div className="text-xs text-muted-foreground font-medium">Win Rate</div>
+                        </div>
+                        <div className="text-2xl font-bold text-foreground">
+                          <AnimatedCounter value={stats?.win_rate || 0} suffix="%" decimals={1} />
+                        </div>
+                        {/* Sparkline for win rate trend */}
+                        <div className="h-10 mt-2">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={trades.slice(-7).map((t, i) => ({ 
+                              value: trades.slice(0, i + 1).filter(trade => trade.pnl > 0).length / (i + 1) * 100 
+                            }))}>
+                              <Line 
+                                type="monotone" 
+                                dataKey="value" 
+                                stroke="hsl(var(--primary))" 
+                                strokeWidth={2}
+                                dot={false}
+                                isAnimationActive={false}
+                              />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                      
+                      <div className="glass rounded-2xl p-4 hover-lift">
+                        <div className="flex items-center gap-2 mb-2">
+                          <TrendingUp className="h-4 w-4 text-primary" />
+                          <div className="text-xs text-muted-foreground font-medium">Total Trades</div>
+                        </div>
+                        <div className="text-2xl font-bold text-foreground">
+                          <AnimatedCounter value={stats?.total_trades || 0} decimals={0} />
+                        </div>
+                        {/* Sparkline for trade volume trend */}
+                        <div className="h-10 mt-2">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={trades.slice(-7).map((_, i) => ({ 
+                              value: trades.slice(0, -7 + i + 1).length 
+                            }))}>
+                              <Line 
+                                type="monotone" 
+                                dataKey="value" 
+                                stroke="hsl(var(--primary))" 
+                                strokeWidth={2}
+                                dot={false}
+                                isAnimationActive={false}
+                              />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                
-                {/* Premium CTA Card */}
-                <PremiumCTACard />
-              </div>
-            </div>
+              )}
+
+              {/* Portfolio Overview */}
+              {(isCustomizing || isWidgetVisible('portfolio')) && (
+                <div key="portfolio" className={isCustomizing && !isWidgetVisible('portfolio') ? 'opacity-50' : ''}>
+                  <div className="relative h-full glass rounded-2xl p-6 hover-lift">
+                    {isCustomizing && (
+                      <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 drag-handle cursor-move hover:bg-primary/10"
+                          title="Drag to reorder"
+                        >
+                          <GripVertical className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 hover:bg-primary/10"
+                          onClick={() => toggleWidgetVisibility('portfolio')}
+                        >
+                          {isWidgetVisible('portfolio') ? (
+                            <Eye className="w-4 h-4" />
+                          ) : (
+                            <EyeOff className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold">Portfolio Overview</h3>
+                      <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="sm" className="text-xs h-7 px-2">7D</Button>
+                        <Button variant="ghost" size="sm" className="text-xs h-7 px-2 bg-primary/10 text-primary">30D</Button>
+                        <Button variant="ghost" size="sm" className="text-xs h-7 px-2">90D</Button>
+                      </div>
+                    </div>
+                    <div className="h-64">
+                      <DashboardCharts 
+                        trades={filteredTrades.length > 0 ? filteredTrades : trades} 
+                        chartType="cumulative" 
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Top Movers */}
+              {(isCustomizing || isWidgetVisible('topMovers')) && (
+                <div key="topMovers" className={isCustomizing && !isWidgetVisible('topMovers') ? 'opacity-50' : ''}>
+                  <div className="relative h-full">
+                    {isCustomizing && (
+                      <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 drag-handle cursor-move hover:bg-primary/10"
+                          title="Drag to reorder"
+                        >
+                          <GripVertical className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 hover:bg-primary/10"
+                          onClick={() => toggleWidgetVisibility('topMovers')}
+                        >
+                          {isWidgetVisible('topMovers') ? (
+                            <Eye className="w-4 h-4" />
+                          ) : (
+                            <EyeOff className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                    <TopMoversCard 
+                      trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Quick Actions */}
+              {(isCustomizing || isWidgetVisible('quickActions')) && (
+                <div key="quickActions" className={isCustomizing && !isWidgetVisible('quickActions') ? 'opacity-50' : ''}>
+                  <div className="relative h-full">
+                    {isCustomizing && (
+                      <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 drag-handle cursor-move hover:bg-primary/10"
+                          title="Drag to reorder"
+                        >
+                          <GripVertical className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 hover:bg-primary/10"
+                          onClick={() => toggleWidgetVisibility('quickActions')}
+                        >
+                          {isWidgetVisible('quickActions') ? (
+                            <Eye className="w-4 h-4" />
+                          ) : (
+                            <EyeOff className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                    <QuickActionCard />
+                  </div>
+                </div>
+              )}
+
+              {/* Recent Transactions */}
+              {(isCustomizing || isWidgetVisible('recentTransactions')) && (
+                <div key="recentTransactions" className={isCustomizing && !isWidgetVisible('recentTransactions') ? 'opacity-50' : ''}>
+                  <div className="relative h-full">
+                    {isCustomizing && (
+                      <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 drag-handle cursor-move hover:bg-primary/10"
+                          title="Drag to reorder"
+                        >
+                          <GripVertical className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 hover:bg-primary/10"
+                          onClick={() => toggleWidgetVisibility('recentTransactions')}
+                        >
+                          {isWidgetVisible('recentTransactions') ? (
+                            <Eye className="w-4 h-4" />
+                          ) : (
+                            <EyeOff className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                    <RecentTransactionsCard 
+                      trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Premium CTA */}
+              {(isCustomizing || isWidgetVisible('premiumCTA')) && (
+                <div key="premiumCTA" className={isCustomizing && !isWidgetVisible('premiumCTA') ? 'opacity-50' : ''}>
+                  <div className="relative h-full">
+                    {isCustomizing && (
+                      <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 drag-handle cursor-move hover:bg-primary/10"
+                          title="Drag to reorder"
+                        >
+                          <GripVertical className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 hover:bg-primary/10"
+                          onClick={() => toggleWidgetVisibility('premiumCTA')}
+                        >
+                          {isWidgetVisible('premiumCTA') ? (
+                            <Eye className="w-4 h-4" />
+                          ) : (
+                            <EyeOff className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                    <PremiumCTACard />
+                  </div>
+                </div>
+              )}
+            </ResponsiveGridLayout>
 
             {/* Month Summary Insights */}
             {stats && stats.total_trades > 0 && (

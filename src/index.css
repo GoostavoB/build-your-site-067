@@ -68,9 +68,11 @@
 
 @layer base {
   :root {
-    /* Glass morphism light mode - Inspired by premium trading UIs */
-    --background: 42 28% 92%;
-    --foreground: 240 10% 15%;
+    /* Glass morphism light mode - Premium glassmorphism gradient */
+    --background: 220 20% 98%;
+    --background-gradient-start: 220 20% 98%;
+    --background-gradient-end: 220 25% 93%;
+    --foreground: 240 10% 13%;
     
     --card: 0 0% 100%;
     --card-foreground: 240 10% 15%;
@@ -119,6 +121,8 @@
   .dark {
     /* Glass morphism dark mode */
     --background: 240 10% 8%;
+    --background-gradient-start: 240 10% 8%;
+    --background-gradient-end: 240 10% 5%;
     --foreground: 0 0% 95%;
     
     --card: 240 10% 12%;
@@ -290,16 +294,43 @@
 }
 
 @layer utilities {
-  /* Glass morphism utilities */
+  /* Glass morphism utilities - Enhanced for premium look */
   .glass {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .dark .glass {
     @apply bg-card/70 backdrop-blur-xl border border-border/50 shadow-lg;
   }
   
   .glass-strong {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .dark .glass-strong {
     @apply bg-card/80 backdrop-blur-2xl border border-border/60 shadow-xl;
   }
   
   .glass-subtle {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .dark .glass-subtle {
     @apply bg-card/50 backdrop-blur-md border border-border/40 shadow-md;
   }
   
@@ -316,9 +347,18 @@
     background: linear-gradient(135deg, hsl(0 84% 60% / 0.1) 0%, hsl(0 84% 60% / 0.05) 100%);
   }
   
-  /* Hover effects */
+  /* Hover effects - Enhanced for glassmorphism */
   .hover-lift {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
+    @apply transition-all duration-300;
+  }
+  
+  .hover-lift:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark .hover-lift:hover {
+    @apply shadow-xl;
   }
   
   .hover-glow {

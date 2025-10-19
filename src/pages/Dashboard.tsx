@@ -222,11 +222,11 @@ const Dashboard = () => {
 
   return (
     <AppLayout>
-      <div className="space-y-4 md:space-y-6 mobile-safe">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="space-y-6 mobile-safe animate-fade-in">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
           <div>
-            <h1 className="text-2xl md:text-4xl font-bold mb-2">Dashboard</h1>
-            <p className="text-sm md:text-base text-muted-foreground">Track your trading performance and analytics</p>
+            <h1 className="text-3xl md:text-4xl font-bold mb-1 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">Dashboard</h1>
+            <p className="text-sm text-muted-foreground/80">Track your trading performance and analytics</p>
           </div>
           <div className="flex items-center gap-2 md:gap-4 flex-wrap">
             <DateRangeFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
@@ -240,7 +240,7 @@ const Dashboard = () => {
                 <TooltipTrigger asChild>
                   <div className="relative cursor-help w-full md:w-auto">
                     <div className="absolute inset-0 bg-gradient-to-r from-neon-green/20 to-primary/20 blur-xl animate-pulse"></div>
-                    <div className="relative flex items-center gap-2 md:gap-3 px-4 md:px-6 py-2 md:py-3 glass-strong border-2 border-neon-green/30 rounded-xl shadow-lg">
+                    <div className="relative flex items-center gap-2 md:gap-3 px-4 md:px-6 py-2 md:py-3 glass-strong border-2 border-neon-green/30 rounded-2xl shadow-lg">
                       <Flame className="w-6 h-6 md:w-8 md:h-8 text-neon-green flex-shrink-0" />
                       <div>
                         <div className="text-[10px] md:text-xs font-medium text-neon-green uppercase tracking-wider">Unlocked</div>
@@ -289,6 +289,91 @@ const Dashboard = () => {
           </Card>
         ) : (
           <>
+            {/* Statistics Overview - Flexible Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6">
+              <div className="glass rounded-2xl p-5 hover-lift cursor-default relative overflow-hidden">
+                {/* Fees Toggle - Minimalistic */}
+                <div className="absolute top-3 right-3 flex items-center gap-1.5">
+                  <Label htmlFor="fees-toggle-grid" className="cursor-pointer text-[10px] text-muted-foreground/70 hidden lg:inline">
+                    {includeFeesInPnL ? 'w/ Fees' : 'w/o Fees'}
+                  </Label>
+                  <Switch
+                    id="fees-toggle-grid"
+                    checked={includeFeesInPnL}
+                    onCheckedChange={setIncludeFeesInPnL}
+                    className="scale-75"
+                  />
+                </div>
+                
+                <div className="text-xs lg:text-sm text-muted-foreground/70 mb-2 font-medium">Total P&L</div>
+                <div className={`text-2xl lg:text-3xl font-bold ${
+                  stats && stats.total_pnl > 0 ? 'text-[#00B87C]' : 
+                  stats && stats.total_pnl < 0 ? 'text-[#E05D5D]' : 'text-foreground'
+                }`}>
+                  <AnimatedCounter value={stats?.total_pnl || 0} prefix="$" decimals={2} />
+                </div>
+              </div>
+              
+              <div className="glass rounded-2xl p-5 hover-lift cursor-default">
+                <div className="text-xs lg:text-sm text-muted-foreground/70 mb-2 font-medium">Win Rate</div>
+                <div className={`text-2xl lg:text-3xl font-bold ${
+                  stats && stats.win_rate > 70 ? 'text-[#00B87C]' : 'text-foreground'
+                }`}>
+                  <AnimatedCounter value={stats?.win_rate || 0} suffix="%" decimals={1} />
+                </div>
+              </div>
+              
+              <div className="glass rounded-2xl p-5 hover-lift cursor-default">
+                <div className="text-xs lg:text-sm text-muted-foreground/70 mb-2 font-medium">Total Trades</div>
+                <div className="text-2xl lg:text-3xl font-bold">
+                  <AnimatedCounter value={stats?.total_trades || 0} decimals={0} />
+                </div>
+              </div>
+              
+              <div className="glass rounded-2xl p-5 hover-lift cursor-default">
+                <div className="text-xs lg:text-sm text-muted-foreground/70 mb-2 font-medium">Avg Duration</div>
+                <div className="text-2xl lg:text-3xl font-bold">
+                  <AnimatedCounter value={Math.round(stats?.avg_duration || 0)} decimals={0} />
+                  <span className="text-base ml-1 text-muted-foreground/70">m</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Month Summary Insights */}
+            {stats && stats.total_trades > 0 && (
+              <div className="mb-6">
+                <MonthSummaryInsights trades={filteredTrades.length > 0 ? filteredTrades : trades} />
+              </div>
+            )}
+
+            {/* Trading Streaks */}
+            {stats && stats.total_trades > 0 && (
+              <div className="mb-6">
+                <TradingStreaks trades={filteredTrades.length > 0 ? filteredTrades : trades} />
+              </div>
+            )}
+
+            {/* Charts Section - Flexible Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <div className="glass rounded-2xl p-6 hover-lift">
+                <h3 className="text-lg font-semibold mb-4">Cumulative P&L</h3>
+                <DashboardCharts trades={filteredTrades.length > 0 ? filteredTrades : trades} chartType="cumulative" />
+              </div>
+              
+              <div className="glass rounded-2xl p-6 hover-lift">
+                <h3 className="text-lg font-semibold mb-4">Wins vs Losses</h3>
+                <DashboardCharts trades={filteredTrades.length > 0 ? filteredTrades : trades} chartType="winsLosses" />
+              </div>
+            </div>
+
+            {/* Trading Heatmap */}
+            {stats && stats.total_trades > 0 && (
+              <div className="glass rounded-2xl p-6 hover-lift mb-6">
+                <h3 className="text-lg font-semibold mb-4">Trading Heatmap</h3>
+                <TradingHeatmap trades={filteredTrades.length > 0 ? filteredTrades : trades} />
+              </div>
+            )}
+
             {/* Grid Layout Container - Isolated stacking context */}
             <div className="relative w-full mb-3">
               <ResponsiveGridLayout
@@ -403,125 +488,73 @@ const Dashboard = () => {
               </ResponsiveGridLayout>
             </div>
 
-            {/* Month Summary Insights */}
-            {stats && stats.total_trades > 0 && (
-              <div className="mb-2">
-                <MonthSummaryInsights trades={filteredTrades.length > 0 ? filteredTrades : trades} />
-              </div>
-            )}
+            {/* Main Content Tabs */}
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6 animate-fade-in" style={{animationDelay: '0.5s'}}>
+              <TabsList className="glass rounded-2xl grid w-full grid-cols-3 md:grid-cols-6 h-auto p-1.5">
+                <TabsTrigger value="insights" className="text-xs md:text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">Insights</TabsTrigger>
+                <TabsTrigger value="history" className="text-xs md:text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">History</TabsTrigger>
+                <TabsTrigger value="analytics" className="text-xs md:text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">Analytics</TabsTrigger>
+                <TabsTrigger value="weekly" className="text-xs md:text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">Weekly</TabsTrigger>
+                <TabsTrigger value="monthly" className="text-xs md:text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">Monthly</TabsTrigger>
+                <TabsTrigger value="goals" className="text-xs md:text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">Goals</TabsTrigger>
+              </TabsList>
 
-            {/* Trading Streaks */}
-            {stats && stats.total_trades > 0 && (
-              <div className="mb-2">
-                <TradingStreaks trades={filteredTrades.length > 0 ? filteredTrades : trades} />
-              </div>
-            )}
-
-            {/* Analytics Row - Charts and Heatmap side by side */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mb-6 -mt-2">
-              {/* Cumulative P&L Chart */}
-              {(isCustomizing || isWidgetVisible('charts')) && (
-                <DashboardWidget
-                  id="cumulative-pnl"
-                  title="Cumulative P&L"
-                  isCustomizing={isCustomizing}
-                  isVisible={isWidgetVisible('charts')}
-                  onToggleVisibility={toggleWidgetVisibility}
-                  className="w-full"
-                >
-                  <DashboardCharts trades={filteredTrades.length > 0 ? filteredTrades : trades} chartType="cumulative" />
-                </DashboardWidget>
-              )}
-
-              {/* Wins vs Losses Chart */}
-              {(isCustomizing || isWidgetVisible('charts')) && (
-                <DashboardWidget
-                  id="wins-losses"
-                  title="Wins vs Losses"
-                  isCustomizing={isCustomizing}
-                  isVisible={isWidgetVisible('charts')}
-                  onToggleVisibility={toggleWidgetVisibility}
-                  className="w-full"
-                >
-                  <DashboardCharts trades={filteredTrades.length > 0 ? filteredTrades : trades} chartType="winsLosses" />
-                </DashboardWidget>
-              )}
-
-              {/* Heatmap Widget */}
-              {(isCustomizing || isWidgetVisible('heatmap')) && (
-                <DashboardWidget
-                  id="heatmap"
-                  title="Trading Success Heatmap"
-                  isCustomizing={isCustomizing}
-                  isVisible={isWidgetVisible('heatmap')}
-                  onToggleVisibility={toggleWidgetVisibility}
-                  className="w-full"
-                >
-                  <TradingHeatmap trades={filteredTrades.length > 0 ? filteredTrades : trades} />
-                </DashboardWidget>
-              )}
-            </div>
-
-            {/* Tabs Section - Separate stacking context */}
-            {stats && stats.total_trades > 0 && (
-            <div ref={tabsContainerRef} className="relative z-10 w-full no-scroll-anchoring">
-              <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4 md:space-y-6">
-                <div className="scroll-mt-20">
-                  <TabsList className="w-full grid grid-cols-3 h-auto gap-1 sticky top-0 z-20 bg-background/95 backdrop-blur-sm">
-                    <TabsTrigger value="insights" className="text-xs md:text-sm py-2">Insights</TabsTrigger>
-                    <TabsTrigger value="advanced" className="text-xs md:text-sm py-2">Advanced Analytics</TabsTrigger>
-                    <TabsTrigger value="history" className="text-xs md:text-sm py-2">Trade History</TabsTrigger>
-                  </TabsList>
-                </div>
-
-                <TabsContent value="insights" className="space-y-4 md:space-y-6 relative">
-                  <MonthlyReport 
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                  />
-                  <WeeklyReview 
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                  />
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <GoalsTracker 
-                      trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                    />
-                    <AchievementBadges 
-                      trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                    />
-                  </div>
-                  <StatisticsComparison 
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                  />
-                  <PerformanceInsights
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                  />
-                </TabsContent>
-
-                <TabsContent value="advanced" className="space-y-4 md:space-y-6 relative">
-                  <DrawdownAnalysis
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                    initialInvestment={initialInvestment}
-                  />
-                  <SetupManager
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                  />
-                  <ExpenseTracker />
-                  <AdvancedAnalytics
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                    initialInvestment={initialInvestment}
-                    userId={user?.id || ''}
-                    onInitialInvestmentUpdate={setInitialInvestment}
-                  />
-                </TabsContent>
-
-              <TabsContent value="history" className="relative">
-                <Card className="p-4 lg:p-6 glass">
-                  <TradeHistory onTradesChange={fetchStats} />
-                </Card>
+              <TabsContent value="insights" className="space-y-4 md:space-y-6 relative glass rounded-2xl p-6">
+                <MonthlyReport 
+                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                />
+                <PerformanceInsights
+                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                />
+                <StatisticsComparison 
+                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                />
               </TabsContent>
-              </Tabs>
-            </div>
-            )}
+
+              <TabsContent value="history" className="relative glass rounded-2xl p-6">
+                <TradeHistory onTradesChange={fetchStats} />
+              </TabsContent>
+
+              <TabsContent value="analytics" className="space-y-4 md:space-y-6 relative glass rounded-2xl p-6">
+                <DrawdownAnalysis
+                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                  initialInvestment={initialInvestment}
+                />
+                <SetupManager
+                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                />
+                <AdvancedAnalytics
+                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                  initialInvestment={initialInvestment}
+                  userId={user?.id || ''}
+                  onInitialInvestmentUpdate={setInitialInvestment}
+                />
+              </TabsContent>
+
+              <TabsContent value="weekly" className="glass rounded-2xl p-6">
+                <WeeklyReview 
+                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                />
+              </TabsContent>
+
+              <TabsContent value="monthly" className="glass rounded-2xl p-6">
+                <MonthlyReport 
+                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                />
+              </TabsContent>
+
+              <TabsContent value="goals" className="space-y-4 md:space-y-6 glass rounded-2xl p-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <GoalsTracker 
+                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                  />
+                  <AchievementBadges 
+                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                  />
+                </div>
+                <ExpenseTracker />
+              </TabsContent>
+            </Tabs>
           </>
         )}
       </div>

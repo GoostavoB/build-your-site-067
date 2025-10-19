@@ -5,7 +5,7 @@ import { AnimatedCounter } from "./AnimatedCounter";
 import { LineChart, Line, ResponsiveContainer, Tooltip } from "recharts";
 import { ExplainMetricButton } from "@/components/ExplainMetricButton";
 import { useAIAssistant } from '@/contexts/AIAssistantContext';
-import { formatCurrency } from "@/utils/formatNumber";
+import { formatCurrency, formatPercent } from "@/utils/formatNumber";
 import { Trade } from "@/types/trade";
 
 interface TotalBalanceCardProps {
@@ -40,7 +40,13 @@ export const TotalBalanceCard = memo(({
   const isPositive = change >= 0;
 
   return (
-    <GlassCard hover className={className} role="article" aria-labelledby="total-balance-title">
+    <GlassCard 
+      hover 
+      className={className} 
+      role="article" 
+      aria-labelledby="total-balance-title"
+      aria-describedby="balance-description"
+    >
       <div className="space-y-4 p-6 md:p-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -56,13 +62,17 @@ export const TotalBalanceCard = memo(({
               context={`Current change: ${formatCurrency(change)} (${changePercent.toFixed(1)}%)`}
               onExplain={openWithPrompt}
             />
-            <div className={`flex items-center gap-1 px-2 py-1 rounded-lg ${
-              isPositive ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary'
-            }`}>
+            <div 
+              className={`flex items-center gap-1 px-2 py-1 rounded-lg ${
+                isPositive ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary'
+              }`}
+              role="status"
+              aria-label={`Balance change: ${isPositive ? 'up' : 'down'} ${formatPercent(Math.abs(changePercent))}`}
+            >
               {isPositive ? (
-                <TrendingUp className="h-3 w-3" />
+                <TrendingUp className="h-3 w-3" aria-hidden="true" />
               ) : (
-                <TrendingDown className="h-3 w-3" />
+                <TrendingDown className="h-3 w-3" aria-hidden="true" />
               )}
               <span className="text-xs font-semibold">
                 {isPositive ? '+' : ''}{changePercent.toFixed(1)}%
@@ -72,19 +82,29 @@ export const TotalBalanceCard = memo(({
         </div>
         
         <div className="space-y-1">
-          <div className="text-4xl font-bold tracking-tight">
+          <div 
+            className="text-4xl font-bold tracking-tight"
+            aria-label={`Current balance: ${formatCurrency(balance)}`}
+          >
             <AnimatedCounter value={balance} prefix="$" decimals={2} />
           </div>
-          <p className={`text-sm font-medium ${
-            isPositive ? 'text-primary' : 'text-secondary'
-          }`}>
+          <p 
+            id="balance-description"
+            className={`text-sm font-medium ${
+              isPositive ? 'text-primary' : 'text-secondary'
+            }`}
+          >
             {isPositive ? '+' : ''}{formatCurrency(change)} today
           </p>
         </div>
 
         {/* Mini Timeline Chart */}
         {sparklineData.length > 0 && (
-          <div className="h-20 w-full overflow-hidden">
+          <div 
+            className="h-20 w-full overflow-hidden"
+            role="img"
+            aria-label={`Balance trend chart showing ${sparklineData.length} data points`}
+          >
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={sparklineData}>
                 <Line 

@@ -366,7 +366,8 @@ const Dashboard = () => {
               }}
               draggableHandle=".drag-handle"
               compactType="vertical"
-              preventCollision={false}
+              preventCollision={true}
+              isBounded={true}
               margin={[16, 16]}
               containerPadding={[0, 0]}
             >
@@ -720,140 +721,6 @@ const Dashboard = () => {
               )}
             </ResponsiveGridLayout>
 
-            {/* Charts Section - Fixed Spacing and Containment */}
-            <div className="relative z-0 w-full mt-8 mb-8 space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Cumulative P&L Chart */}
-                <div className="glass rounded-2xl p-6 hover-lift widget-card">
-                  <div className="flex items-center justify-between mb-4 w-full">
-                    <h3 className="text-lg font-semibold">Cumulative P&L</h3>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Info className="h-4 w-4 text-muted-foreground" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="left" className="glass-strong max-w-xs">
-                          <p className="font-semibold mb-1">Cumulative Profit & Loss</p>
-                          <p className="text-xs mb-2">Running total of all profits and losses over time, showing your account growth trajectory.</p>
-                          <p className="text-xs text-muted-foreground">Formula: Sum of all P&L values up to each point in time</p>
-                          <p className="text-xs text-accent mt-2">Why it matters: Visualizes your overall trading performance trend and consistency.</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  <div className="h-[280px] w-full overflow-hidden">
-                    <LazyChart height={280}>
-                      <DashboardCharts trades={processedTrades} chartType="cumulative" />
-                    </LazyChart>
-                  </div>
-                </div>
-              
-                {/* Wins vs Losses Chart */}
-                <div className="glass rounded-2xl p-6 hover-lift widget-card">
-                  <div className="flex items-center justify-between mb-4 w-full">
-                    <h3 className="text-lg font-semibold">Wins vs Losses</h3>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Info className="h-4 w-4 text-muted-foreground" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="left" className="glass-strong max-w-xs">
-                          <p className="font-semibold mb-1">Wins vs Losses Distribution</p>
-                          <p className="text-xs mb-2">Compares the number and magnitude of profitable trades against losing trades.</p>
-                          <p className="text-xs text-muted-foreground">Shows: Count and total value of winning vs losing positions</p>
-                          <p className="text-xs text-accent mt-2">Why it matters: Helps identify if losses are balanced by wins and guides risk management.</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  <div className="h-[280px] w-full overflow-hidden">
-                    <LazyChart height={280}>
-                      <DashboardCharts trades={processedTrades} chartType="winsLosses" />
-                    </LazyChart>
-                  </div>
-                </div>
-              </div>
-
-            {/* Trading Heatmap */}
-            {stats && stats.total_trades > 0 && (
-              <div className="glass rounded-2xl p-6 hover-lift widget-card">
-                <div className="flex items-center justify-between mb-4 w-full">
-                  <h3 className="text-lg font-semibold">Trading Heatmap</h3>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <Info className="h-4 w-4 text-muted-foreground" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent side="left" className="glass-strong max-w-xs">
-                        <p className="font-semibold mb-1">Trading Activity Heatmap</p>
-                        <p className="text-xs mb-2">Visual representation of trading frequency and profitability by day and time.</p>
-                        <p className="text-xs text-muted-foreground">Shows: Color-coded cells indicating P&L intensity across different time periods</p>
-                        <p className="text-xs text-accent mt-2">Why it matters: Identifies your most and least profitable trading times, helping optimize your schedule.</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                <div className="h-[300px] w-full overflow-hidden">
-                  <LazyChart height={300}>
-                    <TradingHeatmap trades={processedTrades} />
-                  </LazyChart>
-                </div>
-              </div>
-            )}
-
-            {/* Wins by Hour Chart */}
-            {stats && stats.total_trades > 0 && (
-              <div className="w-full">
-                <LazyChart height={300}>
-                  <WinsByHourChart trades={processedTrades} />
-                </LazyChart>
-              </div>
-            )}
-            </div>
-
-            {/* Second Grid Layout Container - Properly Separated */}
-            <div className="relative z-0 w-full mt-8">
-              <ResponsiveGridLayout
-                className="layout"
-                layouts={{
-                lg: layout.filter(item => isCustomizing || isWidgetVisible(item.i)),
-                md: layout.filter(item => isCustomizing || isWidgetVisible(item.i)),
-                sm: layout.filter(item => isCustomizing || isWidgetVisible(item.i)).map(item => ({
-                  ...item,
-                  x: 0,
-                  w: 6,
-                  static: !isCustomizing
-                })),
-                xs: layout.filter(item => isCustomizing || isWidgetVisible(item.i)).map(item => ({
-                  ...item,
-                  x: 0,
-                  w: 1,
-                  static: true
-                }))
-              }}
-              breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 0 }}
-              cols={{ lg: 12, md: 10, sm: 6, xs: 1 }}
-              rowHeight={70}
-              isDraggable={isCustomizing}
-              isResizable={isCustomizing}
-              onLayoutChange={(newLayout) => {
-                if (isCustomizing) updateLayout(newLayout);
-              }}
-              draggableHandle=".drag-handle"
-              compactType="vertical"
-              preventCollision={true}
-              isBounded={true}
-              margin={[16, 16]}
-              containerPadding={[0, 0]}
-            >
-            </ResponsiveGridLayout>
-            </div>
 
             {/* Main Content Tabs */}
             <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6 animate-fade-in" style={{animationDelay: '0.5s'}}>

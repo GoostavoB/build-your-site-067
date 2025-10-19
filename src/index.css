@@ -499,7 +499,6 @@ textarea:focus-visible {
 /* Widget card standardization - prevent overlaps */
 .widget-card {
   position: relative;
-  z-index: 1;
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -526,7 +525,6 @@ textarea:focus-visible {
   border: 1px solid var(--glass-border) !important;
   backdrop-filter: blur(var(--glass-blur)) !important;
   -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
-  z-index: 1;
 }
 
 .glass-strong {

@@ -43,32 +43,9 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         <div className="flex-1 flex flex-col mobile-safe">
           {/* Desktop Header with Pills Navigation */}
           <header className="hidden md:flex h-16 border-b border-border/50 backdrop-blur-xl glass-subtle items-center justify-between gap-4 px-6 sticky top-0 z-50">
-            {/* Left: Sidebar trigger + Pills Navigation */}
-            <div className="flex items-center gap-6">
+            {/* Left: Sidebar trigger */}
+            <div className="flex items-center gap-2">
               <SidebarTrigger className="hover:bg-muted/50 rounded-lg p-2 transition-colors" />
-              
-              <nav className="flex items-center gap-1 p-1 rounded-2xl bg-muted/30 backdrop-blur-sm">
-                {navItems.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <Button
-                      key={item.path}
-                      onClick={() => navigate(item.path)}
-                      variant="ghost"
-                      size="sm"
-                      className={cn(
-                        "gap-2 rounded-xl px-4 py-2 transition-all duration-200 flex items-center justify-center",
-                        isActive(item.path)
-                          ? "bg-background shadow-sm text-foreground"
-                          : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                      )}
-                    >
-                      <Icon className="h-4 w-4 flex-shrink-0" />
-                      <span className="text-sm font-medium whitespace-nowrap">{item.label}</span>
-                    </Button>
-                  );
-                })}
-              </nav>
             </div>
 
             {/* Center: Search Bar */}

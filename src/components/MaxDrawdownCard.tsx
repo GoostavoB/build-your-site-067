@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { GlassCard } from "@/components/ui/glass-card";
 import { TrendingDown } from "lucide-react";
 import { formatPercent, formatCurrency } from "@/utils/formatNumber";
@@ -10,7 +11,7 @@ interface MaxDrawdownCardProps {
   className?: string;
 }
 
-export const MaxDrawdownCard = ({ value, percentage, className }: MaxDrawdownCardProps) => {
+const MaxDrawdownCardComponent = ({ value, percentage, className }: MaxDrawdownCardProps) => {
   const { openWithPrompt } = useAIAssistant();
   
   return (
@@ -53,3 +54,5 @@ export const MaxDrawdownCard = ({ value, percentage, className }: MaxDrawdownCar
     </GlassCard>
   );
 };
+
+export const MaxDrawdownCard = memo(MaxDrawdownCardComponent);

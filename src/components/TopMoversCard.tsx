@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import { GlassCard } from "@/components/ui/glass-card";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { formatPercent, formatCurrency } from "@/utils/formatNumber";
@@ -17,29 +18,31 @@ interface TopMoversCardProps {
   className?: string;
 }
 
-export const TopMoversCard = ({ trades, className }: TopMoversCardProps) => {
+const TopMoversCardComponent = ({ trades, className }: TopMoversCardProps) => {
   const { openWithPrompt } = useAIAssistant();
   
-  // Calculate top movers by total P&L
-  const assetData: Record<string, AssetMover> = {};
-  
-  trades.forEach(trade => {
-    const symbol = trade.symbol || 'Unknown';
-    if (!assetData[symbol]) {
-      assetData[symbol] = { symbol, pnl: 0, change: 0, trades: 0 };
-    }
-    assetData[symbol].pnl += trade.pnl || 0;
-    assetData[symbol].trades += 1;
-  });
+  const topMovers = useMemo(() => {
+    // Calculate top movers by total P&L
+    const assetData: Record<string, AssetMover> = {};
+    
+    trades.forEach(trade => {
+      const symbol = trade.symbol || 'Unknown';
+      if (!assetData[symbol]) {
+        assetData[symbol] = { symbol, pnl: 0, change: 0, trades: 0 };
+      }
+      assetData[symbol].pnl += trade.pnl || 0;
+      assetData[symbol].trades += 1;
+    });
 
-  // Calculate percentage change (simplified)
-  Object.values(assetData).forEach(asset => {
-    asset.change = asset.pnl / (asset.trades * 100) * 100;
-  });
+    // Calculate percentage change (simplified)
+    Object.values(assetData).forEach(asset => {
+      asset.change = asset.pnl / (asset.trades * 100) * 100;
+    });
 
-  const topMovers = Object.values(assetData)
-    .sort((a, b) => Math.abs(b.pnl) - Math.abs(a.pnl))
-    .slice(0, 5);
+    return Object.values(assetData)
+      .sort((a, b) => Math.abs(b.pnl) - Math.abs(a.pnl))
+      .slice(0, 5);
+  }, [trades]);
 
   return (
     <GlassCard className={className} role="region" aria-labelledby="top-movers-title">
@@ -108,3 +111,5 @@ export const TopMoversCard = ({ trades, className }: TopMoversCardProps) => {
     </GlassCard>
   );
 };
+
+export const TopMoversCard = memo(TopMoversCardComponent);

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { GlassCard } from "@/components/ui/glass-card";
 import { Flame, TrendingDown } from "lucide-react";
 import { useThemeMode } from "@/hooks/useThemeMode";
@@ -10,7 +11,7 @@ interface CurrentStreakCardProps {
   className?: string;
 }
 
-export const CurrentStreakCard = ({ streak, type, className }: CurrentStreakCardProps) => {
+const CurrentStreakCardComponent = ({ streak, type, className }: CurrentStreakCardProps) => {
   const { colors } = useThemeMode();
   const { openWithPrompt } = useAIAssistant();
   const isWinning = type === 'winning';
@@ -62,3 +63,5 @@ export const CurrentStreakCard = ({ streak, type, className }: CurrentStreakCard
     </GlassCard>
   );
 };
+
+export const CurrentStreakCard = memo(CurrentStreakCardComponent);

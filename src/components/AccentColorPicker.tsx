@@ -161,13 +161,20 @@ export const AccentColorPicker = () => {
   };
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={isOpen} onOpenChange={setIsOpen} modal={true}>
       <PopoverTrigger asChild>
         <Button variant="outline" size="icon" className="glass hover-lift">
           <Palette className="h-4 w-4" style={{ color: accentColor }} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 glass-strong backdrop-blur-xl border-accent/20 rounded-2xl max-h-[600px] overflow-y-auto">
+      <PopoverContent 
+        className="w-80 glass-strong backdrop-blur-xl border-accent/20 rounded-2xl max-h-[600px] overflow-y-auto sticky-popover"
+        side="bottom"
+        align="end"
+        sideOffset={8}
+        sticky="always"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <div className="space-y-4">
           <div className="space-y-3">
             <p className="text-sm font-semibold">Color Mode</p>

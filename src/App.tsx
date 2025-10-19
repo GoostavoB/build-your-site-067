@@ -44,7 +44,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true} storageKey="app-theme">
         <TooltipProvider>
           <Toaster />
           <Sonner />

@@ -3,9 +3,10 @@ import { useEffect } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { GlassCard } from '@/components/ui/glass-card';
 import { AIWidgetCreator } from '@/components/menu/AIWidgetCreator';
+import { InteractiveAIWidgetCreator } from '@/components/menu/InteractiveAIWidgetCreator';
 import { CustomWidgetRenderer } from '@/components/widgets/CustomWidgetRenderer';
 import { useCustomWidgets } from '@/hooks/useCustomWidgets';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Zap } from 'lucide-react';
 
 const CustomPage = () => {
   const { pageId } = useParams();
@@ -28,7 +29,10 @@ const CustomPage = () => {
               Create custom metrics and analytics using AI
             </p>
           </div>
-          <AIWidgetCreator onWidgetCreated={refreshWidgets} />
+          <div className="flex gap-2">
+            <AIWidgetCreator onWidgetCreated={refreshWidgets} />
+            <InteractiveAIWidgetCreator onWidgetCreated={refreshWidgets} />
+          </div>
         </div>
 
         {loading ? (

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Loader2 } from 'lucide-react';
+import { Sparkles, Loader2, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { GlassCard } from '@/components/ui/glass-card';
@@ -108,17 +108,20 @@ export const AIWidgetCreator = ({ menuItemId, onWidgetCreated }: AIWidgetCreator
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="default" className="gap-2">
-          <Sparkles className="h-4 w-4" />
-          Create AI Widget
+        <Button variant="outline" className="gap-2">
+          <Zap className="h-4 w-4" />
+          Quick Widget
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            AI-Powered Widget Creator
+            <Zap className="h-5 w-5 text-primary" />
+            Quick AI Widget Creator
           </DialogTitle>
+          <p className="text-sm text-muted-foreground">
+            Describe what you want and AI will generate it instantly. For more control, use the Interactive mode.
+          </p>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -165,8 +168,8 @@ export const AIWidgetCreator = ({ menuItemId, onWidgetCreated }: AIWidgetCreator
               </>
             ) : (
               <>
-                <Sparkles className="h-4 w-4 mr-2" />
-                Generate Widget
+                <Zap className="h-4 w-4 mr-2" />
+                Quick Generate
               </>
             )}
           </Button>

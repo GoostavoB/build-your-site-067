@@ -192,25 +192,37 @@ export const CustomWidgetRenderer = ({ widget, onDelete }: CustomWidgetRendererP
 
   const renderTableWidget = () => {
     const tableData = Array.isArray(data) ? data : [];
+    const format = widget.display_config?.format || 'number';
+    
+    const formatValue = (val: number) => {
+      if (format === 'currency') return `$${formatNumber(val)}`;
+      if (format === 'percent') return formatPercent(val);
+      return formatNumber(val);
+    };
     
     return (
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b">
-              <th className="text-left p-2">Item</th>
-              <th className="text-right p-2">Value</th>
+            <tr className="border-b border-border">
+              <th className="text-left p-2 text-sm font-medium">Item</th>
+              <th className="text-right p-2 text-sm font-medium">Value</th>
             </tr>
           </thead>
           <tbody>
-            {tableData.map((row, idx) => (
-              <tr key={idx} className="border-b">
-                <td className="p-2">{row.name}</td>
-                <td className="p-2 text-right font-medium">{formatNumber(row.value)}</td>
+            {tableData.slice(0, 10).map((row, idx) => (
+              <tr key={idx} className="border-b border-border/50 hover:bg-accent/50 transition-colors">
+                <td className="p-2 text-sm">{row.name || 'Unknown'}</td>
+                <td className="p-2 text-right font-medium text-sm">{formatValue(row.value)}</td>
               </tr>
             ))}
           </tbody>
         </table>
+        {tableData.length > 10 && (
+          <p className="text-xs text-muted-foreground mt-2 text-center">
+            Showing top 10 of {tableData.length} items
+          </p>
+        )}
       </div>
     );
   };

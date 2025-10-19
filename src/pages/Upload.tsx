@@ -593,7 +593,10 @@ const Upload = () => {
         .select('id, symbol, profit_loss');
 
       if (error) {
-        toast.error('Failed to save trades');
+        console.error('Error saving trades:', error);
+        toast.error('Failed to save trades', {
+          description: error.message || 'Please check your trade data and try again'
+        });
       } else {
         // Create upload batch record
         const assets = [...new Set(tradesData.map(t => t.symbol))];
@@ -1040,8 +1043,8 @@ const Upload = () => {
                                       <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
                                     </Button>
                                   </PopoverTrigger>
-                                  <PopoverContent className="w-[300px] p-0 bg-popover z-50 mt-2" align="start">
-                                    <Command className="rounded-lg border shadow-md">
+                                  <PopoverContent className="w-[300px] p-0" align="start" sideOffset={8}>
+                                    <Command>
                                       <CommandInput placeholder="Search broker..." />
                                       <CommandList>
                                         <CommandEmpty>No broker found.</CommandEmpty>
@@ -1091,7 +1094,7 @@ const Upload = () => {
                                       <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
                                     </Button>
                                   </PopoverTrigger>
-                                  <PopoverContent className="w-[300px] p-0 bg-popover z-50" align="start">
+                                  <PopoverContent className="w-[300px] p-0" align="start" sideOffset={8}>
                                     <Command shouldFilter={false}>
                                       <CommandInput 
                                         placeholder="Search or type new setup..." 
@@ -1239,7 +1242,7 @@ const Upload = () => {
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[400px] p-0" align="start">
+                      <PopoverContent className="w-[400px] p-0" align="start" sideOffset={8}>
                         <Command shouldFilter={false}>
                           <CommandInput 
                             placeholder="Search or type new setup..." 
@@ -1315,7 +1318,7 @@ const Upload = () => {
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[400px] p-0" align="start">
+                      <PopoverContent className="w-[400px] p-0" align="start" sideOffset={8}>
                         <Command>
                           <CommandInput placeholder="Search broker..." />
                           <CommandList>

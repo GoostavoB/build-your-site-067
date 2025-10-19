@@ -48,42 +48,42 @@ const testimonials = [
 
 const Testimonials = () => {
   return (
-    <section className="py-24 px-6">
-      <div className="container mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-5xl font-bold mb-4">
-            Trusted by <span className="gradient-text">10,000+</span> Traders
+    <section className="py-16 md:py-20 px-6">
+      <div className="container mx-auto max-w-6xl">
+        <div className="text-center mb-12 md:mb-16 animate-fade-in">
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">
+            Trusted by <span className="text-gradient-primary">10,000+</span> Traders
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
             See what professional traders are saying about The Trading Diary
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {testimonials.map((testimonial, index) => (
-            <GlassCard
+            <div
               key={index}
-              hover
-              className="p-6"
+              className="glass backdrop-blur-[12px] rounded-2xl p-5 md:p-6 hover-lift transition-all shadow-sm animate-fade-in"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="flex items-start gap-4 mb-4">
-                <div className="text-4xl">{testimonial.image}</div>
+              <div className="flex items-start gap-3 mb-3">
+                <div className="text-3xl">{testimonial.image}</div>
                 <div>
-                  <h4 className="font-semibold text-lg">{testimonial.name}</h4>
-                  <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                  <h4 className="font-semibold text-base md:text-lg">{testimonial.name}</h4>
+                  <p className="text-xs md:text-sm text-muted-foreground">{testimonial.role}</p>
                 </div>
               </div>
               
-              <div className="flex gap-1 mb-3">
+              <div className="flex gap-1 mb-2.5">
                 {Array.from({ length: testimonial.rating }).map((_, i) => (
-                  <Star key={i} size={16} className="fill-primary text-primary" />
+                  <Star key={i} size={14} className="fill-primary text-primary" />
                 ))}
               </div>
               
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="text-sm text-muted-foreground leading-relaxed">
                 "{testimonial.text}"
               </p>
-            </GlassCard>
+            </div>
           ))}
         </div>
       </div>

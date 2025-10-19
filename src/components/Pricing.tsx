@@ -59,74 +59,74 @@ const Pricing = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="py-24 px-6">
-      <div className="container mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-5xl font-bold mb-4">
-            Simple, <span className="gradient-text">Transparent</span> Pricing
+    <section className="py-16 md:py-20 px-6">
+      <div className="container mx-auto max-w-6xl">
+        <div className="text-center mb-12 md:mb-16 animate-fade-in">
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">
+            Simple, <span className="text-gradient-primary">Transparent</span> Pricing
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
             Choose the plan that fits your trading style. Upgrade or downgrade anytime.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-4 md:gap-6">
           {plans.map((plan, index) => (
-            <GlassCard
+            <div
               key={index}
-              variant={plan.popular ? "strong" : "default"}
-              hover
-              className={`p-8 relative ${
-                plan.popular ? "ring-2 ring-primary shadow-lg shadow-primary/20 scale-105" : ""
+              className={`glass backdrop-blur-[12px] rounded-2xl p-6 md:p-7 relative hover-lift transition-all shadow-sm animate-fade-in ${
+                plan.popular ? "ring-2 ring-primary shadow-lg shadow-primary/20" : ""
               }`}
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
               {plan.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 gradient-primary text-background text-sm font-semibold rounded-full flex items-center gap-1">
-                  <Sparkles size={14} />
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full flex items-center gap-1 shadow-md">
+                  <Sparkles size={12} />
                   Most Popular
                 </div>
               )}
 
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                <p className="text-muted-foreground text-sm mb-4">
+              <div className="mb-5">
+                <h3 className="text-xl md:text-2xl font-bold mb-1.5">{plan.name}</h3>
+                <p className="text-muted-foreground text-xs md:text-sm mb-3">
                   {plan.description}
                 </p>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-bold text-gradient-primary">{plan.price}</span>
-                  <span className="text-muted-foreground">/{plan.period}</span>
+                  <span className="text-3xl md:text-4xl font-bold" style={{ color: 'hsl(var(--primary))' }}>{plan.price}</span>
+                  <span className="text-sm text-muted-foreground">/{plan.period}</span>
                 </div>
               </div>
 
               <Button
                 onClick={() => navigate('/auth')}
-                className={`w-full mb-6 ${
+                className={`w-full mb-5 rounded-xl font-medium transition-all ${
                   plan.popular
-                    ? "gradient-primary text-background hover:opacity-90"
-                    : "bg-foreground text-background hover:bg-foreground/90"
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md"
+                    : "glass border border-primary/30 hover:bg-primary/10 hover:border-primary/50"
                 }`}
+                variant={plan.popular ? "default" : "outline"}
               >
                 {plan.cta}
               </Button>
 
-              <ul className="space-y-3">
+              <ul className="space-y-2.5">
                 {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-start gap-3">
+                  <li key={i} className="flex items-start gap-2.5">
                     <Check
-                      size={20}
+                      size={18}
                       className={`mt-0.5 flex-shrink-0 ${
                         plan.popular ? "text-primary" : "text-foreground"
                       }`}
                     />
-                    <span className="text-sm text-muted-foreground">{feature}</span>
+                    <span className="text-xs md:text-sm text-muted-foreground leading-relaxed">{feature}</span>
                   </li>
                 ))}
               </ul>
-            </GlassCard>
+            </div>
           ))}
         </div>
 
-        <p className="text-center text-muted-foreground mt-12">
+        <p className="text-center text-muted-foreground text-xs md:text-sm mt-10 animate-fade-in" style={{ animationDelay: '0.3s' }}>
           All plans include 14-day free trial • No credit card required • Cancel anytime
         </p>
       </div>

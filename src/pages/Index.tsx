@@ -17,7 +17,8 @@ const Index = () => {
         <ThemeToggle />
         <Button
           onClick={() => navigate('/auth')}
-          className="bg-foreground text-background hover:bg-foreground/90"
+          className="glass backdrop-blur-[10px] border border-primary/30 text-foreground hover:bg-primary hover:text-primary-foreground transition-all rounded-xl px-5 py-2 font-medium shadow-sm hover:shadow-md"
+          variant="ghost"
         >
           Sign In
         </Button>

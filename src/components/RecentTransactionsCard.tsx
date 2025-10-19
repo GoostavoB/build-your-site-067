@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { GlassCard } from "@/components/ui/glass-card";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/utils/formatNumber";
@@ -12,7 +13,7 @@ interface RecentTransactionsCardProps {
   className?: string;
 }
 
-export const RecentTransactionsCard = ({ trades, className }: RecentTransactionsCardProps) => {
+export const RecentTransactionsCard = memo(({ trades, className }: RecentTransactionsCardProps) => {
   const { openWithPrompt } = useAIAssistant();
   const recentTrades = trades
     .sort((a, b) => new Date(b.trade_date).getTime() - new Date(a.trade_date).getTime())
@@ -87,4 +88,6 @@ export const RecentTransactionsCard = ({ trades, className }: RecentTransactions
       </div>
     </GlassCard>
   );
-};
+});
+
+RecentTransactionsCard.displayName = 'RecentTransactionsCard';

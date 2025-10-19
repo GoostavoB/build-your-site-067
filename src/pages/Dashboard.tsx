@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, lazy, Suspense } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,32 +7,19 @@ import AppLayout from '@/components/layout/AppLayout';
 import { TrendingUp, TrendingDown, DollarSign, Target, Flame, Eye, EyeOff, Info, GripVertical } from 'lucide-react';
 import { DashboardCharts } from '@/components/DashboardCharts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TradeHistory } from '@/components/TradeHistory';
-import { AdvancedAnalytics } from '@/components/AdvancedAnalytics';
 import { PerformanceInsights } from '@/components/PerformanceInsights';
 import { DashboardSkeleton } from '@/components/DashboardSkeleton';
-import { GoalsTracker } from '@/components/GoalsTracker';
-import { AchievementBadges } from '@/components/AchievementBadges';
-import { WeeklyReview } from '@/components/WeeklyReview';
-import { ExpenseTracker } from '@/components/ExpenseTracker';
-import { MonthlyReport } from '@/components/MonthlyReport';
 import { ExportTradesDialog } from '@/components/ExportTradesDialog';
-import { StatisticsComparison } from '@/components/StatisticsComparison';
 import { TradingStreaks } from '@/components/TradingStreaks';
-import { MonthSummaryInsights } from '@/components/MonthSummaryInsights';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
-import { SetupManager } from '@/components/SetupManager';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { DrawdownAnalysis } from '@/components/DrawdownAnalysis';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { DateRangeFilter, DateRange } from '@/components/DateRangeFilter';
-import { TradingHeatmap } from '@/components/TradingHeatmap';
 import { DashboardWidget } from '@/components/DashboardWidget';
 import { CustomizeDashboardControls } from '@/components/CustomizeDashboardControls';
 import { AccentColorPicker } from '@/components/AccentColorPicker';
-import { AIAssistant } from '@/components/AIAssistant';
 import { WinsByHourChart } from '@/components/charts/WinsByHourChart';
 import { MaxDrawdownCard } from '@/components/MaxDrawdownCard';
 import { TopAssetsByWinRate } from '@/components/TopAssetsByWinRate';
@@ -50,6 +37,21 @@ import { LineChart, Line, ResponsiveContainer, Tooltip as RechartsTooltip } from
 import { Responsive, WidthProvider } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
+
+// Lazy load heavy components
+const TradeHistory = lazy(() => import('@/components/TradeHistory').then(m => ({ default: m.TradeHistory })));
+const AdvancedAnalytics = lazy(() => import('@/components/AdvancedAnalytics').then(m => ({ default: m.AdvancedAnalytics })));
+const GoalsTracker = lazy(() => import('@/components/GoalsTracker').then(m => ({ default: m.GoalsTracker })));
+const AchievementBadges = lazy(() => import('@/components/AchievementBadges').then(m => ({ default: m.AchievementBadges })));
+const WeeklyReview = lazy(() => import('@/components/WeeklyReview').then(m => ({ default: m.WeeklyReview })));
+const ExpenseTracker = lazy(() => import('@/components/ExpenseTracker').then(m => ({ default: m.ExpenseTracker })));
+const MonthlyReport = lazy(() => import('@/components/MonthlyReport').then(m => ({ default: m.MonthlyReport })));
+const StatisticsComparison = lazy(() => import('@/components/StatisticsComparison').then(m => ({ default: m.StatisticsComparison })));
+const MonthSummaryInsights = lazy(() => import('@/components/MonthSummaryInsights').then(m => ({ default: m.MonthSummaryInsights })));
+const SetupManager = lazy(() => import('@/components/SetupManager').then(m => ({ default: m.SetupManager })));
+const DrawdownAnalysis = lazy(() => import('@/components/DrawdownAnalysis').then(m => ({ default: m.DrawdownAnalysis })));
+const TradingHeatmap = lazy(() => import('@/components/TradingHeatmap').then(m => ({ default: m.TradingHeatmap })));
+const AIAssistant = lazy(() => import('@/components/AIAssistant').then(m => ({ default: m.AIAssistant })));
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -909,19 +911,23 @@ const Dashboard = () => {
               </TabsList>
 
               <TabsContent value="insights" className="space-y-4 md:space-y-6 relative glass rounded-2xl p-6">
-                <MonthlyReport 
-                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                />
-                <PerformanceInsights
-                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                />
-                <StatisticsComparison 
-                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                />
+                <Suspense fallback={<DashboardSkeleton />}>
+                  <MonthlyReport 
+                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                  />
+                  <PerformanceInsights
+                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                  />
+                  <StatisticsComparison 
+                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                  />
+                </Suspense>
               </TabsContent>
 
               <TabsContent value="history" className="relative glass rounded-2xl p-6">
-                <TradeHistory onTradesChange={fetchStats} />
+                <Suspense fallback={<DashboardSkeleton />}>
+                  <TradeHistory onTradesChange={fetchStats} />
+                </Suspense>
               </TabsContent>
 
               <TabsContent value="analytics" className="space-y-4 md:space-y-6 relative glass rounded-2xl p-6">
@@ -938,50 +944,60 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                <DrawdownAnalysis
-                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                  initialInvestment={initialInvestment}
-                />
-                <SetupManager
-                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                />
-                <AdvancedAnalytics
-                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                  initialInvestment={initialInvestment}
-                  userId={user?.id || ''}
-                  onInitialInvestmentUpdate={setInitialInvestment}
-                />
+                <Suspense fallback={<DashboardSkeleton />}>
+                  <DrawdownAnalysis
+                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                    initialInvestment={initialInvestment}
+                  />
+                  <SetupManager
+                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                  />
+                  <AdvancedAnalytics
+                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                    initialInvestment={initialInvestment}
+                    userId={user?.id || ''}
+                    onInitialInvestmentUpdate={setInitialInvestment}
+                  />
+                </Suspense>
               </TabsContent>
 
               <TabsContent value="weekly" className="glass rounded-2xl p-6">
-                <WeeklyReview 
-                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                />
+                <Suspense fallback={<DashboardSkeleton />}>
+                  <WeeklyReview 
+                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                  />
+                </Suspense>
               </TabsContent>
 
               <TabsContent value="monthly" className="glass rounded-2xl p-6">
-                <MonthlyReport 
-                  trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                />
+                <Suspense fallback={<DashboardSkeleton />}>
+                  <MonthlyReport 
+                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                  />
+                </Suspense>
               </TabsContent>
 
               <TabsContent value="goals" className="space-y-4 md:space-y-6 glass rounded-2xl p-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <GoalsTracker 
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                  />
-                  <AchievementBadges 
-                    trades={filteredTrades.length > 0 ? filteredTrades : trades}
-                  />
-                </div>
-                <ExpenseTracker />
+                <Suspense fallback={<DashboardSkeleton />}>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <GoalsTracker 
+                      trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                    />
+                    <AchievementBadges 
+                      trades={filteredTrades.length > 0 ? filteredTrades : trades}
+                    />
+                  </div>
+                  <ExpenseTracker />
+                </Suspense>
               </TabsContent>
             </Tabs>
           </>
         )}
         
         {/* AI Assistant */}
-        <AIAssistant />
+        <Suspense fallback={null}>
+          <AIAssistant />
+        </Suspense>
       </div>
     </AppLayout>
   );

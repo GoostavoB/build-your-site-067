@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TrendingUp } from "lucide-react";
 import bullNeon from "@/assets/bull-neon.png";
 import bearNeon from "@/assets/bear-neon.png";
 import bullBearFight from "@/assets/bull-bear-fight-neon.png";
@@ -262,12 +263,13 @@ const LongShortRatio = () => {
                 </CardHeader>
                 <CardContent className="flex items-center justify-center py-2">
                   {latestCombinedData && (
-                    <div className="w-20 h-20 rounded-full overflow-hidden bg-black/50 flex items-center justify-center">
-                      <img 
-                        src={getMarketSentimentImage(latestCombinedData.longAccount, latestCombinedData.shortAccount)} 
-                        alt="Market sentiment"
-                        className="w-full h-full object-cover"
-                        style={{ mixBlendMode: 'lighten' }}
+                    <div className="w-20 h-20 rounded-full flex items-center justify-center bg-primary/10">
+                      <TrendingUp 
+                        className={`w-12 h-12 ${
+                          latestCombinedData.longAccount > latestCombinedData.shortAccount 
+                            ? 'text-neon-green' 
+                            : 'text-red-500 rotate-180'
+                        }`}
                       />
                     </div>
                   )}

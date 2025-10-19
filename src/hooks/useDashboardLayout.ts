@@ -32,11 +32,12 @@ const DEFAULT_WIDGETS: WidgetConfig[] = [
   { id: 'topMovers', visible: true },
   { id: 'quickActions', visible: true },
   { id: 'recentTransactions', visible: true },
-  { id: 'premiumCTA', visible: true },
   { id: 'insights', visible: true },
-  { id: 'streaks', visible: true },
-  { id: 'heatmap', visible: true },
-  { id: 'charts', visible: true },
+  // Hidden by default but available in customize
+  { id: 'premiumCTA', visible: false },
+  { id: 'streaks', visible: false },
+  { id: 'heatmap', visible: false },
+  { id: 'charts', visible: false },
 ];
 
 const DEFAULT_LAYOUT: LayoutItem[] = [

@@ -21,13 +21,13 @@ import { supabase } from '@/integrations/supabase/client';
 
 const mainItems = [
   { title: 'Dashboard', url: '/dashboard', icon: BarChart3 },
-  { title: 'Upload Trade', url: '/upload', icon: Upload },
+  { title: 'Add Trade', url: '/upload', icon: Upload },
   { title: 'Analytics', url: '/analytics', icon: TrendingUp },
-  { title: 'Forecast', url: '/forecast', icon: TrendingUp },
-  { title: 'Achievements', url: '/achievements', icon: Trophy },
-  { title: 'Social', url: '/social', icon: Users },
-  { title: 'AI Tools', url: '/ai-tools', icon: Brain },
+  { title: 'Forecast & Goals', url: '/forecast', icon: Target },
+  { title: 'Community', url: '/social', icon: Users },
+  { title: 'AI Assistant', url: '/ai-tools', icon: Brain },
   { title: 'Tools', url: '/tools', icon: Wrench },
+  { title: 'Achievements', url: '/achievements', icon: Trophy },
   { title: 'Economic Calendar', url: '/economic-calendar', icon: Calendar },
   { title: 'BTC Long/Short Ratio', url: '/long-short-ratio', icon: Scale },
   { title: 'Settings', url: '/settings', icon: Settings },
@@ -95,7 +95,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Resources</SidebarGroupLabel>
+          <SidebarGroupLabel>Learn</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {resourceItems.map((item) => (

@@ -68,7 +68,7 @@ const Dashboard = () => {
   const [includeFeesInPnL, setIncludeFeesInPnL] = useState(true);
   const [dateRange, setDateRange] = useState<DateRange>(undefined);
   const [filteredTrades, setFilteredTrades] = useState<Trade[]>([]);
-  const [activeTab, setActiveTab] = useState<string>('insights');
+  const [activeTab, setActiveTab] = useState<string>('overview');
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   
   // Memoize processed trades to prevent unnecessary recalculations
@@ -325,15 +325,18 @@ const Dashboard = () => {
           </Card>
         ) : (
           <>
-            {/* Trading Streaks - Top of Dashboard */}
-            {stats && stats.total_trades > 0 && (
-              <div className="mb-6">
-                <TradingStreaks trades={processedTrades} />
-              </div>
-            )}
+            {/* Main Content Tabs */}
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6 animate-fade-in" style={{animationDelay: '0.5s'}}>
+              <TabsList className="glass rounded-2xl grid w-full grid-cols-3 h-auto p-1.5">
+                <TabsTrigger value="overview" className="text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">Overview</TabsTrigger>
+                <TabsTrigger value="insights" className="text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">Insights</TabsTrigger>
+                <TabsTrigger value="history" className="text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">History</TabsTrigger>
+              </TabsList>
 
-            {/* Dashboard Grid */}
-            <div className="dashboard-grid">
+              {/* Overview Tab - Main Dashboard Grid */}
+              <TabsContent value="overview" className="space-y-6">
+                {/* Dashboard Grid */}
+                <div className="dashboard-grid">
               {/* Total Balance Card */}
               {(isCustomizing || isWidgetVisible('totalBalance')) && (
                 <div className={`dash-card ${isCustomizing && !isWidgetVisible('totalBalance') ? 'opacity-50' : ''}`}>
@@ -571,93 +574,23 @@ const Dashboard = () => {
                   <PremiumCTACard />
                 </div>
               )}
-            </div>
+              </div>
+            </TabsContent>
 
-
-            {/* Main Content Tabs */}
-            <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6 animate-fade-in" style={{animationDelay: '0.5s'}}>
-              <TabsList className="glass rounded-2xl grid w-full grid-cols-3 md:grid-cols-6 h-auto p-1.5">
-                <TabsTrigger value="insights" className="text-xs md:text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">Insights</TabsTrigger>
-                <TabsTrigger value="history" className="text-xs md:text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">History</TabsTrigger>
-                <TabsTrigger value="analytics" className="text-xs md:text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">Analytics</TabsTrigger>
-                <TabsTrigger value="weekly" className="text-xs md:text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">Weekly</TabsTrigger>
-                <TabsTrigger value="monthly" className="text-xs md:text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">Monthly</TabsTrigger>
-                <TabsTrigger value="goals" className="text-xs md:text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">Goals</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="insights" className="space-y-4 md:space-y-6 relative glass rounded-2xl p-6">
+            {/* Insights Tab */}
+            <TabsContent value="insights" className="space-y-4 md:space-y-6 relative glass rounded-2xl p-6">
                 <Suspense fallback={<DashboardSkeleton />}>
-                  <MonthlyReport 
-                    trades={processedTrades}
-                  />
-                  <PerformanceInsights
-                    trades={processedTrades}
-                  />
-                  <StatisticsComparison 
-                    trades={processedTrades}
-                  />
+                  <TradingStreaks trades={processedTrades} />
+                  <MonthlyReport trades={processedTrades} />
+                  <PerformanceInsights trades={processedTrades} />
+                  <StatisticsComparison trades={processedTrades} />
                 </Suspense>
               </TabsContent>
 
+              {/* History Tab */}
               <TabsContent value="history" className="relative glass rounded-2xl p-6">
                 <Suspense fallback={<DashboardSkeleton />}>
                   <TradeHistory onTradesChange={fetchStats} />
-                </Suspense>
-              </TabsContent>
-
-              <TabsContent value="analytics" className="space-y-4 md:space-y-6 relative glass rounded-2xl p-6">
-                {/* Additional Cards Row */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  <MaxDrawdownCard value={3500} percentage={12.5} />
-                  <CurrentStreakCard 
-                    streak={calculateCurrentStreak(processedTrades)}
-                    type={calculateStreakType(processedTrades)}
-                  />
-                  <div className="p-5 glass rounded-2xl">
-                    <p className="text-sm text-muted-foreground mb-2">Best Asset</p>
-                    <p className="text-2xl font-bold">{getBestAsset(processedTrades)}</p>
-                  </div>
-                </div>
-
-                <Suspense fallback={<DashboardSkeleton />}>
-                  <DrawdownAnalysis
-                    trades={processedTrades}
-                    initialInvestment={initialInvestment}
-                  />
-                  <SetupManager
-                    trades={processedTrades}
-                  />
-                  <AdvancedAnalytics
-                    trades={processedTrades}
-                    initialInvestment={initialInvestment}
-                    userId={user?.id || ''}
-                    onInitialInvestmentUpdate={setInitialInvestment}
-                  />
-                </Suspense>
-              </TabsContent>
-
-              <TabsContent value="weekly" className="glass rounded-2xl p-6">
-                <Suspense fallback={<DashboardSkeleton />}>
-                  <WeeklyReview 
-                    trades={processedTrades}
-                  />
-                </Suspense>
-              </TabsContent>
-
-              <TabsContent value="monthly" className="glass rounded-2xl p-6">
-                <Suspense fallback={<DashboardSkeleton />}>
-                  <MonthlyReport 
-                    trades={processedTrades}
-                  />
-                </Suspense>
-              </TabsContent>
-
-              <TabsContent value="goals" className="space-y-4 md:space-y-6 glass rounded-2xl p-6">
-                <Suspense fallback={<DashboardSkeleton />}>
-                  <GoalsTracker 
-                    trades={processedTrades}
-                  />
-                  <ExpenseTracker />
                 </Suspense>
               </TabsContent>
             </Tabs>

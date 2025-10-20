@@ -1,7 +1,10 @@
 import { Twitter, Github, Linkedin, Mail } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const Footer = () => {
+  const { t } = useTranslation();
+  
   return (
     <footer className="border-t border-border/50 py-12 px-6 bg-background/60 backdrop-blur-sm">
       <div className="container mx-auto max-w-6xl">
@@ -12,7 +15,7 @@ const Footer = () => {
               <Logo size="lg" variant="horizontal" showText={true} />
             </div>
             <p className="text-muted-foreground text-sm mb-5 leading-relaxed">
-              The premium trading journal for serious traders who want to level up their game.
+              {t('landing.footer.tagline')}
             </p>
             <div className="flex gap-3">
               <a href="#" className="text-muted-foreground hover:text-primary transition-colors p-1.5 glass-subtle rounded-lg hover-lift">
@@ -32,26 +35,21 @@ const Footer = () => {
 
           {/* Product */}
           <div>
-            <h4 className="font-semibold mb-3 text-sm">Product</h4>
+            <h4 className="font-semibold mb-3 text-sm">{t('landing.footer.product')}</h4>
             <ul className="space-y-2.5">
               <li>
                 <a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                  Features
+                  {t('landing.footer.features')}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                  Pricing
+                  {t('landing.footer.pricing')}
                 </a>
               </li>
               <li>
                 <a href="/faq" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                  FAQ
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                  Roadmap
+                  {t('navigation.faq')}
                 </a>
               </li>
             </ul>
@@ -59,26 +57,26 @@ const Footer = () => {
 
           {/* Resources */}
           <div>
-            <h4 className="font-semibold mb-3 text-sm">Resources</h4>
+            <h4 className="font-semibold mb-3 text-sm">{t('landing.footer.support')}</h4>
             <ul className="space-y-2.5">
               <li>
                 <a href="/blog" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                  Blog
+                  {t('navigation.blog')}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                  Tutorials
+                  {t('landing.footer.help')}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                  API Docs
+                  {t('landing.footer.documentation')}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                  Community
+                  {t('landing.footer.contact')}
                 </a>
               </li>
             </ul>
@@ -86,26 +84,16 @@ const Footer = () => {
 
           {/* Company */}
           <div>
-            <h4 className="font-semibold mb-3 text-sm">Company</h4>
+            <h4 className="font-semibold mb-3 text-sm">{t('landing.footer.legal')}</h4>
             <ul className="space-y-2.5">
               <li>
                 <a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                  About
+                  {t('landing.footer.privacy')}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                  Contact
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                  Privacy
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                  Terms
+                  {t('landing.footer.terms')}
                 </a>
               </li>
             </ul>
@@ -115,7 +103,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-6 border-t border-border/50 flex flex-col md:flex-row justify-between items-center gap-3">
           <p className="text-muted-foreground text-xs md:text-sm">
-            © 2025 The Trading Diary. All rights reserved.
+            © 2025 The Trading Diary. {t('landing.footer.allRightsReserved')}
           </p>
           <p className="text-muted-foreground text-xs md:text-sm">
             Made with ❤️ for traders worldwide

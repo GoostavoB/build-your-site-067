@@ -19,30 +19,32 @@ import { useAuth } from '@/contexts/AuthContext';
 import { SidebarCryptoWidget } from '@/components/SidebarCryptoWidget';
 import { MenuCustomizationDialog } from '@/components/menu/MenuCustomizationDialog';
 import { supabase } from '@/integrations/supabase/client';
-
-const mainItems = [
-  { title: 'Dashboard', url: '/dashboard', icon: BarChart3 },
-  { title: 'Add Trade', url: '/upload', icon: Upload },
-  { title: 'Exchange Sync', url: '/exchanges', icon: RefreshCw },
-  { title: 'Spot Wallet', url: '/spot-wallet', icon: Wallet },
-  { title: 'Analytics', url: '/analytics', icon: TrendingUp },
-  { title: 'Market Data', url: '/market-data', icon: LineChart },
-  { title: 'Forecast & Goals', url: '/forecast', icon: Target },
-  { title: 'AI Assistant', url: '/ai-tools', icon: Brain },
-  { title: 'Achievements', url: '/achievements', icon: Trophy },
-  { title: 'Settings', url: '/settings', icon: Settings },
-];
-
-const resourceItems = [
-  { title: 'Blog', url: '/blog', icon: BookOpen },
-  { title: 'FAQ', url: '/faq', icon: HelpCircle },
-];
+import { useTranslation } from '@/hooks/useTranslation';
 
 export function AppSidebar() {
   const { open } = useSidebar();
   const location = useLocation();
   const { signOut } = useAuth();
+  const { t } = useTranslation();
   const [customMenuItems, setCustomMenuItems] = useState<any[]>([]);
+
+  const mainItems = [
+    { title: t('navigation.dashboard'), url: '/dashboard', icon: BarChart3 },
+    { title: t('trades.addTrade'), url: '/upload', icon: Upload },
+    { title: t('navigation.exchanges'), url: '/exchanges', icon: RefreshCw },
+    { title: t('navigation.spotWallet'), url: '/spot-wallet', icon: Wallet },
+    { title: t('navigation.analytics'), url: '/analytics', icon: TrendingUp },
+    { title: t('navigation.marketData'), url: '/market-data', icon: LineChart },
+    { title: t('navigation.forecast'), url: '/forecast', icon: Target },
+    { title: t('navigation.aiTools'), url: '/ai-tools', icon: Brain },
+    { title: t('navigation.achievements'), url: '/achievements', icon: Trophy },
+    { title: t('common.settings'), url: '/settings', icon: Settings },
+  ];
+
+  const resourceItems = [
+    { title: t('navigation.blog'), url: '/blog', icon: BookOpen },
+    { title: t('navigation.faq'), url: '/faq', icon: HelpCircle },
+  ];
 
   useEffect(() => {
     loadCustomMenuItems();
@@ -76,7 +78,7 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Main</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('navigation.home')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainItems.map((item) => (
@@ -94,7 +96,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Learn</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('landing.footer.support')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {resourceItems.map((item) => (
@@ -156,9 +158,9 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={signOut} tooltip="Logout" className="text-muted-foreground hover:text-foreground hover:bg-muted/50">
+                <SidebarMenuButton onClick={signOut} tooltip={t('auth.signOut')} className="text-muted-foreground hover:text-foreground hover:bg-muted/50">
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Logout</span>
+                  <span>{t('auth.signOut')}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

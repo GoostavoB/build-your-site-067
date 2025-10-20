@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, LayoutDashboard, BarChart3, Wrench, Users, Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -24,6 +25,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   // Enable reminder notifications
   useReminderNotifications();
   const { isCollapsed, setIsCollapsed } = useSidebarState();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -55,7 +57,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search trades, analytics..."
+                  placeholder={t('common.search')}
                   className="pl-10 glass-subtle border-0 focus-visible:ring-1 focus-visible:ring-primary/20"
                 />
               </div>

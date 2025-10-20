@@ -28,6 +28,7 @@ import { WIDGET_CATALOG } from '@/config/widgetCatalog';
 import { WidgetLibrary } from '@/components/widgets/WidgetLibrary';
 import { SortableWidget } from '@/components/widgets/SortableWidget';
 import { toast } from 'sonner';
+import { useTranslation } from '@/hooks/useTranslation';
 
 // Lazy load heavy components
 const TradeHistory = lazy(() => import('@/components/TradeHistory').then(m => ({ default: m.TradeHistory })));
@@ -57,6 +58,7 @@ interface TradeStats {
 const Dashboard = () => {
   useKeyboardShortcuts();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [stats, setStats] = useState<TradeStats | null>(null);
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(true);
@@ -474,8 +476,8 @@ const Dashboard = () => {
       <div id="main-dashboard-content" className="space-y-6 mobile-safe animate-fade-in">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-1 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">Dashboard</h1>
-            <p className="text-sm text-muted-foreground/80">Track your trading performance and analytics</p>
+            <h1 className="text-3xl md:text-4xl font-bold mb-1 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">{t('dashboard.title')}</h1>
+            <p className="text-sm text-muted-foreground/80">{t('dashboard.overview')}</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <AccentColorPicker />
@@ -504,7 +506,7 @@ const Dashboard = () => {
                 variant="outline"
                 className="glass"
               >
-                Customize Dashboard
+                {t('dashboard.customizeLayout')}
               </Button>
             ) : (
               <>
@@ -514,16 +516,16 @@ const Dashboard = () => {
                   className="glass"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Widget
+                  {t('common.add')} {t('widgets.quickActions').split(' ')[0]}
                 </Button>
                 <Button onClick={handleSaveLayout} variant="default">
-                  Save Layout
+                  {t('dashboard.saveLayout')}
                 </Button>
                 <Button onClick={handleCancelCustomize} variant="outline">
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button onClick={resetLayout} variant="ghost">
-                  Reset to Default
+                  {t('dashboard.resetLayout')}
                 </Button>
               </>
             )}
@@ -534,12 +536,12 @@ const Dashboard = () => {
           <DashboardSkeleton />
         ) : stats && stats.total_trades === 0 ? (
           <Card className="p-8 text-center glass">
-            <h3 className="text-xl font-semibold mb-2">No trades yet</h3>
+            <h3 className="text-xl font-semibold mb-2">{t('trades.trades')}</h3>
             <p className="text-muted-foreground mb-4">
-              Start by uploading your first trade to see analytics and insights
+              {t('upload.uploadSuccess')}
             </p>
             <a href="/upload" className="text-primary hover:underline">
-              Upload Trade →
+              {t('trades.addTrade')} →
             </a>
           </Card>
         ) : (
@@ -547,9 +549,9 @@ const Dashboard = () => {
             {/* Main Content Tabs */}
             <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6 animate-fade-in" style={{animationDelay: '0.5s'}}>
               <TabsList className="glass rounded-2xl grid w-full grid-cols-3 h-auto p-1.5">
-                <TabsTrigger value="overview" className="text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">Overview</TabsTrigger>
-                <TabsTrigger value="insights" className="text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">Insights</TabsTrigger>
-                <TabsTrigger value="history" className="text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">History</TabsTrigger>
+                <TabsTrigger value="overview" className="text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">{t('dashboard.overview')}</TabsTrigger>
+                <TabsTrigger value="insights" className="text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">{t('analytics.insights')}</TabsTrigger>
+                <TabsTrigger value="history" className="text-sm py-2.5 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10 data-[state=active]:shadow-sm rounded-xl transition-all">{t('trades.tradeHistory')}</TabsTrigger>
               </TabsList>
 
               {/* Overview Tab - Main Dashboard Grid */}

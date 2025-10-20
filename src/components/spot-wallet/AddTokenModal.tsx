@@ -7,9 +7,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { CalendarIcon, ChevronsUpDown, Check, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useTokenSearch } from '@/hooks/useTokenSearch';
 
 interface AddTokenModalProps {
   open: boolean;
@@ -38,6 +40,27 @@ const POPULAR_TOKENS = [
   { symbol: 'AVAX', name: 'Avalanche' },
 ];
 
+const EXCHANGES = [
+  "Binance",
+  "BingX",
+  "Bitfinex",
+  "Bitget",
+  "Bitstamp",
+  "Bithumb",
+  "Bybit",
+  "Coinbase",
+  "Crypto.com Exchange",
+  "Gate.io",
+  "Gemini",
+  "Huobi",
+  "Kraken",
+  "KuCoin",
+  "MEXC",
+  "OKX",
+  "Uniswap",
+  "Other"
+].sort();
+
 export const AddTokenModal = ({ open, onClose, onAdd }: AddTokenModalProps) => {
   const [tokenSymbol, setTokenSymbol] = useState('');
   const [tokenName, setTokenName] = useState('');
@@ -46,6 +69,11 @@ export const AddTokenModal = ({ open, onClose, onAdd }: AddTokenModalProps) => {
   const [purchaseDate, setPurchaseDate] = useState<Date>();
   const [exchange, setExchange] = useState('');
   const [notes, setNotes] = useState('');
+  const [openExchange, setOpenExchange] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showTokenResults, setShowTokenResults] = useState(false);
+  
+  const { results: tokenResults, loading: searchLoading } = useTokenSearch(searchQuery);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,12 +99,17 @@ export const AddTokenModal = ({ open, onClose, onAdd }: AddTokenModalProps) => {
     onClose();
   };
 
-  const handleTokenSelect = (symbol: string) => {
-    const token = POPULAR_TOKENS.find(t => t.symbol === symbol);
-    if (token) {
-      setTokenSymbol(token.symbol);
-      setTokenName(token.name);
-    }
+  const handleTokenSelect = (symbol: string, name: string) => {
+    setTokenSymbol(symbol.toUpperCase());
+    setTokenName(name);
+    setSearchQuery('');
+    setShowTokenResults(false);
+  };
+
+  const handleSymbolChange = (value: string) => {
+    setTokenSymbol(value.toUpperCase());
+    setSearchQuery(value);
+    setShowTokenResults(value.length >= 2);
   };
 
   return (
@@ -92,11 +125,14 @@ export const AddTokenModal = ({ open, onClose, onAdd }: AddTokenModalProps) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label>Quick Select</Label>
-            <Select onValueChange={handleTokenSelect}>
+            <Select onValueChange={(value) => {
+              const token = POPULAR_TOKENS.find(t => t.symbol === value);
+              if (token) handleTokenSelect(token.symbol, token.name);
+            }}>
               <SelectTrigger>
                 <SelectValue placeholder="Select popular token" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-popover z-50">
                 {POPULAR_TOKENS.map(token => (
                   <SelectItem key={token.symbol} value={token.symbol}>
                     {token.symbol} - {token.name}
@@ -107,15 +143,45 @@ export const AddTokenModal = ({ open, onClose, onAdd }: AddTokenModalProps) => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <Label htmlFor="symbol">Symbol *</Label>
               <Input
                 id="symbol"
                 placeholder="BTC"
                 value={tokenSymbol}
-                onChange={(e) => setTokenSymbol(e.target.value.toUpperCase())}
+                onChange={(e) => handleSymbolChange(e.target.value)}
+                onFocus={() => setShowTokenResults(searchQuery.length >= 2)}
                 required
               />
+              {showTokenResults && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-popover border rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
+                  {searchLoading ? (
+                    <div className="p-4 flex items-center justify-center gap-2 text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Searching...
+                    </div>
+                  ) : tokenResults.length > 0 ? (
+                    <div className="py-1">
+                      {tokenResults.map((token) => (
+                        <button
+                          key={token.id}
+                          type="button"
+                          onClick={() => handleTokenSelect(token.symbol, token.name)}
+                          className="w-full px-3 py-2 text-left hover:bg-accent flex items-center gap-2"
+                        >
+                          <img src={token.thumb} alt={token.name} className="w-5 h-5 rounded-full" />
+                          <span className="font-medium">{token.symbol.toUpperCase()}</span>
+                          <span className="text-muted-foreground text-sm">- {token.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : searchQuery.length >= 2 ? (
+                    <div className="p-4 text-sm text-muted-foreground text-center">
+                      No tokens found. You can add it manually.
+                    </div>
+                  ) : null}
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -186,12 +252,47 @@ export const AddTokenModal = ({ open, onClose, onAdd }: AddTokenModalProps) => {
 
             <div className="space-y-2">
               <Label htmlFor="exchange">Exchange</Label>
-              <Input
-                id="exchange"
-                placeholder="Binance"
-                value={exchange}
-                onChange={(e) => setExchange(e.target.value)}
-              />
+              <Popover open={openExchange} onOpenChange={setOpenExchange}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={openExchange}
+                    className="w-full justify-between"
+                  >
+                    {exchange || "Select exchange"}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0 bg-popover z-50" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search exchanges..." />
+                    <CommandList>
+                      <CommandEmpty>No exchange found.</CommandEmpty>
+                      <CommandGroup>
+                        {EXCHANGES.map((ex) => (
+                          <CommandItem
+                            key={ex}
+                            value={ex}
+                            onSelect={(currentValue) => {
+                              setExchange(currentValue === exchange.toLowerCase() ? "" : ex);
+                              setOpenExchange(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                exchange === ex ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {ex}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 

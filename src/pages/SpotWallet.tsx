@@ -10,6 +10,7 @@ import { TokenAllocationChart } from '@/components/spot-wallet/TokenAllocationCh
 import { TokenList } from '@/components/spot-wallet/TokenList';
 import { TokenIcon } from '@/components/TokenIcon';
 import { formatCurrency, formatPercent } from '@/utils/formatNumber';
+import AppLayout from '@/components/layout/AppLayout';
 
 export default function SpotWallet() {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -39,7 +40,8 @@ export default function SpotWallet() {
   }));
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <AppLayout>
+      <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -175,6 +177,7 @@ export default function SpotWallet() {
         onClose={() => setShowAddModal(false)}
         onAdd={handleAddToken}
       />
-    </div>
+      </div>
+    </AppLayout>
   );
 }

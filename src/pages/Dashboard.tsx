@@ -4,47 +4,27 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/layout/AppLayout';
-import { TrendingUp, TrendingDown, DollarSign, Target, Eye, EyeOff, Info, GripVertical } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import { DashboardCharts } from '@/components/DashboardCharts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PerformanceInsights } from '@/components/PerformanceInsights';
 import { DashboardSkeleton } from '@/components/DashboardSkeleton';
 import { ExportTradesDialog } from '@/components/ExportTradesDialog';
 import { TradingStreaks } from '@/components/TradingStreaks';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { DateRangeFilter, DateRange } from '@/components/DateRangeFilter';
-import { DashboardWidget } from '@/components/DashboardWidget';
-import { CustomizeDashboardControls } from '@/components/CustomizeDashboardControls';
 import { AccentColorPicker } from '@/components/AccentColorPicker';
-import { WinsByHourChart } from '@/components/charts/WinsByHourChart';
-import { MaxDrawdownCard } from '@/components/MaxDrawdownCard';
-import { TopAssetsByWinRate } from '@/components/TopAssetsByWinRate';
-import { CurrentStreakCard } from '@/components/CurrentStreakCard';
-import { TotalBalanceCard } from '@/components/TotalBalanceCard';
-import { SpotWalletCard } from '@/components/spot-wallet/SpotWalletCard';
-import { TopMoversCard } from '@/components/TopMoversCard';
-import { QuickActionCard } from '@/components/QuickActionCard';
-import { RecentTransactionsCard } from '@/components/RecentTransactionsCard';
-import { PremiumCTACard } from '@/components/PremiumCTACard';
-import { AIInsightCard } from '@/components/AIInsightCard';
-import { useDashboardLayout } from '@/hooks/useDashboardLayout';
+import { useWidgetLayout } from '@/hooks/useWidgetLayout';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useBadgeNotifications } from '@/hooks/useBadgeNotifications';
 import { useSpotWallet } from '@/hooks/useSpotWallet';
 import { useTokenPrices } from '@/hooks/useTokenPrices';
-import { useWalletAnalytics } from '@/hooks/useWalletAnalytics';
-import { LazyChart } from '@/components/LazyChart';
-import { formatNumber, formatPercent, formatCurrency } from '@/utils/formatNumber';
+import { formatCurrency } from '@/utils/formatNumber';
 import type { Trade } from '@/types/trade';
-import { LineChart, Line, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
+import { WIDGET_CATALOG } from '@/config/widgetCatalog';
+import { WidgetLibrary } from '@/components/widgets/WidgetLibrary';
 
 // Lazy load heavy components
 const TradeHistory = lazy(() => import('@/components/TradeHistory').then(m => ({ default: m.TradeHistory })));
@@ -103,19 +83,24 @@ const Dashboard = () => {
       else window.scrollTo({ top: prevScrollTop });
     });
   }, []);
+  // Widget system
   const {
-    widgets,
     layout,
-    isCustomizing,
-    hasChanges,
-    setIsCustomizing,
-    toggleWidgetVisibility,
+    isLoading: isLayoutLoading,
     updateLayout,
     saveLayout,
+    addWidget,
+    removeWidget,
     resetLayout,
-    cancelCustomization,
-    isWidgetVisible,
-  } = useDashboardLayout();
+    activeWidgets,
+  } = useWidgetLayout(user?.id);
+
+  const [isCustomizing, setIsCustomizing] = useState(false);
+  const [showWidgetLibrary, setShowWidgetLibrary] = useState(false);
+
+  // Spot wallet data for widget
+  const { holdings, isLoading: isSpotWalletLoading } = useSpotWallet();
+  const { prices } = useTokenPrices(holdings.map(h => h.token_symbol));
 
   const fetchCapitalLog = async () => {
     if (!user) return;
@@ -299,30 +284,103 @@ const Dashboard = () => {
 
   const handleStartCustomize = useCallback(() => {
     setIsCustomizing(true);
-  }, [setIsCustomizing]);
+  }, []);
 
-  const StatCard = ({ title, value, icon: Icon, trend, valueColor, animated = false, numericValue }: any) => (
-    <Card className="p-5 glass hover-lift transition-all duration-300">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground mb-1">{title}</p>
-          <div className={`text-2xl font-bold ${valueColor || ''}`}>
-            {animated && typeof numericValue === 'number' ? (
-              value
-            ) : (
-              value
-            )}
-          </div>
-        </div>
-        <div className="p-2.5 rounded-xl bg-primary/10">
-          <Icon 
-            className={trend === 'up' ? 'text-neon-green' : trend === 'down' ? 'text-neon-red' : 'text-primary'} 
-            size={24} 
-          />
-        </div>
+  const handleSaveLayout = useCallback(() => {
+    saveLayout(layout);
+    setIsCustomizing(false);
+  }, [layout, saveLayout]);
+
+  const handleCancelCustomize = useCallback(() => {
+    setIsCustomizing(false);
+  }, []);
+
+  // Prepare widget data
+  const spotWalletTotal = useMemo(() => {
+    return holdings.reduce((sum, holding) => {
+      const price = Number(prices[holding.token_symbol] || 0);
+      return sum + (Number(holding.quantity) * price);
+    }, 0);
+  }, [holdings, prices]);
+
+  const portfolioChartData = useMemo(() => {
+    const combined = [...trades, ...capitalLog.map(c => ({
+      trade_date: c.log_date,
+      pnl: c.amount_added
+    }))].sort((a, b) => 
+      new Date(a.trade_date).getTime() - new Date(b.trade_date).getTime()
+    );
+
+    let cumulative = initialInvestment;
+    return combined.map(item => {
+      cumulative += item.pnl || 0;
+      return {
+        date: new Date(item.trade_date).toLocaleDateString(),
+        value: cumulative
+      };
+    });
+  }, [trades, capitalLog, initialInvestment]);
+
+  // Dynamic widget renderer
+  const renderWidget = useCallback((layoutItem: any) => {
+    const widgetConfig = WIDGET_CATALOG[layoutItem.i];
+    if (!widgetConfig) return null;
+
+    const WidgetComponent = widgetConfig.component;
+    const widgetId = layoutItem.i;
+
+    // Prepare props based on widget ID
+    const widgetProps: any = {
+      id: widgetId,
+      isEditMode: isCustomizing,
+      onRemove: () => removeWidget(widgetId),
+    };
+
+    // Add widget-specific data
+    switch (widgetId) {
+      case 'totalBalance':
+        widgetProps.totalBalance = stats?.total_pnl || 0;
+        widgetProps.change24h = stats?.total_pnl || 0;
+        widgetProps.changePercent24h = initialInvestment > 0 
+          ? ((stats?.total_pnl || 0) / initialInvestment) * 100 
+          : 0;
+        break;
+      case 'winRate':
+        const winningTrades = processedTrades.filter(t => t.pnl > 0).length;
+        const losingTrades = processedTrades.filter(t => t.pnl <= 0).length;
+        widgetProps.winRate = stats?.win_rate || 0;
+        widgetProps.wins = winningTrades;
+        widgetProps.losses = losingTrades;
+        break;
+      case 'totalTrades':
+        widgetProps.totalTrades = stats?.total_trades || 0;
+        break;
+      case 'spotWallet':
+        widgetProps.totalValue = spotWalletTotal;
+        widgetProps.change24h = 0; // TODO: Calculate from snapshots
+        widgetProps.changePercent24h = 0;
+        widgetProps.tokenCount = holdings.length;
+        break;
+      case 'portfolioOverview':
+        widgetProps.data = portfolioChartData;
+        widgetProps.totalValue = stats?.total_pnl || 0;
+        break;
+      case 'topMovers':
+      case 'aiInsights':
+      case 'recentTransactions':
+        widgetProps.trades = processedTrades;
+        break;
+      case 'quickActions':
+        // No additional props needed
+        break;
+    }
+
+    return (
+      <div key={layoutItem.i} className="dash-card">
+        <WidgetComponent {...widgetProps} />
       </div>
-    </Card>
-  );
+    );
+  }, [isCustomizing, removeWidget, stats, processedTrades, initialInvestment, spotWalletTotal, holdings, portfolioChartData]);
 
   return (
     <AppLayout>
@@ -355,16 +413,41 @@ const Dashboard = () => {
         </div>
 
         {/* Customize Dashboard Controls */}
-        <CustomizeDashboardControls
-          isCustomizing={isCustomizing}
-          hasChanges={hasChanges}
-          onStartCustomize={handleStartCustomize}
-          onSave={saveLayout}
-          onCancel={cancelCustomization}
-          onReset={resetLayout}
-          widgets={widgets}
-          onToggleWidget={toggleWidgetVisibility}
-        />
+        {!loading && stats && stats.total_trades > 0 && (
+          <div className="flex items-center gap-2 flex-wrap">
+            {!isCustomizing ? (
+              <>
+                <Button
+                  onClick={handleStartCustomize}
+                  variant="outline"
+                  className="glass"
+                >
+                  Customize Dashboard
+                </Button>
+                <Button
+                  onClick={() => setShowWidgetLibrary(true)}
+                  variant="outline"
+                  className="glass"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Widget
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button onClick={handleSaveLayout} variant="default">
+                  Save Layout
+                </Button>
+                <Button onClick={handleCancelCustomize} variant="outline">
+                  Cancel
+                </Button>
+                <Button onClick={resetLayout} variant="ghost">
+                  Reset to Default
+                </Button>
+              </>
+            )}
+          </div>
+        )}
 
         {loading ? (
           <DashboardSkeleton />
@@ -405,282 +488,10 @@ const Dashboard = () => {
                     draggableHandle=".drag-handle"
                     compactType="vertical"
                   >
-              {/* Total Balance Card */}
-              {(isCustomizing || isWidgetVisible('totalBalance')) && (
-                <div key="totalBalance" className={`dash-card ${isCustomizing && !isWidgetVisible('totalBalance') ? 'opacity-50' : ''}`}>
-                  {isCustomizing && (
-                    <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 hover:bg-primary/10"
-                        onClick={() => toggleWidgetVisibility('totalBalance')}
-                        title={isWidgetVisible('totalBalance') ? "Hide widget" : "Show widget"}
-                      >
-                        {isWidgetVisible('totalBalance') ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                      </Button>
-                    </div>
-                  )}
-                  <TotalBalanceCard 
-                    balance={stats?.total_pnl || 0}
-                    change={stats?.total_pnl || 0}
-                    changePercent={initialInvestment > 0 ? ((stats?.total_pnl || 0) / initialInvestment) * 100 : 0}
-                    trades={processedTrades}
-                  />
+                    {layout.map(renderWidget)}
+                  </GridLayout>
                 </div>
-              )}
-
-              {/* Stats Overview */}
-              {(isCustomizing || isWidgetVisible('stats')) && (
-                <div key="stats" className={`dash-card ${isCustomizing && !isWidgetVisible('stats') ? 'opacity-50' : ''}`}>
-                  {isCustomizing && (
-                    <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 hover:bg-primary/10"
-                        onClick={() => toggleWidgetVisibility('stats')}
-                        title={isWidgetVisible('stats') ? "Hide widget" : "Show widget"}
-                      >
-                        {isWidgetVisible('stats') ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                      </Button>
-                    </div>
-                  )}
-                  <div className="grid grid-cols-2 gap-4 h-full">
-                    <div className="glass rounded-2xl p-4 hover-lift">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Target className="h-4 w-4 text-primary" />
-                        <div className="text-xs text-muted-foreground font-medium">Win Rate</div>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className="cursor-help">
-                                <Info className="h-3 w-3 text-muted-foreground/60" />
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent className="max-w-xs">
-                              <p>Percentage of winning trades out of total trades</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                      <div className="text-2xl font-bold text-foreground">
-                        <AnimatedCounter value={stats?.win_rate || 0} suffix="%" decimals={1} />
-                      </div>
-                      <div className="chart-wrapper h-10 mt-2">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <LineChart data={trades.slice(-7).map((t, i) => ({ 
-                            value: trades.slice(0, i + 1).filter(trade => trade.pnl > 0).length / (i + 1) * 100 
-                          }))}>
-                            <Line 
-                              type="monotone" 
-                              dataKey="value" 
-                              stroke="hsl(var(--primary))" 
-                              strokeWidth={2}
-                              dot={false}
-                              isAnimationActive={false}
-                            />
-                            <RechartsTooltip 
-                              content={({ active, payload }: any) => {
-                                if (active && payload && payload.length) {
-                                  return (
-                                    <div className="glass-strong px-3 py-2 rounded-lg text-sm font-semibold border border-border/50 shadow-lg">
-                                      {(payload[0].value as number).toFixed(1)}%
-                                    </div>
-                                  );
-                                }
-                                return null;
-                              }}
-                              cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '3 3' }}
-                            />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
-                    
-                    <div className="glass rounded-2xl p-4 hover-lift">
-                      <div className="flex items-center gap-2 mb-2">
-                        <TrendingUp className="h-4 w-4 text-primary" />
-                        <div className="text-xs text-muted-foreground font-medium">Total Trades</div>
-                      </div>
-                      <div className="text-2xl font-bold text-foreground">
-                        <AnimatedCounter value={stats?.total_trades || 0} decimals={0} />
-                      </div>
-                      <div className="chart-wrapper h-10 mt-2">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <LineChart data={trades.slice(-7).map((_, i) => ({ 
-                            value: trades.slice(0, -7 + i + 1).length 
-                          }))}>
-                            <Line 
-                              type="monotone" 
-                              dataKey="value" 
-                              stroke="hsl(var(--primary))" 
-                              strokeWidth={2}
-                              dot={false}
-                              isAnimationActive={false}
-                            />
-                            <RechartsTooltip 
-                              content={({ active, payload }: any) => {
-                                if (active && payload && payload.length) {
-                                  return (
-                                    <div className="glass-strong px-3 py-2 rounded-lg text-sm font-semibold border border-border/50 shadow-lg">
-                                      {Math.round(payload[0].value as number)} trades
-                                    </div>
-                                  );
-                                }
-                                return null;
-                              }}
-                              cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '3 3' }}
-                            />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Portfolio Overview */}
-              {(isCustomizing || isWidgetVisible('portfolio')) && (
-                <div key="portfolio" className={`dash-card ${isCustomizing && !isWidgetVisible('portfolio') ? 'opacity-50' : ''}`}>
-                  {isCustomizing && (
-                    <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 hover:bg-primary/10"
-                        onClick={() => toggleWidgetVisibility('portfolio')}
-                        title={isWidgetVisible('portfolio') ? "Hide widget" : "Show widget"}
-                      >
-                        {isWidgetVisible('portfolio') ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                      </Button>
-                    </div>
-                  )}
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold">Portfolio Overview</h3>
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm" className="text-xs h-7 px-2">7D</Button>
-                      <Button variant="ghost" size="sm" className="text-xs h-7 px-2 bg-primary/10 text-primary">30D</Button>
-                      <Button variant="ghost" size="sm" className="text-xs h-7 px-2">90D</Button>
-                    </div>
-                  </div>
-                  <div className="chart-wrapper">
-                    <LazyChart height={256}>
-                      <DashboardCharts 
-                        trades={processedTrades} 
-                        chartType="cumulative" 
-                      />
-                    </LazyChart>
-                  </div>
-                </div>
-              )}
-
-              {/* Top Movers */}
-              {(isCustomizing || isWidgetVisible('topMovers')) && (
-                <div key="topMovers" className={`dash-card ${isCustomizing && !isWidgetVisible('topMovers') ? 'opacity-50' : ''}`}>
-                  {isCustomizing && (
-                    <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 hover:bg-primary/10"
-                        onClick={() => toggleWidgetVisibility('topMovers')}
-                        title={isWidgetVisible('topMovers') ? "Hide widget" : "Show widget"}
-                      >
-                        {isWidgetVisible('topMovers') ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                      </Button>
-                    </div>
-                  )}
-                  <TopMoversCard trades={processedTrades} />
-                </div>
-              )}
-
-              {/* Quick Actions */}
-              {(isCustomizing || isWidgetVisible('quickActions')) && (
-                <div key="quickActions" className={`dash-card ${isCustomizing && !isWidgetVisible('quickActions') ? 'opacity-50' : ''}`}>
-                  {isCustomizing && (
-                    <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 hover:bg-primary/10"
-                        onClick={() => toggleWidgetVisibility('quickActions')}
-                        title={isWidgetVisible('quickActions') ? "Hide widget" : "Show widget"}
-                      >
-                        {isWidgetVisible('quickActions') ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                      </Button>
-                    </div>
-                  )}
-                  <QuickActionCard />
-                </div>
-              )}
-
-              {/* Recent Transactions */}
-              {(isCustomizing || isWidgetVisible('recentTransactions')) && (
-                <div key="recentTransactions" className={`dash-card ${isCustomizing && !isWidgetVisible('recentTransactions') ? 'opacity-50' : ''}`}>
-                  {isCustomizing && (
-                    <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 hover:bg-primary/10"
-                        onClick={() => toggleWidgetVisibility('recentTransactions')}
-                        title={isWidgetVisible('recentTransactions') ? "Hide widget" : "Show widget"}
-                      >
-                        {isWidgetVisible('recentTransactions') ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                      </Button>
-                    </div>
-                  )}
-                  <RecentTransactionsCard trades={processedTrades} />
-                </div>
-              )}
-
-              {/* AI Insight */}
-              {(isCustomizing || isWidgetVisible('insights')) && (
-                <div key="insights" className={`dash-card ${isCustomizing && !isWidgetVisible('insights') ? 'opacity-50' : ''}`}>
-                  {isCustomizing && (
-                    <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 hover:bg-primary/10"
-                        onClick={() => toggleWidgetVisibility('insights')}
-                        title={isWidgetVisible('insights') ? "Hide widget" : "Show widget"}
-                      >
-                        {isWidgetVisible('insights') ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                      </Button>
-                    </div>
-                  )}
-                  <AIInsightCard 
-                    trades={processedTrades}
-                    capitalLog={capitalLog}
-                    stats={dashboardStats}
-                  />
-                </div>
-              )}
-
-              {/* Premium CTA */}
-              {(isCustomizing || isWidgetVisible('premiumCTA')) && (
-                <div key="premiumCTA" className={`dash-card ${isCustomizing && !isWidgetVisible('premiumCTA') ? 'opacity-50' : ''}`}>
-                  {isCustomizing && (
-                    <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 hover:bg-primary/10"
-                        onClick={() => toggleWidgetVisibility('premiumCTA')}
-                        title={isWidgetVisible('premiumCTA') ? "Hide widget" : "Show widget"}
-                      >
-                        {isWidgetVisible('premiumCTA') ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                      </Button>
-                    </div>
-                  )}
-                  <PremiumCTACard />
-                </div>
-              )}
-              </GridLayout>
-                </div>
-            </TabsContent>
+              </TabsContent>
 
             {/* Insights Tab */}
             <TabsContent value="insights" className="space-y-4 md:space-y-6 relative glass rounded-2xl p-6">
@@ -706,6 +517,14 @@ const Dashboard = () => {
         <Suspense fallback={null}>
           <AIAssistant />
         </Suspense>
+
+        {/* Widget Library Modal */}
+        <WidgetLibrary
+          open={showWidgetLibrary}
+          onClose={() => setShowWidgetLibrary(false)}
+          onAddWidget={addWidget}
+          activeWidgets={activeWidgets}
+        />
       </div>
     </AppLayout>
   );

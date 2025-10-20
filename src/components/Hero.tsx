@@ -1,115 +1,87 @@
 import { Button } from "@/components/ui/button";
-import { TrendingUp, BarChart3, Upload } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import bullBearRealistic from "@/assets/bull-bear-realistic.png";
 
 const Hero = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image with Blur Overlay */}
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-6 py-16">
+      {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img 
           src={bullBearRealistic} 
           alt="Trading background"
-          className="w-full h-full object-cover opacity-20"
+          className="w-full h-full object-cover opacity-15"
         />
-        <div className="absolute inset-0 bg-background/40 backdrop-blur-[30px]"></div>
+        <div className="absolute inset-0 bg-background/50 backdrop-blur-[50px]"></div>
       </div>
+      
+      {/* Dynamic Glow Effects */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[150px] animate-pulse"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/15 rounded-full blur-[150px] animate-pulse" style={{ animationDelay: '1s' }}></div>
 
-      {/* Ambient Glows */}
-      <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[180px] animate-pulse"></div>
-      <div className="absolute bottom-1/3 right-1/4 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[180px] animate-pulse" style={{ animationDelay: '1s' }}></div>
-
-      {/* Content - Centered Column */}
-      <div className="relative z-10 w-full max-w-[720px] mx-auto px-6 text-center py-[8vh] md:py-[12vh] flex flex-col items-center gap-6">
-        {/* Icons Row */}
-        <div className="flex justify-center gap-4 md:gap-6 animate-fade-in">
-          <div className="p-3 md:p-4 glass rounded-xl hover-lift transition-all">
-            <TrendingUp className="text-primary" size={32} />
-          </div>
-          <div className="p-3 md:p-4 glass rounded-xl hover-lift transition-all">
-            <BarChart3 className="text-primary" size={32} />
-          </div>
-          <div className="p-3 md:p-4 glass rounded-xl hover-lift transition-all">
-            <Upload className="text-primary" size={32} />
-          </div>
-        </div>
-        
-        {/* Headline */}
-        <h1 
-          className="font-bold tracking-tight leading-tight animate-fade-in"
-          style={{ 
-            fontSize: 'clamp(2.4rem, 5vw, 3.6rem)',
-            animationDelay: '0.1s' 
-          }}
-        >
-          <span className="text-gradient-primary">
-            The Trading Diary
-          </span>
-        </h1>
-        
-        {/* Subtitle */}
-        <p 
-          className="font-medium animate-fade-in"
-          style={{ 
-            fontSize: '1.1rem',
-            color: 'hsl(var(--foreground) / 0.7)',
-            animationDelay: '0.2s' 
-          }}
-        >
-          Upload your trade. Track your performance.
-        </p>
-        
-        {/* Description */}
-        <p 
-          className="text-muted-foreground max-w-[540px] leading-relaxed animate-fade-in"
-          style={{ 
-            lineHeight: '1.5',
-            animationDelay: '0.3s' 
-          }}
-        >
-          Built for traders who demand precision and clarity.
-        </p>
-        
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center w-full sm:w-auto animate-fade-in" style={{ animationDelay: '0.4s' }}>
-          <Button 
-            onClick={() => navigate('/auth')}
-            className="w-full sm:w-auto px-7 py-6 text-base font-medium rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+      <div className="container mx-auto max-w-6xl relative z-10">
+        <div className="text-center space-y-8">
+          {/* Main Headline */}
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight"
           >
-            Get Started
-          </Button>
-          <Button 
-            onClick={() => navigate('/auth')}
-            className="w-full sm:w-auto px-7 py-6 text-base font-medium rounded-xl glass backdrop-blur-[10px] border-border/50 hover:bg-primary/10 hover:border-primary/50 transition-all shadow-md hover:shadow-lg hover:scale-105"
-            variant="outline"
-          >
-            Try for Free
-          </Button>
-        </div>
+            Turn your trading data into{" "}
+            <span className="text-gradient-primary inline-block animate-fade-in">real profit</span>
+          </motion.h1>
 
-        {/* Stats Row - Glass Cards */}
-        <div className="flex flex-col md:flex-row gap-3 md:gap-4 w-full md:w-auto animate-fade-in mt-8" style={{ animationDelay: '0.5s' }}>
-          <div className="glass backdrop-blur-[12px] rounded-2xl p-5 text-center min-w-[180px] shadow-sm hover-lift transition-all">
-            <div className="text-3xl font-semibold mb-1" style={{ color: 'hsl(var(--primary))' }}>
-              10K+
+          {/* Supporting Text */}
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
+          >
+            Log every move, analyze results, and sharpen your edge.
+          </motion.p>
+
+          {/* CTA Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <Button 
+              onClick={() => navigate('/auth')}
+              className="px-8 py-7 text-lg font-medium rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+            >
+              Start for Free
+            </Button>
+            <p className="text-xs md:text-sm text-muted-foreground mt-4">
+              No credit card required • Free forever
+            </p>
+          </motion.div>
+
+          {/* Stats Cards */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 max-w-3xl mx-auto mt-16"
+          >
+            <div className="glass-strong backdrop-blur-[20px] p-5 rounded-xl shadow-lg border border-primary/10">
+              <div className="text-2xl md:text-3xl font-bold text-primary mb-1">10,000+</div>
+              <div className="text-xs text-muted-foreground">Active Traders</div>
             </div>
-            <div className="text-sm text-muted-foreground">Active Traders</div>
-          </div>
-          <div className="glass backdrop-blur-[12px] rounded-2xl p-5 text-center min-w-[180px] shadow-sm hover-lift transition-all">
-            <div className="text-3xl font-semibold mb-1" style={{ color: 'hsl(var(--primary))' }}>
-              2M+
+            <div className="glass-strong backdrop-blur-[20px] p-5 rounded-xl shadow-lg border border-primary/10">
+              <div className="text-2xl md:text-3xl font-bold text-primary mb-1">1M+</div>
+              <div className="text-xs text-muted-foreground">Trades Logged</div>
             </div>
-            <div className="text-sm text-muted-foreground">Trades Logged</div>
-          </div>
-          <div className="glass backdrop-blur-[12px] rounded-2xl p-5 text-center min-w-[180px] shadow-sm hover-lift transition-all">
-            <div className="text-3xl font-semibold mb-1" style={{ color: 'hsl(var(--primary))' }}>
-              98%
+            <div className="glass-strong backdrop-blur-[20px] p-5 rounded-xl shadow-lg border border-primary/10">
+              <div className="text-2xl md:text-3xl font-bold text-primary mb-1">98%</div>
+              <div className="text-xs text-muted-foreground">Satisfaction</div>
             </div>
-            <div className="text-sm text-muted-foreground">Satisfaction</div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

@@ -1,5 +1,7 @@
 import Hero from "@/components/Hero";
+import DashboardShowcase from "@/components/DashboardShowcase";
 import Features from "@/components/Features";
+import ExchangeLogos from "@/components/ExchangeLogos";
 import Testimonials from "@/components/Testimonials";
 import Pricing from "@/components/Pricing";
 import CTA from "@/components/CTA";
@@ -24,7 +26,9 @@ const Index = () => {
         </Button>
       </div>
       <Hero />
+      <DashboardShowcase />
       <Features />
+      <ExchangeLogos />
       <Testimonials />
       <Pricing />
       <CTA />

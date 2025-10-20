@@ -1,0 +1,110 @@
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+
+const DashboardShowcase = () => {
+  const navigate = useNavigate();
+
+  return (
+    <section className="py-20 md:py-28 px-6 relative overflow-hidden bg-gradient-to-b from-background via-gray-900/30 to-background">
+      {/* Ambient Glow Effects */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px]"></div>
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-[120px]"></div>
+      
+      <div className="container mx-auto max-w-7xl">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Left Side - Content */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="space-y-6 lg:pr-8"
+          >
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
+              Other journals show numbers.{" "}
+              <span className="text-gradient-primary">This one shows progress.</span>
+            </h2>
+            
+            <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-xl">
+              Every feature was designed by active traders to help you understand your decisions, 
+              not just record them. It's not a tool, it's your trading coach.
+            </p>
+            
+            <Button 
+              onClick={() => navigate('/auth')}
+              variant="outline"
+              className="group border-primary/30 hover:bg-primary/10 hover:border-primary/50 transition-all"
+            >
+              See it in action
+              <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </motion.div>
+
+          {/* Right Side - Dashboard Preview */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="relative"
+          >
+            {/* Browser-like mockup frame */}
+            <div className="relative glass-strong rounded-2xl overflow-hidden shadow-2xl border border-primary/20">
+              {/* Browser chrome */}
+              <div className="bg-gray-800/50 px-4 py-3 flex items-center gap-2 border-b border-primary/10">
+                <div className="flex gap-2">
+                  <div className="w-3 h-3 rounded-full bg-red-500/60"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/60"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-500/60"></div>
+                </div>
+                <div className="flex-1 mx-4 bg-background/30 rounded px-3 py-1 text-xs text-muted-foreground">
+                  thetradingdiary.com/dashboard
+                </div>
+              </div>
+              
+              {/* Dashboard content - Placeholder for actual screenshot */}
+              <div className="aspect-[16/10] bg-gradient-to-br from-background via-secondary/20 to-background relative overflow-hidden">
+                {/* Glow effect */}
+                <div className="absolute inset-0 bg-gradient-radial from-primary/10 via-transparent to-transparent"></div>
+                
+                {/* Placeholder content - Replace with actual dashboard screenshot */}
+                <div className="absolute inset-0 flex items-center justify-center p-8">
+                  <div className="text-center space-y-4">
+                    <div className="inline-block glass-strong px-6 py-3 rounded-xl border border-primary/20">
+                      <div className="text-4xl font-bold text-gradient-primary mb-1">+68.4%</div>
+                      <div className="text-sm text-muted-foreground">Win Rate</div>
+                    </div>
+                    <div className="flex gap-4 justify-center flex-wrap">
+                      <div className="glass-strong px-4 py-2 rounded-lg border border-primary/10">
+                        <div className="text-xl font-bold text-primary">$12,450</div>
+                        <div className="text-xs text-muted-foreground">Total P&L</div>
+                      </div>
+                      <div className="glass-strong px-4 py-2 rounded-lg border border-primary/10">
+                        <div className="text-xl font-bold text-primary">+24.8%</div>
+                        <div className="text-xs text-muted-foreground">ROI</div>
+                      </div>
+                      <div className="glass-strong px-4 py-2 rounded-lg border border-primary/10">
+                        <div className="text-xl font-bold">342</div>
+                        <div className="text-xs text-muted-foreground">Trades</div>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground/60 mt-4">
+                      💡 Tip: Replace this with an actual dashboard screenshot
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Decorative glow */}
+            <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 to-accent/10 rounded-3xl blur-2xl -z-10 opacity-50"></div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default DashboardShowcase;

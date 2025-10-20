@@ -421,7 +421,32 @@ const Upload = () => {
         setUploadStep(4);
         setProcessingMessage('Trade extraction complete!');
         
-        setExtractedTrades(data.trades);
+        // Normalize trades (defensive fallback for older edge function versions)
+        const normalizedTrades = data.trades.map((t: any) => ({
+          symbol: t.symbol ?? t.asset ?? '',
+          side: (t.side ?? t.position_type ?? 'long').toLowerCase() as 'long' | 'short',
+          broker: t.broker ?? '',
+          setup: t.setup ?? '',
+          emotional_tag: t.emotional_tag ?? '',
+          entry_price: Number(t.entry_price) || 0,
+          exit_price: Number(t.exit_price) || 0,
+          position_size: Number(t.position_size) || 0,
+          leverage: Number(t.leverage) || 1,
+          profit_loss: Number(t.profit_loss) || 0,
+          funding_fee: Number(t.funding_fee) || 0,
+          trading_fee: Number(t.trading_fee) || 0,
+          roi: Number(t.roi) || 0,
+          margin: Number(t.margin) || 0,
+          opened_at: t.opened_at ?? '',
+          closed_at: t.closed_at ?? '',
+          period_of_day: t.period_of_day ?? 'morning',
+          duration_days: Number(t.duration_days) || 0,
+          duration_hours: Number(t.duration_hours) || 0,
+          duration_minutes: Number(t.duration_minutes) || 0,
+          notes: t.notes ?? ''
+        }));
+        
+        setExtractedTrades(normalizedTrades);
         
         await new Promise(resolve => setTimeout(resolve, 500));
         
@@ -519,6 +544,28 @@ const Upload = () => {
     setLoading(true);
 
     try {
+      // Validate all trades have required fields
+      const invalidTrades: string[] = [];
+      extractedTrades.forEach((trade, index) => {
+        const edits = tradeEdits[index] || {};
+        const finalTrade = { ...trade, ...edits };
+        if (!finalTrade.symbol || finalTrade.symbol.trim() === '') {
+          invalidTrades.push(`Trade #${index + 1}: Missing symbol`);
+        }
+        if (!finalTrade.side || (finalTrade.side !== 'long' && finalTrade.side !== 'short')) {
+          invalidTrades.push(`Trade #${index + 1}: Invalid side (must be long or short)`);
+        }
+      });
+
+      if (invalidTrades.length > 0) {
+        console.error('Invalid trades found:', invalidTrades);
+        toast.error('Cannot save trades with missing data', {
+          description: invalidTrades.join(', ')
+        });
+        setLoading(false);
+        return;
+      }
+
       // Check for duplicates before saving
       const tradesData = extractedTrades.map((trade, index) => {
         const edits = tradeEdits[index] || {};
@@ -594,8 +641,9 @@ const Upload = () => {
 
       if (error) {
         console.error('Error saving trades:', error);
+        console.error('Failed trade data:', JSON.stringify(tradesData, null, 2));
         toast.error('Failed to save trades', {
-          description: error.message || 'Please check your trade data and try again'
+          description: `${error.message || 'Database error'}. Check console for details.`
         });
       } else {
         // Create upload batch record

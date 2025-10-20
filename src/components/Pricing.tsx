@@ -2,7 +2,6 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { Check, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { BackgroundLogo } from "@/components/BackgroundLogo";
 
 const plans = [
   {
@@ -60,11 +59,8 @@ const Pricing = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="py-16 md:py-20 px-6 relative overflow-hidden">
-      {/* Giant subtle logo in background */}
-      <BackgroundLogo position="right" opacity={0.03} className="scale-125" />
-      
-      <div className="container mx-auto max-w-6xl relative z-10">
+    <section className="py-16 md:py-20 px-6">
+      <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-12 md:mb-16 animate-fade-in">
           <h2 className="text-3xl md:text-4xl font-bold mb-3">
             Simple, <span className="text-gradient-primary">Transparent</span> Pricing

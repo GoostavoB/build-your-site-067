@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { BackgroundLogo } from "@/components/BackgroundLogo";
 
 const ExchangeLogos = () => {
   const exchanges = [
@@ -13,9 +12,6 @@ const ExchangeLogos = () => {
   return (
     <section className="py-16 md:py-20 px-6 relative overflow-hidden bg-gray-900/30">
       <div className="absolute inset-0 border-t border-b border-primary/10"></div>
-      
-      {/* Giant subtle logo in background */}
-      <BackgroundLogo position="left" opacity={0.025} className="scale-110" />
       
       <div className="container mx-auto max-w-4xl relative z-10">
         <motion.div

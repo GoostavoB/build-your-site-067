@@ -1,7 +1,6 @@
 import { Upload, Zap, TrendingUp, Target, Smartphone } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { motion } from "framer-motion";
-import { BackgroundLogo } from "@/components/BackgroundLogo";
 
 const features = [
   {
@@ -33,11 +32,8 @@ const features = [
 
 const Features = () => {
   return (
-    <section className="py-20 md:py-28 px-6 relative overflow-hidden">
-      {/* Giant subtle logo in background */}
-      <BackgroundLogo position="right" opacity={0.04} />
-      
-      <div className="container mx-auto max-w-6xl relative z-10">
+    <section className="py-20 md:py-28 px-6">
+      <div className="container mx-auto max-w-6xl">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

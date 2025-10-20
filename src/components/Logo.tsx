@@ -35,14 +35,17 @@ export const Logo = ({
         viewBox="0 0 48 48"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className={cn(icon, "shrink-0")}
+        className={cn(icon, "shrink-0 text-primary")}
         aria-label="The Trading Diary Logo"
+        style={{
+          color: 'hsl(var(--primary))'
+        }}
       >
         <defs>
-          {/* Gradient for premium feel */}
+          {/* Gradient for premium feel - dynamically uses primary color */}
           <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="currentColor" stopOpacity="1" className="text-primary" />
-            <stop offset="100%" stopColor="currentColor" stopOpacity="0.85" className="text-primary" />
+            <stop offset="0%" style={{ stopColor: 'hsl(var(--primary))', stopOpacity: 1 }} />
+            <stop offset="100%" style={{ stopColor: 'hsl(var(--primary))', stopOpacity: 0.85 }} />
           </linearGradient>
         </defs>
         
@@ -54,7 +57,6 @@ export const Logo = ({
           width="24"
           height="5"
           fill="url(#logoGradient)"
-          className="text-primary"
         />
         
         {/* Vertical stem of T */}
@@ -64,7 +66,6 @@ export const Logo = ({
           width="6"
           height="28"
           fill="url(#logoGradient)"
-          className="text-primary"
         />
         
         {/* D letter - intertwined with T */}
@@ -75,14 +76,12 @@ export const Logo = ({
           width="6"
           height="23"
           fill="url(#logoGradient)"
-          className="text-primary"
         />
         
         {/* Curved part of D - using path for smooth curve */}
         <path
           d="M 31 15 L 38 15 Q 42 15 42 19 L 42 34 Q 42 38 38 38 L 31 38 Z"
           fill="url(#logoGradient)"
-          className="text-primary"
         />
         
         {/* Inner curve cutout of D */}
@@ -99,10 +98,10 @@ export const Logo = ({
           width="36"
           height="30"
           rx="2"
-          stroke="currentColor"
+          stroke="hsl(var(--primary))"
           strokeWidth="0.5"
           fill="none"
-          className="text-primary opacity-20"
+          opacity="0.2"
         />
       </svg>
 

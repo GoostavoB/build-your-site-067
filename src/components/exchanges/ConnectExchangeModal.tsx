@@ -83,9 +83,13 @@ export function ConnectExchangeModal({
   };
 
   const exchangeInfo: Record<string, { name: string; docsUrl: string }> = {
+    binance: {
+      name: 'Binance',
+      docsUrl: 'https://www.binance.com/en/support/faq/how-to-create-api-keys-on-binance-360002502072',
+    },
     bingx: {
       name: 'BingX',
-      docsUrl: 'https://bingx-api.github.io/docs/#/en-us/common/account.html#API%20Key',
+      docsUrl: 'https://bingx.com/en-us/support/articles/360039749673',
     },
   };
 

@@ -9,12 +9,16 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Logo } from "@/components/Logo";
 
 const Index = () => {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-background">
+      <div className="absolute top-6 left-6 z-50">
+        <Logo size="lg" variant="horizontal" showText={true} className="hover:opacity-80 transition-opacity cursor-pointer" />
+      </div>
       <div className="absolute top-6 right-6 z-50 flex items-center gap-3">
         <ThemeToggle />
         <Button

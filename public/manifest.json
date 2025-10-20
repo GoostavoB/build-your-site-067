@@ -10,13 +10,13 @@
   "categories": ["finance", "business", "productivity"],
   "icons": [
     {
-      "src": "/favicon.png",
+      "src": "/logo-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/favicon.png",
+      "src": "/logo-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -24,7 +24,7 @@
   ],
   "screenshots": [
     {
-      "src": "/favicon.png",
+      "src": "/logo-512.png",
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide"
@@ -36,14 +36,14 @@
       "short_name": "Dashboard",
       "description": "View your trading dashboard",
       "url": "/dashboard",
-      "icons": [{ "src": "/favicon.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/logo-192.png", "sizes": "96x96" }]
     },
     {
       "name": "Upload Trade",
       "short_name": "Upload",
       "description": "Upload new trade data",
       "url": "/upload",
-      "icons": [{ "src": "/favicon.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/logo-192.png", "sizes": "96x96" }]
     }
   ]
 }

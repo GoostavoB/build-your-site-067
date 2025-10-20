@@ -1,4 +1,5 @@
-import { TrendingUp, Twitter, Github, Linkedin, Mail } from "lucide-react";
+import { Twitter, Github, Linkedin, Mail } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 const Footer = () => {
   return (
@@ -7,9 +8,8 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8 mb-10">
           {/* Brand */}
           <div className="md:col-span-1">
-            <div className="flex items-center gap-2 mb-3">
-              <TrendingUp className="text-primary" size={28} />
-              <span className="text-lg font-bold">The Trading Diary</span>
+            <div className="mb-3">
+              <Logo size="lg" variant="horizontal" showText={true} />
             </div>
             <p className="text-muted-foreground text-sm mb-5 leading-relaxed">
               The premium trading journal for serious traders who want to level up their game.

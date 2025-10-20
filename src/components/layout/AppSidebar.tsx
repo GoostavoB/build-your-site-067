@@ -2,6 +2,7 @@ import { BarChart3, Upload, TrendingUp, TrendingDown, Target, Users, Brain, Trop
 import { NavLink, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import * as LucideIcons from 'lucide-react';
+import { Logo } from '@/components/Logo';
 import {
   Sidebar,
   SidebarContent,
@@ -70,8 +71,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="sticky top-0 h-screen border-r border-border/50 backdrop-blur-xl bg-[#0f0f11] glass shadow-level-2 z-40">
       <div className="p-4 border-b border-border/50 flex items-center justify-center">
-        {open && <span className="font-bold text-lg">The Trading Diary</span>}
-        {!open && <span className="font-bold text-xs">TTD</span>}
+        <Logo size={open ? "md" : "sm"} variant={open ? "horizontal" : "icon"} showText={open} />
       </div>
 
       <SidebarContent>

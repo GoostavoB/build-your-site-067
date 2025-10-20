@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -39,6 +39,38 @@ export default function ExchangeConnections() {
       return data as ExchangeConnection[];
     },
   });
+
+  // Auto-detect and reset stuck syncs
+  useEffect(() => {
+    const checkStuckSyncs = async () => {
+      const stuckConnections = connections.filter((conn) => {
+        if (conn.sync_status !== 'syncing') return false;
+        const updatedAt = new Date(conn.created_at);
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+        return updatedAt < fiveMinutesAgo;
+      });
+
+      for (const conn of stuckConnections) {
+        console.log(`Resetting stuck sync for ${conn.exchange_name}`);
+        await supabase
+          .from('exchange_connections')
+          .update({
+            sync_status: 'error',
+            sync_error: 'Sync timed out. Please try again.',
+          })
+          .eq('id', conn.id);
+      }
+
+      if (stuckConnections.length > 0) {
+        queryClient.invalidateQueries({ queryKey: ['exchange-connections'] });
+        toast.error('Some syncs timed out. Please try again.');
+      }
+    };
+
+    if (connections.length > 0) {
+      checkStuckSyncs();
+    }
+  }, [connections, queryClient]);
 
   const syncMutation = useMutation({
     mutationFn: async (connectionId: string) => {

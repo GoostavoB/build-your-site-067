@@ -37,23 +37,54 @@ export const useLSRNotifications = () => {
       return false;
     }
 
-    const result = await Notification.requestPermission();
-    setPermission(result);
-
-    if (result === 'granted') {
-      toast.success('Notifications Enabled! 🔔', {
-        description: 'You\'ll now receive real-time LSR alerts. Configure your preferences below.',
+    // Check if already granted (e.g., from browser settings)
+    if (Notification.permission === 'granted') {
+      setPermission('granted');
+      toast.success('Notifications Already Enabled! 🔔', {
+        description: 'You\'re all set to receive real-time LSR alerts.',
       });
       return true;
-    } else if (result === 'denied') {
-      toast.error('Notifications Blocked', {
-        description: 'To enable notifications:\n1. Click the lock icon (🔒) in your browser address bar\n2. Find "Notifications" and change to "Allow"\n3. Refresh the page and try again',
-        duration: 8000,
+    }
+
+    // Check if blocked - need to reset in browser
+    if (Notification.permission === 'denied') {
+      toast.error('Notifications Blocked in Browser', {
+        description: 'To enable:\n1. Click the lock/info icon (🔒) in your address bar\n2. Find "Notifications" and change to "Allow"\n3. Refresh this page\n4. Click "Enable Alerts" again',
+        duration: 10000,
+        action: {
+          label: 'Refresh Page',
+          onClick: () => window.location.reload(),
+        },
       });
       return false;
-    } else {
-      toast('Permission Dismissed', {
-        description: 'You can enable notifications later by clicking "Allow Notifications" again.',
+    }
+
+    // Request permission (first time)
+    try {
+      const result = await Notification.requestPermission();
+      setPermission(result);
+
+      if (result === 'granted') {
+        toast.success('Notifications Enabled! 🔔', {
+          description: 'You\'ll now receive real-time LSR alerts. Configure your preferences below.',
+        });
+        return true;
+      } else if (result === 'denied') {
+        toast.error('Notifications Blocked', {
+          description: 'You clicked "Block". To enable later:\n1. Click the lock icon (🔒) in your address bar\n2. Change Notifications to "Allow"\n3. Refresh this page',
+          duration: 10000,
+        });
+        return false;
+      } else {
+        toast('Permission Dismissed', {
+          description: 'Click "Enable Alerts" again when you\'re ready.',
+        });
+        return false;
+      }
+    } catch (error) {
+      console.error('Error requesting notification permission:', error);
+      toast.error('Permission Request Failed', {
+        description: 'Please try refreshing the page and enabling notifications again.',
       });
       return false;
     }

@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import dashboardScreenshot from "@/assets/dashboard-screenshot.png";
 
 const DashboardShowcase = () => {
   const navigate = useNavigate();
@@ -64,37 +65,16 @@ const DashboardShowcase = () => {
                 </div>
               </div>
               
-              {/* Dashboard content - Placeholder for actual screenshot */}
-              <div className="aspect-[16/10] bg-gradient-to-br from-background via-secondary/20 to-background relative overflow-hidden">
-                {/* Glow effect */}
-                <div className="absolute inset-0 bg-gradient-radial from-primary/10 via-transparent to-transparent"></div>
+              {/* Dashboard content - Real Screenshot */}
+              <div className="aspect-[16/10] bg-background relative overflow-hidden">
+                <img 
+                  src={dashboardScreenshot}
+                  alt="Trading Dashboard showing real-time analytics, win rate, ROI, and capital growth charts"
+                  className="w-full h-full object-cover object-top"
+                />
                 
-                {/* Placeholder content - Replace with actual dashboard screenshot */}
-                <div className="absolute inset-0 flex items-center justify-center p-8">
-                  <div className="text-center space-y-4">
-                    <div className="inline-block glass-strong px-6 py-3 rounded-xl border border-primary/20">
-                      <div className="text-4xl font-bold text-gradient-primary mb-1">+68.4%</div>
-                      <div className="text-sm text-muted-foreground">Win Rate</div>
-                    </div>
-                    <div className="flex gap-4 justify-center flex-wrap">
-                      <div className="glass-strong px-4 py-2 rounded-lg border border-primary/10">
-                        <div className="text-xl font-bold text-primary">$12,450</div>
-                        <div className="text-xs text-muted-foreground">Total P&L</div>
-                      </div>
-                      <div className="glass-strong px-4 py-2 rounded-lg border border-primary/10">
-                        <div className="text-xl font-bold text-primary">+24.8%</div>
-                        <div className="text-xs text-muted-foreground">ROI</div>
-                      </div>
-                      <div className="glass-strong px-4 py-2 rounded-lg border border-primary/10">
-                        <div className="text-xl font-bold">342</div>
-                        <div className="text-xs text-muted-foreground">Trades</div>
-                      </div>
-                    </div>
-                    <p className="text-xs text-muted-foreground/60 mt-4">
-                      💡 Tip: Replace this with an actual dashboard screenshot
-                    </p>
-                  </div>
-                </div>
+                {/* Subtle glow overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-transparent pointer-events-none"></div>
               </div>
             </div>
 

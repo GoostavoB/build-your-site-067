@@ -350,8 +350,12 @@ async function fetchBingXSpotTrades(
       
       const data = await response.json();
       
-      if (data.code === 0 && data.data) {
+      if (data.code === 0 && Array.isArray(data.data)) {
         allTrades.push(...data.data);
+      } else if (data.code === 0 && data.data) {
+        console.warn(`BingX spot: Unexpected data format for ${symbol}:`, typeof data.data);
+      } else {
+        console.error(`BingX spot: Error response for ${symbol}:`, data);
       }
       
       await new Promise(resolve => setTimeout(resolve, 50));
@@ -389,8 +393,12 @@ async function fetchBingXFuturesTrades(
     
     const data = await response.json();
     
-    if (data.code === 0 && data.data) {
+    if (data.code === 0 && Array.isArray(data.data)) {
       allTrades.push(...data.data);
+    } else if (data.code === 0 && data.data) {
+      console.warn('BingX futures: Unexpected data format:', typeof data.data);
+    } else {
+      console.error('BingX futures: Error response:', data);
     }
   } catch (error) {
     console.error('Error fetching futures trades:', error);
@@ -436,15 +444,15 @@ function normalizeBinanceFuturesTrade(trade: any, userId: string): any {
 function normalizeSpotTrade(trade: BingXSpotTrade, userId: string): any {
   return {
     user_id: userId,
-    symbol: trade.symbol.replace('-', ''),
+    symbol: (trade.symbol || 'UNKNOWN').replace('-', ''),
     side: trade.isBuyer ? 'long' : 'short',
-    entry_price: parseFloat(trade.price),
-    position_size: parseFloat(trade.qty),
-    trading_fee: parseFloat(trade.commission),
-    opened_at: new Date(trade.time).toISOString(),
-    trade_date: new Date(trade.time).toISOString().split('T')[0],
+    entry_price: parseFloat(trade.price || '0'),
+    position_size: parseFloat(trade.qty || '0'),
+    trading_fee: parseFloat(trade.commission || '0'),
+    opened_at: new Date(trade.time || Date.now()).toISOString(),
+    trade_date: new Date(trade.time || Date.now()).toISOString().split('T')[0],
     exchange_source: 'bingx',
-    exchange_trade_id: trade.orderId.toString(),
+    exchange_trade_id: trade.orderId ? trade.orderId.toString() : 'unknown',
     broker: 'BingX',
   };
 }
@@ -457,17 +465,17 @@ function normalizeFuturesTrade(trade: BingXFuturesTrade, userId: string): any {
     
   return {
     user_id: userId,
-    symbol: trade.symbol,
+    symbol: trade.symbol || 'UNKNOWN',
     side: side as 'long' | 'short',
-    entry_price: parseFloat(trade.price),
-    position_size: parseFloat(trade.qty),
-    trading_fee: parseFloat(trade.commission),
-    profit_loss: parseFloat(trade.realizedProfit),
-    pnl: parseFloat(trade.realizedProfit),
-    opened_at: new Date(trade.time).toISOString(),
-    trade_date: new Date(trade.time).toISOString().split('T')[0],
+    entry_price: parseFloat(trade.price || '0'),
+    position_size: parseFloat(trade.qty || '0'),
+    trading_fee: parseFloat(trade.commission || '0'),
+    profit_loss: trade.realizedProfit ? parseFloat(trade.realizedProfit) : 0,
+    pnl: trade.realizedProfit ? parseFloat(trade.realizedProfit) : 0,
+    opened_at: new Date(trade.time || Date.now()).toISOString(),
+    trade_date: new Date(trade.time || Date.now()).toISOString().split('T')[0],
     exchange_source: 'bingx',
-    exchange_trade_id: trade.id.toString(),
+    exchange_trade_id: trade.id ? trade.id.toString() : (trade.orderId ? trade.orderId.toString() : 'unknown'),
     broker: 'BingX Futures',
   };
 }

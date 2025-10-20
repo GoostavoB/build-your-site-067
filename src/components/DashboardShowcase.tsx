@@ -1,11 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Expand } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import dashboardScreenshot from "@/assets/dashboard-screenshot.png";
 
 const DashboardShowcase = () => {
   const navigate = useNavigate();
+  const [isImageOpen, setIsImageOpen] = useState(false);
 
   return (
     <section className="py-20 md:py-28 px-6 relative overflow-hidden bg-gradient-to-b from-background via-gray-900/30 to-background">
@@ -66,16 +69,36 @@ const DashboardShowcase = () => {
               </div>
               
               {/* Dashboard content - Real Screenshot */}
-              <div className="aspect-[16/10] bg-background relative overflow-hidden">
-                <img 
-                  src={dashboardScreenshot}
-                  alt="Trading Dashboard showing real-time analytics, win rate, ROI, and capital growth charts"
-                  className="w-full h-full object-cover object-top"
-                />
-                
-                {/* Subtle glow overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-transparent pointer-events-none"></div>
-              </div>
+              <Dialog open={isImageOpen} onOpenChange={setIsImageOpen}>
+                <DialogTrigger asChild>
+                  <div className="aspect-[16/10] bg-background relative overflow-hidden cursor-pointer group">
+                    <img 
+                      src={dashboardScreenshot}
+                      alt="Trading Dashboard showing real-time analytics, win rate, ROI, and capital growth charts"
+                      className="w-full h-full object-contain object-center"
+                    />
+                    
+                    {/* Hover overlay with expand icon */}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 glass-strong p-3 rounded-full border border-white/20">
+                        <Expand className="w-6 h-6 text-white" />
+                      </div>
+                    </div>
+                    
+                    {/* Subtle glow overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-transparent pointer-events-none"></div>
+                  </div>
+                </DialogTrigger>
+                <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden">
+                  <div className="relative w-full h-full flex items-center justify-center bg-background/95 backdrop-blur-xl p-4">
+                    <img 
+                      src={dashboardScreenshot}
+                      alt="Full Trading Dashboard"
+                      className="max-w-full max-h-[90vh] object-contain rounded-lg"
+                    />
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
 
             {/* Decorative glow */}

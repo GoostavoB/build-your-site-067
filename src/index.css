@@ -499,6 +499,12 @@ textarea:focus-visible {
   opacity: 0.8;
 }
 
+/* Emergency override to ensure content-driven heights */
+.react-grid-item,
+.dashboard-grid > div {
+  min-height: 0 !important;
+}
+
 /* Allow proper content flow - content-driven heights */
 .react-grid-item {
   display: flex;

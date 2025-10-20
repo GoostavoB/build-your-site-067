@@ -386,7 +386,7 @@ const Dashboard = () => {
 
   // Dynamic widget renderer
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const ROW_HEIGHT_PX = 120;
+  const ROW_HEIGHT_PX = 1;
 
   const renderWidget = useCallback((layoutItem: any) => {
     const widgetConfig = WIDGET_CATALOG[layoutItem.i];
@@ -572,7 +572,7 @@ const Dashboard = () => {
                     onLayoutChange={updateLayout}
                     draggableHandle=".drag-handle"
                     compactType="vertical"
-                    preventCollision={false}
+                    preventCollision={true}
                     isBounded={true}
                     autoSize={true}
                   >

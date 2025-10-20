@@ -534,10 +534,13 @@ textarea:focus-visible {
 .dashboard-grid {
   width: 100%;
   position: relative;
+  display: grid !important;
+  grid-auto-flow: dense; /* Masonry-style packing */
+  gap: 12px;
 }
 
 .dashboard-grid > div {
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Clean spacing - no visible grid lines */
@@ -545,31 +548,40 @@ textarea:focus-visible {
   background: transparent;
 }
 
-/* Grid item styles - clean, seamless layout */
+/* Grid item styles - masonry brick effect */
 .react-grid-item {
-  transition: all 200ms ease;
-  transition-property: left, top, width, height;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
+  will-change: transform, width, height;
 }
 
 .react-grid-item.react-dragging {
   transition: none;
   z-index: 100;
-  will-change: transform;
-  opacity: 0.8;
+  opacity: 0.9;
+  transform: scale(1.02);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.3);
 }
 
-/* Emergency override to ensure content-driven heights */
-.react-grid-item,
-.dashboard-grid > div {
-  min-height: 0 !important;
+.react-grid-item.react-grid-placeholder {
+  background: hsl(var(--primary) / 0.15);
+  border: 2px dashed hsl(var(--primary) / 0.4);
+  border-radius: 12px;
+  opacity: 1;
+  transition: all 0.2s ease;
 }
 
-/* Allow proper content flow - content-driven heights */
+/* Ensure content fills the grid item properly */
 .react-grid-item {
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  overflow: hidden;
+}
+
+.react-grid-item > * {
+  flex: 1;
+  min-height: 0;
 }
 
 .react-grid-item > div {

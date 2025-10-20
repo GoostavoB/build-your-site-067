@@ -337,114 +337,133 @@ const Dashboard = () => {
     }, 100);
   }, [layout, saveLayout]);
 
-  // Auto-fit widget heights based on rendered content
+  // Auto-compact layout to create masonry brick effect
   useEffect(() => {
-    if (!layout?.length) return;
+    if (!layout?.length || isCustomizing) return;
 
-    // Compact layout to remove gaps
-    const compactLayout = (items: any[]) => {
-      const sorted = [...items].sort((a, b) => {
-        if (a.y !== b.y) return a.y - b.y;
-        return a.x - b.x;
-      });
-
-      const compacted = sorted.map((item, idx) => {
-        if (idx === 0) return item;
-        
-        // Find the lowest Y position this item can go
-        let targetY = 0;
-        for (let y = 0; y <= item.y; y++) {
-          let hasCollision = false;
-          for (const other of sorted.slice(0, idx)) {
-            // Check if there's overlap at this Y position
-            if (
-              other.y < y + item.h &&
-              other.y + other.h > y &&
-              other.x < item.x + item.w &&
-              other.x + other.w > item.x
-            ) {
-              hasCollision = true;
-              break;
-            }
-          }
-          if (!hasCollision) {
-            targetY = y;
-            break;
-          } else {
-            targetY = y + 1;
-          }
-        }
-        
-        return { ...item, y: targetY };
-      });
-
-      return compacted;
-    };
-
-    const compacted = compactLayout(layout);
-    const hasChanges = layout.some((item, idx) => item.y !== compacted[idx]?.y);
-    
-    if (hasChanges && !isCustomizing) {
-      updateLayout(compacted);
-    }
-  }, [layout, isCustomizing, updateLayout]);
-  const handleCancelCustomize = useCallback(() => {
-    setIsCustomizing(false);
-  }, []);
-
-  const handleOptimizeLayout = useCallback(() => {
-    // Compact layout to remove all gaps
-    const compactLayout = (items: any[]) => {
+    // Masonry-style compaction algorithm
+    const compactMasonryLayout = (items: any[]) => {
       const sorted = [...items].sort((a, b) => {
         if (a.y !== b.y) return a.y - b.y;
         return a.x - b.x;
       });
 
       const compacted: any[] = [];
+      const cols = responsiveLayout.columns;
+      const grid: boolean[][] = [];
       
       for (const item of sorted) {
-        let bestY = 0;
-        let bestX = item.x;
+        let placed = false;
         
-        // Try to find the lowest Y position
-        for (let y = 0; y <= (compacted.length > 0 ? Math.max(...compacted.map(c => c.y + c.h)) : 0) + 10; y++) {
-          // Try different X positions in this row
-          for (let x = 0; x <= 12 - item.w; x++) {
-            let hasCollision = false;
+        // Try to place widget starting from y=0, scanning all rows
+        for (let y = 0; !placed && y < 1000; y++) {
+          for (let x = 0; x <= cols - item.w; x++) {
+            let canPlace = true;
             
-            for (const other of compacted) {
-              if (
-                other.y < y + item.h &&
-                other.y + other.h > y &&
-                other.x < x + item.w &&
-                other.x + other.w > x
-              ) {
-                hasCollision = true;
-                break;
+            for (let dy = 0; dy < item.h; dy++) {
+              for (let dx = 0; dx < item.w; dx++) {
+                if (grid[y + dy]?.[x + dx]) {
+                  canPlace = false;
+                  break;
+                }
               }
+              if (!canPlace) break;
             }
             
-            if (!hasCollision) {
-              bestY = y;
-              bestX = x;
+            if (canPlace) {
+              for (let dy = 0; dy < item.h; dy++) {
+                if (!grid[y + dy]) grid[y + dy] = [];
+                for (let dx = 0; dx < item.w; dx++) {
+                  grid[y + dy][x + dx] = true;
+                }
+              }
+              
+              compacted.push({ ...item, x, y });
+              placed = true;
               break;
             }
           }
-          
-          if (bestX !== undefined) break;
         }
         
-        compacted.push({ ...item, x: bestX, y: bestY });
+        if (!placed) {
+          const maxY = Math.max(0, ...compacted.map(c => c.y + c.h));
+          compacted.push({ ...item, x: 0, y: maxY });
+        }
+      }
+
+      return compacted;
+    };
+
+    const compacted = compactMasonryLayout(layout);
+    const hasChanges = layout.some((item) => {
+      const compact = compacted.find(c => c.i === item.i);
+      return compact && (item.x !== compact.x || item.y !== compact.y);
+    });
+    
+    if (hasChanges) {
+      updateLayout(compacted);
+    }
+  }, [layout, isCustomizing, updateLayout, responsiveLayout.columns]);
+  const handleCancelCustomize = useCallback(() => {
+    setIsCustomizing(false);
+  }, []);
+
+  const handleOptimizeLayout = useCallback(() => {
+    // Masonry-style compaction to remove ALL gaps
+    const compactMasonryLayout = (items: any[]) => {
+      const cols = responsiveLayout.columns;
+      const sorted = [...items].sort((a, b) => {
+        if (a.y !== b.y) return a.y - b.y;
+        return a.x - b.x;
+      });
+
+      const compacted: any[] = [];
+      const grid: boolean[][] = [];
+      
+      for (const item of sorted) {
+        let placed = false;
+        
+        // Find the first available spot starting from top-left
+        for (let y = 0; !placed && y < 1000; y++) {
+          for (let x = 0; x <= cols - item.w; x++) {
+            let canPlace = true;
+            
+            // Check if all cells are free
+            for (let dy = 0; dy < item.h; dy++) {
+              for (let dx = 0; dx < item.w; dx++) {
+                if (grid[y + dy]?.[x + dx]) {
+                  canPlace = false;
+                  break;
+                }
+              }
+              if (!canPlace) break;
+            }
+            
+            if (canPlace) {
+              // Occupy the cells
+              for (let dy = 0; dy < item.h; dy++) {
+                if (!grid[y + dy]) grid[y + dy] = [];
+                for (let dx = 0; dx < item.w; dx++) {
+                  grid[y + dy][x + dx] = true;
+                }
+              }
+              
+              compacted.push({ ...item, x, y });
+              placed = true;
+              break;
+            }
+          }
+        }
       }
       
       return compacted;
     };
 
-    const optimized = compactLayout(layout);
+    const optimized = compactMasonryLayout(layout);
     updateLayout(optimized);
     saveLayout(optimized);
-    toast.success('Layout optimized');
-  }, [layout, updateLayout, saveLayout]);
+    toast.success('Layout optimized - widgets packed like bricks!');
+  }, [layout, updateLayout, saveLayout, responsiveLayout.columns]);
   const spotWalletTotal = useMemo(() => {
     return holdings.reduce((sum, holding) => {
       const price = Number(prices[holding.token_symbol] || 0);
@@ -688,10 +707,9 @@ const Dashboard = () => {
                     isResizable={isCustomizing}
                     onLayoutChange={updateLayout}
                     draggableHandle=".drag-handle"
-                    compactType="vertical"
+                    compactType={null}
                     preventCollision={false}
                     useCSSTransforms={true}
-                    verticalCompact={true}
                   >
                     {layout.map(renderWidget)}
                   </GridLayout>

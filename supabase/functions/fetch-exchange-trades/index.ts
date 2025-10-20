@@ -450,10 +450,15 @@ function normalizeSpotTrade(trade: BingXSpotTrade, userId: string): any {
 }
 
 function normalizeFuturesTrade(trade: BingXFuturesTrade, userId: string): any {
+  // BingX futures might use positionSide instead of side
+  const side = trade.positionSide 
+    ? trade.positionSide.toLowerCase() 
+    : (trade.side ? trade.side.toLowerCase() : 'long');
+    
   return {
     user_id: userId,
     symbol: trade.symbol,
-    side: trade.side.toLowerCase() as 'long' | 'short',
+    side: side as 'long' | 'short',
     entry_price: parseFloat(trade.price),
     position_size: parseFloat(trade.qty),
     trading_fee: parseFloat(trade.commission),
@@ -463,7 +468,7 @@ function normalizeFuturesTrade(trade: BingXFuturesTrade, userId: string): any {
     trade_date: new Date(trade.time).toISOString().split('T')[0],
     exchange_source: 'bingx',
     exchange_trade_id: trade.id.toString(),
-    broker: 'BingX',
+    broker: 'BingX Futures',
   };
 }
 

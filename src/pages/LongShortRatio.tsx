@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import AppLayout from "@/components/layout/AppLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -158,34 +157,25 @@ const LongShortRatio = () => {
   };
 
   return (
-    <AppLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Long/Short Ratio</h1>
-          <p className="text-muted-foreground mt-1">
-            Monitor the long/short account ratio from multiple data sources
-          </p>
-        </div>
+    <div className="space-y-6">
+      <Tabs defaultValue="combined" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 glass max-w-full">
+          <TabsTrigger value="combined">Combined LSR</TabsTrigger>
+          <TabsTrigger value="binance">Binance LSR</TabsTrigger>
+          <TabsTrigger value="bybit">Bybit LSR</TabsTrigger>
+        </TabsList>
 
-        <Tabs defaultValue="combined" className="w-full">
-          <TabsList className="grid w-full max-w-xl grid-cols-3 glass">
-            <TabsTrigger value="combined">Combined LSR</TabsTrigger>
-            <TabsTrigger value="binance">Binance LSR</TabsTrigger>
-            <TabsTrigger value="bybit">Bybit LSR</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="combined" className="space-y-6 mt-6">
-            <CombinedContent />
-          </TabsContent>
-          <TabsContent value="binance" className="space-y-6 mt-6">
-            <BinanceContent />
-          </TabsContent>
-          <TabsContent value="bybit" className="space-y-6 mt-6">
-            <BybitContent />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </AppLayout>
+        <TabsContent value="combined" className="space-y-6 mt-6">
+          <CombinedContent />
+        </TabsContent>
+        <TabsContent value="binance" className="space-y-6 mt-6">
+          <BinanceContent />
+        </TabsContent>
+        <TabsContent value="bybit" className="space-y-6 mt-6">
+          <BybitContent />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 
   function CombinedContent() {

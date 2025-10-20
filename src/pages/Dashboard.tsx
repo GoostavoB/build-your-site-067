@@ -654,7 +654,7 @@ const Dashboard = () => {
                   <PremiumCTACard />
                 </div>
               )}
-              </div>
+              </GridLayout>
             </TabsContent>
 
             {/* Insights Tab */}

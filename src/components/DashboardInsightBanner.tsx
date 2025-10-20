@@ -12,6 +12,8 @@ interface DashboardInsightBannerProps {
 interface LSRData {
   longShortRatio: number;
   change24h: number;
+  openInterest: number;
+  openInterestChange24h: number;
 }
 
 export const DashboardInsightBanner = ({ totalPnL, winRate, totalTrades }: DashboardInsightBannerProps) => {
@@ -27,25 +29,37 @@ export const DashboardInsightBanner = ({ totalPnL, winRate, totalTrades }: Dashb
 
   const fetchBinanceLSR = async () => {
     try {
-      // Fetch BTCUSDT LSR from Binance (most representative)
-      const response = await fetch(
-        'https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=BTCUSDT&period=5m&limit=288'
-      );
-      const data = await response.json();
+      // Fetch BTCUSDT LSR and Open Interest from Binance
+      const [lsrResponse, oiResponse] = await Promise.all([
+        fetch('https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=BTCUSDT&period=5m&limit=288'),
+        fetch('https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT')
+      ]);
+      
+      const lsrData = await lsrResponse.json();
+      const oiData = await oiResponse.json();
 
-      if (data && data.length > 0) {
-        const latest = parseFloat(data[data.length - 1].longShortRatio);
-        // Calculate 24h change (288 data points = 24 hours at 5min intervals)
-        const yesterday = data.length >= 288 ? parseFloat(data[0].longShortRatio) : latest;
+      if (lsrData && lsrData.length > 0) {
+        const latest = parseFloat(lsrData[lsrData.length - 1].longShortRatio);
+        const yesterday = lsrData.length >= 288 ? parseFloat(lsrData[0].longShortRatio) : latest;
         const change24h = ((latest - yesterday) / yesterday) * 100;
+
+        // Fetch historical OI for 24h change calculation
+        const oiHistResponse = await fetch('https://fapi.binance.com/futures/data/openInterestHist?symbol=BTCUSDT&period=5m&limit=288');
+        const oiHistData = await oiHistResponse.json();
+        
+        const currentOI = parseFloat(oiData.openInterest);
+        const yesterdayOI = oiHistData && oiHistData.length >= 288 ? parseFloat(oiHistData[0].sumOpenInterest) : currentOI;
+        const oiChange24h = ((currentOI - yesterdayOI) / yesterdayOI) * 100;
 
         setLsrData({
           longShortRatio: latest,
           change24h,
+          openInterest: currentOI,
+          openInterestChange24h: oiChange24h,
         });
       }
     } catch (error) {
-      console.error('Error fetching Binance LSR:', error);
+      console.error('Error fetching Binance data:', error);
     } finally {
       setLoading(false);
     }
@@ -68,7 +82,7 @@ export const DashboardInsightBanner = ({ totalPnL, winRate, totalTrades }: Dashb
   };
 
   return (
-    <Card className="border-primary/20 bg-primary/5 backdrop-blur-sm">
+    <Card className="border-primary/20 bg-primary/5 backdrop-blur-sm max-w-5xl mx-auto">
       <div className="p-4">
         <div className="flex items-start gap-4 flex-wrap">
           {/* AI Insight Section */}
@@ -90,13 +104,14 @@ export const DashboardInsightBanner = ({ totalPnL, winRate, totalTrades }: Dashb
             </div>
           </div>
 
-          {/* Binance LSR Section */}
+          {/* Binance Market Data Section */}
           {!loading && lsrData && (
-            <div className="flex items-center gap-4 px-4 py-2 rounded-lg bg-card/50 border border-border/50">
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Binance LSR (BTC)</p>
+            <div className="flex items-center gap-3">
+              {/* LSR */}
+              <div className="px-3 py-2 rounded-lg bg-card/50 border border-border/50">
+                <p className="text-xs text-muted-foreground mb-1">LSR (BTC)</p>
                 <div className="flex items-center gap-2">
-                  <span className="text-lg font-bold">
+                  <span className="text-base font-bold">
                     {lsrData.longShortRatio.toFixed(4)}
                   </span>
                   <div className={`flex items-center gap-1 text-xs ${
@@ -112,7 +127,28 @@ export const DashboardInsightBanner = ({ totalPnL, winRate, totalTrades }: Dashb
                     </span>
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground mt-0.5">24h change</p>
+              </div>
+
+              {/* Open Interest */}
+              <div className="px-3 py-2 rounded-lg bg-card/50 border border-border/50">
+                <p className="text-xs text-muted-foreground mb-1">Open Interest</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-base font-bold">
+                    {(lsrData.openInterest / 1000).toFixed(1)}K
+                  </span>
+                  <div className={`flex items-center gap-1 text-xs ${
+                    lsrData.openInterestChange24h >= 0 ? 'text-profit' : 'text-loss'
+                  }`}>
+                    {lsrData.openInterestChange24h >= 0 ? (
+                      <TrendingUp className="h-3 w-3" />
+                    ) : (
+                      <TrendingDown className="h-3 w-3" />
+                    )}
+                    <span className="font-medium">
+                      {lsrData.openInterestChange24h >= 0 ? '+' : ''}{lsrData.openInterestChange24h.toFixed(2)}%
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           )}

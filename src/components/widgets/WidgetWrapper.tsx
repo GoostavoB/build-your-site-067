@@ -57,7 +57,7 @@ export const WidgetWrapper = memo(({
       {/* Header */}
       {title && (
         <div className={cn(
-          "flex items-center justify-between px-6 pt-5 pb-3",
+          "flex items-center justify-between px-6 pt-3 pb-2",
           isEditMode && "pt-12"
         )}>
           <h3 className="text-lg font-semibold">{title}</h3>

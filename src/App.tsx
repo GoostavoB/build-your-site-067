@@ -47,6 +47,11 @@ const SpotWallet = lazy(() => import("./pages/SpotWallet"));
 const FeeAnalysis = lazy(() => import("./pages/FeeAnalysis"));
 const LogoDownload = lazy(() => import("./pages/LogoDownload"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
+const LongShortRatio = lazy(() => import("./pages/LongShortRatio"));
+const EconomicCalendar = lazy(() => import("./pages/EconomicCalendar"));
+const TaxReports = lazy(() => import("./pages/TaxReports"));
+const Accounts = lazy(() => import("./pages/Accounts"));
+const PerformanceAlerts = lazy(() => import("./pages/PerformanceAlerts"));
 
 // Loading fallback
 const PageLoader = () => (
@@ -116,6 +121,12 @@ const App = () => (
                       <Route path="/blog/:slug" element={<ProtectedRoute><BlogPost /></ProtectedRoute>} />
                       <Route path="/faq" element={<ProtectedRoute><FAQ /></ProtectedRoute>} />
                       <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
+                      <Route path="/long-short-ratio" element={<ProtectedRoute><LongShortRatio /></ProtectedRoute>} />
+                      <Route path="/economic-calendar" element={<ProtectedRoute><EconomicCalendar /></ProtectedRoute>} />
+                      <Route path="/tax-reports" element={<ProtectedRoute><TaxReports /></ProtectedRoute>} />
+                      <Route path="/accounts" element={<ProtectedRoute><Accounts /></ProtectedRoute>} />
+                      <Route path="/performance-alerts" element={<ProtectedRoute><PerformanceAlerts /></ProtectedRoute>} />
+                      <Route path="/exchange-connections" element={<ProtectedRoute><ExchangeConnections /></ProtectedRoute>} />
                       <Route path="/custom/:pageId" element={<ProtectedRoute><CustomPage /></ProtectedRoute>} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>

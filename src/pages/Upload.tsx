@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { UploadHistory } from '@/components/UploadHistory';
 import { UploadProgress, getRandomThinkingPhrase } from '@/components/UploadProgress';
 import { DuplicateTradeDialog } from '@/components/DuplicateTradeDialog';
+import { BatchDuplicateDialog } from '@/components/BatchDuplicateDialog';
 import { SuccessFeedback } from '@/components/SuccessFeedback';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { ImageAnnotator, Annotation } from '@/components/upload/ImageAnnotator';
@@ -64,6 +65,14 @@ const Upload = () => {
     trade?: ExtractedTrade & { existingDate?: string; existingSymbol?: string; existingPnl?: number };
     index?: number;
   }>({ open: false });
+  const [batchDuplicates, setBatchDuplicates] = useState<{
+    open: boolean;
+    duplicates: Array<{
+      tradeIndex: number;
+      trade: ExtractedTrade;
+      existing: { symbol: string; trade_date: string; pnl: number };
+    }>;
+  }>({ open: false, duplicates: [] });
   const [showSuccess, setShowSuccess] = useState(false);
   const [savedTradesCount, setSavedTradesCount] = useState(0);
   const [screenshot, setScreenshot] = useState<File | null>(null);
@@ -593,19 +602,23 @@ const Upload = () => {
         .in('trade_hash', hashes);
 
       if (existingTrades && existingTrades.length > 0) {
-        // Found duplicates - show dialog
-        const firstDuplicate = existingTrades[0];
-        const duplicateTradeIndex = tradesData.findIndex(t => t.trade_hash === firstDuplicate.trade_hash);
-        
-        setDuplicateDialog({
+        // Found duplicates - collect all of them
+        const duplicateMatches = existingTrades.map(existing => {
+          const duplicateTradeIndex = tradesData.findIndex(t => t.trade_hash === existing.trade_hash);
+          return {
+            tradeIndex: duplicateTradeIndex,
+            trade: extractedTrades[duplicateTradeIndex],
+            existing: {
+              symbol: existing.symbol,
+              trade_date: existing.trade_date,
+              pnl: existing.pnl || 0,
+            },
+          };
+        }).filter(d => d.tradeIndex >= 0);
+
+        setBatchDuplicates({
           open: true,
-          trade: {
-            ...extractedTrades[duplicateTradeIndex],
-            existingDate: firstDuplicate.trade_date,
-            existingSymbol: firstDuplicate.symbol,
-            existingPnl: firstDuplicate.pnl
-          },
-          index: duplicateTradeIndex
+          duplicates: duplicateMatches,
         });
         
         setLoading(false);
@@ -1572,7 +1585,122 @@ const Upload = () => {
         <UploadHistory />
       </div>
 
-      {/* Duplicate Trade Detection Dialog */}
+      {/* Batch Duplicate Detection Dialog */}
+      <BatchDuplicateDialog
+        open={batchDuplicates.open}
+        duplicates={batchDuplicates.duplicates}
+        onRemoveDuplicates={(indicesToRemove) => {
+          // Remove selected duplicates from extractedTrades
+          const filteredTrades = extractedTrades.filter((_, index) => !indicesToRemove.includes(index));
+          setExtractedTrades(filteredTrades);
+          
+          // Update trade edits to match new indices
+          const newTradeEdits: Record<number, Partial<ExtractedTrade>> = {};
+          let newIndex = 0;
+          Object.entries(tradeEdits).forEach(([oldIndex, edits]) => {
+            const oldIndexNum = parseInt(oldIndex);
+            if (!indicesToRemove.includes(oldIndexNum)) {
+              newTradeEdits[newIndex] = edits;
+              newIndex++;
+            }
+          });
+          setTradeEdits(newTradeEdits);
+          
+          setBatchDuplicates({ open: false, duplicates: [] });
+          
+          toast.success(`Removed ${indicesToRemove.length} duplicate trade${indicesToRemove.length > 1 ? 's' : ''}`);
+          
+          // Trigger save for remaining trades
+          if (filteredTrades.length > 0) {
+            setTimeout(() => saveAllExtractedTrades(), 100);
+          }
+        }}
+        onSaveAll={async () => {
+          setBatchDuplicates({ open: false, duplicates: [] });
+          // Continue with save, ignoring duplicate check
+          if (!user || extractedTrades.length === 0) return;
+          
+          setLoading(true);
+          
+          try {
+            const tradesData = extractedTrades.map((trade, index) => {
+              const edits = tradeEdits[index] || {};
+              const finalTrade = { ...trade, ...edits };
+              const tradeHash = `${finalTrade.symbol}_${finalTrade.opened_at}_${finalTrade.roi}_${finalTrade.profit_loss}`;
+              
+              return {
+                user_id: user.id,
+                symbol: finalTrade.symbol,
+                symbol_temp: finalTrade.symbol,
+                broker: finalTrade.broker || null,
+                setup: finalTrade.setup || null,
+                emotional_tag: finalTrade.emotional_tag || null,
+                entry_price: finalTrade.entry_price,
+                exit_price: finalTrade.exit_price,
+                position_size: finalTrade.position_size,
+                side: finalTrade.side,
+                side_temp: finalTrade.side,
+                leverage: finalTrade.leverage || 1,
+                profit_loss: finalTrade.profit_loss,
+                funding_fee: finalTrade.funding_fee,
+                trading_fee: finalTrade.trading_fee,
+                roi: finalTrade.roi,
+                margin: finalTrade.margin,
+                opened_at: finalTrade.opened_at,
+                closed_at: finalTrade.closed_at,
+                period_of_day: finalTrade.period_of_day,
+                duration_days: finalTrade.duration_days,
+                duration_hours: finalTrade.duration_hours,
+                duration_minutes: finalTrade.duration_minutes,
+                pnl: finalTrade.profit_loss,
+                trade_date: finalTrade.opened_at,
+                notes: finalTrade.notes || null,
+                trade_hash: tradeHash
+              };
+            });
+
+            const { data: insertedTrades, error } = await supabase
+              .from('trades')
+              .insert(tradesData)
+              .select('id, symbol, profit_loss');
+
+            if (!error) {
+              const assets = [...new Set(tradesData.map(t => t.symbol))];
+              const totalEntryValue = tradesData.reduce((sum, t) => sum + (t.entry_price * t.position_size), 0);
+              const mostRecentTrade = insertedTrades?.[0];
+
+              await supabase.from('upload_batches').insert({
+                user_id: user.id,
+                trade_count: extractedTrades.length,
+                assets: assets,
+                total_entry_value: totalEntryValue,
+                most_recent_trade_id: mostRecentTrade?.id,
+                most_recent_trade_asset: mostRecentTrade?.symbol,
+                most_recent_trade_value: mostRecentTrade?.profit_loss
+              });
+
+              setSavedTradesCount(extractedTrades.length);
+              setShowSuccess(true);
+              setExtractedTrades([]);
+              setTradeEdits({});
+              removeExtractionImage();
+            } else {
+              console.error('Error saving trades:', error);
+              toast.error('Failed to save trades', {
+                description: error.message
+              });
+            }
+          } finally {
+            setLoading(false);
+          }
+        }}
+        onCancel={() => {
+          setBatchDuplicates({ open: false, duplicates: [] });
+          setLoading(false);
+        }}
+      />
+
+      {/* Single Duplicate Trade Detection Dialog (legacy) */}
       <DuplicateTradeDialog
         open={duplicateDialog.open}
         onOpenChange={(open) => setDuplicateDialog({ open })}

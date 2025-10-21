@@ -1,4 +1,4 @@
-import { BarChart3, Upload, TrendingUp, Target, Brain, Trophy, Settings2, BookOpen, HelpCircle, LineChart, LogOut, Zap, Sparkles, RefreshCw, Wallet, Receipt, BookMarked, Users, GitCompare, Shield, FileBarChart, ClipboardList } from 'lucide-react';
+import { BarChart3, Upload, TrendingUp, Target, Brain, Trophy, Settings2, BookOpen, HelpCircle, LineChart, LogOut, Zap, Sparkles, RefreshCw, Wallet, Receipt, BookMarked, Users, GitCompare, Shield, FileBarChart, ClipboardList, Calendar, Bell, FileText } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Logo } from '@/components/Logo';
 import {
@@ -29,14 +29,18 @@ export function AppSidebar() {
     { title: t('trades.addTrade'), url: '/upload', icon: Upload },
     { title: t('navigation.exchanges'), url: '/exchanges', icon: RefreshCw },
     { title: t('navigation.spotWallet'), url: '/spot-wallet', icon: Wallet },
+    { title: 'Trading Accounts', url: '/accounts', icon: Wallet },
     { title: t('navigation.analytics'), url: '/analytics', icon: TrendingUp },
     { title: t('navigation.feeAnalysis'), url: '/fee-analysis', icon: Receipt },
     { title: 'Trade Analysis', url: '/trade-analysis', icon: GitCompare },
     { title: 'Risk Management', url: '/risk-management', icon: Shield },
     { title: 'Reports', url: '/reports', icon: FileBarChart },
+    { title: 'Tax Reports', url: '/tax-reports', icon: FileText },
     { title: 'Psychology', url: '/psychology', icon: Brain },
     { title: 'Trading Plan', url: '/trading-plan', icon: ClipboardList },
     { title: t('navigation.marketData'), url: '/market-data', icon: LineChart },
+    { title: 'Economic Calendar', url: '/economic-calendar', icon: Calendar },
+    { title: 'Performance Alerts', url: '/performance-alerts', icon: Bell },
     { title: t('navigation.forecast'), url: '/forecast', icon: Target },
     { title: t('navigation.aiTools'), url: '/ai-tools', icon: Brain },
     { title: 'Trading Journal', url: '/journal', icon: BookMarked },

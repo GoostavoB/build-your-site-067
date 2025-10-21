@@ -1,8 +1,12 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, FileText, Calendar, Eye } from "lucide-react";
+import { Download, FileText, Calendar, Eye, Trash2 } from "lucide-react";
 import { format } from "date-fns";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface Report {
   id: string;
@@ -18,45 +22,51 @@ interface Report {
 }
 
 export function ReportHistory() {
-  // Mock data - in production this would come from the database
-  const reports: Report[] = [
-    {
-      id: "1",
-      name: "Monthly Performance Report",
-      type: "monthly",
-      format: "pdf",
-      dateGenerated: new Date("2024-01-15"),
-      dateRange: {
-        start: new Date("2024-01-01"),
-        end: new Date("2024-01-31"),
-      },
-      size: "2.4 MB",
+  const { user } = useAuth();
+  const { data: reports, isLoading } = useQuery({
+    queryKey: ['reports', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const { data, error } = await supabase
+        .from('reports')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      return data.map(report => ({
+        id: report.id,
+        name: report.report_name,
+        type: report.report_type,
+        format: report.report_format,
+        dateGenerated: new Date(report.created_at),
+        dateRange: {
+          start: new Date((report.date_range as any)?.start || new Date()),
+          end: new Date((report.date_range as any)?.end || new Date()),
+        },
+        size: report.file_size || 'N/A',
+      })) as Report[];
     },
-    {
-      id: "2",
-      name: "Q4 2023 Summary",
-      type: "quarterly",
-      format: "excel",
-      dateGenerated: new Date("2024-01-05"),
-      dateRange: {
-        start: new Date("2023-10-01"),
-        end: new Date("2023-12-31"),
-      },
-      size: "1.8 MB",
-    },
-    {
-      id: "3",
-      name: "Year End Report 2023",
-      type: "yearly",
-      format: "pdf",
-      dateGenerated: new Date("2024-01-02"),
-      dateRange: {
-        start: new Date("2023-01-01"),
-        end: new Date("2023-12-31"),
-      },
-      size: "5.2 MB",
-    },
-  ];
+    enabled: !!user,
+  });
+
+  const handleDelete = async (reportId: string) => {
+    if (!confirm('Are you sure you want to delete this report?')) return;
+    
+    const { error } = await supabase
+      .from('reports')
+      .delete()
+      .eq('id', reportId);
+
+    if (error) {
+      toast.error('Failed to delete report');
+      return;
+    }
+
+    toast.success('Report deleted successfully');
+  };
 
   const getFormatBadgeColor = (format: string) => {
     switch (format) {
@@ -91,8 +101,13 @@ export function ReportHistory() {
         <CardDescription>Previously generated trading reports</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {reports.map((report) => (
+        {isLoading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Loading reports...</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {reports && reports.length > 0 ? reports.map((report) => (
             <div
               key={report.id}
               className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
@@ -125,19 +140,25 @@ export function ReportHistory() {
               </div>
 
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" disabled>
                   <Eye className="h-4 w-4 mr-1" />
                   View
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" disabled>
                   <Download className="h-4 w-4 mr-1" />
                   Download
                 </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleDelete(report.id)}
+                >
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  Delete
+                </Button>
               </div>
             </div>
-          ))}
-
-          {reports.length === 0 && (
+          )) : (
             <div className="text-center py-12">
               <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
               <h3 className="text-lg font-semibold mb-2">No Reports Yet</h3>
@@ -146,7 +167,8 @@ export function ReportHistory() {
               </p>
             </div>
           )}
-        </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

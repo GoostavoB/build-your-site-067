@@ -65,6 +65,8 @@ export function ReportGenerator() {
   };
 
   const generateReport = async () => {
+    if (!user) return;
+
     if (!trades || trades.length === 0) {
       toast({
         title: "No Data",
@@ -75,73 +77,72 @@ export function ReportGenerator() {
     }
 
     setIsGenerating(true);
-
+    
     try {
-      // Filter trades by date range if custom
-      let filteredTrades = trades;
-      if (reportType === "custom" && startDate && endDate) {
-        filteredTrades = trades.filter(t => {
-          const tradeDate = new Date(t.trade_date);
-          return tradeDate >= startDate && tradeDate <= endDate;
-        });
-      }
+      // Filter trades by date range
+      const filteredTrades = (trades || []).filter((trade) => {
+        const tradeDate = new Date(trade.entry_time);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
+        
+        if (start && tradeDate < start) return false;
+        if (end && tradeDate > end) return false;
+        return true;
+      });
 
-      // Calculate metrics for the report
-      const totalPnL = filteredTrades.reduce((sum, t) => sum + t.pnl, 0);
-      const winningTrades = filteredTrades.filter(t => t.pnl > 0).length;
-      const losingTrades = filteredTrades.filter(t => t.pnl < 0).length;
-      const winRate = (winningTrades / filteredTrades.length) * 100;
-      const totalFees = 0; // Fee tracking would be calculated from trade data
+      // Calculate metrics
+      const totalPnL = filteredTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+      const winningTrades = filteredTrades.filter(t => (t.pnl || 0) > 0);
+      const losingTrades = filteredTrades.filter(t => (t.pnl || 0) < 0);
+      const winRate = filteredTrades.length > 0 
+        ? (winningTrades.length / filteredTrades.length) * 100 
+        : 0;
+      const avgWin = winningTrades.length > 0
+        ? winningTrades.reduce((sum, t) => sum + (t.pnl || 0), 0) / winningTrades.length
+        : 0;
+      const avgLoss = losingTrades.length > 0
+        ? losingTrades.reduce((sum, t) => sum + (t.pnl || 0), 0) / losingTrades.length
+        : 0;
 
-      // Build report data
-      const reportData = {
-        reportType,
-        reportFormat,
-        dateRange: {
-          start: startDate?.toISOString() || filteredTrades[filteredTrades.length - 1]?.trade_date,
-          end: endDate?.toISOString() || filteredTrades[0]?.trade_date,
-        },
-        sections: sections.filter(s => s.enabled).map(s => s.id),
-        metrics: {
-          totalTrades: filteredTrades.length,
-          totalPnL,
-          winningTrades,
-          losingTrades,
-          winRate,
-          totalFees,
-          avgWin: winningTrades > 0 ? filteredTrades.filter(t => t.pnl > 0).reduce((sum, t) => sum + t.pnl, 0) / winningTrades : 0,
-          avgLoss: losingTrades > 0 ? Math.abs(filteredTrades.filter(t => t.pnl < 0).reduce((sum, t) => sum + t.pnl, 0) / losingTrades) : 0,
-        },
-        trades: filteredTrades,
-      };
+      // Save report to database
+      const { data: report, error: reportError } = await supabase
+        .from('reports')
+        .insert({
+          user_id: user.id,
+          report_name: `${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report`,
+          report_type: reportType,
+          report_format: reportFormat,
+          date_range: { start: startDate?.toISOString(), end: endDate?.toISOString() },
+          sections: sections.filter(s => s.enabled).map(s => s.id),
+          metrics: {
+            totalPnL,
+            winRate,
+            totalTrades: filteredTrades.length,
+            avgWin,
+            avgLoss,
+            winningTrades: winningTrades.length,
+            losingTrades: losingTrades.length,
+          },
+          status: 'completed',
+        })
+        .select()
+        .single();
 
-      // Simulate report generation
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      if (reportError) throw reportError;
 
       toast({
         title: "Report Generated",
-        description: `Your ${reportType} report has been created successfully`,
+        description: `Your ${reportType} report has been saved successfully.`,
       });
 
-      // In production, this would call an edge function to generate the actual PDF/Excel
-      console.log("Report data:", reportData);
-
-      // Trigger download (simulated)
-      const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `trading-report-${format(new Date(), 'yyyy-MM-dd')}.${reportFormat}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
+      // In production, you could call an edge function here to generate the actual file
+      // await supabase.functions.invoke('generate-report', { body: { reportId: report.id } });
+      
     } catch (error) {
-      console.error("Report generation error:", error);
+      console.error("Error generating report:", error);
       toast({
         title: "Error",
-        description: "Failed to generate report",
+        description: "Failed to generate report. Please try again.",
         variant: "destructive",
       });
     } finally {

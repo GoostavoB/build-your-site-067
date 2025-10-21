@@ -21,3 +21,10 @@ schedule = "0 0 * * *"  # Daily at midnight UTC
 [functions.check-user-activity]
 verify_jwt = false
 schedule = "0 */6 * * *"  # Every 6 hours
+
+[functions.monitor-performance-alerts]
+verify_jwt = false
+schedule = "*/15 * * * *"  # Every 15 minutes
+
+[functions.economic-calendar-proxy]
+verify_jwt = true

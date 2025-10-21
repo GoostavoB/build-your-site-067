@@ -59,35 +59,27 @@ const EconomicCalendar = () => {
   const fetchEconomicCalendar = async () => {
     setLoading(true);
     try {
-      // Using Trading Economics API
-      // Get your free API key at https://tradingeconomics.com/api
-      // WARNING: DO NOT replace with a real API key here!
-      // Real API keys must be stored server-side in backend functions and accessed securely.
-      // This demo key is for testing only.
-      const apiKey = "guest:guest";
+      const { data, error } = await supabase.functions.invoke('economic-calendar-proxy');
+
+      if (error) throw error;
       
-      // Get current date and 30 days ahead
-      const today = new Date();
-      const futureDate = new Date();
-      futureDate.setDate(today.getDate() + 30);
-      
-      const formatDate = (date: Date) => {
-        return date.toISOString().split('T')[0];
-      };
-      
-      console.log('Fetching calendar from:', formatDate(today), 'to:', formatDate(futureDate));
-      
-      const response = await fetch(
-        `https://api.tradingeconomics.com/calendar/country/united states/${formatDate(today)}/${formatDate(futureDate)}?c=${apiKey}&importance=3`
-      );
-      
-      if (!response.ok) {
-        throw new Error("Failed to fetch economic calendar data");
+      if (data?.success && data?.data) {
+        setEvents(data.data);
+      } else {
+        throw new Error('Invalid response format');
       }
-      
-      const data = await response.json();
-      console.log('Received events:', data.length, 'First event date:', data[0]?.Date);
-      
+    } catch (err) {
+      console.error('Error fetching economic calendar:', err);
+      toast({
+        title: "Error",
+        description: "Unable to fetch economic calendar data. Please try again later.",
+        variant: "destructive",
+      });
+      setEvents([]);
+    } finally {
+      setLoading(false);
+    }
+  };
       // Filter only future events (after now)
       const now = new Date();
       const futureEvents = data.filter((event: EconomicEvent) => {

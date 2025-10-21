@@ -1132,6 +1132,108 @@ export type Database = {
         }
         Relationships: []
       }
+      reports: {
+        Row: {
+          created_at: string
+          date_range: Json
+          error_message: string | null
+          file_size: string | null
+          file_url: string | null
+          id: string
+          metrics: Json | null
+          report_format: string
+          report_name: string
+          report_type: string
+          sections: string[]
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date_range: Json
+          error_message?: string | null
+          file_size?: string | null
+          file_url?: string | null
+          id?: string
+          metrics?: Json | null
+          report_format: string
+          report_name: string
+          report_type: string
+          sections: string[]
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date_range?: Json
+          error_message?: string | null
+          file_size?: string | null
+          file_url?: string | null
+          id?: string
+          metrics?: Json | null
+          report_format?: string
+          report_name?: string
+          report_type?: string
+          sections?: string[]
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      scheduled_reports: {
+        Row: {
+          created_at: string
+          email_address: string | null
+          email_enabled: boolean | null
+          frequency: string
+          id: string
+          is_enabled: boolean | null
+          last_run_at: string | null
+          next_run_at: string | null
+          report_config: Json
+          report_format: string
+          report_type: string
+          schedule_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_address?: string | null
+          email_enabled?: boolean | null
+          frequency: string
+          id?: string
+          is_enabled?: boolean | null
+          last_run_at?: string | null
+          next_run_at?: string | null
+          report_config: Json
+          report_format: string
+          report_type: string
+          schedule_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_address?: string | null
+          email_enabled?: boolean | null
+          frequency?: string
+          id?: string
+          is_enabled?: boolean | null
+          last_run_at?: string | null
+          next_run_at?: string | null
+          report_config?: Json
+          report_format?: string
+          report_type?: string
+          schedule_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       seasonal_challenges: {
         Row: {
           challenge_type: string

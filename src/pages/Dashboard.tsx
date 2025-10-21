@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/layout/AppLayout';
 import { Plus } from 'lucide-react';
-import { DndContext, rectIntersection, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent, DragStartEvent } from '@dnd-kit/core';
+import { DndContext, rectIntersection, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent, DragStartEvent, MeasuringStrategy } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { InsightsQuickSummary } from '@/components/insights/InsightsQuickSummary';
@@ -33,6 +33,7 @@ import { WidgetLibrary } from '@/components/widgets/WidgetLibrary';
 import { SortableWidget } from '@/components/widgets/SortableWidget';
 import { toast } from 'sonner';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useMasonryGrid } from '@/hooks/useMasonryGrid';
 
 // Lazy load heavy components
 const TradeHistory = lazy(() => import('@/components/TradeHistory').then(m => ({ default: m.TradeHistory })));
@@ -136,6 +137,10 @@ const Dashboard = () => {
   const [showWidgetLibrary, setShowWidgetLibrary] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overlaySize, setOverlaySize] = useState<{ width: number; height: number } | null>(null);
+
+  // Masonry grid for compact layout
+  const gridRef = useRef<HTMLDivElement>(null);
+  const { reflow } = useMasonryGrid(gridRef, { rowHeight: 8, gap: 16 });
 
   // Drag and drop sensors with optimized settings for smooth dragging
   const sensors = useSensors(
@@ -361,7 +366,10 @@ const Dashboard = () => {
     } else {
       setOverlaySize(null);
     }
-  }, []);
+
+    // Reflow masonry after DOM settles
+    requestAnimationFrame(() => reflow());
+  }, [reflow]);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
@@ -375,12 +383,18 @@ const Dashboard = () => {
     
     setActiveId(null);
     setOverlaySize(null);
-  }, [widgetOrder, updateLayout]);
+
+    // Reflow masonry after drag completes
+    requestAnimationFrame(() => reflow());
+  }, [widgetOrder, updateLayout, reflow]);
 
   const handleDragCancel = useCallback(() => {
     setActiveId(null);
     setOverlaySize(null);
-  }, []);
+
+    // Reflow masonry after drag cancel
+    requestAnimationFrame(() => reflow());
+  }, [reflow]);
   const handleCancelCustomize = useCallback(() => {
     setIsCustomizing(false);
   }, []);
@@ -656,12 +670,17 @@ const Dashboard = () => {
                   onDragStart={handleDragStart}
                   onDragEnd={handleDragEnd}
                   onDragCancel={handleDragCancel}
+                  measuring={{
+                    droppable: {
+                      strategy: MeasuringStrategy.Always,
+                    },
+                  }}
                 >
                   <SortableContext
                     items={widgetOrder}
                     strategy={rectSortingStrategy}
                   >
-                    <div className="dashboard-grid">
+                    <div ref={gridRef} className="dashboard-grid">
                       {widgetOrder.map(renderWidget)}
                     </div>
                   </SortableContext>

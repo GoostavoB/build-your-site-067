@@ -552,7 +552,8 @@ textarea:focus-visible {
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  grid-auto-rows: auto;
+  grid-auto-rows: var(--row-height, 8px);
+  grid-auto-flow: dense;
   gap: 16px;
   width: 100%;
   margin: 0;
@@ -561,13 +562,21 @@ textarea:focus-visible {
 
 /* Widget items with auto height */
 .widget-item {
-  height: auto !important;
-  min-height: fit-content;
+  display: flex;
+  flex-direction: column;
+  grid-row-end: span 1;
   transition: opacity 0.2s ease;
 }
 
-/* Ensure widget content maintains natural size */
-.widget-item > * {
+/* Widget content wrapper for masonry measuring */
+.widget-content {
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.widget-content > * {
   height: 100%;
   display: flex;
   flex-direction: column;

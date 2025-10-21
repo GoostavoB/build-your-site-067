@@ -81,8 +81,11 @@ export const SortableWidget = memo(({ id, children, isEditMode, onRemove }: Sort
           </Button>
         </div>
       )}
-      <div className={isDragging ? 'pointer-events-none' : ''}>
-        {children}
+      {/* Wrap children in measurable content div for masonry */}
+      <div className="widget-content">
+        <div className={isDragging ? 'pointer-events-none' : ''}>
+          {children}
+        </div>
       </div>
     </div>
   );

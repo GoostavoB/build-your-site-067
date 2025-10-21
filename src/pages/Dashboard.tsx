@@ -59,6 +59,22 @@ interface TradeStats {
   avg_roi_per_trade: number;
 }
 
+function calculateCurrentStreak(trades: Trade[]): number {
+  if (!trades || trades.length === 0) return 0;
+  const sorted = [...trades].sort((a, b) => new Date(b.trade_date).getTime() - new Date(a.trade_date).getTime());
+  let count = 0;
+  const isWinning = (sorted[0].pnl || 0) > 0;
+  for (const trade of sorted) {
+    const pnl = trade.pnl || 0;
+    if ((isWinning && pnl > 0) || (!isWinning && pnl <= 0)) {
+      count++;
+    } else {
+      break;
+    }
+  }
+  return isWinning ? count : -count;
+}
+
 const Dashboard = () => {
   useKeyboardShortcuts();
   const { user } = useAuth();
@@ -289,21 +305,7 @@ const Dashboard = () => {
     }
   };
 
-  // Memoize helper functions for performance
-  const calculateCurrentStreak = useCallback((trades: Trade[]) => {
-    if (trades.length === 0) return 0;
-    const sorted = [...trades].sort((a, b) => new Date(b.trade_date).getTime() - new Date(a.trade_date).getTime());
-    let streak = 0;
-    const isWinning = sorted[0].pnl > 0;
-    for (const trade of sorted) {
-      if ((isWinning && trade.pnl > 0) || (!isWinning && trade.pnl <= 0)) {
-        streak++;
-      } else {
-        break;
-      }
-    }
-    return streak;
-  }, []);
+  // calculateCurrentStreak moved to top-level helper for hoisting
 
   const calculateStreakType = useCallback((trades: Trade[]): 'winning' | 'losing' => {
     if (trades.length === 0) return 'winning';

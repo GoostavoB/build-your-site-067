@@ -725,61 +725,6 @@ const Dashboard = () => {
           />
         )}
 
-        {/* Customize Dashboard Controls - Only show on Overview tab */}
-        {!loading && stats && stats.total_trades > 0 && activeTab === 'overview' && (
-          <div className="flex items-center gap-2 flex-wrap">
-            {!isCustomizing ? (
-              <>
-                <Button
-                  onClick={handleStartCustomize}
-                  variant="outline"
-                  className="glass"
-                >
-                  {t('dashboard.customizeLayout')}
-                </Button>
-                
-                {/* Column Count Selector */}
-                <div className="flex items-center gap-2">
-                  <Columns className="w-4 h-4 text-muted-foreground" />
-                  <Select
-                    value={selectedColumnCount.toString()}
-                    onValueChange={(value) => setSelectedColumnCount(parseInt(value, 10))}
-                  >
-                    <SelectTrigger className="w-[120px] glass">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="2">2 Columns</SelectItem>
-                      <SelectItem value="3">3 Columns</SelectItem>
-                      <SelectItem value="4">4 Columns</SelectItem>
-                      <SelectItem value="5">5 Columns</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </>
-            ) : (
-              <>
-                <Button
-                  onClick={() => setShowWidgetLibrary(true)}
-                  variant="outline"
-                  className="glass"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  {t('common.add')} {t('widgets.quickActions').split(' ')[0]}
-                </Button>
-                <Button onClick={handleSaveLayout} variant="default">
-                  {t('dashboard.saveLayout')}
-                </Button>
-                <Button onClick={handleCancelCustomize} variant="outline">
-                  {t('common.cancel')}
-                </Button>
-                <Button onClick={resetLayout} variant="ghost">
-                  {t('dashboard.resetLayout')}
-                </Button>
-              </>
-            )}
-          </div>
-        )}
 
         {loading ? (
           <DashboardSkeleton />

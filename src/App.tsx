@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { AIAssistantProvider } from "@/contexts/AIAssistantContext";
+import { CalmModeProvider } from "@/contexts/CalmModeContext";
 import { ThemeProvider } from "next-themes";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -29,6 +30,7 @@ import ExchangeConnections from "./pages/ExchangeConnections";
 import SpotWallet from "./pages/SpotWallet";
 import FeeAnalysis from "./pages/FeeAnalysis";
 import LogoDownload from "./pages/LogoDownload";
+import Leaderboard from "./pages/Leaderboard";
 
 const queryClient = new QueryClient();
 
@@ -55,8 +57,9 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <AuthProvider>
-              <AIAssistantProvider>
-                <Routes>
+              <CalmModeProvider>
+                <AIAssistantProvider>
+                  <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/logo-download" element={<LogoDownload />} />
@@ -76,11 +79,13 @@ const App = () => (
                   <Route path="/blog" element={<ProtectedRoute><Blog /></ProtectedRoute>} />
                   <Route path="/blog/:slug" element={<ProtectedRoute><BlogPost /></ProtectedRoute>} />
                   <Route path="/faq" element={<ProtectedRoute><FAQ /></ProtectedRoute>} />
+                  <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
                   <Route path="/custom/:pageId" element={<ProtectedRoute><CustomPage /></ProtectedRoute>} />
                   <Route path="*" element={<NotFound />} />
-                </Routes>
-                <PerformanceMonitor />
-              </AIAssistantProvider>
+                  </Routes>
+                  <PerformanceMonitor />
+                </AIAssistantProvider>
+              </CalmModeProvider>
             </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>

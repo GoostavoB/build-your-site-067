@@ -19,6 +19,7 @@ import { ExportTradesDialog } from '@/components/ExportTradesDialog';
 import { LevelUpModal } from '@/components/gamification/LevelUpModal';
 import { FloatingXP } from '@/components/gamification/FloatingXP';
 import { MicroFeedbackOverlay } from '@/components/gamification/MicroFeedbackOverlay';
+import { WeeklySummaryRecap } from '@/components/WeeklySummaryRecap';
 import { useXPSystem } from '@/hooks/useXPSystem';
 import { useDailyChallenges } from '@/hooks/useDailyChallenges';
 import { useTradeXPRewards } from '@/hooks/useTradeXPRewards';

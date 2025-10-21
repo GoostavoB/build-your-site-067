@@ -1,94 +1,169 @@
-import { useEffect, useState } from 'react';
-import { useXPSystem } from './useXPSystem';
-import { ColorMode } from './useThemeMode';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
-export interface ThemeUnlock {
-  themeId: string;
-  requiredLevel: number;
-  unlocked: boolean;
+export interface UnlockableTheme {
+  id: string;
+  name: string;
+  description: string;
+  previewColors: {
+    primary: string;
+    secondary: string;
+    accent: string;
+  };
+  unlockRequirement: {
+    type: 'level' | 'rank' | 'achievement';
+    value: string | number;
+  };
+  isUnlocked: boolean;
 }
 
-// Level-based theme unlocks
-export const THEME_UNLOCK_REQUIREMENTS: Record<string, number> = {
-  // Level 1-2: Always available
-  'ocean': 1,
-  'purple': 1,
-  'classic': 1,
-  'midnight': 1,
-  
-  // Level 3+: Consistent Trader
-  'wall-street': 3,
-  'focus': 3,
-  'neon': 3,
-  'forest': 3,
-  
-  // Level 4+: Expert Trader
-  'sunset': 4,
-  'arctic': 4,
-  'matrix': 4,
-  'fire': 4,
-  
-  // Level 5+: Master Trader
-  'galaxy': 5,
-  'gold-rush': 5,
-  'synthwave': 5,
-};
+const THEME_CATALOG: Omit<UnlockableTheme, 'isUnlocked'>[] = [
+  {
+    id: 'default',
+    name: 'Default Theme',
+    description: 'Clean and professional',
+    previewColors: { primary: '#8B5CF6', secondary: '#06B6D4', accent: '#F59E0B' },
+    unlockRequirement: { type: 'level', value: 1 }
+  },
+  {
+    id: 'neon-nights',
+    name: 'Neon Nights',
+    description: 'Vibrant cyberpunk aesthetics',
+    previewColors: { primary: '#FF00FF', secondary: '#00FFFF', accent: '#FFFF00' },
+    unlockRequirement: { type: 'level', value: 5 }
+  },
+  {
+    id: 'ocean-breeze',
+    name: 'Ocean Breeze',
+    description: 'Calm blue tones',
+    previewColors: { primary: '#0EA5E9', secondary: '#06B6D4', accent: '#22D3EE' },
+    unlockRequirement: { type: 'level', value: 10 }
+  },
+  {
+    id: 'sunset-glow',
+    name: 'Sunset Glow',
+    description: 'Warm orange and pink hues',
+    previewColors: { primary: '#F97316', secondary: '#EC4899', accent: '#FBBF24' },
+    unlockRequirement: { type: 'level', value: 15 }
+  },
+  {
+    id: 'cyber-punk',
+    name: 'Cyber Punk',
+    description: 'Futuristic dark theme',
+    previewColors: { primary: '#A855F7', secondary: '#06B6D4', accent: '#F43F5E' },
+    unlockRequirement: { type: 'rank', value: 'elite_trader' }
+  },
+  {
+    id: 'gold-rush',
+    name: 'Gold Rush',
+    description: 'Luxurious gold accents',
+    previewColors: { primary: '#EAB308', secondary: '#F59E0B', accent: '#FBBF24' },
+    unlockRequirement: { type: 'rank', value: 'legend_trader' }
+  }
+];
 
 export const useThemeUnlocks = () => {
-  const { xpData } = useXPSystem();
-  const level = xpData.currentLevel;
-  const [newlyUnlockedThemes, setNewlyUnlockedThemes] = useState<string[]>([]);
-  const [previousLevel, setPreviousLevel] = useState(level);
+  const { user } = useAuth();
+  const [themes, setThemes] = useState<UnlockableTheme[]>([]);
+  const [activeTheme, setActiveTheme] = useState<string>('default');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if level increased
-    if (level > previousLevel) {
-      const newUnlocks = Object.entries(THEME_UNLOCK_REQUIREMENTS)
-        .filter(([themeId, requiredLevel]) => 
-          requiredLevel === level && requiredLevel > previousLevel
-        )
-        .map(([themeId]) => themeId);
-      
-      if (newUnlocks.length > 0) {
-        setNewlyUnlockedThemes(newUnlocks);
-        
-        // Clear after 5 seconds
-        setTimeout(() => {
-          setNewlyUnlockedThemes([]);
-        }, 5000);
-      }
-      
-      setPreviousLevel(level);
+    if (user) {
+      fetchUnlocks();
     }
-  }, [level, previousLevel]);
+  }, [user]);
 
-  const isThemeUnlocked = (themeId: string): boolean => {
-    const requiredLevel = THEME_UNLOCK_REQUIREMENTS[themeId] || 1;
-    return level >= requiredLevel;
+  const fetchUnlocks = async () => {
+    if (!user) return;
+
+    try {
+      // Fetch user progression
+      const { data: progression } = await supabase
+        .from('user_xp_levels')
+        .select('current_level')
+        .eq('user_id', user.id)
+        .single();
+
+      const { data: userProgression } = await supabase
+        .from('user_progression')
+        .select('rank')
+        .eq('user_id', user.id)
+        .single();
+
+      // Fetch user preferences
+      const { data: preferences } = await supabase
+        .from('user_customization_preferences')
+        .select('active_theme, unlocked_themes')
+        .eq('user_id', user.id)
+        .single();
+
+      const currentLevel = progression?.current_level || 1;
+      const currentRank = userProgression?.rank || 'rookie_trader';
+      const unlockedThemes = preferences?.unlocked_themes || ['default'];
+      const activeThemeId = preferences?.active_theme || 'default';
+
+      setActiveTheme(activeThemeId);
+
+      // Check which themes are unlocked
+      const themesWithUnlocks = THEME_CATALOG.map(theme => {
+        let isUnlocked = unlockedThemes.includes(theme.id);
+        
+        if (!isUnlocked) {
+          if (theme.unlockRequirement.type === 'level') {
+            isUnlocked = currentLevel >= (theme.unlockRequirement.value as number);
+          } else if (theme.unlockRequirement.type === 'rank') {
+            const rankOrder = ['rookie_trader', 'active_trader', 'consistent_trader', 'pro_trader', 'elite_trader', 'legend_trader'];
+            const requiredRankIndex = rankOrder.indexOf(theme.unlockRequirement.value as string);
+            const currentRankIndex = rankOrder.indexOf(currentRank);
+            isUnlocked = currentRankIndex >= requiredRankIndex;
+          }
+        }
+
+        return { ...theme, isUnlocked };
+      });
+
+      setThemes(themesWithUnlocks);
+    } catch (error) {
+      console.error('Error fetching theme unlocks:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getUnlockedThemes = (allThemes: ColorMode[]): ColorMode[] => {
-    return allThemes.filter(theme => isThemeUnlocked(theme.id));
-  };
+  const activateTheme = async (themeId: string) => {
+    if (!user) return;
 
-  const getLockedThemes = (allThemes: ColorMode[]): ColorMode[] => {
-    return allThemes.filter(theme => !isThemeUnlocked(theme.id));
-  };
+    const theme = themes.find(t => t.id === themeId);
+    if (!theme?.isUnlocked) return;
 
-  const getNextUnlockLevel = (currentLevel: number): number | null => {
-    const nextLevels = Object.values(THEME_UNLOCK_REQUIREMENTS)
-      .filter(reqLevel => reqLevel > currentLevel)
-      .sort((a, b) => a - b);
-    
-    return nextLevels.length > 0 ? nextLevels[0] : null;
+    try {
+      // Update active theme in database
+      const { error } = await supabase
+        .from('user_customization_preferences')
+        .upsert({
+          user_id: user.id,
+          active_theme: themeId
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (!error) {
+        setActiveTheme(themeId);
+        // Apply theme to document
+        document.documentElement.setAttribute('data-theme', themeId);
+      }
+    } catch (error) {
+      console.error('Error activating theme:', error);
+    }
   };
 
   return {
-    isThemeUnlocked,
-    getUnlockedThemes,
-    getLockedThemes,
-    newlyUnlockedThemes,
-    getNextUnlockLevel,
-    currentLevel: level,
+    themes,
+    activeTheme,
+    loading,
+    activateTheme,
+    refresh: fetchUnlocks
   };
 };

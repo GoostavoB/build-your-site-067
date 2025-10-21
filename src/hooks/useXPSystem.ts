@@ -88,6 +88,25 @@ export const useXPSystem = () => {
     fetchXPData();
   }, [fetchXPData]);
 
+  // Realtime: keep XP data in sync across widgets
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel(`xp-sync-${user.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_xp_levels', filter: `user_id=eq.${user.id}` }, () => {
+        fetchXPData();
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'xp_activity_log', filter: `user_id=eq.${user.id}` }, () => {
+        fetchXPData();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, fetchXPData]);
+
   const addXP = useCallback(async (
     amount: number, 
     activityType: string, 

@@ -1,4 +1,4 @@
-import { BarChart3, Upload, TrendingUp, Target, Brain, Trophy, Settings2, BookOpen, HelpCircle, LineChart, LogOut, Zap, Sparkles, RefreshCw, Wallet, Receipt } from 'lucide-react';
+import { BarChart3, Upload, TrendingUp, Target, Brain, Trophy, Settings2, BookOpen, HelpCircle, LineChart, LogOut, Zap, Sparkles, RefreshCw, Wallet, Receipt, Palette } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Logo } from '@/components/Logo';
 import {
@@ -43,6 +43,7 @@ export function AppSidebar() {
   const resourceItems = [
     { title: t('navigation.blog'), url: '/blog', icon: BookOpen },
     { title: t('navigation.faq'), url: '/faq', icon: HelpCircle },
+    { title: 'Brand Assets', url: '/logo-download', icon: Palette },
   ];
 
   const isActive = (path: string) => location.pathname === path;

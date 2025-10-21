@@ -1,14 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/glass-card";
-import { Download, Copy, ArrowLeft } from "lucide-react";
+import { Download, Copy, ArrowLeft, ExternalLink, Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { useState } from "react";
 import { toast } from "sonner";
+import heroBg from '@/assets/bull-bear-realistic.png';
 
 const LogoDownload = () => {
   const navigate = useNavigate();
   const [selectedBg, setSelectedBg] = useState<'transparent' | 'white' | 'dark'>('transparent');
+  const [copied, setCopied] = useState(false);
 
   const downloadLogo = (size: number, bgColor: 'transparent' | 'white') => {
     const svg = document.getElementById('logo-svg-source');
@@ -54,7 +56,83 @@ const LogoDownload = () => {
     if (!svg) return;
     const svgData = new XMLSerializer().serializeToString(svg);
     navigator.clipboard.writeText(svgData);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
     toast.success('SVG code copied to clipboard!');
+  };
+
+  const downloadThumbnail = (width: number, height: number) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const bgImg = new Image();
+    bgImg.crossOrigin = 'anonymous';
+    bgImg.onload = () => {
+      // Draw dimmed background
+      ctx.drawImage(bgImg, 0, 0, width, height);
+      ctx.fillStyle = 'rgba(15, 15, 17, 0.7)';
+      ctx.fillRect(0, 0, width, height);
+
+      // Apply gradient overlay
+      const gradient = ctx.createLinearGradient(0, 0, width, height);
+      gradient.addColorStop(0, 'rgba(155, 135, 245, 0.15)');
+      gradient.addColorStop(1, 'rgba(126, 105, 171, 0.15)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height);
+
+      // Draw logo SVG
+      const svgData = `
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+          <defs>
+            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color: hsl(250, 80%, 75%); stop-opacity: 1" />
+              <stop offset="100%" style="stop-color: hsl(250, 80%, 75%); stop-opacity: 0.85" />
+            </linearGradient>
+          </defs>
+          <rect x="8" y="10" width="24" height="5" fill="url(#logoGradient)" />
+          <rect x="17" y="10" width="6" height="28" fill="url(#logoGradient)" />
+          <rect x="25" y="15" width="6" height="23" fill="url(#logoGradient)" />
+          <path d="M 31 15 L 38 15 Q 42 15 42 19 L 42 34 Q 42 38 38 38 L 31 38 Z" fill="url(#logoGradient)" />
+          <path d="M 31 20 L 35 20 Q 37 20 37 22 L 37 31 Q 37 33 35 33 L 31 33 Z" fill="#0f0f11" />
+          <rect x="7" y="9" width="36" height="30" rx="2" stroke="hsl(250, 80%, 75%)" stroke-width="0.5" fill="none" opacity="0.2" />
+        </svg>
+      `;
+
+      const logoImg = new Image();
+      const blob = new Blob([svgData], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+
+      logoImg.onload = () => {
+        const logoSize = Math.min(width, height) * 0.25;
+        const x = (width - logoSize) / 2;
+        const y = (height - logoSize) / 2;
+        ctx.drawImage(logoImg, x, y, logoSize, logoSize);
+
+        // Add text below logo
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold ${width * 0.035}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto`;
+        ctx.textAlign = 'center';
+        ctx.fillText('The Trading Diary', width / 2, y + logoSize + 50);
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const link = document.createElement('a');
+            link.download = `trading-diary-thumbnail-${width}x${height}.png`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            URL.revokeObjectURL(url);
+            toast.success(`Downloaded ${width}x${height} thumbnail`);
+          }
+        });
+      };
+
+      logoImg.src = url;
+    };
+
+    bgImg.src = heroBg;
   };
 
   return (
@@ -62,20 +140,30 @@ const LogoDownload = () => {
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
         <div className="mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-            className="mb-6 hover:bg-primary/10"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <Button
+              variant="ghost"
+              onClick={() => navigate(-1)}
+              className="hover:bg-primary/10"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+            <a 
+              href="/brand-assets.html" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+            >
+              Open static page <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
           
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            Download Logo Assets
+          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent text-center">
+            Brand Assets
           </h1>
-          <p className="text-muted-foreground">
-            Download your Trading Diary logo in various sizes and formats
+          <p className="text-muted-foreground text-center">
+            Download The Trading Diary logo and branded thumbnails
           </p>
         </div>
 
@@ -124,10 +212,72 @@ const LogoDownload = () => {
 
           {/* Copy SVG Button */}
           <div className="mt-6 flex justify-center">
-            <Button onClick={copySVG} variant="outline">
-              <Copy className="mr-2 h-4 w-4" />
-              Copy SVG Code
+            <Button onClick={copySVG} variant={copied ? "default" : "outline"}>
+              {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
+              {copied ? "Copied!" : "Copy SVG Code"}
             </Button>
+          </div>
+        </GlassCard>
+
+        {/* Branded Thumbnails Section */}
+        <GlassCard className="p-8 mb-8">
+          <h2 className="text-2xl font-semibold mb-4">Branded Thumbnails</h2>
+          <p className="text-muted-foreground mb-6">
+            Social media ready thumbnails with your brand design
+          </p>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* 1200x630 Preview */}
+            <div>
+              <div 
+                className="relative w-full aspect-[1200/630] rounded-lg overflow-hidden mb-4 border border-border/50"
+                style={{
+                  backgroundImage: `url(${heroBg})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center'
+                }}
+              >
+                <div className="absolute inset-0 bg-background/70" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/15 to-primary/5" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <Logo size="lg" variant="icon" />
+                  <span className="mt-4 text-sm font-semibold">The Trading Diary</span>
+                </div>
+              </div>
+              <Button onClick={() => downloadThumbnail(1200, 630)} className="w-full justify-between hover:bg-primary/90">
+                <span>1200×630 PNG (Social)</span>
+                <Download className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* 1080x1080 Preview */}
+            <div>
+              <div 
+                className="relative w-full aspect-square rounded-lg overflow-hidden mb-4 border border-border/50"
+                style={{
+                  backgroundImage: `url(${heroBg})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center'
+                }}
+              >
+                <div className="absolute inset-0 bg-background/70" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/15 to-primary/5" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <Logo size="lg" variant="icon" />
+                  <span className="mt-4 text-sm font-semibold">The Trading Diary</span>
+                </div>
+              </div>
+              <Button onClick={() => downloadThumbnail(1080, 1080)} className="w-full justify-between hover:bg-primary/90">
+                <span>1080×1080 PNG (Square)</span>
+                <Download className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="mt-6 p-4 bg-primary/10 border border-primary/20 rounded-lg">
+            <p className="text-sm text-muted-foreground">
+              <strong className="text-foreground">Perfect for:</strong> Twitter/X cards, Facebook posts, LinkedIn banners, Instagram posts
+            </p>
           </div>
         </GlassCard>
 

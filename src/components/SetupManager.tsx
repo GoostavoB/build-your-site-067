@@ -27,10 +27,11 @@ interface SetupManagerProps {
 
 export const SetupManager = ({ trades }: SetupManagerProps) => {
   const { user } = useAuth();
-  const [setups, setSetups] = useState<{ id: string; name: string }[]>([]);
+  const [setups, setSetups] = useState<{ id: string; name: string; color?: string }[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [editingSetup, setEditingSetup] = useState<{ id: string; name: string } | null>(null);
+  const [editingSetup, setEditingSetup] = useState<{ id: string; name: string; color?: string } | null>(null);
   const [setupName, setSetupName] = useState('');
+  const [setupColor, setSetupColor] = useState('#A18CFF');
   const [setupPerformance, setSetupPerformance] = useState<SetupPerformance[]>([]);
 
   useEffect(() => {
@@ -110,7 +111,7 @@ export const SetupManager = ({ trades }: SetupManagerProps) => {
     if (editingSetup) {
       const { error } = await supabase
         .from('user_setups')
-        .update({ name: setupName.trim() })
+        .update({ name: setupName.trim(), color: setupColor })
         .eq('id', editingSetup.id);
 
       if (error) {
@@ -124,6 +125,7 @@ export const SetupManager = ({ trades }: SetupManagerProps) => {
         .insert({
           user_id: user.id,
           name: setupName.trim(),
+          color: setupColor,
         });
 
       if (error) {
@@ -136,6 +138,7 @@ export const SetupManager = ({ trades }: SetupManagerProps) => {
     setIsOpen(false);
     setEditingSetup(null);
     setSetupName('');
+    setSetupColor('#A18CFF');
     fetchSetups();
   };
 
@@ -154,9 +157,10 @@ export const SetupManager = ({ trades }: SetupManagerProps) => {
     fetchSetups();
   };
 
-  const handleEdit = (setup: { id: string; name: string }) => {
+  const handleEdit = (setup: { id: string; name: string; color?: string }) => {
     setEditingSetup(setup);
     setSetupName(setup.name);
+    setSetupColor(setup.color || '#A18CFF');
     setIsOpen(true);
   };
 
@@ -197,6 +201,21 @@ export const SetupManager = ({ trades }: SetupManagerProps) => {
                   Give your setup a descriptive name to easily identify it when logging trades
                 </p>
               </div>
+              <div>
+                <Label htmlFor="setup-color">Setup Color</Label>
+                <div className="flex gap-2 items-center mt-1">
+                  <input
+                    id="setup-color"
+                    type="color"
+                    value={setupColor}
+                    onChange={(e) => setSetupColor(e.target.value)}
+                    className="w-16 h-10 rounded-md border border-border cursor-pointer"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Choose a color to easily identify this setup
+                  </p>
+                </div>
+              </div>
               <div className="flex gap-2">
                 <Button type="submit" className="flex-1">
                   {editingSetup ? 'Update Setup' : 'Create Setup'}
@@ -208,6 +227,7 @@ export const SetupManager = ({ trades }: SetupManagerProps) => {
                     setIsOpen(false);
                     setEditingSetup(null);
                     setSetupName('');
+                    setSetupColor('#A18CFF');
                   }}
                 >
                   Cancel
@@ -236,7 +256,15 @@ export const SetupManager = ({ trades }: SetupManagerProps) => {
                 className="p-3 bg-muted/20 border-border hover:border-primary/30 transition-all duration-300"
               >
                 <div className="flex items-center justify-between">
-                  <Badge variant="secondary" className="text-sm">
+                  <Badge 
+                    variant="secondary" 
+                    className="text-sm"
+                    style={{
+                      backgroundColor: setup.color || '#A18CFF',
+                      color: 'white',
+                      borderColor: setup.color || '#A18CFF'
+                    }}
+                  >
                     {setup.name}
                   </Badge>
                   <div className="flex gap-1">

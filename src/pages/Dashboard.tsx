@@ -138,9 +138,9 @@ const Dashboard = () => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overlaySize, setOverlaySize] = useState<{ width: number; height: number } | null>(null);
 
-  // Masonry grid for compact layout
+  // Masonry grid for compact layout with fine-grained vertical control
   const gridRef = useRef<HTMLDivElement>(null);
-  const { reflow } = useMasonryGrid(gridRef, { rowHeight: 8, gap: 16 });
+  const { reflow } = useMasonryGrid(gridRef, { rowHeight: 4, gap: 16 });
 
   // Drag and drop sensors with optimized settings for smooth dragging
   const sensors = useSensors(

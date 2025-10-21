@@ -7,6 +7,41 @@ import { Plus, Trash2, Edit2, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
+// Helper function to convert HSL to hex
+function hslToHex(hsl: string): string {
+  const [h, s, l] = hsl.split(' ').map((v, i) => {
+    const num = parseFloat(v.replace('%', ''));
+    return i === 0 ? num : num / 100;
+  });
+
+  const hDecimal = h / 360;
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((hDecimal * 6) % 2) - 1));
+  const m = l - c / 2;
+  
+  let r = 0, g = 0, b = 0;
+
+  if (hDecimal < 1/6) {
+    r = c; g = x; b = 0;
+  } else if (hDecimal < 2/6) {
+    r = x; g = c; b = 0;
+  } else if (hDecimal < 3/6) {
+    r = 0; g = c; b = x;
+  } else if (hDecimal < 4/6) {
+    r = 0; g = x; b = c;
+  } else if (hDecimal < 5/6) {
+    r = x; g = 0; b = c;
+  } else {
+    r = c; g = 0; b = x;
+  }
+
+  const rHex = Math.round((r + m) * 255).toString(16).padStart(2, '0');
+  const gHex = Math.round((g + m) * 255).toString(16).padStart(2, '0');
+  const bHex = Math.round((b + m) * 255).toString(16).padStart(2, '0');
+
+  return `#${rHex}${gHex}${bHex}`;
+}
+
 export const CustomThemeManager = () => {
   const { themeMode, setThemeMode, customModes, addCustomMode, deleteCustomMode, updateCustomMode } = useThemeMode();
   const [isCreating, setIsCreating] = useState(false);
@@ -54,6 +89,48 @@ export const CustomThemeManager = () => {
   const handleStartEdit = (mode: ColorMode) => {
     setEditingMode(mode.id);
     setEditName(mode.name);
+    // Convert HSL back to hex for color pickers
+    setEditPrimary(hslToHex(mode.primary));
+    setEditSecondary(hslToHex(mode.secondary));
+    setEditAccent(hslToHex(mode.accent));
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingMode) return;
+    
+    if (!editName.trim()) {
+      toast.error('Please enter a name for the theme');
+      return;
+    }
+
+    try {
+      const primaryHsl = hexToHsl(editPrimary);
+      const secondaryHsl = hexToHsl(editSecondary);
+      const accentHsl = hexToHsl(editAccent);
+
+      updateCustomMode(editingMode, {
+        name: editName,
+        primary: primaryHsl,
+        secondary: secondaryHsl,
+        accent: accentHsl,
+        profit: primaryHsl,
+        loss: secondaryHsl,
+      });
+
+      toast.success(`Theme "${editName}" updated! 🎨`);
+      setEditingMode(null);
+      setEditName('');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to update theme');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingMode(null);
+    setEditName('');
+    setEditPrimary('');
+    setEditSecondary('');
+    setEditAccent('');
   };
 
   const handleDelete = (modeId: string) => {
@@ -84,44 +161,121 @@ export const CustomThemeManager = () => {
       <h3 className="text-sm font-semibold px-4">Your Custom Themes ({customModes.length}/3)</h3>
       
       <div className="space-y-2 px-4">
-        {customModes.map((mode) => (
-          <div
-            key={mode.id}
-            className={cn(
-              "flex items-center justify-between p-3 rounded-lg border-2 transition-colors",
-              themeMode === mode.id 
-                ? "border-primary bg-primary/10" 
-                : "border-border/20 hover:border-border/50"
-            )}
-          >
-            <button
-              onClick={() => setThemeMode(mode.id)}
-              className="flex items-center gap-3 flex-1"
+        {customModes.map((mode) => {
+          const isEditing = editingMode === mode.id;
+          
+          if (isEditing) {
+            return (
+              <Card key={mode.id} className="p-4 space-y-3 border-primary/20">
+                <Input
+                  placeholder="Theme name"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                />
+                
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground">Edit colors:</p>
+                  <div className="flex gap-2">
+                    <div className="flex-1 space-y-1">
+                      <label className="text-xs">Primary</label>
+                      <input
+                        type="color"
+                        value={editPrimary}
+                        onChange={(e) => setEditPrimary(e.target.value)}
+                        className="w-full h-10 rounded cursor-pointer"
+                      />
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <label className="text-xs">Secondary</label>
+                      <input
+                        type="color"
+                        value={editSecondary}
+                        onChange={(e) => setEditSecondary(e.target.value)}
+                        className="w-full h-10 rounded cursor-pointer"
+                      />
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <label className="text-xs">Accent</label>
+                      <input
+                        type="color"
+                        value={editAccent}
+                        onChange={(e) => setEditAccent(e.target.value)}
+                        className="w-full h-10 rounded cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button onClick={handleSaveEdit} className="flex-1" size="sm">
+                    <Check className="h-4 w-4 mr-2" />
+                    Save
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={handleCancelEdit}
+                    className="flex-1"
+                    size="sm"
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Cancel
+                  </Button>
+                </div>
+              </Card>
+            );
+          }
+
+          return (
+            <div
+              key={mode.id}
+              className={cn(
+                "flex items-center justify-between p-3 rounded-lg border-2 transition-colors",
+                themeMode === mode.id 
+                  ? "border-primary bg-primary/10" 
+                  : "border-border/20 hover:border-border/50"
+              )}
             >
-              <div className="flex gap-1">
-                <div 
-                  className="w-6 h-6 rounded-full border border-background"
-                  style={{ backgroundColor: `hsl(${mode.primary})` }}
-                />
-                <div 
-                  className="w-6 h-6 rounded-full border border-background"
-                  style={{ backgroundColor: `hsl(${mode.accent})` }}
-                />
-              </div>
-              <span className="text-sm font-medium">{mode.name}</span>
-            </button>
-            <div className="flex gap-1">
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => handleDelete(mode.id)}
-                className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+              <button
+                onClick={() => setThemeMode(mode.id)}
+                className="flex items-center gap-3 flex-1"
               >
-                <Trash2 className="h-3 w-3" />
-              </Button>
+                <div className="flex gap-1">
+                  <div 
+                    className="w-6 h-6 rounded-full border border-background"
+                    style={{ backgroundColor: `hsl(${mode.primary})` }}
+                  />
+                  <div 
+                    className="w-6 h-6 rounded-full border border-background"
+                    style={{ backgroundColor: `hsl(${mode.secondary})` }}
+                  />
+                  <div 
+                    className="w-6 h-6 rounded-full border border-background"
+                    style={{ backgroundColor: `hsl(${mode.accent})` }}
+                  />
+                </div>
+                <span className="text-sm font-medium">{mode.name}</span>
+              </button>
+              <div className="flex gap-1">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleStartEdit(mode)}
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-primary"
+                >
+                  <Edit2 className="h-3 w-3" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleDelete(mode.id)}
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {isCreating && (

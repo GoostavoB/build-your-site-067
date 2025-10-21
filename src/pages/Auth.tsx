@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { TrendingUp, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import { Logo } from '@/components/Logo';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -142,7 +143,7 @@ const Auth = () => {
       <div className="absolute bottom-20 right-20 w-96 h-96 bg-neon-green/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
       <Card className="w-full max-w-md p-8 bg-card/80 backdrop-blur-xl border-border/50 shadow-2xl relative z-10">
         <div className="flex items-center justify-center gap-2 mb-8">
-          <TrendingUp className="text-foreground" size={32} />
+          <Logo size="lg" variant="icon" />
           <h1 className="text-3xl font-bold gradient-text">The Trading Diary</h1>
         </div>
 

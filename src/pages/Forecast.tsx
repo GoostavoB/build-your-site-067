@@ -103,9 +103,11 @@ const Forecast = () => {
   };
 
   const formatDays = (days: number) => {
-    if (days < 30) return `${days} days`;
-    if (days < 365) return `${Math.round(days / 30)} months`;
-    return `${Math.round(days / 365)} years`;
+    if (days < 30) return `${days} ${days === 1 ? 'day' : 'days'}`;
+    const months = Math.round(days / 30);
+    if (days < 365) return `${months} ${months === 1 ? 'month' : 'months'}`;
+    const years = Math.round(days / 365);
+    return `${years} ${years === 1 ? 'year' : 'years'}`;
   };
 
   return (
@@ -185,7 +187,7 @@ const Forecast = () => {
               <div className="flex items-center gap-3">
                 <Sparkles className="h-8 w-8 text-primary" />
                 <div>
-                  <h2 className="text-3xl font-bold">Forecast 2.0 - Long-Term Growth</h2>
+                  <h2 className="text-3xl font-bold">Forecast - Long-Term Growth</h2>
                   <p className="text-muted-foreground">
                     Statistical projections based on geometric expectancy and compound growth
                   </p>

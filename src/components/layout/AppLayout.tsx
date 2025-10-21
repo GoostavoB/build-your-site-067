@@ -51,18 +51,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               <SidebarTrigger className="hover:bg-muted/50 rounded-lg p-2 transition-colors" />
             </div>
 
-            {/* Center: Search Bar */}
-            <div className="flex-1 max-w-md">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder={t('common.search')}
-                  className="pl-10 glass-subtle border-0 focus-visible:ring-1 focus-visible:ring-primary/20"
-                />
-              </div>
-            </div>
-
             {/* Right: Icon Buttons */}
             <div className="flex items-center gap-2">
               <KeyboardShortcutsHelp />

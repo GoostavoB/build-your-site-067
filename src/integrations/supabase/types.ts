@@ -133,6 +133,30 @@ export type Database = {
         }
         Relationships: []
       }
+      browser_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          last_notified_at: string | null
+          push_subscription: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_notified_at?: string | null
+          push_subscription: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_notified_at?: string | null
+          push_subscription?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       capital_log: {
         Row: {
           amount_added: number
@@ -278,6 +302,7 @@ export type Database = {
           current_progress: number
           id: string
           is_completed: boolean
+          mystery_unlocked: boolean | null
           target_value: number
           user_id: string
           xp_reward: number
@@ -290,6 +315,7 @@ export type Database = {
           current_progress?: number
           id?: string
           is_completed?: boolean
+          mystery_unlocked?: boolean | null
           target_value: number
           user_id: string
           xp_reward: number
@@ -302,6 +328,7 @@ export type Database = {
           current_progress?: number
           id?: string
           is_completed?: boolean
+          mystery_unlocked?: boolean | null
           target_value?: number
           user_id?: string
           xp_reward?: number
@@ -862,6 +889,39 @@ export type Database = {
           },
         ]
       }
+      profile_frames: {
+        Row: {
+          created_at: string
+          frame_id: string
+          frame_name: string
+          frame_style: Json
+          id: string
+          required_badge: string | null
+          required_level: number | null
+          unlock_requirement: string
+        }
+        Insert: {
+          created_at?: string
+          frame_id: string
+          frame_name: string
+          frame_style?: Json
+          id?: string
+          required_badge?: string | null
+          required_level?: number | null
+          unlock_requirement: string
+        }
+        Update: {
+          created_at?: string
+          frame_id?: string
+          frame_name?: string
+          frame_style?: Json
+          id?: string
+          required_badge?: string | null
+          required_level?: number | null
+          unlock_requirement?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           accepted_privacy_at: string | null
@@ -924,6 +984,89 @@ export type Database = {
           username?: string | null
         }
         Relationships: []
+      }
+      reactions_log: {
+        Row: {
+          created_at: string
+          id: string
+          reaction_emoji: string
+          target_id: string
+          target_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reaction_emoji: string
+          target_id: string
+          target_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reaction_emoji?: string
+          target_id?: string
+          target_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      seasonal_challenges: {
+        Row: {
+          challenge_type: string
+          completed_at: string | null
+          cosmetic_reward: string | null
+          created_at: string
+          current_progress: number
+          description: string
+          id: string
+          is_completed: boolean
+          season_id: string
+          target_value: number
+          title: string
+          user_id: string
+          xp_reward: number
+        }
+        Insert: {
+          challenge_type: string
+          completed_at?: string | null
+          cosmetic_reward?: string | null
+          created_at?: string
+          current_progress?: number
+          description: string
+          id?: string
+          is_completed?: boolean
+          season_id: string
+          target_value: number
+          title: string
+          user_id: string
+          xp_reward: number
+        }
+        Update: {
+          challenge_type?: string
+          completed_at?: string | null
+          cosmetic_reward?: string | null
+          created_at?: string
+          current_progress?: number
+          description?: string
+          id?: string
+          is_completed?: boolean
+          season_id?: string
+          target_value?: number
+          title?: string
+          user_id?: string
+          xp_reward?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seasonal_challenges_season_id_fkey"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "seasonal_competitions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       seasonal_competitions: {
         Row: {
@@ -1145,6 +1288,8 @@ export type Database = {
       streak_freeze_inventory: {
         Row: {
           created_at: string
+          earned_from_level: number | null
+          earned_from_streak: number | null
           freeze_tokens: number
           id: string
           last_used_at: string | null
@@ -1152,6 +1297,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          earned_from_level?: number | null
+          earned_from_streak?: number | null
           freeze_tokens?: number
           id?: string
           last_used_at?: string | null
@@ -1159,6 +1306,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          earned_from_level?: number | null
+          earned_from_streak?: number | null
           freeze_tokens?: number
           id?: string
           last_used_at?: string | null
@@ -1564,6 +1713,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_profile_frames: {
+        Row: {
+          frame_id: string
+          id: string
+          is_active: boolean
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          frame_id: string
+          id?: string
+          is_active?: boolean
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          frame_id?: string
+          id?: string
+          is_active?: boolean
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_progression: {
         Row: {
           created_at: string
@@ -1573,7 +1746,9 @@ export type Database = {
           last_active_date: string
           level: number
           rank: string
+          rank_expires_at: string | null
           total_badges_unlocked: number
+          trader_identity_scores: Json | null
           updated_at: string
           user_id: string
           weekly_streak: number
@@ -1587,7 +1762,9 @@ export type Database = {
           last_active_date?: string
           level?: number
           rank?: string
+          rank_expires_at?: string | null
           total_badges_unlocked?: number
+          trader_identity_scores?: Json | null
           updated_at?: string
           user_id: string
           weekly_streak?: number
@@ -1601,7 +1778,9 @@ export type Database = {
           last_active_date?: string
           level?: number
           rank?: string
+          rank_expires_at?: string | null
           total_badges_unlocked?: number
+          trader_identity_scores?: Json | null
           updated_at?: string
           user_id?: string
           weekly_streak?: number
@@ -1632,6 +1811,30 @@ export type Database = {
           reward_id?: string
           reward_type?: string
           unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_rivals: {
+        Row: {
+          created_at: string
+          id: string
+          last_notified_at: string | null
+          rival_user_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_notified_at?: string | null
+          rival_user_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_notified_at?: string | null
+          rival_user_id?: string
           user_id?: string
         }
         Relationships: []
@@ -1741,6 +1944,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_widget_styles: {
+        Row: {
+          id: string
+          is_active: boolean
+          style_id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          is_active?: boolean
+          style_id: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          is_active?: boolean
+          style_id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_xp_levels: {
         Row: {
           created_at: string
@@ -1801,6 +2028,111 @@ export type Database = {
           snapshot_data?: Json
           total_value?: number
           user_id?: string
+        }
+        Relationships: []
+      }
+      weekly_challenges: {
+        Row: {
+          challenge_type: string
+          completed_at: string | null
+          created_at: string
+          current_progress: number
+          description: string
+          id: string
+          is_completed: boolean
+          target_value: number
+          title: string
+          user_id: string
+          week_start_date: string
+          xp_reward: number
+        }
+        Insert: {
+          challenge_type: string
+          completed_at?: string | null
+          created_at?: string
+          current_progress?: number
+          description: string
+          id?: string
+          is_completed?: boolean
+          target_value: number
+          title: string
+          user_id: string
+          week_start_date?: string
+          xp_reward: number
+        }
+        Update: {
+          challenge_type?: string
+          completed_at?: string | null
+          created_at?: string
+          current_progress?: number
+          description?: string
+          id?: string
+          is_completed?: boolean
+          target_value?: number
+          title?: string
+          user_id?: string
+          week_start_date?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
+      widget_styles: {
+        Row: {
+          created_at: string
+          id: string
+          required_level: number | null
+          style_config: Json
+          style_id: string
+          style_name: string
+          unlock_requirement: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          required_level?: number | null
+          style_config?: Json
+          style_id: string
+          style_name: string
+          unlock_requirement: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          required_level?: number | null
+          style_config?: Json
+          style_id?: string
+          style_name?: string
+          unlock_requirement?: string
+        }
+        Relationships: []
+      }
+      widget_usage_stats: {
+        Row: {
+          created_at: string
+          id: string
+          interaction_count: number
+          last_interacted_at: string
+          total_time_seconds: number
+          user_id: string
+          widget_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          interaction_count?: number
+          last_interacted_at?: string
+          total_time_seconds?: number
+          user_id: string
+          widget_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          interaction_count?: number
+          last_interacted_at?: string
+          total_time_seconds?: number
+          user_id?: string
+          widget_type?: string
         }
         Relationships: []
       }

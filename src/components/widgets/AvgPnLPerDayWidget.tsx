@@ -3,6 +3,7 @@ import { WidgetWrapper } from './WidgetWrapper';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { formatCurrency } from '@/utils/formatNumber';
 import { TrendingUp, TrendingDown, Calendar } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface AvgPnLPerDayWidgetProps {
   id: string;
@@ -19,12 +20,13 @@ export const AvgPnLPerDayWidget = memo(({
   avgPnLPerDay,
   tradingDays,
 }: AvgPnLPerDayWidgetProps) => {
+  const { t } = useTranslation();
   const isPositive = avgPnLPerDay >= 0;
 
   return (
     <WidgetWrapper
       id={id}
-      title="Avg P&L Per Day"
+      title={t('widgets.avgPnLPerDay')}
       isEditMode={isEditMode}
       onRemove={onRemove}
     >
@@ -43,7 +45,7 @@ export const AvgPnLPerDayWidget = memo(({
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Calendar className="h-4 w-4" />
-          <span>{tradingDays} trading days</span>
+          <span>{tradingDays} {t('widgets.tradingDays')}</span>
         </div>
       </div>
     </WidgetWrapper>

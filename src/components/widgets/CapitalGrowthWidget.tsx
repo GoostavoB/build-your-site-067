@@ -3,6 +3,7 @@ import { WidgetWrapper } from './WidgetWrapper';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { formatCurrency } from '@/utils/formatNumber';
 import { TrendingUp, TrendingDown } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface CapitalGrowthWidgetProps {
   id: string;
@@ -21,6 +22,7 @@ export const CapitalGrowthWidget = memo(({
   initialInvestment,
   currentBalance,
 }: CapitalGrowthWidgetProps) => {
+  const { t } = useTranslation();
   const totalGrowth = currentBalance - initialInvestment;
   const growthPercentage = initialInvestment > 0 ? ((totalGrowth / initialInvestment) * 100) : 0;
   const isPositive = totalGrowth >= 0;
@@ -28,7 +30,7 @@ export const CapitalGrowthWidget = memo(({
   return (
     <WidgetWrapper
       id={id}
-      title="Capital Growth"
+      title={t('widgets.capitalGrowth')}
       isEditMode={isEditMode}
       onRemove={onRemove}
     >
@@ -36,15 +38,15 @@ export const CapitalGrowthWidget = memo(({
         {/* Summary Stats */}
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Initial</p>
+            <p className="text-xs text-muted-foreground">{t('widgets.initial')}</p>
             <p className="text-sm font-semibold">{formatCurrency(initialInvestment)}</p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Current</p>
+            <p className="text-xs text-muted-foreground">{t('widgets.current')}</p>
             <p className="text-sm font-semibold">{formatCurrency(currentBalance)}</p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Growth</p>
+            <p className="text-xs text-muted-foreground">{t('widgets.growth')}</p>
             <div className="flex items-center gap-1">
               <p className={`text-sm font-semibold ${isPositive ? 'text-profit' : 'text-loss'}`}>
                 {isPositive ? '+' : ''}{growthPercentage.toFixed(2)}%
@@ -96,7 +98,7 @@ export const CapitalGrowthWidget = memo(({
                   borderRadius: '8px',
                   fontSize: '12px',
                 }}
-                formatter={(value: number) => [formatCurrency(value), 'Balance']}
+                formatter={(value: number) => [formatCurrency(value), t('widgets.balance')]}
               />
               <Area
                 type="monotone"

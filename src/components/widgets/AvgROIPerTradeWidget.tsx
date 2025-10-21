@@ -3,6 +3,7 @@ import { WidgetWrapper } from './WidgetWrapper';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { formatPercent } from '@/utils/formatNumber';
 import { TrendingUp, TrendingDown, Percent } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface AvgROIPerTradeWidgetProps {
   id: string;
@@ -19,12 +20,13 @@ export const AvgROIPerTradeWidget = memo(({
   avgROIPerTrade,
   totalTrades,
 }: AvgROIPerTradeWidgetProps) => {
+  const { t } = useTranslation();
   const isPositive = avgROIPerTrade >= 0;
 
   return (
     <WidgetWrapper
       id={id}
-      title="Avg ROI Per Trade"
+      title={t('widgets.avgROIPerTrade')}
       isEditMode={isEditMode}
       onRemove={onRemove}
     >
@@ -43,7 +45,7 @@ export const AvgROIPerTradeWidget = memo(({
           )}
         </div>
         <p className="text-sm text-muted-foreground">
-          Average ROI across {totalTrades} trades
+          {t('widgets.avgROIAcross', { count: totalTrades })}
         </p>
       </div>
     </WidgetWrapper>

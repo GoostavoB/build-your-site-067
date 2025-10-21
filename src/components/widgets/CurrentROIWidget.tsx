@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface CurrentROIWidgetProps {
   id: string;
@@ -31,6 +32,7 @@ export const CurrentROIWidget = memo(({
   onInitialInvestmentUpdate,
 }: CurrentROIWidgetProps) => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const isPositive = currentROI >= 0;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [capitalValue, setCapitalValue] = useState(initialInvestment.toString());
@@ -40,12 +42,12 @@ export const CurrentROIWidget = memo(({
     const newValue = parseFloat(capitalValue);
     
     if (isNaN(newValue) || newValue < 0) {
-      toast.error('Please enter a valid positive number');
+      toast.error(t('errors.validationError'));
       return;
     }
 
     if (!user) {
-      toast.error('You must be logged in to update initial capital');
+      toast.error(t('errors.unauthorized'));
       return;
     }
 
@@ -62,11 +64,11 @@ export const CurrentROIWidget = memo(({
         onInitialInvestmentUpdate(newValue);
       }
       
-      toast.success('Initial capital updated successfully!');
+      toast.success(t('success.updated'));
       setIsDialogOpen(false);
     } catch (error) {
       console.error('Error updating initial investment:', error);
-      toast.error('Failed to update initial capital');
+      toast.error(t('errors.generic'));
     } finally {
       setIsSaving(false);
     }
@@ -75,7 +77,7 @@ export const CurrentROIWidget = memo(({
   return (
     <WidgetWrapper
       id={id}
-      title="Current ROI"
+      title={t('widgets.currentROI')}
       isEditMode={isEditMode}
       onRemove={onRemove}
     >
@@ -95,7 +97,7 @@ export const CurrentROIWidget = memo(({
         </div>
         <div className="space-y-1 text-sm">
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Initial capital</span>
+            <span className="text-muted-foreground">{t('widgets.initialCapital')}</span>
             <div className="flex items-center gap-2">
               <span className="font-medium">{formatCurrency(initialInvestment)}</span>
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -111,14 +113,14 @@ export const CurrentROIWidget = memo(({
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
-                    <DialogTitle>Set Initial Capital</DialogTitle>
+                    <DialogTitle>{t('widgets.setInitialCapital')}</DialogTitle>
                     <DialogDescription>
-                      Enter your starting capital to calculate accurate ROI. This should be the amount you started trading with.
+                      {t('widgets.enterStartingCapital')}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 py-4">
                     <div className="space-y-2">
-                      <Label htmlFor="capital">Initial Capital ($)</Label>
+                      <Label htmlFor="capital">{t('widgets.initialCapitalLabel')}</Label>
                       <Input
                         id="capital"
                         type="number"
@@ -134,7 +136,7 @@ export const CurrentROIWidget = memo(({
                         }}
                       />
                       <p className="text-xs text-muted-foreground">
-                        Current balance: {formatCurrency(currentBalance)}
+                        {t('widgets.currentBalance')}: {formatCurrency(currentBalance)}
                       </p>
                     </div>
                     <div className="flex gap-2 justify-end">
@@ -143,10 +145,10 @@ export const CurrentROIWidget = memo(({
                         onClick={() => setIsDialogOpen(false)}
                         disabled={isSaving}
                       >
-                        Cancel
+                        {t('common.cancel')}
                       </Button>
                       <Button onClick={handleSave} disabled={isSaving}>
-                        {isSaving ? 'Saving...' : 'Save'}
+                        {isSaving ? t('settings.saving') : t('common.save')}
                       </Button>
                     </div>
                   </div>
@@ -155,7 +157,7 @@ export const CurrentROIWidget = memo(({
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Current capital</span>
+            <span className="text-muted-foreground">{t('widgets.currentCapital')}</span>
             <span className="font-medium">{formatCurrency(currentBalance)}</span>
           </div>
         </div>

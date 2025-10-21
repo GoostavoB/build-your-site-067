@@ -3,6 +3,7 @@ import { WidgetWrapper } from './WidgetWrapper';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { formatCurrency } from '@/utils/formatNumber';
 import { TrendingUp, TrendingDown } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface AvgPnLPerTradeWidgetProps {
   id: string;
@@ -17,12 +18,13 @@ export const AvgPnLPerTradeWidget = memo(({
   onRemove,
   avgPnLPerTrade,
 }: AvgPnLPerTradeWidgetProps) => {
+  const { t } = useTranslation();
   const isPositive = avgPnLPerTrade >= 0;
 
   return (
     <WidgetWrapper
       id={id}
-      title="Avg P&L Per Trade"
+      title={t('widgets.avgPnLPerTrade')}
       isEditMode={isEditMode}
       onRemove={onRemove}
     >
@@ -40,7 +42,7 @@ export const AvgPnLPerTradeWidget = memo(({
           )}
         </div>
         <p className="text-sm text-muted-foreground">
-          Average profit/loss per executed trade
+          {t('widgets.avgPnLDescription')}
         </p>
       </div>
     </WidgetWrapper>

@@ -3,6 +3,7 @@ import { Target } from 'lucide-react';
 import { formatPercent } from '@/utils/formatNumber';
 import { WidgetProps } from '@/types/widget';
 import { WidgetWrapper } from './WidgetWrapper';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface WinRateWidgetProps extends WidgetProps {
   winRate: number;
@@ -19,6 +20,8 @@ export const WinRateWidget = memo(({
   wins,
   losses,
 }: WinRateWidgetProps) => {
+  const { t } = useTranslation();
+  
   return (
     <WidgetWrapper
       id={id}
@@ -28,7 +31,7 @@ export const WinRateWidget = memo(({
     >
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-medium text-muted-foreground">Win Rate</p>
+          <p className="text-sm font-medium text-muted-foreground">{t('widgets.winRate')}</p>
           <div className="p-2 rounded-xl bg-primary/10">
             <Target className="h-4 w-4 text-primary" />
           </div>

@@ -1,0 +1,289 @@
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon, Download, FileText, Mail } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+
+type ReportType = "monthly" | "quarterly" | "yearly" | "custom";
+type ReportFormat = "pdf" | "excel" | "json";
+
+interface ReportSection {
+  id: string;
+  label: string;
+  enabled: boolean;
+}
+
+export function ReportGenerator() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [reportType, setReportType] = useState<ReportType>("monthly");
+  const [reportFormat, setReportFormat] = useState<ReportFormat>("pdf");
+  const [startDate, setStartDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const [sections, setSections] = useState<ReportSection[]>([
+    { id: "summary", label: "Executive Summary", enabled: true },
+    { id: "performance", label: "Performance Metrics", enabled: true },
+    { id: "trades", label: "Trade History", enabled: true },
+    { id: "analytics", label: "Advanced Analytics", enabled: true },
+    { id: "risk", label: "Risk Analysis", enabled: true },
+    { id: "goals", label: "Goals Progress", enabled: true },
+    { id: "charts", label: "Charts & Visualizations", enabled: true },
+    { id: "insights", label: "AI Insights", enabled: false },
+  ]);
+
+  const { data: trades } = useQuery({
+    queryKey: ['trades-report', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('trades')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('trade_date', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  const toggleSection = (id: string) => {
+    setSections(sections.map(s => 
+      s.id === id ? { ...s, enabled: !s.enabled } : s
+    ));
+  };
+
+  const generateReport = async () => {
+    if (!trades || trades.length === 0) {
+      toast({
+        title: "No Data",
+        description: "You need trades to generate a report",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+
+    try {
+      // Filter trades by date range if custom
+      let filteredTrades = trades;
+      if (reportType === "custom" && startDate && endDate) {
+        filteredTrades = trades.filter(t => {
+          const tradeDate = new Date(t.trade_date);
+          return tradeDate >= startDate && tradeDate <= endDate;
+        });
+      }
+
+      // Calculate metrics for the report
+      const totalPnL = filteredTrades.reduce((sum, t) => sum + t.pnl, 0);
+      const winningTrades = filteredTrades.filter(t => t.pnl > 0).length;
+      const losingTrades = filteredTrades.filter(t => t.pnl < 0).length;
+      const winRate = (winningTrades / filteredTrades.length) * 100;
+      const totalFees = 0; // Fee tracking would be calculated from trade data
+
+      // Build report data
+      const reportData = {
+        reportType,
+        reportFormat,
+        dateRange: {
+          start: startDate?.toISOString() || filteredTrades[filteredTrades.length - 1]?.trade_date,
+          end: endDate?.toISOString() || filteredTrades[0]?.trade_date,
+        },
+        sections: sections.filter(s => s.enabled).map(s => s.id),
+        metrics: {
+          totalTrades: filteredTrades.length,
+          totalPnL,
+          winningTrades,
+          losingTrades,
+          winRate,
+          totalFees,
+          avgWin: winningTrades > 0 ? filteredTrades.filter(t => t.pnl > 0).reduce((sum, t) => sum + t.pnl, 0) / winningTrades : 0,
+          avgLoss: losingTrades > 0 ? Math.abs(filteredTrades.filter(t => t.pnl < 0).reduce((sum, t) => sum + t.pnl, 0) / losingTrades) : 0,
+        },
+        trades: filteredTrades,
+      };
+
+      // Simulate report generation
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      toast({
+        title: "Report Generated",
+        description: `Your ${reportType} report has been created successfully`,
+      });
+
+      // In production, this would call an edge function to generate the actual PDF/Excel
+      console.log("Report data:", reportData);
+
+      // Trigger download (simulated)
+      const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `trading-report-${format(new Date(), 'yyyy-MM-dd')}.${reportFormat}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.error("Report generation error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate report",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Report Settings</CardTitle>
+          <CardDescription>Configure your trading report parameters</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label>Report Type</Label>
+            <Select value={reportType} onValueChange={(v) => setReportType(v as ReportType)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="monthly">Monthly Report</SelectItem>
+                <SelectItem value="quarterly">Quarterly Report</SelectItem>
+                <SelectItem value="yearly">Yearly Report</SelectItem>
+                <SelectItem value="custom">Custom Date Range</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {reportType === "custom" && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Start Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !startDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {startDate ? format(startDate, "PPP") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={setStartDate}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="space-y-2">
+                <Label>End Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !endDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {endDate ? format(endDate, "PPP") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={endDate}
+                      onSelect={setEndDate}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label>Report Format</Label>
+            <Select value={reportFormat} onValueChange={(v) => setReportFormat(v as ReportFormat)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pdf">PDF Document</SelectItem>
+                <SelectItem value="excel">Excel Spreadsheet</SelectItem>
+                <SelectItem value="json">JSON Data</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Report Sections</CardTitle>
+          <CardDescription>Select sections to include in your report</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {sections.map((section) => (
+              <div key={section.id} className="flex items-center space-x-2">
+                <Checkbox
+                  id={section.id}
+                  checked={section.enabled}
+                  onCheckedChange={() => toggleSection(section.id)}
+                />
+                <Label
+                  htmlFor={section.id}
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                >
+                  {section.label}
+                </Label>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 flex gap-2">
+            <Button 
+              className="flex-1" 
+              onClick={generateReport}
+              disabled={isGenerating}
+            >
+              <Download className="mr-2 h-4 w-4" />
+              {isGenerating ? "Generating..." : "Generate Report"}
+            </Button>
+            <Button variant="outline" disabled={isGenerating}>
+              <Mail className="mr-2 h-4 w-4" />
+              Email
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

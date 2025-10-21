@@ -32,6 +32,7 @@ const Settings = lazy(() => import("./pages/Settings"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const FAQ = lazy(() => import("./pages/FAQ"));
+const CryptoTradingFAQ = lazy(() => import("./pages/CryptoTradingFAQ"));
 const Social = lazy(() => import("./pages/Social"));
 const AITools = lazy(() => import("./pages/AITools"));
 const Journal = lazy(() => import("./pages/Journal"));
@@ -99,6 +100,9 @@ const App = () => (
                       <Route path="/" element={<Index />} />
                       <Route path="/auth" element={<Auth />} />
                       <Route path="/logo-download" element={<LogoDownload />} />
+                      <Route path="/crypto-trading-faq" element={<CryptoTradingFAQ />} />
+                      <Route path="/blog" element={<Blog />} />
+                      <Route path="/blog/:slug" element={<BlogPost />} />
                       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                       <Route path="/upload" element={<ProtectedRoute><Upload /></ProtectedRoute>} />
                       <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
@@ -119,8 +123,6 @@ const App = () => (
                       <Route path="/exchanges" element={<ProtectedRoute><ExchangeConnections /></ProtectedRoute>} />
                       <Route path="/spot-wallet" element={<ProtectedRoute><SpotWallet /></ProtectedRoute>} />
                       <Route path="/fee-analysis" element={<ProtectedRoute><FeeAnalysis /></ProtectedRoute>} />
-                      <Route path="/blog" element={<ProtectedRoute><Blog /></ProtectedRoute>} />
-                      <Route path="/blog/:slug" element={<ProtectedRoute><BlogPost /></ProtectedRoute>} />
                       <Route path="/faq" element={<ProtectedRoute><FAQ /></ProtectedRoute>} />
                       <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
                       <Route path="/long-short-ratio" element={<ProtectedRoute><LongShortRatio /></ProtectedRoute>} />

@@ -61,7 +61,12 @@ const Footer = () => {
             <ul className="space-y-2.5">
               <li>
                 <a href="/blog" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                  {t('navigation.blog')}
+                  Blog
+                </a>
+              </li>
+              <li>
+                <a href="/crypto-trading-faq" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
+                  Crypto Trading FAQ
                 </a>
               </li>
               <li>

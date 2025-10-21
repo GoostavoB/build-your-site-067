@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCryptoPrice } from '@/hooks/useCryptoPrice';
 import { TrendingUp, ChevronDown } from 'lucide-react';
 import {
@@ -22,8 +22,19 @@ const AVAILABLE_TICKERS = [
 
 export function SidebarCryptoWidget() {
   const { open } = useSidebar();
-  const [selectedTickers, setSelectedTickers] = useState<string[]>(['BTCUSDT', 'ETHUSDT']);
+  
+  // Load selected tickers from localStorage on mount
+  const [selectedTickers, setSelectedTickers] = useState<string[]>(() => {
+    const saved = localStorage.getItem('selectedCryptoTickers');
+    return saved ? JSON.parse(saved) : ['BTCUSDT', 'ETHUSDT'];
+  });
+  
   const { prices, loading } = useCryptoPrice(selectedTickers);
+
+  // Save selected tickers to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('selectedCryptoTickers', JSON.stringify(selectedTickers));
+  }, [selectedTickers]);
 
   const toggleTicker = (symbol: string) => {
     setSelectedTickers(prev => 

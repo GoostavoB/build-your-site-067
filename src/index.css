@@ -549,21 +549,22 @@ textarea:focus-visible {
 }
 
 /* Dashboard grid system using CSS Grid masonry layout */
-.dashboard-grid {
+/* Free-form grid layout */
+.dashboard-grid-free {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 16px;
   width: 100%;
   margin: 0;
   padding: 0;
 }
 
-/* Column container for vertical stacking */
-.dashboard-column {
+/* Column for free vertical stacking */
+.dashboard-column-free {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  min-width: 0; /* prevent overflow */
+  min-width: 0;
 }
 
 /* Widget items */

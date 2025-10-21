@@ -33,6 +33,7 @@ import { WidgetLibrary } from '@/components/widgets/WidgetLibrary';
 import { SortableWidget } from '@/components/widgets/SortableWidget';
 import { toast } from 'sonner';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useGridLayout, WidgetPosition } from '@/hooks/useGridLayout';
 import { DropZone } from '@/components/widgets/DropZone';
 
 // Lazy load heavy components
@@ -121,61 +122,59 @@ const Dashboard = () => {
       else window.scrollTo({ top: prevScrollTop });
     });
   }, []);
-  // Widget system
+  // Grid layout with free positioning
   const {
-    layout: widgetOrder,
+    positions,
     isLoading: isLayoutLoading,
-    updateLayout,
-    saveLayout,
+    updatePosition,
+    saveLayout: saveGridLayout,
     addWidget,
     removeWidget,
     resetLayout,
-    activeWidgets,
-  } = useWidgetLayout(user?.id);
+  } = useGridLayout(user?.id, Object.keys(WIDGET_CATALOG));
 
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [showWidgetLibrary, setShowWidgetLibrary] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [overlaySize, setOverlaySize] = useState<{ width: number; height: number } | null>(null);
 
-  // Columns-based layout for free vertical stacking
   const gridRef = useRef<HTMLDivElement>(null);
-  const [columnCount, setColumnCount] = useState(1);
-  const [columns, setColumns] = useState<string[][]>([]);
+  const [columnCount, setColumnCount] = useState(3);
 
-  const minColWidth = 350;
-
-  const distribute = useCallback((order: string[], cols: number) => {
-    const res: string[][] = Array.from({ length: Math.max(cols, 1) }, () => []);
-    order.forEach((id, idx) => {
-      res[idx % Math.max(cols, 1)].push(id);
-    });
-    return res;
-  }, []);
-
+  // Track column count based on viewport
   useEffect(() => {
     const el = gridRef.current;
     if (!el) return;
-    const ro = new ResizeObserver(() => {
+    
+    const updateCols = () => {
       const width = el.clientWidth;
-      const cols = Math.max(1, Math.floor(width / minColWidth));
-      setColumnCount(cols);
-    });
+      if (width < 768) setColumnCount(1);
+      else if (width < 1024) setColumnCount(2);
+      else setColumnCount(3);
+    };
+    
+    updateCols();
+    const ro = new ResizeObserver(updateCols);
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
 
-  useEffect(() => {
-    setColumns(prev => {
-      if (!prev.length) return distribute(widgetOrder, columnCount);
-      const flat = prev.flat();
-      return distribute(flat, columnCount);
+  // Organize widgets by column and row
+  const grid = useMemo(() => {
+    const result: { [col: number]: { [row: number]: string } } = {};
+    
+    positions.forEach(pos => {
+      if (!result[pos.column]) result[pos.column] = {};
+      result[pos.column][pos.row] = pos.id;
     });
-  }, [widgetOrder, columnCount, distribute]);
+    
+    return result;
+  }, [positions]);
+
+  const activeWidgets = useMemo(() => positions.map(p => p.id), [positions]);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // Require 8px movement before dragging starts
+        distance: 8,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -374,72 +373,65 @@ const Dashboard = () => {
   }, []);
 
   const handleSaveLayout = useCallback(() => {
-    saveLayout(widgetOrder);
+    saveGridLayout(positions);
     setIsCustomizing(false);
-    // Force charts to recalculate dimensions
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 100);
-  }, [widgetOrder, saveLayout]);
+  }, [positions, saveGridLayout]);
 
-  // Handle drag start/end
+  // Handle drag
   const handleDragStart = useCallback((event: DragStartEvent) => {
-    const id = event.active.id as string;
-    setActiveId(id);
-
-    const el = document.querySelector(`[data-sortable-id="${id}"]`) as HTMLElement | null;
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      setOverlaySize({ width: rect.width, height: rect.height });
-    } else {
-      setOverlaySize(null);
-    }
+    setActiveId(event.active.id as string);
   }, []);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
-    if (!over) return;
+    if (!over) {
+      setActiveId(null);
+      return;
+    }
 
     const activeId = active.id as string;
     const overId = over.id as string;
 
-    const findCol = (id: string) => columns.findIndex(col => col.includes(id));
-
-    const fromCol = findCol(activeId);
-    let toCol = -1;
-    let toIndex = -1;
-
-    if (overId.startsWith('col-drop-')) {
-      toCol = parseInt(overId.replace('col-drop-', ''), 10);
-      toIndex = columns[toCol]?.length ?? 0;
-    } else {
-      toCol = findCol(overId);
-      toIndex = columns[toCol]?.indexOf(overId) ?? 0;
+    // Find active widget position
+    const activePos = positions.find(p => p.id === activeId);
+    if (!activePos) {
+      setActiveId(null);
+      return;
     }
 
-    if (fromCol === -1 || toCol === -1) return;
-
-    setColumns(prev => {
-      const next = prev.map(col => [...col]);
-      const fromIndex = next[fromCol].indexOf(activeId);
-      if (fromIndex === -1) return prev;
-      next[fromCol].splice(fromIndex, 1);
-      if (fromCol === toCol && fromIndex < toIndex) {
-        toIndex = Math.max(0, toIndex - 1);
-      }
-      next[toCol].splice(toIndex, 0, activeId);
-      const newOrder = next.flat();
-      updateLayout(newOrder);
-      return next;
-    });
+    // Handle drop on another widget - insert before it
+    const overPos = positions.find(p => p.id === overId);
+    if (overPos) {
+      updatePosition(activeId, overPos.column, overPos.row);
+      // Shift down widgets in same column at or after target row
+      const updatedPositions = positions.map(p => {
+        if (p.id === activeId) return { ...p, column: overPos.column, row: overPos.row };
+        if (p.column === overPos.column && p.row >= overPos.row && p.id !== activeId) {
+          return { ...p, row: p.row + 1 };
+        }
+        return p;
+      });
+      saveGridLayout(updatedPositions);
+    }
+    // Handle drop on dropzone
+    else if (overId.startsWith('dropzone-')) {
+      const [, colStr, rowStr] = overId.split('-');
+      const targetCol = parseInt(colStr, 10);
+      const targetRow = parseInt(rowStr, 10);
+      updatePosition(activeId, targetCol, targetRow);
+      saveGridLayout(positions.map(p => 
+        p.id === activeId ? { ...p, column: targetCol, row: targetRow } : p
+      ));
+    }
 
     setActiveId(null);
-    setOverlaySize(null);
-  }, [columns, updateLayout]);
+  }, [positions, updatePosition, saveGridLayout]);
 
   const handleDragCancel = useCallback(() => {
     setActiveId(null);
-    setOverlaySize(null);
   }, []);
   const handleCancelCustomize = useCallback(() => {
     setIsCustomizing(false);
@@ -715,18 +707,25 @@ const Dashboard = () => {
                   onDragStart={handleDragStart}
                   onDragEnd={handleDragEnd}
                   onDragCancel={handleDragCancel}
-                  measuring={{
-                    droppable: { strategy: MeasuringStrategy.Always },
-                  }}
                 >
-                  <div ref={gridRef} className="dashboard-grid">
-                    {columns.map((col, i) => (
-                      <div key={`col-${i}`} className="dashboard-column">
-                        <SortableContext items={col} strategy={rectSortingStrategy}>
-                          {col.map(renderWidget)}
+                  <div ref={gridRef} className="dashboard-grid-free">
+                    {Array.from({ length: columnCount }, (_, colIdx) => (
+                      <div key={`col-${colIdx}`} className="dashboard-column-free">
+                        <SortableContext 
+                          items={Object.entries(grid[colIdx] || {}).map(([row, id]) => id)}
+                          strategy={rectSortingStrategy}
+                        >
+                          {Object.entries(grid[colIdx] || {})
+                            .sort(([rowA], [rowB]) => parseInt(rowA) - parseInt(rowB))
+                            .map(([row, widgetId]) => (
+                              <div key={widgetId}>
+                                {renderWidget(widgetId)}
+                              </div>
+                            ))}
                         </SortableContext>
-                        {/* Column end dropzone to allow dropping into empty areas */}
-                        <DropZone id={`col-drop-${i}`} />
+                        {isCustomizing && (
+                          <DropZone id={`dropzone-${colIdx}-${Object.keys(grid[colIdx] || {}).length}`} />
+                        )}
                       </div>
                     ))}
                   </div>

@@ -30,23 +30,52 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Set up auth state listener
+    // Set up auth state listener with automatic token refresh
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
+        console.log('Auth event:', event);
+        
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+
+        // Handle specific auth events
+        if (event === 'TOKEN_REFRESHED') {
+          console.log('Token refreshed successfully');
+        } else if (event === 'SIGNED_OUT') {
+          // Clear any cached data
+          localStorage.removeItem('rememberMe');
+        } else if (event === 'USER_UPDATED') {
+          console.log('User data updated');
+        }
       }
     );
 
-    // Check for existing session
+    // Check for existing session with automatic refresh
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    // Set up periodic session check (every 5 minutes)
+    const sessionCheckInterval = setInterval(async () => {
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      if (currentSession) {
+        // Refresh token if it expires in less than 10 minutes
+        const expiresAt = currentSession.expires_at;
+        const now = Math.floor(Date.now() / 1000);
+        if (expiresAt && expiresAt - now < 600) {
+          console.log('Token expiring soon, refreshing...');
+          await supabase.auth.refreshSession();
+        }
+      }
+    }, 5 * 60 * 1000); // Check every 5 minutes
+
+    return () => {
+      subscription.unsubscribe();
+      clearInterval(sessionCheckInterval);
+    };
   }, []);
 
   const signIn = async (email: string, password: string, rememberMe: boolean = true) => {

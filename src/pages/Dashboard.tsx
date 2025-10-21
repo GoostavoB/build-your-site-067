@@ -253,9 +253,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (user) {
-      fetchStats();
+      fetchCapitalLog(); // Fetch capital log first
       fetchInitialInvestment();
-      fetchCapitalLog();
       fetchCustomWidgets();
     }
     
@@ -275,7 +274,7 @@ const Dashboard = () => {
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'capital_log', filter: `user_id=eq.${user?.id}` },
         () => {
-          fetchCapitalLog();
+          fetchCapitalLog().then(() => fetchStats());
         }
       )
       .subscribe();
@@ -285,6 +284,13 @@ const Dashboard = () => {
       supabase.removeChannel(capitalChannel);
     };
   }, [user, includeFeesInPnL, initialInvestment]);
+
+  // Fetch stats when capital log changes
+  useEffect(() => {
+    if (user && capitalLog.length >= 0) {
+      fetchStats();
+    }
+  }, [capitalLog]);
 
   // Filter trades based on date range
   useEffect(() => {
@@ -381,13 +387,21 @@ const Dashboard = () => {
         ? (includeFeesInPnL ? totalPnlWithFees : totalPnlWithoutFees) / uniqueDays 
         : 0;
       
-      // Calculate current balance
-      const currentBalance = initialInvestment + (includeFeesInPnL ? totalPnlWithFees : totalPnlWithoutFees);
+      // Calculate total added capital from capital_log (sum of all additions)
+      const totalAddedCapital = capitalLog.reduce((sum, entry) => sum + (entry.amount_added || 0), 0);
       
-      // Calculate current ROI from initial capital
-      const currentROI = initialInvestment > 0 
-        ? ((currentBalance - initialInvestment) / initialInvestment) * 100 
-        : 0;
+      // Use total added capital as the "initial investment" for ROI calculation
+      // If no capital log exists, fallback to initialInvestment from settings
+      const baseCapital = totalAddedCapital > 0 ? totalAddedCapital : initialInvestment;
+      
+      // Calculate current balance
+      const currentBalance = baseCapital + (includeFeesInPnL ? totalPnlWithFees : totalPnlWithoutFees);
+      
+      // Calculate current ROI based on total invested capital
+      let currentROI = 0;
+      if (baseCapital > 0) {
+        currentROI = ((currentBalance - baseCapital) / baseCapital) * 100;
+      }
       
       // Calculate average ROI per trade
       const avgROIPerTrade = trades.length > 0 
@@ -634,10 +648,11 @@ const Dashboard = () => {
     // Add widget-specific data
     switch (widgetId) {
       case 'totalBalance':
-        widgetProps.totalBalance = initialInvestment + totalCapitalAdditions + (stats?.total_pnl || 0);
+        const totalInvestedCapital = totalCapitalAdditions > 0 ? totalCapitalAdditions : initialInvestment;
+        widgetProps.totalBalance = totalInvestedCapital + (stats?.total_pnl || 0);
         widgetProps.change24h = stats?.total_pnl || 0;
-        widgetProps.changePercent24h = (initialInvestment + totalCapitalAdditions) > 0 
-          ? ((stats?.total_pnl || 0) / (initialInvestment + totalCapitalAdditions)) * 100 
+        widgetProps.changePercent24h = totalInvestedCapital > 0 
+          ? ((stats?.total_pnl || 0) / totalInvestedCapital) * 100 
           : 0;
         break;
       case 'winRate':
@@ -658,7 +673,8 @@ const Dashboard = () => {
         break;
       case 'portfolioOverview':
         widgetProps.data = portfolioChartData;
-        widgetProps.totalValue = initialInvestment + totalCapitalAdditions + (stats?.total_pnl || 0);
+        const totalInvestedForPortfolio = totalCapitalAdditions > 0 ? totalCapitalAdditions : initialInvestment;
+        widgetProps.totalValue = totalInvestedForPortfolio + (stats?.total_pnl || 0);
         break;
       case 'topMovers':
       case 'aiInsights':
@@ -703,8 +719,11 @@ const Dashboard = () => {
         break;
       case 'currentROI':
         widgetProps.currentROI = stats?.current_roi || 0;
-        widgetProps.initialInvestment = initialInvestment;
-        widgetProps.currentBalance = initialInvestment + totalCapitalAdditions + (stats?.total_pnl || 0);
+        // Show total invested capital from capital_log as "initial investment"
+        widgetProps.initialInvestment = totalCapitalAdditions > 0 ? totalCapitalAdditions : initialInvestment;
+        widgetProps.currentBalance = totalCapitalAdditions > 0 
+          ? totalCapitalAdditions + (stats?.total_pnl || 0)
+          : initialInvestment + (stats?.total_pnl || 0);
         widgetProps.onInitialInvestmentUpdate = async (newValue: number) => {
           setInitialInvestment(newValue);
           // fetchStats will be automatically called via useEffect when initialInvestment changes
@@ -716,9 +735,10 @@ const Dashboard = () => {
         break;
       case 'capitalGrowth':
         widgetProps.chartData = portfolioChartData;
-        widgetProps.initialInvestment = initialInvestment;
+        const baseCapitalForGrowth = totalCapitalAdditions > 0 ? totalCapitalAdditions : initialInvestment;
+        widgetProps.initialInvestment = baseCapitalForGrowth;
         widgetProps.totalCapitalAdditions = totalCapitalAdditions;
-        widgetProps.currentBalance = initialInvestment + totalCapitalAdditions + (stats?.total_pnl || 0);
+        widgetProps.currentBalance = baseCapitalForGrowth + (stats?.total_pnl || 0);
         break;
     }
 

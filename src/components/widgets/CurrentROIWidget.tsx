@@ -138,6 +138,9 @@ export const CurrentROIWidget = memo(({
                       <p className="text-xs text-muted-foreground">
                         {t('widgets.currentBalance')}: {formatCurrency(currentBalance)}
                       </p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        💡 Tip: Use Capital Management in Settings → Trading to track capital additions over time for accurate ROI calculation.
+                      </p>
                     </div>
                     <div className="flex gap-2 justify-end">
                       <Button
@@ -160,6 +163,9 @@ export const CurrentROIWidget = memo(({
             <span className="text-muted-foreground">{t('widgets.currentCapital')}</span>
             <span className="font-medium">{formatCurrency(currentBalance)}</span>
           </div>
+          <p className="text-[10px] text-muted-foreground/70 mt-2">
+            ROI calculation includes all capital additions tracked in Capital Management
+          </p>
         </div>
       </div>
     </WidgetWrapper>

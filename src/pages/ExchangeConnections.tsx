@@ -158,7 +158,7 @@ export default function ExchangeConnections() {
       name: 'BingX',
       description: 'Connect your BingX account to automatically sync spot & futures trades',
       icon: '🏦',
-      comingSoon: false,
+      comingSoon: true,
     },
     {
       id: 'bybit',

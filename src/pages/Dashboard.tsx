@@ -170,15 +170,22 @@ const Dashboard = () => {
   const grid = useMemo(() => {
     const result: { [col: number]: { [row: number]: string } } = {};
     
+    console.log('Building grid from positions:', positions);
+    
     positions.forEach(pos => {
       if (!result[pos.column]) result[pos.column] = {};
       result[pos.column][pos.row] = pos.id;
     });
     
+    console.log('Grid structure:', result);
     return result;
   }, [positions]);
 
-  const activeWidgets = useMemo(() => positions.map(p => p.id), [positions]);
+  const activeWidgets = useMemo(() => {
+    const widgets = positions.map(p => p.id);
+    console.log('Active widgets:', widgets);
+    return widgets;
+  }, [positions]);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -422,41 +429,66 @@ const Dashboard = () => {
     // Find active widget position
     const activePos = positions.find(p => p.id === activeId);
     if (!activePos) {
+      console.error('Active widget not found:', activeId);
       setActiveId(null);
       return;
     }
 
-    // Handle drop on another widget - insert before it
+    let updatedPositions: WidgetPosition[];
+
+    // Handle drop on another widget - swap positions
     const overPos = positions.find(p => p.id === overId);
     if (overPos) {
-      updatePosition(activeId, overPos.column, overPos.row);
-      // Shift down widgets in same column at or after target row
-      const updatedPositions = positions.map(p => {
-        if (p.id === activeId) return { ...p, column: overPos.column, row: overPos.row };
-        if (p.column === overPos.column && p.row >= overPos.row && p.id !== activeId) {
-          return { ...p, row: p.row + 1 };
+      // Simply swap positions - no shifting needed
+      updatedPositions = positions.map(p => {
+        if (p.id === activeId) {
+          return { ...p, column: overPos.column, row: overPos.row };
+        }
+        if (p.id === overId) {
+          return { ...p, column: activePos.column, row: activePos.row };
         }
         return p;
       });
-      saveGridLayout(updatedPositions);
     }
     // Handle drop on dropzone
     else if (overId.startsWith('dropzone-')) {
       const [, colStr, rowStr] = overId.split('-');
       const targetCol = parseInt(colStr, 10);
       const targetRow = parseInt(rowStr, 10);
-      updatePosition(activeId, targetCol, targetRow);
-      saveGridLayout(positions.map(p => 
+      
+      updatedPositions = positions.map(p =>
         p.id === activeId ? { ...p, column: targetCol, row: targetRow } : p
-      ));
+      );
+    }
+    else {
+      console.warn('Unknown drop target:', overId);
+      setActiveId(null);
+      return;
     }
 
+    // Validate all widgets are still present
+    const originalIds = new Set(positions.map(p => p.id));
+    const updatedIds = new Set(updatedPositions.map(p => p.id));
+    
+    if (originalIds.size !== updatedIds.size) {
+      console.error('Widget count mismatch!', {
+        original: Array.from(originalIds),
+        updated: Array.from(updatedIds)
+      });
+      toast.error('Layout update failed - widgets would be lost');
+      setActiveId(null);
+      return;
+    }
+
+    // Save the updated positions (this will also update the hook's internal state)
+    saveGridLayout(updatedPositions);
     setActiveId(null);
-  }, [positions, updatePosition, saveGridLayout]);
+  }, [positions, saveGridLayout]);
 
   const handleDragCancel = useCallback(() => {
     setActiveId(null);
   }, []);
+
   const handleCancelCustomize = useCallback(() => {
     setIsCustomizing(false);
   }, []);

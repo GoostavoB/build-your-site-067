@@ -52,17 +52,20 @@ export const useGridLayout = (userId: string | undefined, availableWidgets: stri
           const layoutData = data.layout_json as any;
           
           // Handle new position-based format
-          if (Array.isArray(layoutData) && layoutData[0]?.column !== undefined) {
+          if (Array.isArray(layoutData) && layoutData.length > 0 && layoutData[0]?.column !== undefined) {
+            console.log('Loading position-based layout:', layoutData);
             setPositions(layoutData);
           }
           // Handle old order-based format - convert to positions
-          else if (Array.isArray(layoutData) && typeof layoutData[0] === 'string') {
+          else if (Array.isArray(layoutData) && layoutData.length > 0 && typeof layoutData[0] === 'string') {
+            console.log('Converting old layout format:', layoutData);
             const newPositions = layoutData.map((id: string, idx: number) => ({
               id,
               column: idx % 3,
               row: Math.floor(idx / 3),
             }));
             setPositions(newPositions);
+            // Save in new format (will happen on next interaction)
           }
         }
       } catch (error) {
@@ -78,8 +81,22 @@ export const useGridLayout = (userId: string | undefined, availableWidgets: stri
   const saveLayout = useCallback(async (newPositions: WidgetPosition[]) => {
     if (!userId) return;
 
+    console.log('Saving layout with positions:', newPositions);
+    
+    // Validate before saving
+    const uniqueIds = new Set(newPositions.map(p => p.id));
+    if (uniqueIds.size !== newPositions.length) {
+      console.error('Duplicate widget IDs detected!', newPositions);
+      toast.error('Cannot save: duplicate widgets detected');
+      return;
+    }
+
     setIsSaving(true);
     try {
+      // Update local state first
+      setPositions(newPositions);
+      
+      // Then save to database
       const { error } = await supabase
         .from('user_settings')
         .update({
@@ -89,7 +106,7 @@ export const useGridLayout = (userId: string | undefined, availableWidgets: stri
         .eq('user_id', userId);
 
       if (error) throw error;
-      toast.success('Layout saved');
+      console.log('Layout saved successfully');
     } catch (error) {
       console.error('Failed to save layout:', error);
       toast.error('Failed to save layout');

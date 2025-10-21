@@ -21,6 +21,7 @@ import { DuplicateTradeDialog } from '@/components/DuplicateTradeDialog';
 import { SuccessFeedback } from '@/components/SuccessFeedback';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { ImageAnnotator, Annotation } from '@/components/upload/ImageAnnotator';
+import { BrokerSelect } from '@/components/upload/BrokerSelect';
 
 interface ExtractedTrade {
   symbol: string;
@@ -46,49 +47,7 @@ interface ExtractedTrade {
   notes?: string;
 }
 
-const BROKERS = [
-  "AJ Bell YouInvest",
-  "Binance",
-  "BingX",
-  "Bithumb",
-  "Bitfinex",
-  "Bitget",
-  "Bitstamp",
-  "Bybit",
-  "Capital.com",
-  "Charles Schwab",
-  "CoinMENA",
-  "Coinbase",
-  "Crypto.com Exchange",
-  "E*TRADE (Morgan Stanley)",
-  "Fidelity Investments",
-  "Gate.io",
-  "Gemini",
-  "Hargreaves Lansdown",
-  "HSBC InvestDirect",
-  "Huobi",
-  "IG",
-  "Interactive Brokers",
-  "J.P. Morgan (Self-Directed Investing)",
-  "Jupiter",
-  "KGI Securities",
-  "Kraken",
-  "KuCoin",
-  "Lim & Tan",
-  "MEXC",
-  "Merrill Edge",
-  "Moomoo",
-  "OANDA",
-  "Plus500",
-  "Saxo Bank / Saxo Markets",
-  "Swissquote",
-  "TradeStation",
-  "Uniswap",
-  "Vanguard",
-  "eToro",
-  "No Broker",
-  "Other"
-].sort();
+// Broker list and management moved to BrokerSelect component
 
 const Upload = () => {
   useKeyboardShortcuts();
@@ -811,51 +770,15 @@ const Upload = () => {
                   {/* Pre-select broker */}
                   {!extractionPreview && (
                     <div className="mb-4 p-4 border border-border rounded-lg bg-muted/30">
-                      <Label className="text-sm font-medium mb-2 block">Broker (Optional)</Label>
+                      <Label className="text-sm font-medium mb-2 block">Broker (Required)</Label>
                       <p className="text-xs text-muted-foreground mb-3">
                         Select your broker to pre-fill this field in extracted trades
                       </p>
-                      <Popover open={openPreBroker} onOpenChange={setOpenPreBroker}>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            aria-expanded={openPreBroker}
-                            className="w-full justify-between"
-                          >
-                            {preSelectedBroker || "Select broker..."}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-0" align="start">
-                          <Command>
-                            <CommandInput placeholder="Search broker..." />
-                            <CommandList>
-                              <CommandEmpty>No broker found.</CommandEmpty>
-                              <CommandGroup>
-                                {BROKERS.map((broker) => (
-                                  <CommandItem
-                                    key={broker}
-                                    value={broker}
-                                    onSelect={(value) => {
-                                      setPreSelectedBroker(value === preSelectedBroker ? '' : value);
-                                      setOpenPreBroker(false);
-                                    }}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        preSelectedBroker === broker ? "opacity-100" : "opacity-0"
-                                      )}
-                                    />
-                                    {broker}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
+                      <BrokerSelect 
+                        value={preSelectedBroker}
+                        onChange={setPreSelectedBroker}
+                        required
+                      />
                     </div>
                   )}
                   <div className="mt-2">
@@ -1164,54 +1087,13 @@ const Upload = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               <div>
                                 <Label className="text-xs text-muted-foreground">Broker</Label>
-                                <Popover open={openExtractedBroker === index} onOpenChange={(open) => setOpenExtractedBroker(open ? index : null)}>
-                                  <PopoverTrigger asChild>
-                                    <Button
-                                      variant="outline"
-                                      role="combobox"
-                                      aria-expanded={openExtractedBroker === index}
-                                      className="w-full justify-between mt-1 h-8 text-sm"
-                                    >
-                                      {(edits.broker ?? trade.broker) || "Select broker..."}
-                                      <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
-                                    </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-[300px] p-0" align="start" sideOffset={8}>
-                                    <Command>
-                                      <CommandInput placeholder="Search broker..." />
-                                      <CommandList>
-                                        <CommandEmpty>No broker found.</CommandEmpty>
-                                        <CommandGroup>
-                                          {BROKERS.map((broker) => (
-                                            <CommandItem
-                                              key={broker}
-                                              value={broker}
-                                              onSelect={() => {
-                                                if (broker === "Other") {
-                                                  const custom = prompt("Enter broker name:");
-                                                  if (custom && custom.trim()) {
-                                                    updateTradeField(index, 'broker', custom.trim());
-                                                  }
-                                                } else {
-                                                  updateTradeField(index, 'broker', broker);
-                                                }
-                                                setOpenExtractedBroker(null);
-                                              }}
-                                            >
-                                              <Check
-                                                className={cn(
-                                                  "mr-2 h-4 w-4",
-                                                  (edits.broker ?? trade.broker) === broker ? "opacity-100" : "opacity-0"
-                                                )}
-                                              />
-                                              {broker}
-                                            </CommandItem>
-                                          ))}
-                                        </CommandGroup>
-                                      </CommandList>
-                                    </Command>
-                                  </PopoverContent>
-                                </Popover>
+                                <div className="mt-1">
+                                  <BrokerSelect 
+                                    value={edits.broker ?? trade.broker ?? ''}
+                                    onChange={(value) => updateTradeField(index, 'broker', value)}
+                                    required
+                                  />
+                                </div>
                               </div>
                               <div>
                                 <Label className="text-xs text-muted-foreground">Setup</Label>
@@ -1439,55 +1321,13 @@ const Upload = () => {
 
                   <div>
                     <label className="text-sm font-medium">Broker</label>
-                    <Popover open={openBroker} onOpenChange={setOpenBroker}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={openBroker}
-                          className="w-full justify-between mt-1"
-                        >
-                          {formData.broker || "Select broker..."}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[400px] p-0" align="start" sideOffset={8}>
-                        <Command>
-                          <CommandInput placeholder="Search broker..." />
-                          <CommandList>
-                            <CommandEmpty>No broker found.</CommandEmpty>
-                            <CommandGroup>
-                              {BROKERS.map((broker) => (
-                                <CommandItem
-                                  key={broker}
-                                  value={broker}
-                                  onSelect={(currentValue) => {
-                                    const selectedBroker = BROKERS.find(b => b.toLowerCase() === currentValue);
-                                    if (selectedBroker === "Other") {
-                                      const custom = prompt("Enter broker name:");
-                                      if (custom && custom.trim()) {
-                                        setFormData({...formData, broker: custom.trim()});
-                                      }
-                                    } else if (selectedBroker) {
-                                      setFormData({...formData, broker: selectedBroker});
-                                    }
-                                    setOpenBroker(false);
-                                  }}
-                                >
-                                  <Check
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      formData.broker === broker ? "opacity-100" : "opacity-0"
-                                    )}
-                                  />
-                                  {broker}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
+                    <div className="mt-1">
+                      <BrokerSelect 
+                        value={formData.broker}
+                        onChange={(value) => setFormData({...formData, broker: value})}
+                        required
+                      />
+                    </div>
                   </div>
 
                   <div>

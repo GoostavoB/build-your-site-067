@@ -1253,6 +1253,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_broker_preferences: {
+        Row: {
+          broker_name: string
+          created_at: string
+          id: string
+          last_used_at: string
+          updated_at: string
+          usage_count: number
+          user_id: string
+        }
+        Insert: {
+          broker_name: string
+          created_at?: string
+          id?: string
+          last_used_at?: string
+          updated_at?: string
+          usage_count?: number
+          user_id: string
+        }
+        Update: {
+          broker_name?: string
+          created_at?: string
+          id?: string
+          last_used_at?: string
+          updated_at?: string
+          usage_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_follows: {
         Row: {
           created_at: string | null
@@ -1554,6 +1584,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_broker_usage: {
+        Args: { p_broker_name: string }
+        Returns: undefined
       }
       increment_daily_alert_count: {
         Args: { p_user_id: string }

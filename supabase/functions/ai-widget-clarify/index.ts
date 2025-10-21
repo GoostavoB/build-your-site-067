@@ -46,7 +46,6 @@ Make questions specific and actionable.`;
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
         messages: [{ role: "user", content: systemPrompt }],
-        temperature: 0.3,
       }),
     });
 

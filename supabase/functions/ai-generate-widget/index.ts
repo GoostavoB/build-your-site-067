@@ -72,7 +72,6 @@ Respond ONLY with valid JSON, no markdown, no explanations.`;
           { role: "system", content: systemPrompt },
           { role: "user", content: prompt }
         ],
-        temperature: 0.3,
       }),
     });
 

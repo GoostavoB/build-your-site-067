@@ -1,10 +1,12 @@
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
-import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label, LabelList } from 'recharts';
 import { format } from 'date-fns';
 import { useMobileOptimization } from '@/hooks/useMobileOptimization';
 import { ExplainMetricButton } from '@/components/ExplainMetricButton';
 import { useAIAssistant } from '@/contexts/AIAssistantContext';
+import { Button } from '@/components/ui/button';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface Trade {
   id: string;
@@ -21,6 +23,7 @@ interface DashboardChartsProps {
 export const DashboardCharts = memo(({ trades, chartType }: DashboardChartsProps) => {
   const { isMobile, optimizeDataPoints, formatNumberMobile } = useMobileOptimization();
   const { openWithPrompt } = useAIAssistant();
+  const [showLabels, setShowLabels] = useState(false);
   
   // Memoize cumulative P&L calculation
   const cumulativePnLRaw = useMemo(() => 
@@ -74,13 +77,23 @@ export const DashboardCharts = memo(({ trades, chartType }: DashboardChartsProps
           <p className="text-xs lg:text-sm text-muted-foreground">
             Track your cumulative profit and loss over time.
           </p>
-          <ExplainMetricButton
-            metricName="Cumulative P&L Chart"
-            metricValue={`$${totalPnL.toFixed(2)}`}
-            context={`Total of ${trades.length} trades over time`}
-            onExplain={openWithPrompt}
-            className="flex-shrink-0"
-          />
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowLabels(!showLabels)}
+              className="h-7 px-2"
+            >
+              {showLabels ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+            </Button>
+            <ExplainMetricButton
+              metricName="Cumulative P&L Chart"
+              metricValue={`$${totalPnL.toFixed(2)}`}
+              context={`Total of ${trades.length} trades over time`}
+              onExplain={openWithPrompt}
+              className="flex-shrink-0"
+            />
+          </div>
         </div>
         {cumulativePnL.length > 0 ? (
           <ResponsiveContainer width="100%" height={220}>
@@ -139,7 +152,16 @@ export const DashboardCharts = memo(({ trades, chartType }: DashboardChartsProps
                 fill="url(#colorPnl)"
                 animationDuration={800}
                 animationEasing="ease-in-out"
-              />
+              >
+                {showLabels && (
+                  <LabelList 
+                    dataKey="pnl" 
+                    position="top" 
+                    formatter={(value: number) => `$${value.toFixed(0)}`}
+                    style={{ fill: 'hsl(var(--primary))', fontSize: '10px', fontWeight: 600 }}
+                  />
+                )}
+              </Area>
             </AreaChart>
           </ResponsiveContainer>
         ) : (
@@ -160,13 +182,23 @@ export const DashboardCharts = memo(({ trades, chartType }: DashboardChartsProps
           <p className="text-xs lg:text-sm text-muted-foreground">
             Compare your winning and losing trades by date.
           </p>
-          <ExplainMetricButton
-            metricName="Wins vs Losses Chart"
-            metricValue={`${totalWins}W / ${totalLosses}L`}
-            context={`${trades.length} total trades`}
-            onExplain={openWithPrompt}
-            className="flex-shrink-0"
-          />
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowLabels(!showLabels)}
+              className="h-7 px-2"
+            >
+              {showLabels ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+            </Button>
+            <ExplainMetricButton
+              metricName="Wins vs Losses Chart"
+              metricValue={`${totalWins}W / ${totalLosses}L`}
+              context={`${trades.length} total trades`}
+              onExplain={openWithPrompt}
+              className="flex-shrink-0"
+            />
+          </div>
         </div>
         {winsLossesData.length > 0 ? (
           <ResponsiveContainer width="100%" height={220}>
@@ -214,14 +246,30 @@ export const DashboardCharts = memo(({ trades, chartType }: DashboardChartsProps
                 radius={[6, 6, 0, 0]}
                 animationDuration={800}
                 animationEasing="ease-in-out"
-              />
+              >
+                {showLabels && (
+                  <LabelList 
+                    dataKey="wins" 
+                    position="top" 
+                    style={{ fill: 'hsl(var(--primary))', fontSize: '10px', fontWeight: 600 }}
+                  />
+                )}
+              </Bar>
               <Bar 
                 dataKey="losses" 
                 fill="hsl(var(--secondary))" 
                 radius={[6, 6, 0, 0]}
                 animationDuration={800}
                 animationEasing="ease-in-out"
-              />
+              >
+                {showLabels && (
+                  <LabelList 
+                    dataKey="losses" 
+                    position="top" 
+                    style={{ fill: 'hsl(var(--secondary))', fontSize: '10px', fontWeight: 600 }}
+                  />
+                )}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         ) : (
@@ -243,12 +291,22 @@ export const DashboardCharts = memo(({ trades, chartType }: DashboardChartsProps
       <Card className="p-4 lg:p-6 bg-card border-border">
         <div className="flex items-center justify-between mb-3 lg:mb-4">
           <h3 className="text-base lg:text-lg font-semibold">Cumulative P&L</h3>
-          <ExplainMetricButton
-            metricName="Cumulative P&L"
-            metricValue={`$${totalPnL.toFixed(2)}`}
-            context={`${trades.length} trades over time`}
-            onExplain={openWithPrompt}
-          />
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowLabels(!showLabels)}
+              className="h-7 px-2"
+            >
+              {showLabels ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+            </Button>
+            <ExplainMetricButton
+              metricName="Cumulative P&L"
+              metricValue={`$${totalPnL.toFixed(2)}`}
+              context={`${trades.length} trades over time`}
+              onExplain={openWithPrompt}
+            />
+          </div>
         </div>
         {cumulativePnL.length > 0 ? (
           <ResponsiveContainer width="100%" height={250}>
@@ -292,7 +350,16 @@ export const DashboardCharts = memo(({ trades, chartType }: DashboardChartsProps
                 strokeWidth={2}
                 fillOpacity={1}
                 fill="url(#colorPnl)"
-              />
+              >
+                {showLabels && (
+                  <LabelList 
+                    dataKey="pnl" 
+                    position="top" 
+                    formatter={(value: number) => `$${value.toFixed(0)}`}
+                    style={{ fill: 'hsl(var(--primary))', fontSize: '10px', fontWeight: 600 }}
+                  />
+                )}
+              </Area>
             </AreaChart>
           </ResponsiveContainer>
         ) : (
@@ -305,12 +372,22 @@ export const DashboardCharts = memo(({ trades, chartType }: DashboardChartsProps
       <Card className="p-4 lg:p-6 bg-card border-border">
         <div className="flex items-center justify-between mb-3 lg:mb-4">
           <h3 className="text-base lg:text-lg font-semibold">Wins vs Losses</h3>
-          <ExplainMetricButton
-            metricName="Wins vs Losses"
-            metricValue={`${totalWins}W / ${totalLosses}L`}
-            context={`${trades.length} total trades`}
-            onExplain={openWithPrompt}
-          />
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowLabels(!showLabels)}
+              className="h-7 px-2"
+            >
+              {showLabels ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+            </Button>
+            <ExplainMetricButton
+              metricName="Wins vs Losses"
+              metricValue={`${totalWins}W / ${totalLosses}L`}
+              context={`${trades.length} total trades`}
+              onExplain={openWithPrompt}
+            />
+          </div>
         </div>
         {winsLossesData.length > 0 ? (
           <ResponsiveContainer width="100%" height={250}>
@@ -336,8 +413,24 @@ export const DashboardCharts = memo(({ trades, chartType }: DashboardChartsProps
                 }}
                 labelStyle={{ color: 'hsl(var(--foreground))' }}
               />
-              <Bar dataKey="wins" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="losses" fill="hsl(var(--secondary))" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="wins" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]}>
+                {showLabels && (
+                  <LabelList 
+                    dataKey="wins" 
+                    position="top" 
+                    style={{ fill: 'hsl(var(--primary))', fontSize: '10px', fontWeight: 600 }}
+                  />
+                )}
+              </Bar>
+              <Bar dataKey="losses" fill="hsl(var(--secondary))" radius={[6, 6, 0, 0]}>
+                {showLabels && (
+                  <LabelList 
+                    dataKey="losses" 
+                    position="top" 
+                    style={{ fill: 'hsl(var(--secondary))', fontSize: '10px', fontWeight: 600 }}
+                  />
+                )}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         ) : (

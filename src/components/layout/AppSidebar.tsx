@@ -1,4 +1,4 @@
-import { BarChart3, Upload, TrendingUp, TrendingDown, Target, Users, Brain, Trophy, Settings, BookOpen, HelpCircle, LineChart, LogOut, Circle, Star, PieChart, Activity, Zap, Sparkles, DollarSign, RefreshCw, Wallet, Receipt } from 'lucide-react';
+import { BarChart3, Upload, TrendingUp, TrendingDown, Target, Users, Brain, Trophy, Settings2, BookOpen, HelpCircle, LineChart, LogOut, Circle, Star, PieChart, Activity, Zap, Sparkles, DollarSign, RefreshCw, Wallet, Receipt } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import * as LucideIcons from 'lucide-react';
@@ -39,7 +39,7 @@ export function AppSidebar() {
     { title: t('navigation.forecast'), url: '/forecast', icon: Target },
     { title: t('navigation.aiTools'), url: '/ai-tools', icon: Brain },
     { title: t('navigation.achievements'), url: '/achievements', icon: Trophy },
-    { title: t('common.settings'), url: '/settings', icon: Settings },
+    { title: t('common.settings'), url: '/settings', icon: Settings2 },
   ];
 
   const resourceItems = [

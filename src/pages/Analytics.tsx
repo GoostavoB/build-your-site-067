@@ -123,8 +123,17 @@ export default function Analytics() {
             </div>
           </TabsContent>
 
-          <TabsContent value="performance">
-            <LazyChart height={400}>
+          <TabsContent value="performance" className="space-y-6">
+            <div className="glass-subtle p-6 rounded-xl">
+              <div className="flex items-center gap-3 mb-2">
+                <Target className="h-5 w-5 text-primary" />
+                <h2 className="text-xl font-bold">Custom Setup Performance</h2>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Analyze how each of your custom-tagged trading strategies performs across win rate and ROI metrics
+              </p>
+            </div>
+            <LazyChart height={600}>
               <SetupPerformanceChart data={setupData} />
             </LazyChart>
           </TabsContent>

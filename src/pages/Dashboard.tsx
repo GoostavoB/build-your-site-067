@@ -655,23 +655,21 @@ const Dashboard = () => {
                   
                   <DragOverlay
                     dropAnimation={{
-                      duration: 150,
+                      duration: 120,
                       easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
                     }}
                   >
                     {activeId ? (
-                      <div className="opacity-90 scale-105 shadow-2xl shadow-primary/50 ring-2 ring-primary rounded-lg pointer-events-none">
-                        <div className="widget-item">
-                          {(() => {
-                            const config = WIDGET_CATALOG[activeId];
-                            return config ? (
-                              <div className="p-4 bg-card rounded-lg">
-                                <div className="text-sm font-semibold">{config.title}</div>
-                              </div>
-                            ) : null;
-                          })()}
-                        </div>
-                      </div>
+                      (() => {
+                        const config = WIDGET_CATALOG[activeId];
+                        return (
+                          <div className="pointer-events-none select-none rounded-lg bg-card/90 border border-border p-4 w-[360px] h-[160px] flex items-center justify-center shadow-2xl shadow-primary/40 ring-2 ring-primary/60">
+                            <div className="text-sm font-semibold truncate max-w-[300px]">
+                              {config?.title || activeId}
+                            </div>
+                          </div>
+                        );
+                      })()
                     ) : null}
                   </DragOverlay>
                 </DndContext>

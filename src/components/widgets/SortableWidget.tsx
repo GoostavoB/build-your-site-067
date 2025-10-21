@@ -30,7 +30,8 @@ export const SortableWidget = memo(({ id, children, isEditMode, onRemove }: Sort
   const style = {
     transform: CSS.Transform.toString(transform),
     transition: transition || undefined,
-    opacity: isDragging ? 0 : 1,
+    opacity: 1,
+    visibility: isDragging ? 'hidden' as const : 'visible' as const,
     touchAction: 'none',
   };
 

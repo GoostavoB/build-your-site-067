@@ -1605,6 +1605,62 @@ export type Database = {
         }
         Relationships: []
       }
+      trading_journal: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          lessons_learned: string | null
+          mood: string | null
+          rating: number | null
+          tags: string[] | null
+          title: string
+          trade_id: string | null
+          updated_at: string | null
+          user_id: string
+          what_to_improve: string | null
+          what_went_well: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          lessons_learned?: string | null
+          mood?: string | null
+          rating?: number | null
+          tags?: string[] | null
+          title: string
+          trade_id?: string | null
+          updated_at?: string | null
+          user_id: string
+          what_to_improve?: string | null
+          what_went_well?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          lessons_learned?: string | null
+          mood?: string | null
+          rating?: number | null
+          tags?: string[] | null
+          title?: string
+          trade_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+          what_to_improve?: string | null
+          what_went_well?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trading_journal_trade_id_fkey"
+            columns: ["trade_id"]
+            isOneToOne: false
+            referencedRelation: "trades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       unlocked_badges: {
         Row: {
           badge_id: string

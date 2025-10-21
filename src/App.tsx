@@ -15,6 +15,7 @@ import Upload from "./pages/Upload";
 import Analytics from "./pages/Analytics";
 import Forecast from "./pages/Forecast";
 import Achievements from "./pages/Achievements";
+import Gamification from "./pages/Gamification";
 import MarketData from "./pages/MarketData";
 import Settings from "./pages/Settings";
 import Blog from "./pages/Blog";
@@ -62,6 +63,7 @@ const App = () => (
                   <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                   <Route path="/forecast" element={<ProtectedRoute><Forecast /></ProtectedRoute>} />
                   <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
+                  <Route path="/gamification" element={<ProtectedRoute><Gamification /></ProtectedRoute>} />
                   <Route path="/market-data" element={<ProtectedRoute><MarketData /></ProtectedRoute>} />
                   <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                   <Route path="/social" element={<ProtectedRoute><Social /></ProtectedRoute>} />

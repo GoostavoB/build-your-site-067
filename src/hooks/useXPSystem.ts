@@ -42,6 +42,7 @@ export const useXPSystem = () => {
   });
   const [loading, setLoading] = useState(true);
   const [showLevelUp, setShowLevelUp] = useState(false);
+  const [newLevelRef, setNewLevelRef] = useState<number | null>(null);
 
   const fetchXPData = useCallback(async () => {
     if (!user) return;
@@ -135,11 +136,20 @@ export const useXPSystem = () => {
 
       // Show notifications
       if (didLevelUp) {
+        setNewLevelRef(newLevel);
         setShowLevelUp(true);
+        
+        // Also show a toast for extra dopamine
+        toast.success(`🎉 Level Up! You're now level ${newLevel}!`, {
+          description: `Keep trading to reach level ${newLevel + 1}`,
+          duration: 5000
+        });
       } else {
+        // Use custom XP toast with icon
         toast.success(`+${amount} XP`, {
           description: description || activityType,
-          duration: 2000
+          duration: 2000,
+          icon: '⚡'
         });
       }
     } catch (error) {
@@ -159,6 +169,7 @@ export const useXPSystem = () => {
     getXPForNextLevel,
     showLevelUp,
     setShowLevelUp,
+    newLevel: newLevelRef,
     refresh: fetchXPData
   };
 };

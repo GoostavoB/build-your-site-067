@@ -17,8 +17,10 @@ import { BehaviorAnalytics } from '@/components/insights/BehaviorAnalytics';
 import { DashboardSkeleton } from '@/components/DashboardSkeleton';
 import { ExportTradesDialog } from '@/components/ExportTradesDialog';
 import { LevelUpModal } from '@/components/gamification/LevelUpModal';
+import { FloatingXP } from '@/components/gamification/FloatingXP';
 import { useXPSystem } from '@/hooks/useXPSystem';
 import { useDailyChallenges } from '@/hooks/useDailyChallenges';
+import { useTradeXPRewards } from '@/hooks/useTradeXPRewards';
 import { TradingStreaks } from '@/components/TradingStreaks';
 import { DateRangeFilter, DateRange } from '@/components/DateRangeFilter';
 import { AccentColorPicker } from '@/components/AccentColorPicker';
@@ -147,6 +149,9 @@ const Dashboard = () => {
   // Gamification system
   const { xpData, showLevelUp, setShowLevelUp } = useXPSystem();
   const { updateChallengeProgress } = useDailyChallenges();
+  
+  // Award XP for trades
+  useTradeXPRewards(trades);
 
   const gridRef = useRef<HTMLDivElement>(null);
   const [columnCount, setColumnCount] = useState(3);
@@ -725,6 +730,7 @@ const Dashboard = () => {
 
   return (
     <AppLayout>
+      <FloatingXP />
       <LevelUpModal 
         show={showLevelUp} 
         level={xpData.currentLevel} 

@@ -75,10 +75,10 @@ export const SetupPerformanceChart = ({ data }: SetupPerformanceChartProps) => {
       </div>
 
       {/* Chart */}
-      <div className="relative">
+      <div className="relative w-full overflow-hidden">
         <ResponsiveContainer width="100%" height={500}>
           <ScatterChart
-            margin={{ top: 60, right: 60, bottom: 60, left: 60 }}
+            margin={{ top: 70, right: 70, bottom: 70, left: 70 }}
           >
             <defs>
               <linearGradient id="successGradient" x1="0" y1="0" x2="0" y2="1">
@@ -120,13 +120,13 @@ export const SetupPerformanceChart = ({ data }: SetupPerformanceChartProps) => {
               unit="%"
               domain={[0, 100]}
               className="text-xs"
-              tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }}
+              tick={{ fill: 'hsl(var(--foreground))', fontSize: 11 }}
               label={{ 
                 value: 'Win Rate (%)', 
                 position: 'insideBottom', 
-                offset: -15, 
+                offset: -20, 
                 fill: 'hsl(var(--foreground))',
-                style: { fontWeight: 600 }
+                style: { fontWeight: 600, fontSize: 12 }
               }}
             />
             <YAxis 
@@ -135,13 +135,14 @@ export const SetupPerformanceChart = ({ data }: SetupPerformanceChartProps) => {
               name="ROI"
               unit="%"
               className="text-xs"
-              tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }}
+              tick={{ fill: 'hsl(var(--foreground))', fontSize: 11 }}
               label={{ 
-                value: 'Return on Investment (%)', 
+                value: 'ROI (%)', 
                 angle: -90, 
                 position: 'insideLeft', 
+                offset: 10,
                 fill: 'hsl(var(--foreground))',
-                style: { fontWeight: 600 }
+                style: { fontWeight: 600, fontSize: 12 }
               }}
             />
             <ZAxis 

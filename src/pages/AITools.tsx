@@ -3,7 +3,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AIAnalysisPanel } from "@/components/ai/AIAnalysisPanel";
 import { AIChat } from "@/components/ai/AIChat";
 import { AIGeneratedReport } from "@/components/ai/AIGeneratedReport";
-import { Brain, MessageSquare, FileText } from "lucide-react";
+import { AIPatternRecognition } from "@/components/ai/AIPatternRecognition";
+import { Brain, MessageSquare, FileText, Target } from "lucide-react";
 
 export default function AITools() {
   return (
@@ -12,10 +13,14 @@ export default function AITools() {
         <h1 className="text-3xl font-bold mb-6">AI Trading Assistant</h1>
 
         <Tabs defaultValue="analysis" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="analysis" className="gap-2">
               <Brain className="h-4 w-4" />
               Analysis
+            </TabsTrigger>
+            <TabsTrigger value="patterns" className="gap-2">
+              <Target className="h-4 w-4" />
+              Patterns
             </TabsTrigger>
             <TabsTrigger value="chat" className="gap-2">
               <MessageSquare className="h-4 w-4" />
@@ -29,6 +34,10 @@ export default function AITools() {
 
           <TabsContent value="analysis">
             <AIAnalysisPanel />
+          </TabsContent>
+
+          <TabsContent value="patterns">
+            <AIPatternRecognition />
           </TabsContent>
 
           <TabsContent value="chat">

@@ -31,6 +31,7 @@ export interface Trade {
   image_url: string | null;
   trade_hash: string | null;
   deleted_at: string | null;
+  xp_awarded?: boolean;
   created_at: string;
   updated_at: string;
 }

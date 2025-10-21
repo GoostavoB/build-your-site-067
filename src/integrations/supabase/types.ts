@@ -1038,6 +1038,7 @@ export type Database = {
           trading_fee: number | null
           updated_at: string | null
           user_id: string
+          xp_awarded: boolean
         }
         Insert: {
           broker?: string | null
@@ -1075,6 +1076,7 @@ export type Database = {
           trading_fee?: number | null
           updated_at?: string | null
           user_id: string
+          xp_awarded?: boolean
         }
         Update: {
           broker?: string | null
@@ -1112,6 +1114,7 @@ export type Database = {
           trading_fee?: number | null
           updated_at?: string | null
           user_id?: string
+          xp_awarded?: boolean
         }
         Relationships: []
       }

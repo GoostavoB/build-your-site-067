@@ -12,8 +12,8 @@ export const usePageMeta = (meta: PageMeta) => {
     // Cleanup - reset to default on unmount
     return () => {
       updatePageMeta({
-        title: 'The Trading Diary - Your Trades. Your Data. Your Edge.',
-        description: 'Advanced trading journal for crypto and stock traders. Track performance, analyze trades, and improve your trading strategy with powerful analytics and insights.',
+        title: 'The #1 Crypto Trading Journal | Track & Analyze Every Trade',
+        description: 'Track, analyze, and review every crypto trade with AI. Built exclusively for crypto traders. Advanced analytics, automated insights, and performance tracking.',
         canonical: 'https://www.thetradingdiary.com/',
       });
     };

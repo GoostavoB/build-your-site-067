@@ -153,10 +153,15 @@
   },
   "landing": {
     "hero": {
-      "title": "Rastrea, Analiza, Mejora Tu Trading",
-      "subtitle": "Un diario de trading completo con análisis impulsados por IA para ayudarte a ser mejor trader",
+      "title": "El Diario de Trading Crypto #1",
+      "subtitle": "Rastrea, analiza y revisa cada operación cripto con IA. Construido exclusivamente para traders de criptomonedas.",
       "cta": "Comenzar Gratis",
       "watchDemo": "Ver Demo"
+    },
+    "stats": {
+      "activeTraders": "Traders Activos",
+      "tradesLogged": "Operaciones Registradas",
+      "satisfaction": "Satisfacción"
     },
     "features": {
       "title": "Todo Lo Que Necesitas Para Dominar Tu Trading",

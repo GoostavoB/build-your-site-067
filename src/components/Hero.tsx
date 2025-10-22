@@ -70,15 +70,15 @@ const Hero = () => {
           >
             <div className="glass-strong backdrop-blur-[20px] p-5 rounded-xl shadow-lg border border-primary/10">
               <div className="text-2xl md:text-3xl font-bold text-primary mb-1">10,000+</div>
-              <div className="text-xs text-muted-foreground">Active Traders</div>
+              <div className="text-xs text-muted-foreground">{t('landing.stats.activeTraders')}</div>
             </div>
             <div className="glass-strong backdrop-blur-[20px] p-5 rounded-xl shadow-lg border border-primary/10">
               <div className="text-2xl md:text-3xl font-bold text-primary mb-1">1M+</div>
-              <div className="text-xs text-muted-foreground">Trades Logged</div>
+              <div className="text-xs text-muted-foreground">{t('landing.stats.tradesLogged')}</div>
             </div>
             <div className="glass-strong backdrop-blur-[20px] p-5 rounded-xl shadow-lg border border-primary/10">
               <div className="text-2xl md:text-3xl font-bold text-primary mb-1">98%</div>
-              <div className="text-xs text-muted-foreground">Satisfaction</div>
+              <div className="text-xs text-muted-foreground">{t('landing.stats.satisfaction')}</div>
             </div>
           </motion.div>
         </div>

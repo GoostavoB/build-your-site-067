@@ -12,10 +12,18 @@ import { LanguageToggle } from "@/components/LanguageToggle";
 import { ThemeStudio } from "@/components/theme-studio/ThemeStudio";
 import { Logo } from "@/components/Logo";
 import { useTranslation } from "@/hooks/useTranslation";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const Index = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  usePageMeta({
+    title: 'The #1 Crypto Trading Journal | Track & Analyze Every Trade',
+    description: 'Track, analyze, and review every crypto trade with AI. Built exclusively for crypto traders. Advanced analytics, automated insights, and performance tracking.',
+    canonical: 'https://www.thetradingdiary.com/',
+    keywords: 'crypto trading journal, cryptocurrency trading, crypto trade tracker, bitcoin trading journal, crypto analytics, trading performance',
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-background">

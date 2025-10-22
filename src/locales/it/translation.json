@@ -272,6 +272,19 @@
       }
     }
   },
+  "landing": {
+    "hero": {
+      "title": "Il Diario di Trading Crypto #1",
+      "subtitle": "Traccia, analizza e rivedi ogni operazione crypto con l'IA. Costruito esclusivamente per trader di criptovalute.",
+      "cta": "Inizia Gratis",
+      "watchDemo": "Guarda Demo"
+    },
+    "stats": {
+      "activeTraders": "Trader Attivi",
+      "tradesLogged": "Operazioni Registrate",
+      "satisfaction": "Soddisfazione"
+    }
+  },
   "blog": {
     "title": "Blog di Trading",
     "subtitle": "Approfondimenti esperti, strategie comprovate e consigli pratici per elevare il tuo trading",

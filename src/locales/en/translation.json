@@ -157,10 +157,15 @@
   },
   "landing": {
     "hero": {
-      "title": "Track, Analyze, Improve Your Trading",
-      "subtitle": "A comprehensive trading journal with AI-powered insights to help you become a better trader",
+      "title": "The #1 Crypto Trading Journal",
+      "subtitle": "Track, analyze, and review every crypto trade with AI. Built exclusively for crypto traders.",
       "cta": "Get Started Free",
       "watchDemo": "Watch Demo"
+    },
+    "stats": {
+      "activeTraders": "Active Traders",
+      "tradesLogged": "Trades Logged",
+      "satisfaction": "Satisfaction"
     },
     "features": {
       "title": "Everything You Need to Master Your Trading",

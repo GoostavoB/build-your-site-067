@@ -272,6 +272,19 @@
       }
     }
   },
+  "landing": {
+    "hero": {
+      "title": "Das #1 Krypto-Trading-Tagebuch",
+      "subtitle": "Verfolgen, analysieren und überprüfen Sie jeden Krypto-Trade mit KI. Exklusiv für Krypto-Trader entwickelt.",
+      "cta": "Kostenlos Starten",
+      "watchDemo": "Demo Ansehen"
+    },
+    "stats": {
+      "activeTraders": "Aktive Trader",
+      "tradesLogged": "Erfasste Trades",
+      "satisfaction": "Zufriedenheit"
+    }
+  },
   "blog": {
     "title": "Trading-Blog",
     "subtitle": "Experteneinblicke, bewährte Strategien und praktische Tipps für besseres Trading",

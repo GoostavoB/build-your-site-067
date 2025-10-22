@@ -51,6 +51,7 @@ export function AppSidebar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [archivedGroups, setArchivedGroups] = useState<string[]>([]);
   const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
+  const [allExpanded, setAllExpanded] = useState(false);
   const { favorites, isFavorite, toggleFavorite } = useFavorites();
 
   const menuStructure: MenuGroup[] = [
@@ -164,13 +165,15 @@ export function AppSidebar() {
     );
   };
 
-  const expandAll = () => {
-    const allLabels = menuStructure.map(g => g.label);
-    setExpandedGroups(allLabels);
-  };
-
-  const collapseAll = () => {
-    setExpandedGroups([]);
+  const toggleExpandAll = () => {
+    if (allExpanded) {
+      setExpandedGroups([]);
+      setAllExpanded(false);
+    } else {
+      const allLabels = menuStructure.map(g => g.label);
+      setExpandedGroups(allLabels);
+      setAllExpanded(true);
+    }
   };
 
   const isGroupExpanded = (label: string) => {
@@ -192,7 +195,7 @@ export function AppSidebar() {
         <Logo size={open ? "md" : "sm"} variant={open ? "horizontal" : "icon"} showText={open} />
       </div>
 
-      <SidebarContent>
+      <SidebarContent className="gap-1">
         {/* Search and Controls */}
         {open && (
           <div className="px-3 py-2 space-y-2">
@@ -205,25 +208,15 @@ export function AppSidebar() {
                 className="pl-9 h-9"
               />
             </div>
-            {/* Expand/Collapse Controls */}
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={expandAll}
-                className="flex-1 h-7 text-xs"
-              >
-                Expand All
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={collapseAll}
-                className="flex-1 h-7 text-xs"
-              >
-                Collapse All
-              </Button>
-            </div>
+            {/* Toggle Expand/Collapse */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleExpandAll}
+              className="w-full h-7 text-xs"
+            >
+              {allExpanded ? 'Collapse All' : 'Expand All'}
+            </Button>
           </div>
         )}
 

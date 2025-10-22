@@ -30,8 +30,10 @@ export function ConnectExchangeModal({
 }: ConnectExchangeModalProps) {
   const [apiKey, setApiKey] = useState('');
   const [apiSecret, setApiSecret] = useState('');
+  const [apiPassphrase, setApiPassphrase] = useState('');
   const [showKey, setShowKey] = useState(false);
   const [showSecret, setShowSecret] = useState(false);
+  const [showPassphrase, setShowPassphrase] = useState(false);
 
   const connectMutation = useMutation({
     mutationFn: async () => {
@@ -50,6 +52,7 @@ export function ConnectExchangeModal({
             exchange,
             apiKey,
             apiSecret,
+            apiPassphrase: apiPassphrase || undefined,
           }),
         }
       );
@@ -82,23 +85,18 @@ export function ConnectExchangeModal({
     connectMutation.mutate();
   };
 
-  const exchangeInfo: Record<string, { name: string; docsUrl: string }> = {
-    binance: {
-      name: 'Binance',
-      docsUrl: 'https://www.binance.com/en/support/faq/detail/360002502072',
-    },
-    bingx: {
-      name: 'BingX',
-      docsUrl: 'https://bingx.com/en/wiki/detail/api',
-    },
-    bybit: {
-      name: 'Bybit',
-      docsUrl: 'https://www.bybit.com/en/help-center/article/How-to-create-your-API-key',
-    },
-    mexc: {
-      name: 'MEXC',
-      docsUrl: 'https://www.mexc.com/user/openapi',
-    },
+  const exchangeInfo: Record<string, { name: string; docsUrl: string; requiresPassphrase?: boolean; passphraseLabel?: string }> = {
+    binance: { name: 'Binance', docsUrl: 'https://www.binance.com/en/support/faq/detail/360002502072' },
+    bingx: { name: 'BingX', docsUrl: 'https://bingx.com/en/wiki/detail/api' },
+    bybit: { name: 'Bybit', docsUrl: 'https://www.bybit.com/en/help-center/article/How-to-create-your-API-key' },
+    mexc: { name: 'MEXC', docsUrl: 'https://www.mexc.com/user/openapi' },
+    coinbase: { name: 'Coinbase', docsUrl: 'https://docs.cloud.coinbase.com/exchange/docs' },
+    kraken: { name: 'Kraken', docsUrl: 'https://docs.kraken.com/rest/' },
+    bitfinex: { name: 'Bitfinex', docsUrl: 'https://docs.bitfinex.com/docs' },
+    kucoin: { name: 'KuCoin', docsUrl: 'https://docs.kucoin.com/', requiresPassphrase: true, passphraseLabel: 'API Passphrase' },
+    okx: { name: 'OKX', docsUrl: 'https://www.okx.com/docs-v5/en/', requiresPassphrase: true, passphraseLabel: 'API Passphrase' },
+    gateio: { name: 'Gate.io', docsUrl: 'https://www.gate.io/docs/developers/apiv4' },
+    bitstamp: { name: 'Bitstamp', docsUrl: 'https://www.bitstamp.net/api/', requiresPassphrase: true, passphraseLabel: 'Customer ID' },
   };
 
   const info = exchangeInfo[exchange] || { name: exchange, docsUrl: '#' };
@@ -171,6 +169,31 @@ export function ConnectExchangeModal({
               </Button>
             </div>
           </div>
+
+          {info.requiresPassphrase && (
+            <div className="space-y-2">
+              <Label htmlFor="apiPassphrase">{info.passphraseLabel} *</Label>
+              <div className="relative">
+                <Input
+                  id="apiPassphrase"
+                  type={showPassphrase ? 'text' : 'password'}
+                  value={apiPassphrase}
+                  onChange={(e) => setApiPassphrase(e.target.value)}
+                  placeholder={`Enter your ${info.passphraseLabel?.toLowerCase()}`}
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3"
+                  onClick={() => setShowPassphrase(!showPassphrase)}
+                >
+                  {showPassphrase ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+          )}
 
           <Button
             type="button"

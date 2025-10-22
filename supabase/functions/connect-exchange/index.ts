@@ -1,5 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.75.0';
-import { createHmac } from 'https://deno.land/std@0.177.0/node/crypto.ts';
+import { encrypt, isSupportedExchange, requiresPassphrase } from '../_shared/exchangeUtils.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,50 +7,10 @@ const corsHeaders = {
 };
 
 interface ConnectRequest {
-  exchange: 'bingx' | 'binance' | 'bybit' | 'coinbase';
+  exchange: string;
   apiKey: string;
   apiSecret: string;
   apiPassphrase?: string;
-}
-
-// Simple encryption using base64 encoding
-// In production, use proper encryption with a secret key
-function encrypt(text: string): string {
-  return btoa(text);
-}
-
-async function validateBingXCredentials(apiKey: string, apiSecret: string): Promise<boolean> {
-  const timestamp = Date.now().toString();
-  const queryString = `timestamp=${timestamp}`;
-  
-  // Generate HMAC SHA256 signature
-  const signature = createHmac('sha256', apiSecret)
-    .update(queryString)
-    .digest('hex');
-  
-  const url = `https://open-api.bingx.com/openApi/spot/v1/account/balance?${queryString}&signature=${signature}`;
-  
-  try {
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'X-BX-APIKEY': apiKey,
-      },
-    });
-    
-    const data = await response.json();
-    
-    // BingX returns code: 0 for success
-    if (response.ok && data.code === 0) {
-      return true;
-    }
-    
-    console.error('BingX API validation failed:', data);
-    return false;
-  } catch (error) {
-    console.error('BingX API call error:', error);
-    return false;
-  }
 }
 
 Deno.serve(async (req) => {
@@ -89,25 +49,24 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Validate credentials based on exchange
-    let isValid = false;
-    switch (exchange) {
-      case 'bingx':
-        isValid = await validateBingXCredentials(apiKey, apiSecret);
-        break;
-      default:
-        return new Response(
-          JSON.stringify({ error: 'Exchange not supported yet' }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-    }
-
-    if (!isValid) {
+    // Validate exchange is supported
+    if (!isSupportedExchange(exchange)) {
       return new Response(
-        JSON.stringify({ error: 'Invalid API credentials. Please check your API key and secret.' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: `Exchange ${exchange} is not supported` }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Validate passphrase for exchanges that require it
+    if (requiresPassphrase(exchange) && !apiPassphrase) {
+      return new Response(
+        JSON.stringify({ error: `${exchange} requires an API passphrase or customer ID` }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Note: Credential validation will be done during first sync
+    // We store the credentials now and test them when syncing trades
 
     // Encrypt credentials
     const encryptedKey = encrypt(apiKey);
@@ -119,7 +78,7 @@ Deno.serve(async (req) => {
       .from('exchange_connections')
       .upsert({
         user_id: user.id,
-        exchange_name: exchange,
+        exchange_name: exchange.toLowerCase(),
         api_key_encrypted: encryptedKey,
         api_secret_encrypted: encryptedSecret,
         api_passphrase_encrypted: encryptedPassphrase,

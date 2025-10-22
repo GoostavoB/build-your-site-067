@@ -2,7 +2,7 @@ import { useState } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, TrendingUp, TrendingDown, Wallet, Package } from 'lucide-react';
+import { Plus, TrendingUp, TrendingDown, Wallet, Package, RefreshCw } from 'lucide-react';
 import { usePortfolio } from '@/hooks/usePortfolio';
 import { useSpotWallet } from '@/hooks/useSpotWallet';
 import { formatCurrency, formatPercent } from '@/utils/formatNumber';
@@ -12,12 +12,21 @@ import { PortfolioChart } from '@/components/portfolio/PortfolioChart';
 import { TokenList } from '@/components/spot-wallet/TokenList';
 import { TokenAllocationChart } from '@/components/spot-wallet/TokenAllocationChart';
 import { AddTokenModal } from '@/components/spot-wallet/AddTokenModal';
+import { CategoryView } from '@/components/portfolio/CategoryView';
+import { PortfolioSettings } from '@/components/portfolio/PortfolioSettings';
+import { aggregatePortfolioByCategory } from '@/utils/categoryAggregation';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import type { TimeRange } from '@/utils/timeframeReturns';
 
 export default function SpotWallet() {
   const [selectedRange, setSelectedRange] = useState<TimeRange>('1M');
   const [showAddModal, setShowAddModal] = useState(false);
   const [viewType, setViewType] = useState<'value' | 'percent'>('value');
+  const [activeView, setActiveView] = useState<'tokens' | 'categories'>('tokens');
+  const [syncing, setSyncing] = useState(false);
+  const { toast } = useToast();
 
   const {
     holdings,
@@ -31,9 +40,65 @@ export default function SpotWallet() {
     isLoading,
     baseCurrency,
     costMethod,
+    settings,
   } = usePortfolio(selectedRange);
   
   const { addHolding, deleteHolding } = useSpotWallet();
+
+  const handleSyncCategories = async () => {
+    setSyncing(true);
+    try {
+      toast({
+        title: 'Syncing categories...',
+        description: 'Fetching category data from CoinGecko. This may take a minute.',
+      });
+
+      const { data, error } = await supabase.functions.invoke('sync-coingecko-categories');
+
+      if (error) throw error;
+
+      toast({
+        title: 'Categories synced',
+        description: `Updated ${data.assetsUpdated} assets with category information.`,
+      });
+
+      window.location.reload();
+    } catch (error) {
+      console.error('Error syncing categories:', error);
+      toast({
+        title: 'Sync failed',
+        description: 'Could not sync categories. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  // Aggregate by category
+  const categoryData = aggregatePortfolioByCategory(
+    holdings?.map(h => {
+      const currentPrice = prices?.[h.token_symbol]?.price || h.purchase_price || 0;
+      const currentValue = h.quantity * currentPrice;
+      const costBasis = h.quantity * (h.purchase_price || 0);
+      
+      return {
+        token_symbol: h.token_symbol,
+        token_name: h.token_name || h.token_symbol,
+        quantity: h.quantity,
+        purchase_price: h.purchase_price,
+        primary_category: (h as any).primary_category,
+        categories_json: (h as any).categories_json,
+        currentPrice,
+        currentValue,
+        unrealizedPnL: currentValue - costBasis,
+        priceChange24h: prices?.[h.token_symbol]?.priceChange24h,
+        priceChange7d: prices?.[h.token_symbol]?.priceChange7d,
+        priceChange30d: prices?.[h.token_symbol]?.priceChange30d,
+      };
+    }) || [],
+    settings?.category_split_mode || false
+  );
 
   if (isLoading) {
     return (
@@ -82,6 +147,21 @@ export default function SpotWallet() {
             >
               Percent
             </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleSyncCategories}
+              disabled={syncing}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
+              Sync
+            </Button>
+            {settings && (
+              <PortfolioSettings 
+                settings={settings} 
+                onSettingsChange={() => window.location.reload()}
+              />
+            )}
             <Button onClick={() => setShowAddModal(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Add Asset
@@ -170,40 +250,55 @@ export default function SpotWallet() {
           withdrawals={withdrawals || []}
         />
 
-        {/* Holdings Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Token Allocation */}
-          <Card className="p-6 lg:col-span-1">
-            <h3 className="text-lg font-semibold mb-4">Allocation</h3>
-            <TokenAllocationChart data={chartData} />
-          </Card>
+        {/* View Toggle */}
+        <Tabs value={activeView} onValueChange={(v) => setActiveView(v as 'tokens' | 'categories')}>
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="tokens">Tokens</TabsTrigger>
+            <TabsTrigger value="categories">Categories</TabsTrigger>
+          </TabsList>
+        </Tabs>
 
-          {/* Token List */}
-          <div className="lg:col-span-2">
-            <TokenList 
-              tokens={holdings?.map(h => {
-                const currentPrice = prices?.[h.token_symbol]?.price || h.purchase_price || 0;
-                const value = h.quantity * currentPrice;
-                const priceData = prices?.[h.token_symbol];
-                
-                return {
-                  symbol: h.token_symbol,
-                  name: h.token_name || h.token_symbol,
-                  value,
-                  percentage: ((value / totalValue) * 100),
-                  quantity: h.quantity,
-                  priceChange24h: priceData?.priceChange24h,
-                  priceChange7d: priceData?.priceChange7d,
-                  priceChange30d: priceData?.priceChange30d,
-                };
-              }) || []}
-              onDelete={(symbol) => {
-                const holding = holdings?.find(h => h.token_symbol === symbol);
-                if (holding) deleteHolding.mutate(holding.id);
-              }}
-            />
+        {/* Holdings Grid */}
+        {activeView === 'tokens' ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Token Allocation */}
+            <Card className="p-6 lg:col-span-1">
+              <h3 className="text-lg font-semibold mb-4">Allocation</h3>
+              <TokenAllocationChart data={chartData} />
+            </Card>
+
+            {/* Token List */}
+            <div className="lg:col-span-2">
+              <TokenList 
+                tokens={holdings?.map(h => {
+                  const currentPrice = prices?.[h.token_symbol]?.price || h.purchase_price || 0;
+                  const value = h.quantity * currentPrice;
+                  const priceData = prices?.[h.token_symbol];
+                  
+                  return {
+                    symbol: h.token_symbol,
+                    name: h.token_name || h.token_symbol,
+                    value,
+                    percentage: ((value / totalValue) * 100),
+                    quantity: h.quantity,
+                    priceChange24h: priceData?.priceChange24h,
+                    priceChange7d: priceData?.priceChange7d,
+                    priceChange30d: priceData?.priceChange30d,
+                  };
+                }) || []}
+                onDelete={(symbol) => {
+                  const holding = holdings?.find(h => h.token_symbol === symbol);
+                  if (holding) deleteHolding.mutate(holding.id);
+                }}
+              />
+            </div>
           </div>
-        </div>
+        ) : (
+          <CategoryView 
+            categories={categoryData}
+            baseCurrency={baseCurrency}
+          />
+        )}
       </div>
 
       <AddTokenModal 

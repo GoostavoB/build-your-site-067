@@ -26,19 +26,54 @@ export const ExchangeCarousel = () => {
       aria-label="Partner exchanges"
       role="region"
     >
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-8 gap-y-6 md:gap-x-12 md:gap-y-8 max-w-4xl mx-auto items-center justify-items-center">
-        {exchanges.map((exchange) => (
-          <img
-            key={exchange.name}
-            src={exchange.logo}
-            alt={exchange.alt}
-            className={`${exchange.size} w-auto object-contain shrink-0`}
-            loading="lazy"
-            decoding="async"
-            role="img"
-            aria-label={exchange.alt}
-          />
-        ))}
+      <div className="max-w-4xl mx-auto space-y-6 md:space-y-8">
+        {/* First row - 4 logos */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-6 md:gap-x-12 items-center justify-items-center">
+          {exchanges.slice(0, 4).map((exchange) => (
+            <img
+              key={exchange.name}
+              src={exchange.logo}
+              alt={exchange.alt}
+              className={`${exchange.size} w-auto object-contain shrink-0`}
+              loading="lazy"
+              decoding="async"
+              role="img"
+              aria-label={exchange.alt}
+            />
+          ))}
+        </div>
+        
+        {/* Second row - 4 logos */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-6 md:gap-x-12 items-center justify-items-center">
+          {exchanges.slice(4, 8).map((exchange) => (
+            <img
+              key={exchange.name}
+              src={exchange.logo}
+              alt={exchange.alt}
+              className={`${exchange.size} w-auto object-contain shrink-0`}
+              loading="lazy"
+              decoding="async"
+              role="img"
+              aria-label={exchange.alt}
+            />
+          ))}
+        </div>
+        
+        {/* Third row - 3 logos centered */}
+        <div className="flex justify-center gap-x-8 md:gap-x-12 items-center flex-wrap gap-y-6">
+          {exchanges.slice(8).map((exchange) => (
+            <img
+              key={exchange.name}
+              src={exchange.logo}
+              alt={exchange.alt}
+              className={`${exchange.size} w-auto object-contain shrink-0`}
+              loading="lazy"
+              decoding="async"
+              role="img"
+              aria-label={exchange.alt}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

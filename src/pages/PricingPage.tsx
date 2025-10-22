@@ -11,6 +11,7 @@ import { OutcomeCard } from "@/components/premium/OutcomeCard";
 import { ParallaxTradingElements } from "@/components/premium/ParallaxTradingElements";
 import { PremiumPricingCard } from "@/components/PremiumPricingCard";
 import { MagneticButton } from "@/components/MagneticButton";
+import { PremiumBillingToggle } from "@/components/premium/PremiumBillingToggle";
 
 const PricingPage = () => {
   const navigate = useNavigate();
@@ -353,39 +354,54 @@ const PricingPage = () => {
         </div>
       </section>
 
-      {/* Solutions Section - Premium Outcome Gallery */}
-      <section className="relative py-32 px-6 overflow-hidden">
+      {/* Solutions Section */}
+      <section className="relative py-24 px-6 overflow-hidden">
         <ParallaxTradingElements />
         
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-24">
+        <div className="container mx-auto max-w-7xl relative z-10">
+          <div className="text-center mb-16">
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5 }}
               viewport={{ once: true }}
-              className="text-5xl md:text-6xl font-display font-bold mb-6 tracking-[-0.02em]"
+              className="text-3xl md:text-4xl font-bold mb-4"
             >
               {t('pricing.solutions.title')}
             </motion.h2>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.15 }}
               viewport={{ once: true }}
-              className="text-lg text-muted-foreground/80 max-w-2xl mx-auto"
+              className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto"
             >
               {t('pricing.solutions.subtitle')}
             </motion.p>
           </div>
 
-          <div className="space-y-40">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {solutions.map((solution, index) => (
               <OutcomeCard key={index} {...solution} index={index} />
             ))}
           </div>
         </div>
       </section>
+
+      <motion.section 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+        className="py-16 px-6"
+      >
+        <div className="container mx-auto max-w-3xl text-center">
+          <h3 className="text-3xl md:text-4xl leading-tight">
+            Every trader has a path.{' '}
+            <span className="font-serif italic text-primary">Choose yours</span>
+          </h3>
+        </div>
+      </motion.section>
 
       {/* Pricing Cards */}
       <section ref={pricingRef} className="py-32 px-6">

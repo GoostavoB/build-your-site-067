@@ -25,12 +25,12 @@ export const AnimatedMetric = ({
   }, [inView]);
 
   return (
-    <div className="text-5xl md:text-6xl font-bold text-foreground/95 font-mono tabular-nums">
+    <div className="text-4xl md:text-5xl font-bold text-foreground/90 tabular-nums">
       {inView && (
         <CountUp
           start={0}
           end={value}
-          duration={2.5}
+          duration={2}
           decimals={decimals}
           prefix={prefix}
           suffix={suffix}

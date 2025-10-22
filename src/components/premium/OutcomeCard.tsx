@@ -40,112 +40,87 @@ export const OutcomeCard = ({
   return (
     <motion.div
       ref={setRefs}
-      initial={{ opacity: 0, y: 60, rotateX: 10 }}
-      animate={{
-        opacity: inView ? 1 : 0,
-        y: inView ? 0 : 60,
-        rotateX: inView ? 0 : 10,
-      }}
-      transition={{
-        duration: 0.8,
-        delay: 0.15 * (index % 3),
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      style={{
-        transform: inView ? `translateZ(${parallaxDepth}px) rotate(${angle}deg)` : undefined,
-        transformStyle: 'preserve-3d',
-      }}
+      initial={{ opacity: 0, y: 40 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.45, delay: index * 0.12 }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className="relative group"
     >
-      {/* Cursor proximity glow */}
-      {cursorPos.isNear && (
-        <motion.div
-          className="absolute inset-0 rounded-3xl pointer-events-none"
-          style={{
-            background: `radial-gradient(circle at ${cursorPos.x * 100}% ${cursorPos.y * 100}%, rgba(255,255,255,0.08), transparent 60%)`,
-          }}
-          animate={{ opacity: [0.6, 0.8, 0.6] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
-      )}
-
       <motion.div
-        className="outcome-card relative p-12 rounded-3xl overflow-hidden"
-        animate={{
-          rotateY: isHovered ? (isEven ? 2 : -2) : 0,
-          rotateX: isHovered ? (isEven ? -1 : 1) : 0,
-          scale: isHovered ? 1.02 : 1,
+        style={{
+          rotateY: isHovered ? (cursorPos.x > 0.5 ? 1 : -1) : 0,
+          rotateX: isHovered ? (cursorPos.y > 0.5 ? -1 : 1) : 0,
         }}
-        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="relative"
       >
-        {/* Layout: 60/40 split */}
-        <div className={`flex ${isEven ? 'flex-row' : 'flex-row-reverse'} items-center gap-12`}>
-          {/* Text side */}
-          <div className="flex-[0.6] space-y-6">
+        {cursorPos.isNear && (
+          <motion.div
+            className="absolute inset-0 pointer-events-none rounded-2xl"
+            style={{
+              background: `radial-gradient(circle at ${cursorPos.x * 100}% ${cursorPos.y * 100}%, rgba(59,130,246,0.06) 0%, transparent 60%)`,
+            }}
+          />
+        )}
+
+        <div className="outcome-card-refined relative overflow-hidden rounded-2xl p-8 h-[380px] flex flex-col justify-between">
+          <div className="space-y-4">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={inView ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.3, delay: index * 0.12 + 0.15 }}
+              className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/50 font-medium"
+            >
+              Solution {index + 1}
+            </motion.div>
+
             <motion.h3
-              className="gradient-text text-5xl md:text-6xl font-display font-bold leading-[0.95] tracking-[-0.02em]"
-              initial={{ opacity: 0, x: isEven ? -20 : 20 }}
-              animate={{ opacity: inView ? 1 : 0, x: inView ? 0 : (isEven ? -20 : 20) }}
-              transition={{ delay: 0.2 + index * 0.1, duration: 0.6 }}
+              initial={{ opacity: 0, y: 15 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.4, delay: index * 0.12 + 0.2 }}
+              className="text-3xl md:text-4xl font-bold text-foreground leading-[1.15] tracking-tight"
             >
               {headline}
             </motion.h3>
 
             <motion.p
-              className="text-sm text-muted-foreground leading-relaxed tracking-wide max-w-[48ch]"
               initial={{ opacity: 0 }}
-              animate={{ opacity: inView ? 1 : 0 }}
-              transition={{ delay: 0.3 + index * 0.1, duration: 0.6 }}
+              animate={inView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.3, delay: index * 0.12 + 0.3 }}
+              className="text-sm text-foreground/60 leading-relaxed"
             >
               {subhead}
             </motion.p>
-
-            {/* Metric */}
-            <motion.div
-              className="pt-6 border-t border-white/[0.06]"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 20 }}
-              transition={{ delay: 0.4 + index * 0.1, duration: 0.6 }}
-            >
-              {metricValue !== undefined ? (
-                <AnimatedMetric value={metricValue} suffix={metric.split(' ').pop() || ''} inView={inView} />
-              ) : (
-                <div className="text-4xl font-bold text-foreground/90 font-mono tabular-nums">
-                  {metric}
-                </div>
-              )}
-              <p className="text-[10px] text-muted-foreground/60 uppercase tracking-widest mt-3">
-                {proofPoint}
-              </p>
-            </motion.div>
           </div>
 
-          {/* Visual side */}
-          <motion.div
-            className="flex-[0.4]"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{
-              opacity: inView ? 1 : 0,
-              scale: inView ? 1 : 0.9,
-            }}
-            transition={{ delay: 0.5 + index * 0.1, duration: 0.6 }}
-          >
+          <div className="space-y-3">
             <motion.div
-              animate={{
-                y: isHovered ? -8 : 0,
-                scale: isHovered ? 1.05 : 1,
-              }}
-              transition={{ duration: 0.3 }}
-              className="relative"
-              style={{
-                transform: `translateZ(${parallaxDepth + 20}px)`,
-              }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={inView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ duration: 0.4, delay: index * 0.12 + 0.4 }}
+              className="space-y-1"
             >
-              {visual}
+              <AnimatedMetric
+                value={metricValue || 0}
+                suffix={metric.includes('%') ? '%' : metric.includes('x') ? 'x' : ''}
+                decimals={metricValue && metricValue % 1 !== 0 ? 1 : 0}
+                inView={inView}
+              />
+              <p className="text-[10px] text-muted-foreground/40 uppercase tracking-wider">
+                {metric}
+              </p>
             </motion.div>
-          </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={inView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.3, delay: index * 0.12 + 0.5 }}
+              className="text-[10px] text-muted-foreground/30 leading-relaxed tracking-wide"
+            >
+              {proofPoint}
+            </motion.p>
+          </div>
         </div>
       </motion.div>
     </motion.div>

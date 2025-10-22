@@ -17,6 +17,7 @@ const Hero = () => {
           alt="Bull and bear trading market illustration depicting financial market dynamics"
           className="w-full h-full object-cover opacity-15"
           loading="eager"
+          fetchPriority="high"
           width="1920"
           height="1080"
         />

@@ -69,6 +69,31 @@ const BlogPost = () => {
         link.href = `https://www.thetradingdiary.com/blog/${article.slug}`;
         document.head.appendChild(link);
       });
+      
+      // Add social meta tags for better sharing
+      const socialMeta = [
+        { name: 'twitter:site', content: '@thetradingdiary' },
+        { property: 'article:author', content: article.author },
+        { property: 'article:published_time', content: article.date },
+        { property: 'article:section', content: article.category },
+        { property: 'article:tag', content: article.tags?.join(',') || article.focusKeyword || '' }
+      ];
+      
+      socialMeta.forEach(meta => {
+        const existingMeta = document.querySelector(
+          meta.name ? `meta[name="${meta.name}"]` : `meta[property="${meta.property}"]`
+        );
+        if (existingMeta) existingMeta.remove();
+        
+        const metaTag = document.createElement('meta');
+        if (meta.name) {
+          metaTag.setAttribute('name', meta.name);
+        } else {
+          metaTag.setAttribute('property', meta.property);
+        }
+        metaTag.content = meta.content;
+        document.head.appendChild(metaTag);
+      });
     }
   }, [article]);
   
@@ -132,14 +157,20 @@ const BlogPost = () => {
         <Card className="p-8 bg-card border-border">
           {/* Hero Image */}
           {article.heroImage && (
-            <img 
-              src={article.heroImage} 
-              alt={article.heroImageAlt || article.title}
-              className="w-full h-auto rounded-lg mb-8 object-cover"
-              width={1920}
-              height={1080}
-              loading="eager"
-            />
+            <figure className="mb-8">
+              <img 
+                src={article.heroImage} 
+                alt={article.heroImageAlt || article.title}
+                className="w-full h-auto rounded-lg object-cover"
+                width={1920}
+                height={1080}
+                loading="eager"
+                fetchPriority="high"
+              />
+              <figcaption className="text-sm text-muted-foreground mt-2 text-center">
+                {article.heroImageAlt || article.title}
+              </figcaption>
+            </figure>
           )}
           
           {/* Article Header */}

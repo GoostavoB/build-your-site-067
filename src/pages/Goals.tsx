@@ -2,13 +2,16 @@ import { useState } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { GoalCard } from "@/components/goals/GoalCard";
 import { CreateGoalDialog } from "@/components/goals/CreateGoalDialog";
-import { Target, TrendingUp, Award, CheckCircle } from "lucide-react";
+import { GamificationSidebar } from "@/components/gamification/GamificationSidebar";
+import { Target, TrendingUp, Award, CheckCircle, Zap, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +27,7 @@ export default function Goals() {
   const { user } = useAuth();
   const [editingGoal, setEditingGoal] = useState<any>(null);
   const [deletingGoalId, setDeletingGoalId] = useState<string | null>(null);
+  const [showGamification, setShowGamification] = useState(true);
 
   const { data: goals, refetch } = useQuery({
     queryKey: ['trading-goals', user?.id],
@@ -95,7 +99,9 @@ export default function Goals() {
 
   return (
     <AppLayout>
-      <div className="container mx-auto p-6 max-w-7xl">
+      <div className="container mx-auto p-6 max-w-7xl flex gap-6 relative">
+        {/* Main Content */}
+        <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-2">
@@ -229,6 +235,38 @@ export default function Goals() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+        </div>
+
+        {/* Collapsible Gamification Panel */}
+        <AnimatePresence>
+          {showGamification && (
+            <motion.div
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 320, opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="relative overflow-hidden"
+            >
+              <div className="sticky top-6 w-80">
+                <GamificationSidebar />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Toggle Button */}
+        <Button
+          onClick={() => setShowGamification(!showGamification)}
+          size="icon"
+          variant="outline"
+          className="fixed right-6 top-20 z-50 shadow-lg bg-background hover:bg-accent"
+        >
+          {showGamification ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <Zap className="h-4 w-4 text-primary" />
+          )}
+        </Button>
       </div>
     </AppLayout>
   );

@@ -16,7 +16,6 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { SidebarCryptoWidget } from '@/components/SidebarCryptoWidget';
 import { SidebarLSRWidget } from '@/components/SidebarLSRWidget';
-import { GamificationSidebar } from '@/components/gamification/GamificationSidebar';
 import { useTranslation } from '@/hooks/useTranslation';
 
 export function AppSidebar() {
@@ -108,13 +107,8 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Gamification & Crypto Widgets */}
+        {/* Market Widgets */}
         <div className="mt-auto space-y-0">
-          {/* Gamification Widget */}
-          <div className="border-t border-border/50 px-4 py-3">
-            <GamificationSidebar />
-          </div>
-
           {/* LSR & Open Interest Widget */}
           <div className="border-t border-border/50">
             <SidebarLSRWidget />

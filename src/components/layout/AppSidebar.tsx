@@ -353,6 +353,14 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="User Guide">
+                  <NavLink to="/user-guide" end className={getNavCls}>
+                    <BookOpen className="h-4 w-4" />
+                    {open && <span>User Guide</span>}
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip={t('common.settings')}>
                   <NavLink to="/settings" end className={getNavCls}>
                     <Settings2 className="h-4 w-4" />

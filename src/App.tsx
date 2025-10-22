@@ -136,6 +136,7 @@ const App = () => (
                       <Route path="/exchange-connections" element={<ProtectedRoute><ExchangeConnections /></ProtectedRoute>} />
                       <Route path="/progress-analytics" element={<ProtectedRoute><ProgressAnalytics /></ProtectedRoute>} />
                       <Route path="/my-metrics" element={<ProtectedRoute><MyMetrics /></ProtectedRoute>} />
+                      <Route path="/user-guide" element={<ProtectedRoute><UserGuide /></ProtectedRoute>} />
                       <Route path="/custom/:pageId" element={<ProtectedRoute><CustomPage /></ProtectedRoute>} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>

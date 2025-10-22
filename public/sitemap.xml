@@ -119,6 +119,72 @@
     <loc>https://www.thetradingdiary.com/blog</loc>
     <lastmod>2025-10-22</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
+  
+  <!-- Blog Article 1: AI Tools for Crypto Trading -->
+  <url>
+    <loc>https://www.thetradingdiary.com/blog/ai-tools-for-crypto-trading</loc>
+    <lastmod>2025-10-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.thetradingdiary.com/blog/ai-tools-for-crypto-trading" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.thetradingdiary.com/blog/ferramentas-ia-trading-cripto" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thetradingdiary.com/blog/herramientas-ia-trading-cripto" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.thetradingdiary.com/blog/adawat-ai-trading-crypto-ar" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://www.thetradingdiary.com/blog/cong-cu-ai-giao-dich-crypto-vi" />
+  </url>
+  
+  <!-- Blog Article 2: Trading Journal for Crypto -->
+  <url>
+    <loc>https://www.thetradingdiary.com/blog/trading-journal-for-crypto</loc>
+    <lastmod>2025-10-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.thetradingdiary.com/blog/trading-journal-for-crypto" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.thetradingdiary.com/blog/diario-trading-cripto" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thetradingdiary.com/blog/diario-trading-cripto-es" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.thetradingdiary.com/blog/daftar-trading-crypto-ar" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://www.thetradingdiary.com/blog/nhat-ky-giao-dich-crypto-vi" />
+  </url>
+  
+  <!-- Blog Article 3: Trading Psychology -->
+  <url>
+    <loc>https://www.thetradingdiary.com/blog/trading-psychology-control-emotions</loc>
+    <lastmod>2025-10-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.thetradingdiary.com/blog/trading-psychology-control-emotions" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.thetradingdiary.com/blog/psicologia-trading-controlar-emocoes" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thetradingdiary.com/blog/psicologia-trading-controlar-emocoes-es" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.thetradingdiary.com/blog/nafsia-trading-ar" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://www.thetradingdiary.com/blog/tam-ly-giao-dich-vi" />
+  </url>
+  
+  <!-- Blog Article 4: Data-Driven Trading -->
+  <url>
+    <loc>https://www.thetradingdiary.com/blog/data-driven-trading</loc>
+    <lastmod>2025-10-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.thetradingdiary.com/blog/data-driven-trading" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.thetradingdiary.com/blog/trading-orientado-dados" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thetradingdiary.com/blog/trading-basado-datos-es" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.thetradingdiary.com/blog/trading-bayanat-ar" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://www.thetradingdiary.com/blog/giao-dich-du-lieu-vi" />
+  </url>
+  
+  <!-- Blog Article 5: AI-Powered Trading Journal -->
+  <url>
+    <loc>https://www.thetradingdiary.com/blog/ai-powered-trading-journal</loc>
+    <lastmod>2025-10-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.thetradingdiary.com/blog/ai-powered-trading-journal" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.thetradingdiary.com/blog/diario-trading-ia" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thetradingdiary.com/blog/diario-trading-ia-es" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.thetradingdiary.com/blog/daftar-ai-ar" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://www.thetradingdiary.com/blog/nhat-ky-ai-vi" />
+  </url>
+
 </urlset>

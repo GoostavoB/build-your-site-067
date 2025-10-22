@@ -114,6 +114,67 @@ export const generateBreadcrumbSchema = (items: Array<{ name: string; url: strin
 };
 
 /**
+ * Generate Article schema for blog posts
+ */
+export const generateArticleSchema = (article: {
+  title: string;
+  description: string;
+  author: string;
+  date: string;
+  canonical: string;
+  image?: string;
+  keywords?: string;
+}) => {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": article.title,
+    "description": article.description,
+    "image": article.image || "https://www.thetradingdiary.com/og-image-en.png",
+    "author": {
+      "@type": "Person",
+      "name": article.author
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "The Trading Diary",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.thetradingdiary.com/og-image-en.png"
+      }
+    },
+    "datePublished": article.date,
+    "dateModified": article.date,
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": article.canonical
+    },
+    "keywords": article.keywords || ""
+  };
+};
+
+/**
+ * Generate Blog schema for blog listing page
+ */
+export const generateBlogSchema = () => {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "The Trading Diary Blog",
+    "description": "Expert insights on crypto trading, AI-powered tools, trading psychology, risk management, and data-driven strategies.",
+    "url": "https://www.thetradingdiary.com/blog",
+    "publisher": {
+      "@type": "Organization",
+      "name": "The Trading Diary",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.thetradingdiary.com/og-image-en.png"
+      }
+    }
+  };
+};
+
+/**
  * Page-specific meta configurations
  */
 export const pageMeta = {

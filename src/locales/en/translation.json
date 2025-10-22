@@ -29,6 +29,25 @@
     "customize": "Customize",
     "settings": "Settings"
   },
+  "blog": {
+    "title": "Crypto Trading Blog",
+    "subtitle": "Expert insights on AI-powered trading, psychology, risk management, and data-driven strategies",
+    "readMore": "Read More",
+    "relatedArticles": "Related Articles",
+    "shareArticle": "Share Article",
+    "backToBlog": "Back to Blog",
+    "searchPlaceholder": "Search articles...",
+    "allArticles": "All Articles",
+    "categories": {
+      "aiTools": "AI Tools",
+      "tradingJournal": "Trading Journal",
+      "tradingPsychology": "Trading Psychology",
+      "tradingStrategy": "Trading Strategy",
+      "riskManagement": "Risk Management"
+    },
+    "showing": "Showing {{count}} article",
+    "showing_plural": "Showing {{count}} articles"
+  },
   "sidebar": {
     "groups": {
       "dashboard": "Dashboard",

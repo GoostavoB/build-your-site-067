@@ -3,14 +3,87 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/components/layout/AppLayout';
-import { blogArticles } from '@/data/blogArticles';
+import { blogArticles, getRelatedArticles } from '@/data/blogArticles';
 import { ArrowLeft, Calendar, Clock, User, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
+import { usePageMeta } from '@/hooks/usePageMeta';
+import { addStructuredData, generateBreadcrumbSchema } from '@/utils/seoHelpers';
+import { useEffect } from 'react';
 
 const BlogPost = () => {
   const { slug } = useParams();
   const article = blogArticles.find(a => a.slug === slug);
+  
+  // SEO Meta Tags and Structured Data
+  useEffect(() => {
+    if (article) {
+      // Article Schema
+      const articleSchema = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": article.metaTitle || article.title,
+        "description": article.metaDescription || article.description,
+        "image": article.heroImage ? `https://www.thetradingdiary.com${article.heroImage}` : "https://www.thetradingdiary.com/og-image-en.png",
+        "author": {
+          "@type": "Person",
+          "name": article.author
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "The Trading Diary",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.thetradingdiary.com/og-image-en.png"
+          }
+        },
+        "datePublished": article.date,
+        "dateModified": article.date,
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": article.canonical || `https://www.thetradingdiary.com/blog/${article.slug}`
+        },
+        "keywords": article.tags?.join(", ") || article.focusKeyword || ""
+      };
+      
+      addStructuredData(articleSchema, 'article-schema');
+      
+      // Breadcrumb Schema
+      const breadcrumbSchema = generateBreadcrumbSchema([
+        { name: 'Home', url: 'https://www.thetradingdiary.com' },
+        { name: 'Blog', url: 'https://www.thetradingdiary.com/blog' },
+        { name: article.title, url: article.canonical || `https://www.thetradingdiary.com/blog/${article.slug}` }
+      ]);
+      
+      addStructuredData(breadcrumbSchema, 'breadcrumb-schema');
+      
+      // Add hreflang tags for language versions
+      const languages = ['en', 'pt', 'es', 'ar', 'vi'];
+      languages.forEach(lang => {
+        const existingLink = document.querySelector(`link[hreflang="${lang}"]`);
+        if (existingLink) existingLink.remove();
+        
+        const link = document.createElement('link');
+        link.rel = 'alternate';
+        link.hreflang = lang;
+        link.href = `https://www.thetradingdiary.com/blog/${article.slug}`;
+        document.head.appendChild(link);
+      });
+    }
+  }, [article]);
+  
+  // Update page meta
+  usePageMeta(article ? {
+    title: article.metaTitle || article.title,
+    description: article.metaDescription || article.description,
+    canonical: article.canonical || `https://www.thetradingdiary.com/blog/${article.slug}`,
+    ogImage: article.heroImage ? `https://www.thetradingdiary.com${article.heroImage}` : undefined,
+    keywords: article.focusKeyword
+  } : {
+    title: 'Article Not Found | The Trading Diary Blog',
+    description: 'The article you are looking for does not exist.',
+    canonical: 'https://www.thetradingdiary.com/blog'
+  });
 
   const handleShare = () => {
     const url = window.location.href;
@@ -40,6 +113,15 @@ const BlogPost = () => {
   return (
     <AppLayout>
       <div className="max-w-4xl mx-auto space-y-6">
+        {/* Breadcrumb Navigation */}
+        <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+          <Link to="/" className="hover:text-primary transition-colors">Home</Link>
+          <span>/</span>
+          <Link to="/blog" className="hover:text-primary transition-colors">Blog</Link>
+          <span>/</span>
+          <span className="text-foreground">{article.title}</span>
+        </nav>
+        
         <Link to="/blog">
           <Button variant="ghost" className="gap-2 mb-4">
             <ArrowLeft className="w-4 h-4" />
@@ -48,6 +130,18 @@ const BlogPost = () => {
         </Link>
 
         <Card className="p-8 bg-card border-border">
+          {/* Hero Image */}
+          {article.heroImage && (
+            <img 
+              src={article.heroImage} 
+              alt={article.heroImageAlt || article.title}
+              className="w-full h-auto rounded-lg mb-8 object-cover"
+              width={1920}
+              height={1080}
+              loading="eager"
+            />
+          )}
+          
           {/* Article Header */}
           <div className="mb-8">
             <Badge variant="secondary" className="mb-4">
@@ -111,12 +205,9 @@ const BlogPost = () => {
 
         {/* Related Articles Section */}
         <Card className="p-6 bg-card border-border">
-          <h3 className="text-xl font-semibold mb-4">More Articles</h3>
+          <h3 className="text-xl font-semibold mb-4">Related Articles</h3>
           <div className="grid gap-4">
-            {blogArticles
-              .filter(a => a.slug !== slug)
-              .slice(0, 3)
-              .map((relatedArticle) => (
+            {getRelatedArticles(slug || '', 3).map((relatedArticle) => (
                 <Link 
                   key={relatedArticle.slug} 
                   to={`/blog/${relatedArticle.slug}`}

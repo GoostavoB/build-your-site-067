@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import PricingComparison from "@/components/PricingComparison";
 import PricingRoadmap from "@/components/PricingRoadmap";
 import CTA from "@/components/CTA";
-import { ShaderBackground } from "@/components/ShaderBackground";
 import { OutcomeCard } from "@/components/premium/OutcomeCard";
 import { ParallaxTradingElements } from "@/components/premium/ParallaxTradingElements";
 import { PremiumPricingCard } from "@/components/PremiumPricingCard";
@@ -18,7 +17,6 @@ const PricingPage = () => {
   const { t } = useTranslation();
   const heroRef = useRef<HTMLDivElement>(null);
   const pricingRef = useRef<HTMLDivElement>(null);
-  const [backgroundIntensity, setBackgroundIntensity] = useState(1.0);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
 
   usePageMeta({
@@ -26,28 +24,6 @@ const PricingPage = () => {
     description: 'Choose the perfect plan for your crypto trading journey. AI insights, pattern recognition, risk management, and performance analytics.',
     canonical: 'https://www.thetradingdiary.com/pricing',
   });
-
-  // Scroll-linked background intensity
-  useEffect(() => {
-    const handleScroll = () => {
-      if (pricingRef.current) {
-        const rect = pricingRef.current.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-        
-        // Increase intensity as pricing section approaches
-        if (rect.top < windowHeight && rect.top > 0) {
-          const progress = 1 - (rect.top / windowHeight);
-          setBackgroundIntensity(1 + progress * 0.08);
-        } else if (rect.top <= 0) {
-          // Return to baseline when section is in view
-          setBackgroundIntensity(1.0);
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const solutions = [
     {
@@ -304,32 +280,20 @@ const PricingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen relative">
-      {/* WebGL Shader Background */}
-      <ShaderBackground intensity={backgroundIntensity} />
-
+    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-background">
       {/* Hero Section */}
-      <section ref={heroRef} className="relative py-32 md:py-40 px-6 overflow-hidden">
-        <div className="container relative mx-auto max-w-4xl text-center z-50">
+      <section ref={heroRef} className="relative py-32 md:py-40 px-6">
+        <div className="container relative mx-auto max-w-4xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6 }}
           >
-            <h1 
-              className="text-6xl md:text-8xl font-bold mb-6 leading-tight tracking-tight" 
-              style={{ 
-                letterSpacing: '-0.02em', 
-                maxWidth: '64ch', 
-                margin: '0 auto',
-                textShadow: '0 2px 20px rgba(0,0,0,0.5)',
-                color: 'rgba(255,255,255,0.95)'
-              }}
-            >
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
               {t('pricing.hero.title')}
             </h1>
             
-            <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
               {t('pricing.hero.subtitle')}
             </p>
             
@@ -337,15 +301,15 @@ const PricingPage = () => {
               <MagneticButton
                 onClick={() => navigate('/auth')}
                 size="lg"
-                className="px-10 py-7 text-base"
+                className="px-10 py-7"
               >
                 {t('pricing.hero.primaryCta')}
               </MagneticButton>
               <MagneticButton
-                onClick={() => {/* TODO: Add demo video */}}
+                onClick={() => {}}
                 variant="outline"
                 size="lg"
-                className="px-10 py-7 text-base"
+                className="px-10 py-7"
               >
                 {t('pricing.hero.secondaryCta')}
               </MagneticButton>
@@ -427,43 +391,16 @@ const PricingPage = () => {
               {t('pricing.subtitle')}
             </motion.p>
 
-            {/* Billing Toggle with Physical Switch Feel */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.28, delay: 0.18 }}
-              viewport={{ once: true }}
-              className="flex items-center justify-center gap-4 mb-4"
-            >
-              <button
-                onClick={() => setBillingCycle('monthly')}
-                className={`px-6 py-3 rounded-lg font-medium transition-all duration-280 ease-premium ${
-                  billingCycle === 'monthly'
-                    ? 'text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {t('pricing.billing.monthly')}
-              </button>
-              
-              <motion.button
-                onClick={() => setBillingCycle('annual')}
-                whileTap={{ scale: 0.98 }}
-                className={`relative px-6 py-3 rounded-lg font-medium transition-all duration-280 ease-premium ${
-                  billingCycle === 'annual'
-                    ? 'text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {t('pricing.billing.annual')}
-                <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">
-                  {t('pricing.billing.save20')}
-                </span>
-              </motion.button>
-            </motion.div>
+            {/* Premium Billing Toggle */}
+            <div className="flex justify-center mb-6">
+              <PremiumBillingToggle
+                billingCycle={billingCycle}
+                onToggle={setBillingCycle}
+              />
+            </div>
 
             {/* Guarantee Banner */}
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.28, delay: 0.27 }}

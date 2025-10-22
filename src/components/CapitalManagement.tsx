@@ -148,7 +148,7 @@ export const CapitalManagement = () => {
   const totalAdded = capitalLog.reduce((sum, entry) => sum + entry.amount_added, 0);
 
   return (
-    <Card className="p-6 glass-strong">
+    <Card className="p-6 glass-strong" data-tour="settings-capital">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-xl font-semibold flex items-center gap-2">

@@ -41,6 +41,7 @@ interface MenuGroup {
   label: string;
   items: MenuItem[];
   defaultOpen?: boolean;
+  dataTour?: string;
 }
 
 export function AppSidebar() {
@@ -65,6 +66,7 @@ export function AppSidebar() {
     {
       label: t('sidebar.groups.portfolio'),
       defaultOpen: true,
+      dataTour: 'portfolio-group',
       items: [
         { title: t('navigation.spotWallet'), url: '/spot-wallet', icon: Wallet, iconName: 'Wallet', keywords: ['wallet', 'balance', 'tokens', 'holdings', 'assets', 'portfolio', 'allocation', 'distribution', 'coins', 'cryptocurrencies', 'btc', 'eth', 'total', 'value', 'net worth', 'funds', 'money', 'cash', 'crypto'] },
         { title: t('navigation.exchanges'), url: '/exchanges', icon: RefreshCw, iconName: 'RefreshCw', keywords: ['binance', 'bybit', 'okx', 'api', 'connect', 'sync', 'integration', 'platform', 'broker', 'exchange', 'connection', 'link', 'import', 'automated', 'real-time', 'live'] },
@@ -74,6 +76,7 @@ export function AppSidebar() {
     {
       label: t('sidebar.groups.trades'),
       defaultOpen: true,
+      dataTour: 'trades-group',
       items: [
         { title: t('trades.addTrade'), url: '/upload', icon: Plus, iconName: 'Plus', keywords: ['upload', 'import', 'add', 'csv', 'file', 'broker', 'manual', 'entry', 'input', 'binance', 'bybit', 'okx', 'data', 'bulk', 'batch', 'new', 'create', 'log', 'record', 'enter'] },
         { title: t('navigation.tradeAnalysis'), url: '/trade-analysis', icon: GitCompare, iconName: 'GitCompare', keywords: ['analysis', 'performance', 'insights', 'metrics', 'statistics', 'win', 'rate', 'profit', 'loss', 'ratio', 'setups', 'patterns', 'timing', 'duration', 'comparison', 'results', 'stats', 'pairs', 'review', 'analyze', 'study', 'examine', 'history'] },
@@ -85,6 +88,7 @@ export function AppSidebar() {
     {
       label: t('sidebar.groups.analytics'),
       defaultOpen: false,
+      dataTour: 'analytics-group',
       items: [
         { title: t('navigation.marketData'), url: '/market-data', icon: LineChart, iconName: 'LineChart', keywords: ['market', 'prices', 'crypto', 'live', 'real-time', 'ticker', 'movers', 'gainers', 'losers', 'volume', '24h', 'change', 'top', 'coins', 'charts', 'data', 'volatility', 'btc', 'eth', 'trends'] },
         { title: t('navigation.forecast'), url: '/forecast', icon: Target, iconName: 'Target', keywords: ['forecast', 'prediction', 'future', 'projection', 'goals', 'targets', 'scenarios', 'simulation', 'planning', 'estimates', 'ai', 'predictions', 'what-if', 'models', 'signals', 'estimate', 'predict'] },
@@ -95,6 +99,7 @@ export function AppSidebar() {
     {
       label: t('sidebar.groups.planning'),
       defaultOpen: false,
+      dataTour: 'planning-group',
       items: [
         { title: t('navigation.tradingPlan'), url: '/trading-plan', icon: ClipboardList, iconName: 'ClipboardList', keywords: ['plan', 'strategy', 'rules', 'checklist', 'discipline', 'guidelines', 'framework', 'methodology', 'approach', 'system', 'process', 'routine', 'setup', 'prepare', 'playbook'] },
         { title: t('navigation.goals'), url: '/goals', icon: Target, iconName: 'Target', keywords: ['goals', 'targets', 'objectives', 'milestones', 'achievements', 'ambitions', 'progress', 'tracking', 'completion', 'roadmap', 'plans', 'aim', 'ambition', 'success', 'kpi'] },
@@ -104,6 +109,7 @@ export function AppSidebar() {
     {
       label: t('sidebar.groups.reports'),
       defaultOpen: false,
+      dataTour: 'reports-group',
       items: [
         { title: t('navigation.reports'), url: '/reports', icon: FileBarChart, iconName: 'FileBarChart', keywords: ['reports', 'documents', 'generate', 'export', 'monthly', 'weekly', 'custom', 'scheduled', 'automated', 'history', 'download', 'summary', 'kpi', 'metrics', 'analysis', 'period', 'excel', 'csv'] },
         { title: t('navigation.taxReports'), url: '/tax-reports', icon: FileText, iconName: 'FileText', keywords: ['tax', 'taxes', 'irs', 'filings', 'legal', 'compliance', 'capital', 'gains', 'losses', 'year', 'end', 'accountant', 'documentation', 'fifo', 'lifo', 'accounting', 'fiscal', 'revenue', 'income'] },
@@ -113,6 +119,7 @@ export function AppSidebar() {
     {
       label: t('sidebar.groups.community'),
       defaultOpen: false,
+      dataTour: 'community-group',
       items: [
         { title: t('navigation.social'), url: '/social', icon: Users, iconName: 'Users', keywords: ['social', 'community', 'feed', 'posts', 'share', 'friends', 'network', 'follow', 'followers', 'strategies', 'discussions', 'comments', 'likes', 'engagement', 'traders', 'public'] },
         { title: t('navigation.leaderboard'), url: '/leaderboard', icon: Trophy, iconName: 'Trophy', keywords: ['leaderboard', 'ranking', 'top', 'competition', 'scores', 'traders', 'best', 'performers', 'elite', 'standings', 'positions', 'compare', 'leaders', 'winners', 'rank', 'compete'] },
@@ -291,7 +298,7 @@ export function AppSidebar() {
             onOpenChange={() => toggleGroup(group.label)}
             className="group/collapsible"
           >
-            <SidebarGroup>
+            <SidebarGroup data-tour={group.dataTour}>
               <CollapsibleTrigger className="w-full">
                 <SidebarGroupLabel className="flex items-center justify-between group-data-[state=open]/collapsible:text-primary">
                   {group.label}
@@ -427,7 +434,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
+              <SidebarMenuItem data-tour="user-guide">
                 <SidebarMenuButton asChild tooltip={t('navigation.userGuide')}>
                   <NavLink to="/user-guide" end className={getNavCls}>
                     <BookOpen className="h-4 w-4" />

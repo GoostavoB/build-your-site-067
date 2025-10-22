@@ -85,7 +85,7 @@ export function SidebarLSRWidget() {
   const isOiPositive = lsrData.openInterestChange >= 0;
 
   return (
-    <div className="mx-3 my-2 rounded-lg border border-border/40 bg-card/30 backdrop-blur-sm">
+    <div className="mx-3 my-2 rounded-lg border border-border/40 bg-card/30 backdrop-blur-sm" data-tour="market-data-widget">
       {/* Header with Time Frame Selector */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-border/40">
         <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70">Market Data</span>

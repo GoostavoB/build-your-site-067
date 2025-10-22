@@ -34,26 +34,25 @@ const fullTourSteps: Step[] = [
     target: '[data-tour="theme-toggle"]',
     content: (
       <div className="space-y-3">
-        <h3 className="font-light text-lg tracking-wide text-center">Modo Claro & Escuro</h3>
+        <h3 className="font-light text-lg tracking-wide text-center">Modo Claro/Escuro e Mudança de Cores</h3>
         <p className="text-sm leading-relaxed text-center">
-          Alterne entre temas e personalize cores para uma experiência visual confortável em qualquer momento.
+          Alterne entre tema claro e escuro, personalize as cores da interface e ajuste o contraste para uma experiência visual perfeita. Escolha entre diversos esquemas de cores e encontre o visual ideal para o seu momento de trading.
         </p>
       </div>
     ),
     placement: 'bottom',
   },
   {
-    target: '[data-tour="sidebar-menu"]',
+    target: '[data-tour="portfolio-group"]',
     content: (
       <div className="space-y-3">
-        <h3 className="font-light text-lg tracking-wide text-center">Menu Principal</h3>
+        <h3 className="font-light text-lg tracking-wide text-center">Portfólio</h3>
         <div className="space-y-2 text-sm">
-          <p className="text-center mb-3 text-muted-foreground">Navegue pelas principais seções:</p>
+          <p className="text-center mb-3 text-muted-foreground">Gerencie seus ativos e contas:</p>
           <div className="space-y-1.5">
-            <p><span className="font-medium">Dashboard</span> — Visão geral do desempenho</p>
-            <p><span className="font-medium">Trade History</span> — Histórico completo de trades</p>
-            <p><span className="font-medium">Analytics</span> — Análises avançadas e insights</p>
-            <p><span className="font-medium">Upload</span> — Importação de trades com IA</p>
+            <p><span className="font-medium">Spot Wallet</span> — Visualize saldo total, distribuição de tokens e alocação de ativos</p>
+            <p><span className="font-medium">Exchanges</span> — Conecte APIs da Binance, Bybit, OKX para sincronização automática</p>
+            <p><span className="font-medium">Trading Accounts</span> — Gerencie múltiplas contas e acompanhe capital inicial por conta</p>
           </div>
         </div>
       </div>
@@ -61,17 +60,18 @@ const fullTourSteps: Step[] = [
     placement: 'right',
   },
   {
-    target: '[data-tour="analytics-section"]',
+    target: '[data-tour="trades-group"]',
     content: (
       <div className="space-y-3">
-        <h3 className="font-light text-lg tracking-wide text-center">Analytics</h3>
+        <h3 className="font-light text-lg tracking-wide text-center">Operações</h3>
         <div className="space-y-2 text-sm">
-          <p className="text-center mb-3 text-muted-foreground">Análises detalhadas do seu desempenho:</p>
+          <p className="text-center mb-3 text-muted-foreground">Registre e analise suas operações:</p>
           <div className="space-y-1.5">
-            <p><span className="font-medium">Performance</span> — Gráficos de P&L e evolução</p>
-            <p><span className="font-medium">Statistics</span> — Win rate, drawdown e métricas</p>
-            <p><span className="font-medium">Patterns</span> — Padrões e tendências identificadas</p>
-            <p><span className="font-medium">Insights</span> — Recomendações baseadas em dados</p>
+            <p><span className="font-medium">Adicionar Trade</span> — Importe CSVs ou adicione operações manualmente</p>
+            <p><span className="font-medium">Trade Analysis</span> — Análise detalhada de performance, win rate e padrões de trading</p>
+            <p><span className="font-medium">Fee Analysis</span> — Acompanhe custos, taxas e otimize eficiência operacional</p>
+            <p><span className="font-medium">Risk Management</span> — Calculadora de position size, controle de drawdown e limites</p>
+            <p><span className="font-medium">Trading Journal</span> — Registre observações, lições aprendidas e insights de cada operação</p>
           </div>
         </div>
       </div>
@@ -79,58 +79,122 @@ const fullTourSteps: Step[] = [
     placement: 'right',
   },
   {
-    target: '[data-tour="market-data"]',
+    target: '[data-tour="analytics-group"]',
+    content: (
+      <div className="space-y-3">
+        <h3 className="font-light text-lg tracking-wide text-center">Análises</h3>
+        <div className="space-y-2 text-sm">
+          <p className="text-center mb-3 text-muted-foreground">Dados e insights em tempo real:</p>
+          <div className="space-y-1.5">
+            <p><span className="font-medium">Market Data</span> — Dados em tempo real de criptomoedas e métricas de mercado</p>
+            <p><span className="font-medium">Forecast</span> — Projeções e simulações baseadas em IA para planejar metas</p>
+            <p><span className="font-medium">Economic Calendar</span> — Eventos macroeconômicos e impactos no mercado crypto</p>
+            <p><span className="font-medium">Performance Alerts</span> — Notificações automáticas sobre métricas e thresholds</p>
+          </div>
+        </div>
+      </div>
+    ),
+    placement: 'right',
+  },
+  {
+    target: '[data-tour="planning-group"]',
+    content: (
+      <div className="space-y-3">
+        <h3 className="font-light text-lg tracking-wide text-center">Planejamento</h3>
+        <div className="space-y-2 text-sm">
+          <p className="text-center mb-3 text-muted-foreground">Estruture sua estratégia de trading:</p>
+          <div className="space-y-1.5">
+            <p><span className="font-medium">Trading Plan</span> — Defina regras, estratégias e checklists de entrada/saída</p>
+            <p><span className="font-medium">Goals</span> — Estabeleça objetivos, acompanhe progresso e celebre conquistas</p>
+            <p><span className="font-medium">Psychology</span> — Monitore estado emocional, identifique padrões psicológicos e melhore disciplina</p>
+          </div>
+        </div>
+      </div>
+    ),
+    placement: 'right',
+  },
+  {
+    target: '[data-tour="reports-group"]',
+    content: (
+      <div className="space-y-3">
+        <h3 className="font-light text-lg tracking-wide text-center">Relatórios</h3>
+        <div className="space-y-2 text-sm">
+          <p className="text-center mb-3 text-muted-foreground">Documentação e análise de performance:</p>
+          <div className="space-y-1.5">
+            <p><span className="font-medium">Reports</span> — Gere relatórios mensais, semanais ou personalizados automaticamente</p>
+            <p><span className="font-medium">Tax Reports</span> — Documentação fiscal, cálculo de ganhos de capital e conformidade</p>
+            <p><span className="font-medium">My Metrics</span> — Crie KPIs personalizados e benchmarks específicos para seu estilo</p>
+          </div>
+        </div>
+      </div>
+    ),
+    placement: 'right',
+  },
+  {
+    target: '[data-tour="community-group"]',
+    content: (
+      <div className="space-y-3">
+        <h3 className="font-light text-lg tracking-wide text-center">Comunidade</h3>
+        <div className="space-y-2 text-sm">
+          <p className="text-center mb-3 text-muted-foreground">Conecte-se e evolua com outros traders:</p>
+          <div className="space-y-1.5">
+            <p><span className="font-medium">Social</span> — Feed social para compartilhar estratégias e resultados</p>
+            <p><span className="font-medium">Leaderboard</span> — Rankings de performance entre traders da plataforma</p>
+            <p><span className="font-medium">Achievements</span> — Badges, conquistas e sistema de gamificação</p>
+            <p><span className="font-medium">Progress XP</span> — Sistema de níveis, experiência e recompensas por consistência</p>
+          </div>
+        </div>
+      </div>
+    ),
+    placement: 'right',
+  },
+  {
+    target: '[data-tour="user-guide"]',
+    content: (
+      <div className="space-y-3">
+        <h3 className="font-light text-lg tracking-wide text-center">Guia do Usuário</h3>
+        <p className="text-sm leading-relaxed text-center">
+          Acesse tutoriais completos, documentação e dicas de uso da plataforma. Aprenda sobre cada funcionalidade através de guias passo a passo, vídeos explicativos e melhores práticas de uso. Sempre disponível para consulta rápida.
+        </p>
+      </div>
+    ),
+    placement: 'right',
+  },
+  {
+    target: '[data-tour="market-data-widget"]',
     content: (
       <div className="space-y-3">
         <h3 className="font-light text-lg tracking-wide text-center">Market Data</h3>
-        <div className="space-y-2 text-sm">
-          <p className="text-center mb-3 text-muted-foreground">Dados de mercado em tempo real:</p>
-          <div className="space-y-1.5">
-            <p><span className="font-medium">Long/Short Ratio</span> — Posições do mercado</p>
-            <p><span className="font-medium">Live Prices</span> — BTC, ETH e principais altcoins</p>
-            <p><span className="font-medium">Open Interest</span> — Volume de contratos abertos</p>
-            <p><span className="font-medium">Fear & Greed</span> — Sentimento do mercado</p>
-          </div>
-        </div>
+        <p className="text-sm leading-relaxed text-center">
+          Acompanhe dados de mercado em tempo real: Long/Short Ratio mostra o sentimento institucional, Live Prices traz cotações atualizadas de BTC, ETH e principais altcoins, Open Interest indica volume de contratos futuros, e Fear & Greed Index revela o sentimento geral do mercado.
+        </p>
       </div>
     ),
-    placement: 'right',
+    placement: 'bottom',
   },
   {
-    target: '[data-tour="social-section"]',
+    target: '[data-tour="live-prices"]',
     content: (
       <div className="space-y-3">
-        <h3 className="font-light text-lg tracking-wide text-center">Community</h3>
-        <div className="space-y-2 text-sm">
-          <p className="text-center mb-3 text-muted-foreground">Conecte-se com outros traders:</p>
-          <div className="space-y-1.5">
-            <p><span className="font-medium">Social Feed</span> — Compartilhe conquistas</p>
-            <p><span className="font-medium">Leaderboard</span> — Rankings de performance</p>
-            <p><span className="font-medium">Following</span> — Siga traders de sucesso</p>
-            <p><span className="font-medium">Community</span> — Participe das discussões</p>
-          </div>
-        </div>
+        <h3 className="font-light text-lg tracking-wide text-center">Live Prices - Personalize Seus Ativos</h3>
+        <p className="text-sm leading-relaxed text-center">
+          Visualize cotações em tempo real das suas criptomoedas favoritas. Clique para adicionar ou remover ativos da sua watchlist, reordene conforme sua preferência e acompanhe variações percentuais, volume 24h e capitalização de mercado de forma instantânea.
+        </p>
       </div>
     ),
-    placement: 'right',
+    placement: 'bottom',
   },
   {
-    target: '[data-tour="settings"]',
+    target: '[data-tour="settings-capital"]',
     content: (
       <div className="space-y-3">
-        <h3 className="font-light text-lg tracking-wide text-center">Configurações</h3>
-        <div className="space-y-2 text-sm">
-          <p className="text-center mb-3 text-muted-foreground">Personalize sua experiência:</p>
-          <div className="space-y-1.5">
-            <p><span className="font-medium">Theme</span> — Cores e aparência</p>
-            <p><span className="font-medium">Notifications</span> — Alertas e lembretes</p>
-            <p><span className="font-medium">Account</span> — Dados e preferências</p>
-            <p><span className="font-medium">Display</span> — Layout e visualização</p>
-          </div>
-        </div>
+        <h3 className="font-light text-lg tracking-wide text-center">Configure seu Capital Inicial</h3>
+        <p className="text-sm leading-relaxed text-center">
+          Defina o valor do seu capital inicial para cálculos precisos de ROI e desempenho. Este valor pode ser editado a qualquer momento. Ao adicionar mais capital, o sistema calculará automaticamente a média ponderada considerando as datas de depósito, garantindo métricas sempre atualizadas e proporcionais ao seu investimento real.
+        </p>
       </div>
     ),
-    placement: 'right',
+    placement: 'left',
   },
   {
     target: 'body',
@@ -310,11 +374,10 @@ export const GuidedTour = () => {
         spotlight: {
           borderRadius: 12,
           border: '1px solid hsl(var(--primary) / 0.3)',
-          boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.5), 0 0 40px hsl(var(--primary) / 0.3)',
+          boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.3), 0 0 40px hsl(var(--primary) / 0.3)',
         },
         overlay: {
-          backgroundColor: 'rgba(0, 0, 0, 0.6)',
-          backdropFilter: 'blur(2px)',
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
           transition: 'all 0.4s ease-in-out',
         },
         tooltip: {

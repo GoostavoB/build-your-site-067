@@ -1256,5 +1256,102 @@
     "tips": "Consejos",
     "troubleshooting": "Solución de Problemas",
     "faq": "FAQ"
+  },
+  "tour": {
+    "locale": {
+      "back": "Atrás",
+      "close": "Cerrar",
+      "last": "Finalizar",
+      "next": "Siguiente",
+      "skip": "Omitir"
+    },
+    "welcome": {
+      "title": "Bienvenido al Tour Guiado",
+      "description": "Vamos a presentarte todas las funcionalidades de la plataforma para que la aproveches al máximo."
+    },
+    "dashboardCustomization": {
+      "title": "Personaliza tu Dashboard",
+      "description": "Reorganiza widgets, agrega nuevos gráficos y crea una visualización perfecta para tu estilo de trading."
+    },
+    "themeToggle": {
+      "title": "Modo Claro/Oscuro y Colores",
+      "description": "Alterna entre tema claro y oscuro, personaliza los colores de la interfaz y ajusta el contraste para una experiencia visual perfecta.",
+      "subtitle": "Elige entre diversos esquemas de colores y encuentra el visual ideal para tu momento de trading."
+    },
+    "portfolioGroup": {
+      "title": "Portafolio",
+      "description": "Gestiona tus activos y cuentas:",
+      "spotWallet": "Visualiza saldo total, distribución de tokens y asignación de activos",
+      "exchanges": "Conecta APIs de Binance, Bybit, OKX para sincronización automática",
+      "tradingAccounts": "Gestiona múltiples cuentas y rastrea capital inicial por cuenta"
+    },
+    "tradesGroup": {
+      "title": "Operaciones",
+      "description": "Registra y analiza tus operaciones:",
+      "addTrade": "Importa CSVs o agrega operaciones manualmente",
+      "tradeAnalysis": "Análisis detallado de rendimiento, tasa de ganancia y patrones de trading",
+      "feeAnalysis": "Rastrea costos, tarifas y optimiza eficiencia operacional",
+      "riskManagement": "Calculadora de tamaño de posición, control de drawdown y límites",
+      "tradingJournal": "Registra observaciones, lecciones aprendidas e insights"
+    },
+    "analyticsGroup": {
+      "title": "Análisis",
+      "description": "Datos e insights en tiempo real:",
+      "marketData": "Datos en tiempo real de criptomonedas y métricas de mercado",
+      "forecast": "Proyecciones y simulaciones basadas en IA para planificar metas",
+      "economicCalendar": "Eventos macroeconómicos e impactos en el mercado crypto",
+      "performanceAlerts": "Notificaciones automáticas sobre métricas y umbrales"
+    },
+    "planningGroup": {
+      "title": "Planificación",
+      "description": "Estructura tu estrategia de trading:",
+      "tradingPlan": "Define reglas, estrategias y checklists de entrada/salida",
+      "goals": "Establece objetivos, rastrea progreso y celebra logros",
+      "psychology": "Monitorea estado emocional, identifica patrones y mejora disciplina"
+    },
+    "reportsGroup": {
+      "title": "Informes",
+      "description": "Documentación y análisis de rendimiento:",
+      "reports": "Genera informes mensuales, semanales o personalizados automáticamente",
+      "taxReports": "Documentación fiscal, cálculo de ganancias de capital y cumplimiento",
+      "myMetrics": "Crea KPIs personalizados y benchmarks específicos para tu estilo"
+    },
+    "communityGroup": {
+      "title": "Comunidad",
+      "description": "Conéctate y evoluciona con otros traders:",
+      "social": "Feed social para compartir estrategias y resultados",
+      "leaderboard": "Rankings de rendimiento entre traders de la plataforma",
+      "achievements": "Insignias, logros y sistema de gamificación",
+      "progressXP": "Sistema de niveles, experiencia y recompensas por consistencia"
+    },
+    "userGuide": {
+      "title": "Guía del Usuario",
+      "description": "Accede a tutoriales completos, documentación y consejos de uso de la plataforma.",
+      "subtitle": "Aprende sobre cada funcionalidad a través de guías paso a paso, videos explicativos y mejores prácticas de uso. Siempre disponible para consulta rápida."
+    },
+    "marketDataWidget": {
+      "title": "Datos de Mercado",
+      "description": "Rastrea datos de mercado en tiempo real:",
+      "longShortRatio": "Sentimiento institucional del mercado",
+      "livePrices": "Cotizaciones actualizadas de BTC, ETH y principales altcoins",
+      "openInterest": "Volumen de contratos futuros abiertos",
+      "fearGreedIndex": "Sentimiento general del mercado"
+    },
+    "livePrices": {
+      "title": "Precios en Vivo — Personaliza tus Activos",
+      "description": "Visualiza cotizaciones en tiempo real de tus criptomonedas favoritas.",
+      "subtitle": "Haz clic para agregar o remover activos de tu lista de seguimiento, reordena según tu preferencia y rastrea variaciones porcentuales, volumen 24h y capitalización de mercado de forma instantánea."
+    },
+    "settingsCapital": {
+      "title": "Configura tu Capital Inicial",
+      "description": "Define el valor de tu capital inicial para cálculos precisos de ROI y rendimiento. Este valor puede editarse en cualquier momento.",
+      "subtitle": "Al agregar más capital, el sistema calculará automáticamente el promedio ponderado considerando las fechas de depósito, garantizando métricas siempre actualizadas y proporcionales a tu inversión real."
+    },
+    "finish": {
+      "title": "Listo para Comenzar",
+      "description": "Ahora conoces todas las principales funcionalidades de la plataforma.",
+      "subtitle": "Explora y lleva tu trading al siguiente nivel.",
+      "footer": "Puedes revisar este tour en cualquier momento en configuración."
+    }
   }
 }

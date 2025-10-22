@@ -1452,5 +1452,102 @@
     "troubleshooting": "Troubleshooting",
     "faq": "FAQ",
     "thankYouFeedback": "Thank you for your feedback!"
+  },
+  "tour": {
+    "locale": {
+      "back": "Back",
+      "close": "Close",
+      "last": "Finish",
+      "next": "Next",
+      "skip": "Skip"
+    },
+    "welcome": {
+      "title": "Welcome to the Guided Tour",
+      "description": "We'll walk you through all the platform features so you can make the most of it."
+    },
+    "dashboardCustomization": {
+      "title": "Customize Your Dashboard",
+      "description": "Reorganize widgets, add new charts, and create a perfect view for your trading style."
+    },
+    "themeToggle": {
+      "title": "Light/Dark Mode and Colors",
+      "description": "Switch between light and dark themes, customize interface colors and adjust contrast for a perfect visual experience.",
+      "subtitle": "Choose from multiple color schemes and find the ideal look for your trading moment."
+    },
+    "portfolioGroup": {
+      "title": "Portfolio",
+      "description": "Manage your assets and accounts:",
+      "spotWallet": "View total balance, token distribution and asset allocation",
+      "exchanges": "Connect Binance, Bybit, OKX APIs for automatic synchronization",
+      "tradingAccounts": "Manage multiple accounts and track initial capital per account"
+    },
+    "tradesGroup": {
+      "title": "Trades",
+      "description": "Record and analyze your trades:",
+      "addTrade": "Import CSVs or add trades manually",
+      "tradeAnalysis": "Detailed performance analysis, win rate and trading patterns",
+      "feeAnalysis": "Track costs, fees and optimize operational efficiency",
+      "riskManagement": "Position size calculator, drawdown control and limits",
+      "tradingJournal": "Record observations, lessons learned and insights"
+    },
+    "analyticsGroup": {
+      "title": "Analytics",
+      "description": "Real-time data and insights:",
+      "marketData": "Real-time cryptocurrency data and market metrics",
+      "forecast": "AI-based projections and simulations to plan goals",
+      "economicCalendar": "Macroeconomic events and crypto market impacts",
+      "performanceAlerts": "Automatic notifications about metrics and thresholds"
+    },
+    "planningGroup": {
+      "title": "Planning",
+      "description": "Structure your trading strategy:",
+      "tradingPlan": "Define rules, strategies and entry/exit checklists",
+      "goals": "Set objectives, track progress and celebrate achievements",
+      "psychology": "Monitor emotional state, identify patterns and improve discipline"
+    },
+    "reportsGroup": {
+      "title": "Reports",
+      "description": "Documentation and performance analysis:",
+      "reports": "Generate monthly, weekly or custom reports automatically",
+      "taxReports": "Tax documentation, capital gains calculation and compliance",
+      "myMetrics": "Create custom KPIs and specific benchmarks for your style"
+    },
+    "communityGroup": {
+      "title": "Community",
+      "description": "Connect and evolve with other traders:",
+      "social": "Social feed to share strategies and results",
+      "leaderboard": "Performance rankings among platform traders",
+      "achievements": "Badges, achievements and gamification system",
+      "progressXP": "Level system, experience and rewards for consistency"
+    },
+    "userGuide": {
+      "title": "User Guide",
+      "description": "Access complete tutorials, documentation and platform usage tips.",
+      "subtitle": "Learn about each feature through step-by-step guides, explanatory videos and best usage practices. Always available for quick reference."
+    },
+    "marketDataWidget": {
+      "title": "Market Data",
+      "description": "Track real-time market data:",
+      "longShortRatio": "Institutional market sentiment",
+      "livePrices": "Updated quotes for BTC, ETH and major altcoins",
+      "openInterest": "Open futures contract volume",
+      "fearGreedIndex": "Overall market sentiment"
+    },
+    "livePrices": {
+      "title": "Live Prices — Customize Your Assets",
+      "description": "View real-time quotes of your favorite cryptocurrencies.",
+      "subtitle": "Click to add or remove assets from your watchlist, reorder according to your preference and track percentage changes, 24h volume and market cap instantly."
+    },
+    "settingsCapital": {
+      "title": "Configure Your Initial Capital",
+      "description": "Set your initial capital value for accurate ROI and performance calculations. This value can be edited at any time.",
+      "subtitle": "When adding more capital, the system will automatically calculate the weighted average considering deposit dates, ensuring metrics are always updated and proportional to your real investment."
+    },
+    "finish": {
+      "title": "Ready to Start",
+      "description": "You now know all the main platform features.",
+      "subtitle": "Explore and take your trading to the next level.",
+      "footer": "You can review this tour anytime in settings."
+    }
   }
 }

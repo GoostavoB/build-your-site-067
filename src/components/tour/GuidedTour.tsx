@@ -3,17 +3,18 @@ import Joyride, { Step, CallBackProps, STATUS, ACTIONS } from 'react-joyride';
 import { useGuidedTour, TourMode } from '@/hooks/useGuidedTour';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from '@/hooks/useTranslation';
 
-const fullTourSteps: Step[] = [
+const createTourSteps = (t: any): Step[] => [
   {
     target: 'body',
     content: (
       <div className="space-y-5">
         <h2 className="text-2xl font-semibold tracking-tight text-center">
-          Bem-vindo ao Tour Guiado
+          {t('tour.welcome.title')}
         </h2>
         <p className="text-[15px] text-muted-foreground leading-relaxed text-center">
-          Vamos apresentar todas as funcionalidades da plataforma para você aproveitar ao máximo.
+          {t('tour.welcome.description')}
         </p>
       </div>
     ),
@@ -24,9 +25,9 @@ const fullTourSteps: Step[] = [
     target: '[data-tour="dashboard-customization"]',
     content: (
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold tracking-tight">Personalize seu Dashboard</h3>
+        <h3 className="text-lg font-semibold tracking-tight">{t('tour.dashboardCustomization.title')}</h3>
         <p className="text-[15px] leading-relaxed text-muted-foreground">
-          Reorganize widgets, adicione novos gráficos e crie uma visualização perfeita para o seu estilo de trading.
+          {t('tour.dashboardCustomization.description')}
         </p>
       </div>
     ),
@@ -36,12 +37,12 @@ const fullTourSteps: Step[] = [
     target: '[data-tour="theme-toggle"]',
     content: (
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold tracking-tight">Modo Claro/Escuro e Cores</h3>
+        <h3 className="text-lg font-semibold tracking-tight">{t('tour.themeToggle.title')}</h3>
         <p className="text-[15px] leading-relaxed text-muted-foreground">
-          Alterne entre tema claro e escuro, personalize as cores da interface e ajuste o contraste para uma experiência visual perfeita.
+          {t('tour.themeToggle.description')}
         </p>
         <p className="text-[15px] leading-relaxed text-muted-foreground">
-          Escolha entre diversos esquemas de cores e encontre o visual ideal para o seu momento de trading.
+          {t('tour.themeToggle.subtitle')}
         </p>
       </div>
     ),
@@ -51,16 +52,16 @@ const fullTourSteps: Step[] = [
     target: '[data-tour="portfolio-group"]',
     content: (
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold tracking-tight">Portfólio</h3>
+        <h3 className="text-lg font-semibold tracking-tight">{t('tour.portfolioGroup.title')}</h3>
         <p className="text-[15px] leading-relaxed text-muted-foreground">
-          Gerencie seus ativos e contas:
+          {t('tour.portfolioGroup.description')}
         </p>
         <div className="space-y-3 text-[15px] leading-relaxed">
-          <p><span className="font-bold text-foreground">Spot Wallet</span> — Visualize saldo total, distribuição de tokens e alocação de ativos</p>
+          <p><span className="font-bold text-foreground">Spot Wallet</span> — {t('tour.portfolioGroup.spotWallet')}</p>
           
-          <p><span className="font-bold text-foreground">Exchanges</span> — Conecte APIs da Binance, Bybit, OKX para sincronização automática</p>
+          <p><span className="font-bold text-foreground">Exchanges</span> — {t('tour.portfolioGroup.exchanges')}</p>
           
-          <p><span className="font-bold text-foreground">Trading Accounts</span> — Gerencie múltiplas contas e acompanhe capital inicial por conta</p>
+          <p><span className="font-bold text-foreground">Trading Accounts</span> — {t('tour.portfolioGroup.tradingAccounts')}</p>
         </div>
       </div>
     ),
@@ -240,16 +241,16 @@ const fullTourSteps: Step[] = [
     content: (
       <div className="space-y-5">
         <h2 className="text-2xl font-semibold tracking-tight text-center">
-          Pronto para começar
+          {t('tour.finish.title')}
         </h2>
         <p className="text-[15px] text-muted-foreground leading-relaxed text-center">
-          Você agora conhece todas as principais funcionalidades da plataforma.
+          {t('tour.finish.description')}
         </p>
         <p className="text-[15px] text-muted-foreground leading-relaxed text-center">
-          Explore e leve seu trading para o próximo nível.
+          {t('tour.finish.subtitle')}
         </p>
         <p className="text-[13px] text-muted-foreground/70 mt-6 pt-5 border-t border-border/30 text-center leading-relaxed">
-          Você pode rever este tour a qualquer momento nas configurações.
+          {t('tour.finish.footer')}
         </p>
       </div>
     ),
@@ -259,10 +260,13 @@ const fullTourSteps: Step[] = [
 
 export const GuidedTour = () => {
   const { shouldShowTour, tourMode, completeTour } = useGuidedTour();
+  const { t, i18n } = useTranslation();
   const [run, setRun] = useState(false);
   const [steps, setSteps] = useState<Step[]>([]);
   const [currentVersion, setCurrentVersion] = useState(1);
   const [isLoadingSteps, setIsLoadingSteps] = useState(false);
+
+  const isRTL = i18n.language === 'ar';
 
   useEffect(() => {
     console.log('🎯 GuidedTour useEffect triggered:', { shouldShowTour, tourMode, isLoadingSteps });
@@ -287,11 +291,13 @@ export const GuidedTour = () => {
     
     const load = async () => {
       try {
+        const tourSteps = createTourSteps(t);
+        
         // Load tour steps based on mode
         if (tourMode === 'full' || tourMode === 'manual-full') {
           console.log('📋 Setting full tour steps');
           if (!isCancelled) {
-            setSteps(fullTourSteps);
+            setSteps(tourSteps);
           }
           
           // Get latest full tour version
@@ -323,7 +329,7 @@ export const GuidedTour = () => {
               setSteps(data.steps as unknown as Step[]);
               setCurrentVersion(data.version);
             } else {
-              setSteps(fullTourSteps);
+              setSteps(tourSteps);
             }
           }
         }
@@ -344,7 +350,7 @@ export const GuidedTour = () => {
       } catch (error) {
         console.error('Error loading tour steps:', error);
         if (!isCancelled) {
-          setSteps(fullTourSteps);
+          setSteps(createTourSteps(t));
           setRun(true);
           setIsLoadingSteps(false);
         }
@@ -509,11 +515,11 @@ export const GuidedTour = () => {
         },
       }}
       locale={{
-        back: 'Voltar',
-        close: 'Fechar',
-        last: 'Finalizar',
-        next: 'Próximo',
-        skip: 'Pular',
+        back: t('tour.locale.back'),
+        close: t('tour.locale.close'),
+        last: t('tour.locale.last'),
+        next: t('tour.locale.next'),
+        skip: t('tour.locale.skip'),
       }}
       callback={handleJoyrideCallback}
     />

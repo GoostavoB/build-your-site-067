@@ -10,13 +10,11 @@ import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const languages = [
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
   { code: 'pt', name: 'Português', flag: '🇧🇷' },
-  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
-  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
+  { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
+  { code: 'ar', name: 'العربية', flag: '🇦🇪' },
+  { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
 ];
 
 export const LanguageToggle = () => {

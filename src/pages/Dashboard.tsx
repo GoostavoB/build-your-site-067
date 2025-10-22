@@ -45,6 +45,7 @@ import { useGridLayout, WidgetPosition } from '@/hooks/useGridLayout';
 import { DropZone } from '@/components/widgets/DropZone';
 import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow';
 import { useOnboarding } from '@/hooks/useOnboarding';
+import { HomeMarketBanner } from '@/components/HomeMarketBanner';
 
 // Lazy load heavy components
 const TradeHistory = lazy(() => import('@/components/TradeHistory').then(m => ({ default: m.TradeHistory })));
@@ -769,6 +770,8 @@ const Dashboard = () => {
         level={xpData.currentLevel} 
         onClose={() => setShowLevelUp(false)} 
       />
+      
+      <HomeMarketBanner />
       
       {/* Skip to main content link for keyboard navigation */}
       <a 

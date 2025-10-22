@@ -360,9 +360,9 @@ const PricingPage = () => {
         className="py-16 px-6"
       >
         <div className="container mx-auto max-w-3xl text-center">
-          <h3 className="text-3xl md:text-4xl leading-tight">
-            Every trader has a path.{' '}
-            <span className="font-serif italic text-primary">Choose yours</span>
+          <h3 className="text-3xl md:text-4xl leading-tight font-sans">
+            Your rules. Your risk.{' '}
+            <span className="font-serif italic text-primary">Your results</span>
           </h3>
         </div>
       </motion.section>

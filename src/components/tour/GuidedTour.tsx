@@ -157,15 +157,22 @@ export const GuidedTour = () => {
   const [currentVersion, setCurrentVersion] = useState(1);
 
   useEffect(() => {
+    console.log('🎯 GuidedTour useEffect triggered:', { shouldShowTour, tourMode });
     if (shouldShowTour) {
+      console.log('✅ Starting tour load...');
       loadTourSteps();
+    } else {
+      console.log('❌ Tour should not show, resetting run state');
+      setRun(false);
     }
   }, [shouldShowTour, tourMode]);
 
   const loadTourSteps = async () => {
+    console.log('🔄 Loading tour steps for mode:', tourMode);
     try {
       // Load tour steps based on mode
       if (tourMode === 'full' || tourMode === 'manual-full') {
+        console.log('📋 Setting full tour steps');
         setSteps(fullTourSteps);
         
         // Get latest full tour version
@@ -200,6 +207,7 @@ export const GuidedTour = () => {
 
       // Small delay to ensure DOM is fully rendered
       const timer = setTimeout(() => {
+        console.log('▶️ Starting tour run');
         setRun(true);
       }, 800);
       
@@ -231,7 +239,12 @@ export const GuidedTour = () => {
     }
   };
 
-  if (!shouldShowTour) return null;
+  console.log('🎬 GuidedTour render:', { shouldShowTour, run, stepsCount: steps.length });
+  
+  if (!shouldShowTour) {
+    console.log('⏸️ Tour should not show, returning null');
+    return null;
+  }
 
   return (
     <Joyride

@@ -1,15 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTourStore } from '@/stores/useTourStore';
 
 export type TourMode = 'full' | 'updates' | 'manual-full' | 'manual-updates';
 
 export const useGuidedTour = () => {
   const { user } = useAuth();
-  const [shouldShowTour, setShouldShowTour] = useState(false);
-  const [tourMode, setTourMode] = useState<TourMode>('full');
-  const [hasNewUpdates, setHasNewUpdates] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const { 
+    shouldShowTour, 
+    tourMode, 
+    hasNewUpdates, 
+    loading,
+    setShouldShowTour,
+    setTourMode,
+    setHasNewUpdates,
+    setLoading,
+    startTour: startTourStore
+  } = useTourStore();
 
   useEffect(() => {
     checkTourStatus();
@@ -114,8 +122,8 @@ export const useGuidedTour = () => {
   };
 
   const startTour = (mode: TourMode = 'manual-full') => {
-    setTourMode(mode);
-    setShouldShowTour(true);
+    console.log('🎯 useGuidedTour.startTour called with mode:', mode);
+    startTourStore(mode);
   };
 
   return {

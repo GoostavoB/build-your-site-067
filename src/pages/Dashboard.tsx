@@ -58,7 +58,10 @@ const SetupManager = lazy(() => import('@/components/SetupManager').then(m => ({
 const DrawdownAnalysis = lazy(() => import('@/components/DrawdownAnalysis').then(m => ({ default: m.DrawdownAnalysis })));
 const TradingHeatmap = lazy(() => import('@/components/TradingHeatmap').then(m => ({ default: m.TradingHeatmap })));
 const AIAssistant = lazy(() => import('@/components/AIAssistant').then(m => ({ default: m.AIAssistant })));
+const GamificationSidebar = lazy(() => import('@/components/gamification/GamificationSidebar').then(m => ({ default: m.GamificationSidebar })));
 import { TourCTAButton } from '@/components/tour/TourCTAButton';
+import { Zap, ChevronLeft } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface TradeStats {
   total_pnl: number;
@@ -159,6 +162,7 @@ const Dashboard = () => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selectedColumnCount, setSelectedColumnCount] = useState(3);
   const [originalPositions, setOriginalPositions] = useState<WidgetPosition[]>([]);
+  const [isGamificationOpen, setIsGamificationOpen] = useState(false);
 
   // Sync loaded positions and column count with local state
   useEffect(() => {
@@ -801,7 +805,8 @@ const Dashboard = () => {
   }, [isCustomizing, removeWidget, stats, processedTrades, initialInvestment, spotWalletTotal, holdings, portfolioChartData, customWidgets, fetchCustomWidgets]);
 
   return (
-    <AppLayout>
+    <>
+    <AppLayout isGamificationOpen={isGamificationOpen} onGamificationToggle={() => setIsGamificationOpen(!isGamificationOpen)}>
       {/* Onboarding Flow - shows for new users */}
       {showOnboarding && !onboardingLoading && (
         <OnboardingFlow onComplete={completeOnboarding} />
@@ -840,6 +845,15 @@ const Dashboard = () => {
             {trades.length > 0 && (
               <ExportTradesDialog trades={processedTrades} />
             )}
+            {/* Gamification Button */}
+            <Button
+              size="icon"
+              onClick={() => setIsGamificationOpen(!isGamificationOpen)}
+              variant="outline"
+              className="glass hover:glass-strong"
+            >
+              <Zap className="h-4 w-4" />
+            </Button>
           </div>
         </div>
 
@@ -991,6 +1005,49 @@ const Dashboard = () => {
         <TourCTAButton />
       </div>
     </AppLayout>
+    
+    {/* Glassmorphic Overlay Sidebar - Gamification */}
+    <AnimatePresence>
+      {isGamificationOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsGamificationOpen(false)}
+            className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-40"
+          />
+          
+          {/* Glass Sidebar */}
+          <motion.aside
+            initial={{ x: "100%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: "100%", opacity: 0 }}
+            transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
+            className="fixed right-0 top-0 bottom-0 w-96 z-50 bg-background/40 backdrop-blur-3xl border-l border-white/20 shadow-2xl"
+          >
+            <div className="h-full p-6 overflow-auto custom-scrollbar">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-semibold text-lg">Your Progress</h3>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsGamificationOpen(false)}
+                  className="h-8 w-8 rounded-full hover:bg-white/10"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              </div>
+              <Suspense fallback={<div>Loading...</div>}>
+                <GamificationSidebar />
+              </Suspense>
+            </div>
+          </motion.aside>
+        </>
+      )}
+    </AnimatePresence>
+    </>
   );
 };
 

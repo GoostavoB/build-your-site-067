@@ -7,6 +7,7 @@ import { WidgetConfig } from '@/hooks/useDashboardLayout';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { TourButton } from '@/components/tour/TourButton';
 
 interface CustomizeDashboardControlsProps {
   isCustomizing: boolean;
@@ -94,6 +95,9 @@ export function CustomizeDashboardControls({
               </Select>
             </div>
           )}
+          
+          {/* Tour Button */}
+          <TourButton />
         </motion.div>
       ) : (
         <motion.div

@@ -56,6 +56,7 @@ const Accounts = lazy(() => import("./pages/Accounts"));
 const PerformanceAlerts = lazy(() => import("./pages/PerformanceAlerts"));
 const ProgressAnalytics = lazy(() => import("./pages/ProgressAnalytics"));
 const MyMetrics = lazy(() => import("./pages/MyMetrics"));
+const UserGuide = lazy(() => import("./pages/UserGuide"));
 
 // Loading fallback
 const PageLoader = () => (

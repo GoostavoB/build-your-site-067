@@ -12,6 +12,7 @@ import { MobileNav } from '@/components/mobile/MobileNav';
 import { QuickAddTrade } from '@/components/mobile/QuickAddTrade';
 import { InstallPrompt } from '@/components/mobile/InstallPrompt';
 import { GamificationSidebar } from '@/components/gamification/GamificationSidebar';
+import { FloatingGamificationButton } from '@/components/gamification/FloatingGamificationButton';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -90,6 +91,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           <MobileNav />
           <QuickAddTrade />
           <InstallPrompt />
+          <FloatingGamificationButton />
         </div>
       </div>
     </SidebarProvider>

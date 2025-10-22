@@ -24,6 +24,10 @@ export default function SpotWallet() {
     metrics,
     bestPerformers,
     worstPerformers,
+    timeseriesData,
+    deposits,
+    withdrawals,
+    prices,
     isLoading,
     baseCurrency,
     costMethod,
@@ -160,10 +164,10 @@ export default function SpotWallet() {
 
         {/* Portfolio Chart */}
         <PortfolioChart 
-          data={[]} // TODO: Implement timeseries data
+          data={timeseriesData || []}
           showPercent={viewType === 'percent'}
-          deposits={[]}
-          withdrawals={[]}
+          deposits={deposits || []}
+          withdrawals={withdrawals || []}
         />
 
         {/* Holdings Grid */}
@@ -176,31 +180,28 @@ export default function SpotWallet() {
 
           {/* Token List */}
           <div className="lg:col-span-2">
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Holdings</h3>
-              <div className="space-y-3">
-                {holdings && holdings.length > 0 ? (
-                  holdings.map((holding) => (
-                    <div key={holding.id} className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-                      <div className="flex-1">
-                        <div className="font-semibold">{holding.token_symbol}</div>
-                        <div className="text-sm text-muted-foreground">{holding.token_name}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-semibold">{holding.quantity.toFixed(8)}</div>
-                        <div className="text-sm text-muted-foreground">
-                          ${((holding.purchase_price || 0) * holding.quantity).toFixed(2)}
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center text-muted-foreground py-8">
-                    No holdings yet. Add your first token to get started.
-                  </div>
-                )}
-              </div>
-            </Card>
+            <TokenList 
+              tokens={holdings?.map(h => {
+                const currentPrice = prices?.[h.token_symbol]?.price || h.purchase_price || 0;
+                const value = h.quantity * currentPrice;
+                const priceData = prices?.[h.token_symbol];
+                
+                return {
+                  symbol: h.token_symbol,
+                  name: h.token_name || h.token_symbol,
+                  value,
+                  percentage: ((value / totalValue) * 100),
+                  quantity: h.quantity,
+                  priceChange24h: priceData?.priceChange24h,
+                  priceChange7d: priceData?.priceChange7d,
+                  priceChange30d: priceData?.priceChange30d,
+                };
+              }) || []}
+              onDelete={(symbol) => {
+                const holding = holdings?.find(h => h.token_symbol === symbol);
+                if (holding) deleteHolding.mutate(holding.id);
+              }}
+            />
           </div>
         </div>
       </div>

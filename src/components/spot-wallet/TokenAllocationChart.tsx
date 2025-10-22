@@ -1,5 +1,6 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getTokenColor } from '@/utils/tokenColors';
 
 interface AllocationData {
   symbol: string;
@@ -13,17 +14,6 @@ interface TokenAllocationChartProps {
   data: AllocationData[];
   currency?: string;
 }
-
-const COLORS = [
-  'hsl(var(--chart-1))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-5))',
-  'hsl(142, 76%, 36%)',
-  'hsl(346, 77%, 50%)',
-  'hsl(280, 87%, 65%)',
-];
 
 export const TokenAllocationChart = ({ data, currency = 'USD' }: TokenAllocationChartProps) => {
   if (!data.length) {
@@ -67,7 +57,12 @@ export const TokenAllocationChart = ({ data, currency = 'USD' }: TokenAllocation
               dataKey="value"
             >
               {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={getTokenColor(entry.name, true)}
+                  stroke="white"
+                  strokeWidth={2}
+                />
               ))}
             </Pie>
             <Tooltip

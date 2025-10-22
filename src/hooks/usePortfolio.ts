@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useTokenPrices } from './useTokenPrices';
-import { calculatePortfolioValue, findTopPerformers, type PortfolioHolding } from '@/utils/portfolioPerformance';
+import { calculatePortfolioValue, findTopPerformers, calculatePortfolioSeries, type PortfolioHolding } from '@/utils/portfolioPerformance';
 import type { TimeRange } from '@/utils/timeframeReturns';
+import { getStartDateForRange } from '@/utils/timeframeReturns';
 
 /**
  * Enhanced portfolio data hook with comprehensive metrics
@@ -119,6 +120,36 @@ export const usePortfolio = (range: TimeRange = '1M') => {
   // Find best and worst performers
   const { best, worst } = findTopPerformers(portfolioHoldings, 3);
 
+  // Generate portfolio timeseries data
+  const startDate = getStartDateForRange(range);
+  const endDate = new Date();
+  
+  // Create price history map from current prices (simplified - would need historical data)
+  const priceHistory = new Map<string, Array<{ date: Date; price: number }>>();
+  portfolioHoldings.forEach(holding => {
+    priceHistory.set(holding.symbol, [
+      { date: startDate, price: holding.cost_basis / holding.quantity }, // Start at cost basis
+      { date: endDate, price: holding.current_price } // End at current price
+    ]);
+  });
+  
+  const timeseriesData = calculatePortfolioSeries(startDate, endDate, portfolioHoldings, priceHistory);
+  
+  // Extract deposits and withdrawals from transactions
+  const deposits = transactions?.filter(tx => 
+    tx.transaction_type === 'deposit' || tx.transaction_type === 'transfer_in'
+  ).map(tx => ({
+    date: new Date(tx.transaction_date),
+    amount: tx.total_value
+  })) || [];
+  
+  const withdrawals = transactions?.filter(tx => 
+    tx.transaction_type === 'withdrawal' || tx.transaction_type === 'transfer_out'
+  ).map(tx => ({
+    date: new Date(tx.transaction_date),
+    amount: tx.total_value
+  })) || [];
+
   const isLoading = holdingsLoading || transactionsLoading || pricesLoading;
 
   return {
@@ -130,6 +161,9 @@ export const usePortfolio = (range: TimeRange = '1M') => {
     metrics: enhancedMetrics,
     bestPerformers: best,
     worstPerformers: worst,
+    timeseriesData,
+    deposits,
+    withdrawals,
     isLoading,
     baseCurrency: settings?.base_currency || 'USD',
     costMethod: settings?.cost_method || 'FIFO',

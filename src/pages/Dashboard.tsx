@@ -136,9 +136,13 @@ const Dashboard = () => {
       else window.scrollTo({ top: prevScrollTop });
     });
   }, []);
+  
+  // Fix positions state management
+  const [positions, setPositions] = useState<WidgetPosition[]>([]);
+
   // Grid layout with free positioning
   const {
-    positions,
+    positions: loadedPositions,
     isLoading: isLayoutLoading,
     updatePosition,
     saveLayout: saveGridLayout,
@@ -147,10 +151,31 @@ const Dashboard = () => {
     resetLayout,
   } = useGridLayout(user?.id, Object.keys(WIDGET_CATALOG));
 
+  // Sync loaded positions with local state
+  useEffect(() => {
+    if (!isCustomizing && loadedPositions.length > 0) {
+      setPositions(loadedPositions);
+    }
+  }, [loadedPositions]);
+
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [showWidgetLibrary, setShowWidgetLibrary] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selectedColumnCount, setSelectedColumnCount] = useState(3);
+  const [originalPositions, setOriginalPositions] = useState<WidgetPosition[]>([]);
+
+  // Track if layout has changed
+  const hasLayoutChanges = useMemo(() => {
+    if (!isCustomizing || originalPositions.length === 0) return false;
+    
+    // Compare current positions with original
+    if (positions.length !== originalPositions.length) return true;
+    
+    return positions.some(pos => {
+      const original = originalPositions.find(o => o.id === pos.id);
+      return !original || original.column !== pos.column || original.row !== pos.row;
+    });
+  }, [isCustomizing, positions, originalPositions]);
 
   // Gamification system
   const { xpData, showLevelUp, setShowLevelUp } = useXPSystem();
@@ -462,12 +487,15 @@ const Dashboard = () => {
   }, []);
 
   const handleStartCustomize = useCallback(() => {
+    setOriginalPositions([...positions]);
     setIsCustomizing(true);
-  }, []);
+  }, [positions]);
 
   const handleSaveLayout = useCallback(() => {
     saveGridLayout(positions);
     setIsCustomizing(false);
+    setOriginalPositions([]);
+    toast.success('Layout saved');
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 100);
@@ -542,18 +570,28 @@ const Dashboard = () => {
       return;
     }
 
-    // Save the updated positions (this will also update the hook's internal state)
-    saveGridLayout(updatedPositions);
+    // Don't auto-save during customize mode - let user explicitly save
+    if (!isCustomizing) {
+      saveGridLayout(updatedPositions);
+    } else {
+      // Just update local state during customization
+      setPositions(updatedPositions);
+    }
     setActiveId(null);
-  }, [positions, saveGridLayout]);
+  }, [positions, saveGridLayout, isCustomizing]);
 
   const handleDragCancel = useCallback(() => {
     setActiveId(null);
   }, []);
 
   const handleCancelCustomize = useCallback(() => {
+    // Revert to original positions
+    if (originalPositions.length > 0) {
+      setPositions(originalPositions);
+    }
     setIsCustomizing(false);
-  }, []);
+    setOriginalPositions([]);
+  }, [originalPositions]);
 
   const spotWalletTotal = useMemo(() => {
     return holdings.reduce((sum, holding) => {
@@ -801,7 +839,7 @@ const Dashboard = () => {
         {!loading && stats && stats.total_trades > 0 && activeTab === 'overview' && (
           <CustomizeDashboardControls
             isCustomizing={isCustomizing}
-            hasChanges={false}
+            hasChanges={hasLayoutChanges}
             onStartCustomize={handleStartCustomize}
             onSave={handleSaveLayout}
             onCancel={handleCancelCustomize}

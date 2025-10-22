@@ -85,22 +85,22 @@ export function SidebarLSRWidget() {
   const isOiPositive = lsrData.openInterestChange >= 0;
 
   return (
-    <div className="p-3 space-y-1.5 bg-background/50">
+    <div className="mx-3 my-2 rounded-lg border border-border/40 bg-card/30 backdrop-blur-sm">
       {/* Header with Time Frame Selector */}
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-muted-foreground">Market Data</span>
+      <div className="flex items-center justify-between px-3 py-2 border-b border-border/40">
+        <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70">Market Data</span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
               variant="ghost" 
               size="sm" 
-              className="h-6 px-2 text-xs hover:bg-muted/50"
+              className="h-5 px-1.5 text-[10px] font-medium hover:bg-accent/50"
             >
               {timeFrame}
-              <ChevronDown className="h-3 w-3 ml-1" />
+              <ChevronDown className="h-3 w-3 ml-0.5 opacity-50" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-24 bg-popover/95 backdrop-blur-sm z-50">
+          <DropdownMenuContent align="end" className="w-20 bg-popover border-border/40 z-50">
             <DropdownMenuRadioGroup value={timeFrame} onValueChange={(value) => setTimeFrame(value as TimeFrame)}>
               {TIME_FRAMES.map((tf) => (
                 <DropdownMenuRadioItem key={tf.value} value={tf.value} className="text-xs">
@@ -112,32 +112,34 @@ export function SidebarLSRWidget() {
         </DropdownMenu>
       </div>
 
-      {/* Compact LSR Display */}
-      <div className="text-[11px] leading-tight space-y-0.5">
-        <div className="flex items-center gap-1 flex-wrap">
-          <span className="text-muted-foreground">LSR (BTC):</span>
-          <span className="font-mono font-semibold text-foreground">
-            {lsrData.longShortRatio.toFixed(4)}
-          </span>
-          <span className={`font-mono flex items-center gap-0.5 ${
-            isLsrPositive ? 'text-profit' : 'text-loss'
-          }`}>
-            {isLsrPositive ? '↗' : '↘'}
-            {isLsrPositive ? '+' : ''}{lsrData.change.toFixed(2)}%
-          </span>
+      {/* Premium Compact Display */}
+      <div className="px-3 py-2.5 space-y-2">
+        <div className="flex items-baseline justify-between gap-2">
+          <span className="text-[10px] text-muted-foreground/60 font-medium">LSR (BTC)</span>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-xs font-mono font-semibold text-foreground tabular-nums">
+              {lsrData.longShortRatio.toFixed(4)}
+            </span>
+            <span className={`text-[10px] font-mono font-medium tabular-nums ${
+              isLsrPositive ? 'text-profit' : 'text-loss'
+            }`}>
+              {isLsrPositive ? '+' : ''}{lsrData.change.toFixed(2)}%
+            </span>
+          </div>
         </div>
         
-        <div className="flex items-center gap-1 flex-wrap">
-          <span className="text-muted-foreground">Open Interest:</span>
-          <span className="font-mono font-semibold text-foreground">
-            ${(lsrData.openInterest / 1e9).toFixed(2)}B
-          </span>
-          <span className={`font-mono flex items-center gap-0.5 ${
-            isOiPositive ? 'text-profit' : 'text-loss'
-          }`}>
-            {isOiPositive ? '↗' : '↘'}
-            {isOiPositive ? '+' : ''}{lsrData.openInterestChange.toFixed(2)}%
-          </span>
+        <div className="flex items-baseline justify-between gap-2">
+          <span className="text-[10px] text-muted-foreground/60 font-medium">Open Interest</span>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-xs font-mono font-semibold text-foreground tabular-nums">
+              ${(lsrData.openInterest / 1e9).toFixed(2)}B
+            </span>
+            <span className={`text-[10px] font-mono font-medium tabular-nums ${
+              isOiPositive ? 'text-profit' : 'text-loss'
+            }`}>
+              {isOiPositive ? '+' : ''}{lsrData.openInterestChange.toFixed(2)}%
+            </span>
+          </div>
         </div>
       </div>
     </div>

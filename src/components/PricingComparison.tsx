@@ -76,63 +76,65 @@ const PricingComparison = () => {
   };
 
   return (
-    <section className="py-16 px-6 bg-background/50">
+    <section className="py-20 px-6 bg-secondary/30">
       <div className="container mx-auto max-w-6xl">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-3">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
             {t('pricing.comparison.title')}
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-lg text-muted-foreground">
             {t('pricing.comparison.subtitle')}
           </p>
         </div>
 
-        <div className="glass rounded-2xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border/50">
-                  <th className="text-left p-4 md:p-6 font-semibold min-w-[200px]">
-                    {t('pricing.comparison.feature')}
-                  </th>
-                  <th className="text-center p-4 md:p-6 font-semibold w-[120px]">
-                    <div className="text-foreground">Basic</div>
-                    <div className="text-sm font-normal text-muted-foreground mt-1">$15/mo</div>
-                  </th>
-                  <th className="text-center p-4 md:p-6 font-semibold w-[120px] bg-primary/5">
-                    <div className="text-primary">Pro</div>
-                    <div className="text-sm font-normal text-muted-foreground mt-1">$35/mo</div>
-                  </th>
-                  <th className="text-center p-4 md:p-6 font-semibold w-[120px]">
-                    <div className="text-foreground">Elite</div>
-                    <div className="text-sm font-normal text-muted-foreground mt-1">$79/mo</div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {features.map((category, categoryIdx) => (
-                  <React.Fragment key={categoryIdx}>
-                    <tr className="bg-muted/30">
-                      <td colSpan={4} className="p-3 md:p-4 font-semibold text-sm uppercase tracking-wider">
-                        {category.category}
-                      </td>
-                    </tr>
-                    {category.items.map((item, itemIdx) => (
-                      <tr 
-                        key={itemIdx} 
-                        className="border-b border-border/30 hover:bg-muted/20 transition-colors"
-                      >
-                        <td className="p-3 md:p-4 text-sm">{item.name}</td>
-                        <td className="p-3 md:p-4 text-center">{renderCell(item.basic)}</td>
-                        <td className="p-3 md:p-4 text-center bg-primary/5">{renderCell(item.pro)}</td>
-                        <td className="p-3 md:p-4 text-center">{renderCell(item.elite)}</td>
-                      </tr>
-                    ))}
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
+        {/* Guarantee Banner */}
+        <div className="mb-8 text-center">
+          <div className="inline-flex items-center gap-2 px-6 py-3 bg-primary/10 border border-primary/20 rounded-full">
+            <Check className="w-5 h-5 text-primary" />
+            <span className="text-sm font-medium">
+              {t('pricing.guaranteeNote')}
+            </span>
           </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse bg-card rounded-xl overflow-hidden shadow-lg">
+            <thead>
+              <tr className="border-b-2 bg-muted/50">
+                <th className="text-left p-5 font-bold text-base">{t('pricing.comparison.feature')}</th>
+                <th className="text-center p-5 font-bold text-base">Basic</th>
+                <th className="text-center p-5 font-bold text-base bg-primary/10 relative">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full whitespace-nowrap">
+                    Most Popular
+                  </div>
+                  Pro
+                </th>
+                <th className="text-center p-5 font-bold text-base">Elite</th>
+              </tr>
+            </thead>
+            <tbody>
+              {features.map((category, categoryIdx) => (
+                <React.Fragment key={categoryIdx}>
+                  <tr className="bg-muted/40">
+                    <td colSpan={4} className="p-4 font-bold text-sm uppercase tracking-wider text-primary">
+                      {category.category}
+                    </td>
+                  </tr>
+                  {category.items.map((item, itemIdx) => (
+                    <tr 
+                      key={itemIdx} 
+                      className="border-b last:border-b-0 hover:bg-muted/30 transition-all duration-200 group"
+                    >
+                      <td className="p-5 font-medium">{item.name}</td>
+                      <td className="p-5 text-center group-hover:scale-105 transition-transform">{renderCell(item.basic)}</td>
+                      <td className="p-5 text-center bg-primary/5 group-hover:bg-primary/10 group-hover:scale-105 transition-all">{renderCell(item.pro)}</td>
+                      <td className="p-5 text-center group-hover:scale-105 transition-transform">{renderCell(item.elite)}</td>
+                    </tr>
+                  ))}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </section>

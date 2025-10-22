@@ -31,12 +31,57 @@
   },
   "pricing": {
     "title": "Simple, Transparent Pricing",
-    "subtitle": "Start with a 7-day free trial. Credit card required, but you won't be charged until the trial ends.",
+    "subtitle": "Choose the plan that fits your trading journey",
     "mostPopular": "Most Popular",
     "perMonth": "month",
     "perMonthBilledAnnually": "month, billed annually",
     "savingsAmount": "Save ${{amount}}/year",
-    "trialNote": "7-day free trial • Credit card required • Cancel anytime before Day 7 • No hidden fees",
+    "guaranteeNote": "7-day money-back guarantee • Cancel anytime • No hidden fees",
+    "hero": {
+      "title": "Trade with clarity.",
+      "subtitle": "An AI-powered trading diary for crypto investors. Capture every trade, find patterns, and track your edge.",
+      "primaryCta": "Start Free Trial",
+      "secondaryCta": "Watch 2-minute demo"
+    },
+    "solutions": {
+      "title": "Solutions You Get",
+      "subtitle": "Outcomes designed to transform your trading performance",
+      "aiInsights": {
+        "title": "AI Insights",
+        "description": "Summaries of your week, drivers behind PnL, and anomalies to review",
+        "outcome": "Faster reviews; clearer next steps"
+      },
+      "patternRecognition": {
+        "title": "Discovery & Pattern Recognition",
+        "description": "Recurring setup tags, time-of-day effects, and asset-level tendencies",
+        "outcome": "See where you win; avoid where you bleed"
+      },
+      "riskManagement": {
+        "title": "Risk Management Insights",
+        "description": "Position size trends, max adverse excursion, and drawdown profile",
+        "outcome": "Fewer oversized losses; smoother equity curve"
+      },
+      "performanceAnalytics": {
+        "title": "Performance Analytics",
+        "description": "Win rate, expectancy, R-multiples, hit rate by tag, equity curve",
+        "outcome": "Evidence-backed improvements; confidence in your plan"
+      },
+      "notesAttachments": {
+        "title": "Notes & Attachments",
+        "description": "Structured entries with tags, screenshots, and links",
+        "outcome": "Clean records; reliable context for reviews"
+      },
+      "customDashboard": {
+        "title": "Customizable Dashboard",
+        "description": "Widgets for PnL, tags, assets, and timeframes",
+        "outcome": "See only what matters; decide faster"
+      },
+      "builtByTraders": {
+        "title": "Built by Traders for Investors",
+        "description": "Workflows shaped by real trading diaries",
+        "outcome": "A tool that matches how you review and improve"
+      }
+    },
     "billing": {
       "monthly": "Monthly",
       "annual": "Annual",

@@ -220,7 +220,7 @@ const Pricing = () => {
           </div>
 
           <p className="text-center text-muted-foreground text-xs md:text-sm mt-10 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            {t('pricing.trialNote')}
+            {t('pricing.guaranteeNote')}
           </p>
         </div>
       </section>

@@ -851,6 +851,7 @@ const Dashboard = () => {
             onSave={handleSaveLayout}
             onCancel={handleCancelCustomize}
             onReset={resetLayout}
+            onAddWidget={() => setShowWidgetLibrary(true)}
             columnCount={selectedColumnCount}
             onColumnCountChange={updateColumnCount}
             widgetCount={positions.length}

@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Settings2, Save, X, RotateCcw, Eye, EyeOff, LayoutDashboard, Columns } from 'lucide-react';
+import { Settings2, Save, X, RotateCcw, Eye, EyeOff, LayoutDashboard, Columns, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { WidgetConfig } from '@/hooks/useDashboardLayout';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,7 @@ interface CustomizeDashboardControlsProps {
   onSave: () => void;
   onCancel: () => void;
   onReset: () => void;
+  onAddWidget?: () => void;
   widgets?: WidgetConfig[];
   onToggleWidget?: (widgetId: string) => void;
   columnCount?: number;
@@ -43,6 +44,7 @@ export function CustomizeDashboardControls({
   onSave,
   onCancel,
   onReset,
+  onAddWidget,
   widgets = [],
   onToggleWidget,
   columnCount = 3,
@@ -119,6 +121,17 @@ export function CustomizeDashboardControls({
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                {onAddWidget && (
+                  <Button
+                    onClick={onAddWidget}
+                    variant="secondary"
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Widget
+                  </Button>
+                )}
                 <Button
                   onClick={onReset}
                   variant="ghost"

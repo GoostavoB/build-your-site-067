@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from './AppSidebar';
 import { UserMenu } from './UserMenu';
@@ -12,35 +12,19 @@ import { MobileNav } from '@/components/mobile/MobileNav';
 import { QuickAddTrade } from '@/components/mobile/QuickAddTrade';
 import { InstallPrompt } from '@/components/mobile/InstallPrompt';
 import { GamificationSidebar } from '@/components/gamification/GamificationSidebar';
-import { FloatingGamificationButton } from '@/components/gamification/FloatingGamificationButton';
-import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search, LayoutDashboard, BarChart3, Wrench, Users, Upload } from 'lucide-react';
+import { Zap, ChevronLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useTranslation } from '@/hooks/useTranslation';
 
 interface AppLayoutProps {
   children: ReactNode;
 }
 
 const AppLayout = ({ children }: AppLayoutProps) => {
-  // Enable reminder notifications
   useReminderNotifications();
   const { isCollapsed, setIsCollapsed } = useSidebarState();
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const navItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/analytics', label: 'Analytics', icon: BarChart3 },
-    { path: '/tools', label: 'Tools', icon: Wrench },
-    { path: '/social', label: 'Social', icon: Users },
-    { path: '/upload', label: 'Upload', icon: Upload },
-  ];
-
-  const isActive = (path: string) => location.pathname === path;
+  const [isGamificationOpen, setIsGamificationOpen] = useState(false);
 
   return (
     <SidebarProvider defaultOpen={!isCollapsed} onOpenChange={setIsCollapsed}>
@@ -82,16 +66,58 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               {children}
             </main>
             
-            {/* Right Sidebar - Gamification (Desktop Only) */}
-            <aside className="hidden xl:block w-80 border-l border-border/50 p-4 overflow-auto custom-scrollbar bg-background/50 backdrop-blur-sm">
-              <GamificationSidebar />
-            </aside>
+            {/* Collapsible Right Sidebar - Gamification */}
+            <AnimatePresence>
+              {isGamificationOpen && (
+                <motion.aside
+                  initial={{ width: 0, opacity: 0 }}
+                  animate={{ width: 320, opacity: 1 }}
+                  exit={{ width: 0, opacity: 0 }}
+                  transition={{ type: "spring", duration: 0.4 }}
+                  className="hidden xl:block border-l border-border/50 overflow-hidden bg-background/50 backdrop-blur-sm"
+                >
+                  <div className="w-80 p-4 overflow-auto custom-scrollbar h-full">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-semibold text-sm text-muted-foreground">Progress</h3>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setIsGamificationOpen(false)}
+                        className="h-7 w-7"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <GamificationSidebar />
+                  </div>
+                </motion.aside>
+              )}
+            </AnimatePresence>
           </div>
+
+          {/* Floating Lightning Button */}
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="hidden xl:block fixed bottom-8 right-8 z-40"
+          >
+            <Button
+              size="icon"
+              onClick={() => setIsGamificationOpen(!isGamificationOpen)}
+              className={cn(
+                "rounded-full w-10 h-10 shadow-lg transition-all duration-300 hover:scale-110",
+                isGamificationOpen 
+                  ? "bg-primary/20 text-primary border border-primary/30" 
+                  : "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+              )}
+            >
+              <Zap className="h-4 w-4" />
+            </Button>
+          </motion.div>
           
           <MobileNav />
           <QuickAddTrade />
           <InstallPrompt />
-          <FloatingGamificationButton />
         </div>
       </div>
     </SidebarProvider>

@@ -44,42 +44,55 @@
       "secondaryCta": "Watch 2-minute demo"
     },
     "solutions": {
-      "title": "Solutions You Get",
-      "subtitle": "Outcomes designed to transform your trading performance",
-      "aiInsights": {
-        "title": "AI Insights",
-        "description": "Summaries of your week, drivers behind PnL, and anomalies to review",
-        "outcome": "Faster reviews; clearer next steps"
+      "title": "Outcomes That Matter",
+      "subtitle": "Premium capabilities built for elite traders",
+      "seePatterns": {
+        "headline": "See patterns instantly",
+        "subhead": "AI reads your entire history. Highlights what actually makes money.",
+        "metric": "4.2x faster reviews",
+        "proofPoint": "Average trader discovers 3 profitable patterns in first week"
       },
-      "patternRecognition": {
-        "title": "Discovery & Pattern Recognition",
-        "description": "Recurring setup tags, time-of-day effects, and asset-level tendencies",
-        "outcome": "See where you win; avoid where you bleed"
+      "knowEdge": {
+        "headline": "Know your edge",
+        "subhead": "Every setup, every hour, every market condition. Measured.",
+        "metric": "67%",
+        "metricValue": 67,
+        "proofPoint": "Win rate improvement (average user)"
       },
-      "riskManagement": {
-        "title": "Risk Management Insights",
-        "description": "Position size trends, max adverse excursion, and drawdown profile",
-        "outcome": "Fewer oversized losses; smoother equity curve"
+      "tradeConfidence": {
+        "headline": "Trade with confidence",
+        "subhead": "Position sizing calculated. Risk controlled. Drawdowns predicted.",
+        "metric": "89%",
+        "metricValue": 89,
+        "proofPoint": "Fewer oversized losses"
       },
-      "performanceAnalytics": {
-        "title": "Performance Analytics",
-        "description": "Win rate, expectancy, R-multiples, hit rate by tag, equity curve",
-        "outcome": "Evidence-backed improvements; confidence in your plan"
+      "trackEffortlessly": {
+        "headline": "Track everything effortlessly",
+        "subhead": "Screenshots, notes, emotional state. All organized. Always searchable.",
+        "metric": "12 minutes saved",
+        "metricValue": 12,
+        "proofPoint": "Per review session"
       },
-      "notesAttachments": {
-        "title": "Notes & Attachments",
-        "description": "Structured entries with tags, screenshots, and links",
-        "outcome": "Clean records; reliable context for reviews"
+      "performanceSpeaks": {
+        "headline": "Performance that speaks",
+        "subhead": "Win rate, expectancy, R-multiples. Charts that tell your story.",
+        "metric": "2.3 Sharpe",
+        "metricValue": 2.3,
+        "proofPoint": "Average elite user performance"
       },
-      "customDashboard": {
-        "title": "Customizable Dashboard",
-        "description": "Widgets for PnL, tags, assets, and timeframes",
-        "outcome": "See only what matters; decide faster"
+      "yourRules": {
+        "headline": "Your dashboard, your rules",
+        "subhead": "Widgets you need. Metrics that matter. Nothing else.",
+        "metric": "8 layouts",
+        "metricValue": 8,
+        "proofPoint": "Custom configurations per user (avg)"
       },
       "builtByTraders": {
-        "title": "Built by Traders for Investors",
-        "description": "Workflows shaped by real trading diaries",
-        "outcome": "A tool that matches how you review and improve"
+        "headline": "Built by traders who get it",
+        "subhead": "Every workflow from real journals. Every feature battle-tested.",
+        "metric": "10,000+ hours",
+        "metricValue": 10000,
+        "proofPoint": "Of trader feedback integrated"
       }
     },
     "billing": {

@@ -3,12 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { motion } from "framer-motion";
-import { Sparkles, Target, Shield, TrendingUp, FileText, LayoutDashboard, Users } from "lucide-react";
 import PricingComparison from "@/components/PricingComparison";
 import PricingRoadmap from "@/components/PricingRoadmap";
 import CTA from "@/components/CTA";
 import { ShaderBackground } from "@/components/ShaderBackground";
-import { SolutionCard } from "@/components/SolutionCard";
+import { OutcomeCard } from "@/components/premium/OutcomeCard";
+import { ParallaxTradingElements } from "@/components/premium/ParallaxTradingElements";
 import { PremiumPricingCard } from "@/components/PremiumPricingCard";
 import { MagneticButton } from "@/components/MagneticButton";
 
@@ -50,47 +50,194 @@ const PricingPage = () => {
 
   const solutions = [
     {
-      icon: Sparkles,
-      title: t('pricing.solutions.aiInsights.title'),
-      description: t('pricing.solutions.aiInsights.description'),
-      outcome: t('pricing.solutions.aiInsights.outcome')
+      headline: t('pricing.solutions.seePatterns.headline'),
+      subhead: t('pricing.solutions.seePatterns.subhead'),
+      metric: t('pricing.solutions.seePatterns.metric'),
+      proofPoint: t('pricing.solutions.seePatterns.proofPoint'),
+      visual: (
+        <div className="relative w-full h-48 bg-gradient-to-br from-primary/10 to-accent/5 rounded-2xl overflow-hidden">
+          <div className="absolute inset-0 grid grid-cols-5 grid-rows-4 gap-2 p-4">
+            {Array.from({ length: 20 }).map((_, i) => (
+              <motion.div
+                key={i}
+                className="rounded bg-primary/20"
+                animate={{
+                  opacity: [0.2, 0.8, 0.2],
+                  scale: [1, 1.1, 1],
+                }}
+                transition={{
+                  duration: 2,
+                  delay: i * 0.1,
+                  repeat: Infinity,
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      ),
     },
     {
-      icon: Target,
-      title: t('pricing.solutions.patternRecognition.title'),
-      description: t('pricing.solutions.patternRecognition.description'),
-      outcome: t('pricing.solutions.patternRecognition.outcome')
+      headline: t('pricing.solutions.knowEdge.headline'),
+      subhead: t('pricing.solutions.knowEdge.subhead'),
+      metric: t('pricing.solutions.knowEdge.metric'),
+      metricValue: 67,
+      proofPoint: t('pricing.solutions.knowEdge.proofPoint'),
+      visual: (
+        <div className="relative w-full h-48">
+          <svg viewBox="0 0 200 100" className="w-full h-full">
+            {[30, 45, 60, 75, 90].map((height, i) => (
+              <motion.rect
+                key={i}
+                x={i * 35 + 10}
+                y={100 - height}
+                width="25"
+                height={height}
+                fill="currentColor"
+                className="text-primary/60"
+                initial={{ height: 0 }}
+                animate={{ height }}
+                transition={{ duration: 1, delay: i * 0.1 }}
+              />
+            ))}
+          </svg>
+        </div>
+      ),
     },
     {
-      icon: Shield,
-      title: t('pricing.solutions.riskManagement.title'),
-      description: t('pricing.solutions.riskManagement.description'),
-      outcome: t('pricing.solutions.riskManagement.outcome')
+      headline: t('pricing.solutions.tradeConfidence.headline'),
+      subhead: t('pricing.solutions.tradeConfidence.subhead'),
+      metric: t('pricing.solutions.tradeConfidence.metric'),
+      metricValue: 89,
+      proofPoint: t('pricing.solutions.tradeConfidence.proofPoint'),
+      visual: (
+        <div className="relative w-full h-48 flex items-center justify-center">
+          <div className="relative w-32 h-32">
+            <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
+              <circle
+                cx="50"
+                cy="50"
+                r="40"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="8"
+                className="text-muted/20"
+              />
+              <motion.circle
+                cx="50"
+                cy="50"
+                r="40"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="8"
+                strokeLinecap="round"
+                className="text-primary"
+                initial={{ strokeDasharray: '0 251.2' }}
+                animate={{ strokeDasharray: '224 251.2' }}
+                transition={{ duration: 2, ease: 'easeOut' }}
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center text-2xl font-bold">
+              89%
+            </div>
+          </div>
+        </div>
+      ),
     },
     {
-      icon: TrendingUp,
-      title: t('pricing.solutions.performanceAnalytics.title'),
-      description: t('pricing.solutions.performanceAnalytics.description'),
-      outcome: t('pricing.solutions.performanceAnalytics.outcome')
+      headline: t('pricing.solutions.trackEffortlessly.headline'),
+      subhead: t('pricing.solutions.trackEffortlessly.subhead'),
+      metric: t('pricing.solutions.trackEffortlessly.metric'),
+      metricValue: 12,
+      proofPoint: t('pricing.solutions.trackEffortlessly.proofPoint'),
+      visual: (
+        <div className="relative w-full h-48 flex items-center justify-center">
+          <div className="relative">
+            {[0, 1, 2].map((i) => (
+              <motion.div
+                key={i}
+                className="absolute w-32 h-40 bg-gradient-to-br from-primary/20 to-accent/10 rounded-lg border border-white/10"
+                style={{
+                  left: `${i * 12}px`,
+                  top: `${i * 8}px`,
+                  zIndex: 3 - i,
+                }}
+                initial={{ rotateZ: 0, y: 0 }}
+                animate={{
+                  rotateZ: i * 4,
+                  y: i * -2,
+                }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+              />
+            ))}
+          </div>
+        </div>
+      ),
     },
     {
-      icon: FileText,
-      title: t('pricing.solutions.notesAttachments.title'),
-      description: t('pricing.solutions.notesAttachments.description'),
-      outcome: t('pricing.solutions.notesAttachments.outcome')
+      headline: t('pricing.solutions.performanceSpeaks.headline'),
+      subhead: t('pricing.solutions.performanceSpeaks.subhead'),
+      metric: t('pricing.solutions.performanceSpeaks.metric'),
+      metricValue: 2.3,
+      proofPoint: t('pricing.solutions.performanceSpeaks.proofPoint'),
+      visual: (
+        <div className="relative w-full h-48">
+          <svg viewBox="0 0 200 100" className="w-full h-full">
+            <motion.path
+              d="M 10 90 Q 50 70, 100 40 T 190 10"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              className="text-primary"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 2, ease: 'easeInOut' }}
+            />
+          </svg>
+        </div>
+      ),
     },
     {
-      icon: LayoutDashboard,
-      title: t('pricing.solutions.customDashboard.title'),
-      description: t('pricing.solutions.customDashboard.description'),
-      outcome: t('pricing.solutions.customDashboard.outcome')
+      headline: t('pricing.solutions.yourRules.headline'),
+      subhead: t('pricing.solutions.yourRules.subhead'),
+      metric: t('pricing.solutions.yourRules.metric'),
+      metricValue: 8,
+      proofPoint: t('pricing.solutions.yourRules.proofPoint'),
+      visual: (
+        <div className="relative w-full h-48 grid grid-cols-3 grid-rows-3 gap-2 p-4">
+          {Array.from({ length: 9 }).map((_, i) => (
+            <motion.div
+              key={i}
+              className="bg-gradient-to-br from-primary/20 to-accent/10 rounded-lg border border-white/10"
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.3, delay: i * 0.05 }}
+            />
+          ))}
+        </div>
+      ),
     },
     {
-      icon: Users,
-      title: t('pricing.solutions.builtByTraders.title'),
-      description: t('pricing.solutions.builtByTraders.description'),
-      outcome: t('pricing.solutions.builtByTraders.outcome')
-    }
+      headline: t('pricing.solutions.builtByTraders.headline'),
+      subhead: t('pricing.solutions.builtByTraders.subhead'),
+      metric: t('pricing.solutions.builtByTraders.metric'),
+      metricValue: 10000,
+      proofPoint: t('pricing.solutions.builtByTraders.proofPoint'),
+      visual: (
+        <div className="relative w-full h-48 flex items-center justify-center">
+          <div className="flex -space-x-4">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <motion.div
+                key={i}
+                className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/40 to-accent/20 border-2 border-background"
+                initial={{ scale: 0, x: -20 }}
+                animate={{ scale: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+              />
+            ))}
+          </div>
+        </div>
+      ),
+    },
   ];
 
   const plans = [
@@ -206,34 +353,35 @@ const PricingPage = () => {
         </div>
       </section>
 
-      {/* Solutions Section with Scroll Animations */}
-      <section className="py-32 px-6">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-20">
+      {/* Solutions Section - Premium Outcome Gallery */}
+      <section className="relative py-32 px-6 overflow-hidden">
+        <ParallaxTradingElements />
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center mb-24">
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.6 }}
               viewport={{ once: true }}
-              className="text-4xl md:text-5xl font-bold mb-6 tracking-tight"
-              style={{ letterSpacing: '-0.01em' }}
+              className="text-5xl md:text-6xl font-display font-bold mb-6 tracking-[-0.02em]"
             >
               {t('pricing.solutions.title')}
             </motion.h2>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, delay: 0.09, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ once: true }}
-              className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed"
+              className="text-lg text-muted-foreground/80 max-w-2xl mx-auto"
             >
               {t('pricing.solutions.subtitle')}
             </motion.p>
           </div>
-          
-          <div className="space-y-8">
+
+          <div className="space-y-40">
             {solutions.map((solution, index) => (
-              <SolutionCard key={index} solution={solution} index={index} />
+              <OutcomeCard key={index} {...solution} index={index} />
             ))}
           </div>
         </div>

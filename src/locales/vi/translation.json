@@ -83,6 +83,21 @@
     "progressXP": "Tiến độ & Kinh nghiệm",
     "userGuide": "Hướng dẫn sử dụng"
   },
+  "blog": {
+    "title": "Blog Giao Dịch",
+    "subtitle": "Thông tin chuyên sâu về giao dịch tiền điện tử, công cụ AI và chiến lược",
+    "searchPlaceholder": "Tìm kiếm bài viết...",
+    "allCategories": "Tất cả danh mục",
+    "readMore": "Đọc thêm",
+    "relatedArticles": "Bài viết liên quan",
+    "shareArticle": "Chia sẻ bài viết",
+    "categories": {
+      "ai-tools": "Công cụ AI",
+      "trading-psychology": "Tâm lý giao dịch",
+      "risk-management": "Quản lý rủi ro",
+      "data-analysis": "Phân tích dữ liệu"
+    }
+  },
   "tour": {
     "locale": {
       "back": "Quay lại",

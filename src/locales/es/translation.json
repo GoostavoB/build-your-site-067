@@ -926,10 +926,25 @@
       "button": "Comenzar Gratis",
       "note": "Gratis para siempre • Sin tarjeta de crédito • Configuración de 2 minutos"
     },
+    "blog": {
+      "title": "Blog de Trading",
+      "subtitle": "Insights expertos sobre trading de criptomonedas, herramientas de IA y estrategias",
+      "searchPlaceholder": "Buscar artículos...",
+      "allCategories": "Todas Categorías",
+      "readMore": "Leer Más",
+      "relatedArticles": "Artículos Relacionados",
+      "shareArticle": "Compartir Artículo",
+      "categories": {
+        "ai-tools": "Herramientas de IA",
+        "trading-psychology": "Psicología de Trading",
+        "risk-management": "Gestión de Riesgo",
+        "data-analysis": "Análisis de Datos"
+      }
+    },
     "footer": {
       "tagline": "La plataforma completa de diario de trading",
       "madeWith": "Hecho con ❤️ para traders en todo el mundo",
-      "product": "Producto",
+      "producto": "Producto",
       "features": "Características",
       "pricing": "Precios",
       "support": "Soporte",

@@ -926,6 +926,21 @@
       "button": "Começar Grátis",
       "note": "Grátis para sempre • Sem cartão de crédito • Configuração de 2 minutos"
     },
+    "blog": {
+      "title": "Blog de Negociação",
+      "subtitle": "Insights especializados sobre negociação de criptomoedas, ferramentas de IA e estratégias",
+      "searchPlaceholder": "Buscar artigos...",
+      "allCategories": "Todas Categorias",
+      "readMore": "Ler Mais",
+      "relatedArticles": "Artigos Relacionados",
+      "shareArticle": "Compartilhar Artigo",
+      "categories": {
+        "ai-tools": "Ferramentas de IA",
+        "trading-psychology": "Psicologia de Negociação",
+        "risk-management": "Gestão de Risco",
+        "data-analysis": "Análise de Dados"
+      }
+    },
     "footer": {
       "tagline": "A plataforma completa de diário de trading",
       "madeWith": "Feito com ❤️ para traders no mundo todo",

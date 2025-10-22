@@ -42,6 +42,13 @@ const Index = () => {
         <LanguageToggle />
         <ThemeStudio />
         <Button
+          onClick={() => navigate('/blog')}
+          variant="ghost"
+          className="glass backdrop-blur-[10px] border border-primary/20 text-foreground hover:bg-primary/10 transition-all rounded-xl px-5 py-2 font-medium shadow-sm hover:shadow-md"
+        >
+          {t('navigation.blog')}
+        </Button>
+        <Button
           onClick={() => handleCTAClick('header')}
           className="glass backdrop-blur-[10px] border border-primary/30 text-foreground hover:bg-primary hover:text-primary-foreground transition-all rounded-xl px-5 py-2 font-medium shadow-sm hover:shadow-md"
           variant="ghost"

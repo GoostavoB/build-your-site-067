@@ -283,7 +283,6 @@ export default function ExchangeConnections() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <CardTitle>{exchange.name}</CardTitle>
                         {exchange.comingSoon && !isConnected && (
                           <Badge variant="secondary" className="text-xs">Soon</Badge>
                         )}

@@ -9,7 +9,7 @@ interface ExchangeLogoProps {
 }
 
 const exchangeLogos: Record<string, { svg: string; png?: string }> = {
-  binance: { svg: "/exchange-logos/binance.png" },
+  binance: { svg: "/exchange-logos/binance.webp" },
   bybit: { svg: "/exchange-logos/bybit.png" },
   coinbase: { svg: "/exchange-logos/coinbase.png" },
   okx: { svg: "/exchange-logos/okx.svg" },

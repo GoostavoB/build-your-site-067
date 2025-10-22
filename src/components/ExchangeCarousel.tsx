@@ -5,7 +5,7 @@ interface Exchange {
 }
 
 const exchanges: Exchange[] = [
-  { name: "Binance", logo: "/exchange-logos/binance.png", alt: "Binance logo" },
+  { name: "Binance", logo: "/exchange-logos/binance.webp", alt: "Binance logo" },
   { name: "Bybit", logo: "/exchange-logos/bybit.png", alt: "Bybit logo" },
   { name: "Coinbase", logo: "/exchange-logos/coinbase.png", alt: "Coinbase logo" },
   { name: "OKX", logo: "/exchange-logos/okx.svg", alt: "OKX logo" },

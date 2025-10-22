@@ -64,6 +64,7 @@ const MyMetrics = lazy(() => import("./pages/MyMetrics"));
 const UserGuide = lazy(() => import("./pages/UserGuide"));
 const Sitemap = lazy(() => import("./pages/Sitemap"));
 const About = lazy(() => import("./pages/About"));
+const SEODashboard = lazy(() => import("./pages/SEODashboard"));
 
 // Loading fallback
 const PageLoader = () => (
@@ -120,6 +121,7 @@ const App = () => (
                       <Route path="/crypto-trading-faq" element={<CryptoTradingFAQ />} />
                       <Route path="/sitemap" element={<Sitemap />} />
                       <Route path="/about" element={<About />} />
+                      <Route path="/seo-dashboard" element={<SEODashboard />} />
                       
                       {/* Blog routes with language support */}
                       <Route path="/blog" element={<Blog />} />

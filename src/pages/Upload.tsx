@@ -259,18 +259,12 @@ const Upload = () => {
             return;
           }
           
-          // Reduced max size to 1280px for cost optimization (was 1920px)
-          let width = img.width;
-          let height = img.height;
-          const maxSize = 1280;
-          
-          // Reject images that are too small
-          if (width < 400 || height < 400) {
-            reject(new Error('Image too small (minimum 400px)'));
-            return;
-          }
-          
-          if (width > height && width > maxSize) {
+        // Reduced max size to 1280px for cost optimization (was 1920px)
+        let width = img.width;
+        let height = img.height;
+        const maxSize = 1280;
+
+        if (width > height && width > maxSize) {
             height = (height * maxSize) / width;
             width = maxSize;
           } else if (height > maxSize) {

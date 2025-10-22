@@ -23,6 +23,7 @@ import { SuccessFeedback } from '@/components/SuccessFeedback';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { ImageAnnotator, Annotation } from '@/components/upload/ImageAnnotator';
 import { BrokerSelect } from '@/components/upload/BrokerSelect';
+import { runOCR, type OCRResult } from '@/utils/ocrPipeline';
 
 interface ExtractedTrade {
   symbol: string;
@@ -94,6 +95,8 @@ const Upload = () => {
   const [openPreBroker, setOpenPreBroker] = useState(false);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [showAnnotator, setShowAnnotator] = useState(false);
+  const [ocrResult, setOcrResult] = useState<OCRResult | null>(null);
+  const [ocrRunning, setOcrRunning] = useState(false);
   
   const [formData, setFormData] = useState({
     symbol: '',
@@ -240,7 +243,7 @@ const Upload = () => {
     }
   };
 
-  const compressAndResizeImage = async (file: File): Promise<string> => {
+  const compressAndResizeImage = async (file: File, forOCR: boolean = false): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -254,10 +257,16 @@ const Upload = () => {
             return;
           }
           
-          // Calculate new dimensions (max 1920px on longest side)
+          // Reduced max size to 1280px for cost optimization (was 1920px)
           let width = img.width;
           let height = img.height;
-          const maxSize = 1920;
+          const maxSize = 1280;
+          
+          // Reject images that are too small
+          if (width < 400 || height < 400) {
+            reject(new Error('Image too small (minimum 400px)'));
+            return;
+          }
           
           if (width > height && width > maxSize) {
             height = (height * maxSize) / width;
@@ -269,10 +278,16 @@ const Upload = () => {
           
           canvas.width = width;
           canvas.height = height;
+          
+          // Convert to grayscale for OCR path to improve accuracy
+          if (forOCR) {
+            ctx.filter = 'grayscale(100%) contrast(120%)';
+          }
+          
           ctx.drawImage(img, 0, 0, width, height);
           
-          // Convert to base64 with quality compression (JPEG at 85% quality)
-          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.85);
+          // Use WebP at quality 60 for better compression (reduced from JPEG 85)
+          const compressedBase64 = canvas.toDataURL('image/webp', 0.60);
           resolve(compressedBase64);
         };
         img.onerror = () => reject(new Error('Failed to load image'));
@@ -284,7 +299,7 @@ const Upload = () => {
   };
 
   const processImageFile = async (file: File) => {
-    // Check file size (20MB limit before compression)
+    // Check file size limit (20MB)
     if (file.size > 20 * 1024 * 1024) {
       toast.error('Image file is too large', {
         description: 'Please upload an image smaller than 20MB'
@@ -295,18 +310,39 @@ const Upload = () => {
     try {
       toast.info('Processing image...', { duration: 1000 });
       
-      // Compress and resize the image
-      const compressedBase64 = await compressAndResizeImage(file);
+      // Compress and resize the image (using OCR-optimized settings)
+      const compressedBase64 = await compressAndResizeImage(file, true);
       
       setExtractionImage(file);
       setExtractionPreview(compressedBase64);
       
-      toast.success('Image ready for extraction!');
+      // Run OCR in background for cost optimization
+      setOcrRunning(true);
+      try {
+        const ocr = await runOCR(file);
+        setOcrResult(ocr);
+        console.log('✅ OCR Quality Score:', ocr.qualityScore.toFixed(2), 
+                    'Confidence:', ocr.confidence.toFixed(2));
+        
+        if (ocr.qualityScore >= 0.80) {
+          toast.success('Image ready! High OCR quality - using cost-efficient processing.', {
+            description: `Quality: ${Math.round(ocr.qualityScore * 100)}%`
+          });
+        } else {
+          toast.success('Image ready for extraction!');
+        }
+      } catch (ocrError) {
+        console.warn('⚠️ OCR failed, will use vision fallback:', ocrError);
+        toast.success('Image ready for extraction!');
+      } finally {
+        setOcrRunning(false);
+      }
     } catch (error) {
       console.error('Image processing error:', error);
       toast.error('Failed to process image', {
-        description: 'Please try with a different image'
+        description: error instanceof Error ? error.message : 'Please try with a different image'
       });
+      setOcrRunning(false);
     }
   };
 
@@ -377,7 +413,12 @@ const Upload = () => {
         body: { 
           imageBase64: extractionPreview,
           broker: preSelectedBroker || null,
-          annotations: annotations.length > 0 ? annotations : null
+          annotations: annotations.length > 0 ? annotations : null,
+          // Include OCR data for cost optimization
+          ocrText: ocrResult?.text,
+          ocrConfidence: ocrResult?.confidence,
+          imageHash: ocrResult?.imageHash,
+          perceptualHash: ocrResult?.perceptualHash,
         }
       });
 

@@ -7,50 +7,52 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Keyboard } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-
-const shortcuts = [
-  {
-    category: 'Navigation',
-    items: [
-      { keys: ['Alt', 'D'], description: 'Go to Dashboard' },
-      { keys: ['Alt', 'U'], description: 'Go to Upload' },
-      { keys: ['Alt', 'F'], description: 'Go to Forecast' },
-      { keys: ['Alt', 'A'], description: 'Go to Analytics' },
-      { keys: ['Alt', 'T'], description: 'Go to Tools' },
-      { keys: ['Alt', 'H'], description: 'Go to Home' },
-      { keys: ['Alt', 'S'], description: 'Go to Settings' },
-    ],
-  },
-  {
-    category: 'Dashboard Actions',
-    items: [
-      { keys: ['N'], description: 'Add new trade' },
-      { keys: ['E'], description: 'Export trades' },
-      { keys: ['C'], description: 'Customize dashboard' },
-      { keys: ['Tab'], description: 'Navigate between sections' },
-    ],
-  },
-  {
-    category: 'AI Assistant',
-    items: [
-      { keys: ['Alt', 'I'], description: 'Open AI Assistant' },
-      { keys: ['Ctrl', 'Enter'], description: 'Send message (in chat)' },
-    ],
-  },
-  {
-    category: 'General',
-    items: [
-      { keys: ['Shift', '?'], description: 'Show keyboard shortcuts' },
-      { keys: ['Esc'], description: 'Close dialogs/modals' },
-      { keys: ['Ctrl', 'K'], description: 'Focus search' },
-      { keys: ['Ctrl', '/'], description: 'Toggle sidebar' },
-    ],
-  },
-];
+import { Keyboard } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export const KeyboardShortcutsHelp = () => {
+  const { t } = useTranslation();
+  
+  const shortcuts = [
+    {
+      category: t('keyboardShortcuts.categories.navigation'),
+      items: [
+        { keys: ['Alt', 'D'], description: t('keyboardShortcuts.shortcuts.goToDashboard') },
+        { keys: ['Alt', 'U'], description: t('keyboardShortcuts.shortcuts.goToUpload') },
+        { keys: ['Alt', 'F'], description: t('keyboardShortcuts.shortcuts.goToForecast') },
+        { keys: ['Alt', 'A'], description: t('keyboardShortcuts.shortcuts.goToAnalytics') },
+        { keys: ['Alt', 'T'], description: t('keyboardShortcuts.shortcuts.goToTools') },
+        { keys: ['Alt', 'H'], description: t('keyboardShortcuts.shortcuts.goToHome') },
+        { keys: ['Alt', 'S'], description: t('keyboardShortcuts.shortcuts.goToSettings') },
+      ],
+    },
+    {
+      category: t('keyboardShortcuts.categories.dashboardActions'),
+      items: [
+        { keys: ['N'], description: t('keyboardShortcuts.shortcuts.addNewTrade') },
+        { keys: ['E'], description: t('keyboardShortcuts.shortcuts.exportTrades') },
+        { keys: ['C'], description: t('keyboardShortcuts.shortcuts.customizeDashboard') },
+        { keys: ['Tab'], description: t('keyboardShortcuts.shortcuts.navigateSections') },
+      ],
+    },
+    {
+      category: t('keyboardShortcuts.categories.aiAssistant'),
+      items: [
+        { keys: ['Alt', 'I'], description: t('keyboardShortcuts.shortcuts.openAIAssistant') },
+        { keys: ['Ctrl', 'Enter'], description: t('keyboardShortcuts.shortcuts.sendMessage') },
+      ],
+    },
+    {
+      category: t('keyboardShortcuts.categories.general'),
+      items: [
+        { keys: ['Shift', '?'], description: t('keyboardShortcuts.shortcuts.showShortcuts') },
+        { keys: ['Esc'], description: t('keyboardShortcuts.shortcuts.closeDialogs') },
+        { keys: ['Ctrl', 'K'], description: t('keyboardShortcuts.shortcuts.focusSearch') },
+        { keys: ['Ctrl', '/'], description: t('keyboardShortcuts.shortcuts.toggleSidebar') },
+      ],
+    },
+  ];
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -60,9 +62,9 @@ export const KeyboardShortcutsHelp = () => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Keyboard Shortcuts</DialogTitle>
+          <DialogTitle>{t('keyboardShortcuts.title')}</DialogTitle>
           <DialogDescription>
-            Speed up your workflow with these keyboard shortcuts
+            {t('keyboardShortcuts.subtitle')}
           </DialogDescription>
         </DialogHeader>
         
@@ -99,8 +101,8 @@ export const KeyboardShortcutsHelp = () => {
         </div>
 
         <div className="text-xs text-muted-foreground text-center pt-4 border-t border-border">
-          Press <kbd className="px-1.5 py-0.5 bg-muted rounded text-foreground font-semibold">Shift</kbd> +{' '}
-          <kbd className="px-1.5 py-0.5 bg-muted rounded text-foreground font-semibold">?</kbd> anytime to view this help
+          {t('keyboardShortcuts.footerPrefix')} <kbd className="px-1.5 py-0.5 bg-muted rounded text-foreground font-semibold">Shift</kbd> +{' '}
+          <kbd className="px-1.5 py-0.5 bg-muted rounded text-foreground font-semibold">?</kbd> {t('keyboardShortcuts.footer')}
         </div>
       </DialogContent>
     </Dialog>

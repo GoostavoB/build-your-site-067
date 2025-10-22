@@ -202,20 +202,20 @@ export function AppSidebar() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search menu..."
+                placeholder={t('sidebar.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9 h-9"
               />
             </div>
-            {/* Toggle Expand/Collapse */}
+          {/* Toggle Expand/Collapse */}
             <Button
               variant="ghost"
               size="sm"
               onClick={toggleExpandAll}
               className="w-full h-7 text-xs"
             >
-              {allExpanded ? 'Collapse All' : 'Expand All'}
+              {allExpanded ? t('sidebar.collapseAll') : t('sidebar.expandAll')}
             </Button>
           </div>
         )}
@@ -228,7 +228,7 @@ export function AppSidebar() {
                 <SidebarGroupLabel className="text-primary flex items-center justify-between group-data-[state=open]/collapsible:text-primary">
                   <div className="flex items-center gap-2">
                     <Star className="h-4 w-4 fill-primary" />
-                    Favorites ({favorites.length}/12)
+                    {t('sidebar.favorites')} ({favorites.length}/12)
                   </div>
                   <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
                 </SidebarGroupLabel>
@@ -268,7 +268,7 @@ export function AppSidebar() {
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent side="right">
-                                  Remove from favorites
+                                  {t('sidebar.removeFromFavorites')}
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>

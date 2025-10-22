@@ -78,7 +78,15 @@
     "marketingConsent": "I agree to receive communications and marketing updates about promotions and news from The Trading Diary.",
     "rememberMe": "Keep me logged in",
     "sendResetLink": "Send Reset Link",
-    "resetDescription": "Enter your email address and we'll send you a link to reset your password."
+    "resetDescription": "Enter your email address and we'll send you a link to reset your password.",
+    "orContinueWith": "OR CONTINUE WITH",
+    "placeholders": {
+      "email": "trader@example.com",
+      "fullName": "John Doe",
+      "country": "United States",
+      "password": "Enter your password",
+      "confirmPassword": "Confirm your password"
+    }
   },
   "dashboard": {
     "title": "Dashboard",
@@ -113,7 +121,15 @@
     "exitEditMode": "Exit Edit Mode",
     "noTradesYet": "No trades yet",
     "uploadTrade": "Upload Trade",
-    "overviewDescription": "Your trading performance at a glance"
+    "overviewDescription": "Your trading performance at a glance",
+    "columns": {
+      "one": "1 Column",
+      "two": "2 Columns",
+      "three": "3 Columns"
+    },
+    "pickDateRange": "Pick a date range",
+    "hiddenWidgets": "Hidden Widgets",
+    "clickToShow": "Click to show:"
   },
   "trades": {
     "trade": "Trade",
@@ -324,7 +340,9 @@
     },
     "recentTransactions": {
       "title": "Recent Transactions",
-      "description": "Your latest trading activity"
+      "description": "Your latest trading activity",
+      "viewAll": "View all",
+      "noTransactions": "No transactions yet"
     },
     "quickActions": {
       "title": "Quick Actions",
@@ -607,6 +625,110 @@
     "lastMonth": "Last Month",
     "thisYear": "This Year",
     "custom": "Custom Range"
+  },
+  "sidebar": {
+    "expandAll": "Expand All",
+    "collapseAll": "Collapse All",
+    "searchPlaceholder": "Search menu...",
+    "favorites": "Favorites",
+    "removeFromFavorites": "Remove from favorites"
+  },
+  "keyboardShortcuts": {
+    "title": "Keyboard Shortcuts",
+    "subtitle": "Speed up your workflow with these keyboard shortcuts",
+    "footer": "anytime to view this help",
+    "footerPrefix": "Press",
+    "categories": {
+      "navigation": "Navigation",
+      "dashboardActions": "Dashboard Actions",
+      "aiAssistant": "AI Assistant",
+      "general": "General"
+    },
+    "shortcuts": {
+      "goToDashboard": "Go to Dashboard",
+      "goToUpload": "Go to Upload",
+      "goToForecast": "Go to Forecast",
+      "goToAnalytics": "Go to Analytics",
+      "goToTools": "Go to Tools",
+      "goToHome": "Go to Home",
+      "goToSettings": "Go to Settings",
+      "addNewTrade": "Add new trade",
+      "exportTrades": "Export trades",
+      "customizeDashboard": "Customize dashboard",
+      "navigateSections": "Navigate between sections",
+      "openAIAssistant": "Open AI Assistant",
+      "sendMessage": "Send message (in chat)",
+      "showShortcuts": "Show keyboard shortcuts",
+      "closeDialogs": "Close dialogs/modals",
+      "focusSearch": "Focus search",
+      "toggleSidebar": "Toggle sidebar"
+    }
+  },
+  "dateRange": {
+    "pickDateRange": "Pick a date range",
+    "quickSelect": "Quick Select",
+    "presets": {
+      "last7Days": "Last 7 days",
+      "last30Days": "Last 30 days",
+      "last90Days": "Last 90 days",
+      "thisMonth": "This Month"
+    },
+    "cancel": "Cancel",
+    "apply": "Apply",
+    "showingData": "Showing data for"
+  },
+  "export": {
+    "title": "Export Trades",
+    "description": "Choose a format to export your",
+    "trade": "trade",
+    "trades": "trades",
+    "formats": {
+      "csv": {
+        "title": "CSV Format",
+        "description": "Compatible with Excel, Google Sheets, and other spreadsheets"
+      },
+      "csvWithSummary": {
+        "title": "CSV with Summary",
+        "description": "Includes performance summary at the top"
+      },
+      "json": {
+        "title": "JSON Format",
+        "description": "For developers and data analysis tools"
+      }
+    },
+    "success": {
+      "csv": "Trades exported as CSV",
+      "json": "Trades exported as JSON",
+      "summary": "Trades exported with summary"
+    },
+    "error": "Failed to export trades"
+  },
+  "userMenu": {
+    "hello": "Hello",
+    "myAccount": "My Account",
+    "changePassword": "Change Password",
+    "logout": "Logout",
+    "dialog": {
+      "title": "Change Password",
+      "description": "Choose how you'd like to change your password",
+      "changeNow": "Change Password Now",
+      "changeNowDescription": "Set a new password immediately",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmPasswordPlaceholder": "Confirm new password",
+      "updating": "Updating...",
+      "updatePassword": "Update Password",
+      "or": "Or",
+      "sendResetEmail": "Send Reset Email",
+      "sendResetEmailDescription": "We'll send a password reset link to",
+      "sending": "Sending...",
+      "sendEmail": "Send Reset Email",
+      "success": "Password updated successfully! Please sign in again.",
+      "resetEmailSent": "Password reset email sent! Check your inbox.",
+      "error": "Failed to update password",
+      "resetError": "Failed to send reset email"
+    }
   },
   "feeAnalysis": {
     "title": "Fee Analysis",

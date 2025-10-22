@@ -6,6 +6,7 @@ import { Trade } from "@/types/trade";
 import { format } from "date-fns";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { ExplainMetricButton } from "@/components/ExplainMetricButton";
+import { useTranslation } from '@/hooks/useTranslation';
 import { useAIAssistant } from '@/contexts/AIAssistantContext';
 
 interface RecentTransactionsCardProps {
@@ -14,6 +15,7 @@ interface RecentTransactionsCardProps {
 }
 
 export const RecentTransactionsCard = memo(({ trades, className }: RecentTransactionsCardProps) => {
+  const { t } = useTranslation();
   const { openWithPrompt } = useAIAssistant();
   const recentTrades = trades
     .sort((a, b) => new Date(b.trade_date).getTime() - new Date(a.trade_date).getTime())
@@ -23,7 +25,7 @@ export const RecentTransactionsCard = memo(({ trades, className }: RecentTransac
     <GlassCard className={className} role="article" aria-labelledby="recent-transactions-title">
       <div className="space-y-4 p-6 md:p-8">
         <div className="flex items-center justify-between">
-          <h3 id="recent-transactions-title" className="text-lg font-semibold">Recent Transactions</h3>
+          <h3 id="recent-transactions-title" className="text-lg font-semibold">{t('widgets.recentTransactions.title')}</h3>
           <div className="flex items-center gap-2">
             <ExplainMetricButton 
               metricName="Recent Transactions"
@@ -32,7 +34,7 @@ export const RecentTransactionsCard = memo(({ trades, className }: RecentTransac
               onExplain={openWithPrompt}
             />
             <a href="/dashboard" className="text-xs text-primary hover:underline">
-              View all
+              {t('widgets.recentTransactions.viewAll')}
             </a>
           </div>
         </div>
@@ -82,7 +84,7 @@ export const RecentTransactionsCard = memo(({ trades, className }: RecentTransac
             })
           ) : (
             <li className="text-sm text-muted-foreground text-center py-4">
-              No transactions yet
+              {t('widgets.recentTransactions.noTransactions')}
             </li>
           )}
         </ul>

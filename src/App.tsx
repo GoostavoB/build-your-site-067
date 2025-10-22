@@ -54,6 +54,8 @@ const EconomicCalendar = lazy(() => import("./pages/EconomicCalendar"));
 const TaxReports = lazy(() => import("./pages/TaxReports"));
 const Accounts = lazy(() => import("./pages/Accounts"));
 const PerformanceAlerts = lazy(() => import("./pages/PerformanceAlerts"));
+const ProgressAnalytics = lazy(() => import("./pages/ProgressAnalytics"));
+const MyMetrics = lazy(() => import("./pages/MyMetrics"));
 
 // Loading fallback
 const PageLoader = () => (
@@ -131,6 +133,8 @@ const App = () => (
                       <Route path="/accounts" element={<ProtectedRoute><Accounts /></ProtectedRoute>} />
                       <Route path="/performance-alerts" element={<ProtectedRoute><PerformanceAlerts /></ProtectedRoute>} />
                       <Route path="/exchange-connections" element={<ProtectedRoute><ExchangeConnections /></ProtectedRoute>} />
+                      <Route path="/progress-analytics" element={<ProtectedRoute><ProgressAnalytics /></ProtectedRoute>} />
+                      <Route path="/my-metrics" element={<ProtectedRoute><MyMetrics /></ProtectedRoute>} />
                       <Route path="/custom/:pageId" element={<ProtectedRoute><CustomPage /></ProtectedRoute>} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>

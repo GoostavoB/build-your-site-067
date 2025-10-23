@@ -401,8 +401,10 @@ const PricingPage = () => {
       >
         <div className="container mx-auto max-w-3xl text-center">
           <h3 className="text-3xl md:text-4xl leading-tight font-sans">
-            Your rules. Your risk.{' '}
-            <span className="font-serif italic text-primary">Your results</span>
+            If you cannot measure it, you cannot improve it.
+            <br />
+            Your rules.{' '}
+            <span className="text-primary">Your results</span>
           </h3>
         </div>
       </motion.section>

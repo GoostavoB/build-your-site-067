@@ -46,7 +46,7 @@ const handler = async (req: Request): Promise<Response> => {
       },
       body: JSON.stringify({
         from: "The Trading Diary <onboarding@resend.dev>",
-        to: ["support@thetradingdiary.com"],
+        to: ["contact@thetradingdiary.com"],
         reply_to: email,
         subject: `Contact Form: ${subject}`,
         html: `

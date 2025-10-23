@@ -138,11 +138,11 @@ const PricingPage = () => {
       ),
     },
     {
-      headline: t('pricing.solutions.trackEffortlessly.headline'),
-      subhead: t('pricing.solutions.trackEffortlessly.subhead'),
-      metric: t('pricing.solutions.trackEffortlessly.metric'),
-      metricValue: 12,
-      proofPoint: t('pricing.solutions.trackEffortlessly.proofPoint'),
+      headline: "Upload 40x Faster",
+      subhead: "Batch upload trades from screenshots instead of manual entry",
+      metric: "40x",
+      metricValue: 40,
+      proofPoint: "Batch uploads from screenshots beat manual entry every time",
       visual: (
         <div className="relative w-full h-48 flex items-center justify-center">
           <div className="relative">
@@ -168,11 +168,11 @@ const PricingPage = () => {
       ),
     },
     {
-      headline: t('pricing.solutions.performanceSpeaks.headline'),
-      subhead: t('pricing.solutions.performanceSpeaks.subhead'),
-      metric: t('pricing.solutions.performanceSpeaks.metric'),
-      metricValue: 2.3,
-      proofPoint: t('pricing.solutions.performanceSpeaks.proofPoint'),
+      headline: "Save 75-97% of Your Time",
+      subhead: "Spend less time logging, more time analyzing and trading",
+      metric: "97%",
+      metricValue: 97,
+      proofPoint: "Spend less time logging, more time winning",
       visual: (
         <div className="relative w-full h-48">
           <svg viewBox="0 0 200 100" className="w-full h-full">
@@ -207,28 +207,6 @@ const PricingPage = () => {
               transition={{ duration: 0.3, delay: i * 0.05 }}
             />
           ))}
-        </div>
-      ),
-    },
-    {
-      headline: t('pricing.solutions.builtByTraders.headline'),
-      subhead: t('pricing.solutions.builtByTraders.subhead'),
-      metric: t('pricing.solutions.builtByTraders.metric'),
-      metricValue: 10000,
-      proofPoint: t('pricing.solutions.builtByTraders.proofPoint'),
-      visual: (
-        <div className="relative w-full h-48 flex items-center justify-center">
-          <div className="flex -space-x-4">
-            {[0, 1, 2, 3, 4].map((i) => (
-              <motion.div
-                key={i}
-                className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/40 to-accent/20 border-2 border-background"
-                initial={{ scale: 0, x: -20 }}
-                animate={{ scale: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-              />
-            ))}
-          </div>
         </div>
       ),
     },

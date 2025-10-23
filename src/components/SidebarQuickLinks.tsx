@@ -1,5 +1,5 @@
 import { SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
-import { BarChart3, TrendingUp, Target, Sparkles } from 'lucide-react';
+import { BarChart3, TrendingUp, Target, Sparkles, Image } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -15,6 +15,7 @@ export function SidebarQuickLinks() {
     { to: '/forecast', icon: TrendingUp, label: t('navigation.forecast') },
     { to: '/achievements', icon: Target, label: t('navigation.achievements') },
     { to: '/ai-tools', icon: Sparkles, label: t('navigation.aiTools') },
+    { to: '/logo-generator', icon: Image, label: 'Logo Generator' },
   ];
 
   return (

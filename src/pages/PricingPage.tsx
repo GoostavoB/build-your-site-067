@@ -11,6 +11,7 @@ import { MagneticButton } from "@/components/MagneticButton";
 import { PremiumBillingToggle } from "@/components/premium/PremiumBillingToggle";
 import { Logo } from "@/components/Logo";
 import { GlassCard } from "@/components/GlassCard";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import appStoreSoon from "@/assets/app-store-coming-soon.png";
 import googlePlaySoon from "@/assets/google-play-coming-soon.png";
 
@@ -308,6 +309,11 @@ const PricingPage = () => {
           showText={true} 
           className="hover:opacity-80 transition-opacity"
         />
+      </div>
+
+      {/* Theme Toggle */}
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle />
       </div>
 
       {/* Hero Section */}

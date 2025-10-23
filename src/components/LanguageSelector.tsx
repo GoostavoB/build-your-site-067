@@ -25,11 +25,21 @@ export const LanguageSelector = () => {
   const handleLanguageChange = (langCode: string) => {
     changeLanguage(langCode);
     
-    // Update URL with language prefix
+    // Get current path without existing language prefix
     const currentPath = location.pathname;
-    const pathWithoutLang = currentPath.replace(/^\/(en|pt|es|ar|vi)/, '');
-    const newPath = langCode === 'en' ? pathWithoutLang || '/' : `/${langCode}${pathWithoutLang || '/'}`;
-    navigate(newPath);
+    const pathParts = currentPath.split('/').filter(Boolean);
+    const isLangPath = ['en', 'pt', 'es', 'ar', 'vi'].includes(pathParts[0]);
+    
+    // Remove language prefix if it exists
+    const pathWithoutLang = isLangPath 
+      ? '/' + pathParts.slice(1).join('/') 
+      : currentPath;
+    
+    // Build new path with language prefix (except for 'en' which stays at root)
+    const basePath = pathWithoutLang || '/';
+    const newPath = langCode === 'en' ? basePath : `/${langCode}${basePath}`;
+    
+    navigate(newPath, { replace: true });
   };
 
   const currentLanguage = languages.find((lang) => lang.code === language) || languages[0];

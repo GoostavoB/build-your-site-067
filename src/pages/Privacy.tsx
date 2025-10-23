@@ -1,100 +1,100 @@
 import { Helmet } from 'react-helmet';
 import AppLayout from '@/components/layout/AppLayout';
+import { useTranslation } from '@/hooks/useTranslation';
+import { useEffect } from 'react';
+import { useHreflang } from '@/hooks/useHreflang';
+import { SUPPORTED_LANGUAGES } from '@/utils/languageRouting';
 
 export default function Privacy() {
+  const { t, changeLanguage } = useTranslation();
+  
+  // Add hreflang tags for SEO
+  useHreflang({
+    languages: [...SUPPORTED_LANGUAGES],
+    defaultLanguage: 'en'
+  });
+  
+  // Sync language with URL
+  useEffect(() => {
+    const pathLang = window.location.pathname.split('/')[1];
+    if (['pt', 'es', 'ar', 'vi'].includes(pathLang)) {
+      changeLanguage(pathLang);
+    }
+  }, [changeLanguage]);
   return (
     <>
       <Helmet>
-        <title>Privacy Policy - The Trading Diary</title>
-        <meta name="description" content="Learn how The Trading Diary collects, uses, and protects your personal information." />
+        <title>{t('legal.privacyTitle', 'Privacy Policy')} - The Trading Diary</title>
+        <meta name="description" content={t('legal.privacy.description', 'Learn how The Trading Diary collects, uses, and protects your personal information.')} />
       </Helmet>
       
       <AppLayout>
         <div className="container max-w-4xl mx-auto px-4 py-12">
-          <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
+          <h1 className="text-4xl font-bold mb-8">{t('legal.privacyTitle', 'Privacy Policy')}</h1>
           
           <div className="prose prose-invert max-w-none space-y-6">
-            <p className="text-muted-foreground">Last updated: {new Date().toLocaleDateString()}</p>
+            <p className="text-muted-foreground">{t('legal.lastUpdated', 'Last updated')}: {new Date().toLocaleDateString()}</p>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">1. Information We Collect</h2>
-              <p>
-                We collect information you provide directly to us, including your name, email address, and trading data
-                you choose to log in our platform.
-              </p>
+              <h2 className="text-2xl font-semibold mb-4">{t('legal.privacy.intro.title', '1. Introduction')}</h2>
+              <p>{t('legal.privacy.intro.content', 'This Privacy Policy explains how The Trading Diary collects, uses, and protects your personal information. We are committed to protecting your privacy and complying with applicable data protection laws, including GDPR.')}</p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">2. How We Use Your Information</h2>
+              <h2 className="text-2xl font-semibold mb-4">{t('legal.privacy.collection.title', '2. Information We Collect')}</h2>
+              <p>{t('legal.privacy.collection.content', 'We collect the following types of information:')}</p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>To provide and maintain our service</li>
-                <li>To notify you about changes to our service</li>
-                <li>To provide customer support</li>
-                <li>To gather analysis or valuable information to improve our service</li>
-                <li>To monitor the usage of our service</li>
-                <li>To detect, prevent and address technical issues</li>
+                <li>{t('legal.privacy.collection.items.account', 'Account information (email, name)')}</li>
+                <li>{t('legal.privacy.collection.items.trading', 'Trading data you upload')}</li>
+                <li>{t('legal.privacy.collection.items.usage', 'Usage data and analytics')}</li>
+                <li>{t('legal.privacy.collection.items.technical', 'Technical data (IP address, browser type)')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">3. Data Storage and Security</h2>
-              <p>
-                Your trading data is stored securely in encrypted databases. We implement industry-standard security
-                measures to protect your information from unauthorized access, alteration, disclosure, or destruction.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">4. Data Sharing</h2>
-              <p>
-                We do not sell, trade, or rent your personal information to third parties. We may share aggregated,
-                anonymized data for analytics purposes.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">5. Cookies and Tracking</h2>
-              <p>
-                We use cookies and similar tracking technologies to track activity on our service and hold certain
-                information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">6. Your Rights</h2>
-              <p>You have the right to:</p>
+              <h2 className="text-2xl font-semibold mb-4">{t('legal.privacy.usage.title', '3. How We Use Your Data')}</h2>
+              <p>{t('legal.privacy.usage.content', 'We use your information to:')}</p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Access your personal data</li>
-                <li>Rectify inaccurate personal data</li>
-                <li>Request deletion of your personal data</li>
-                <li>Object to processing of your personal data</li>
-                <li>Request restriction of processing your personal data</li>
-                <li>Request transfer of your personal data</li>
-                <li>Withdraw consent</li>
+                <li>{t('legal.privacy.usage.items.service', 'Provide and maintain our service')}</li>
+                <li>{t('legal.privacy.usage.items.support', 'Provide customer support')}</li>
+                <li>{t('legal.privacy.usage.items.analytics', 'Generate analytics and insights')}</li>
+                <li>{t('legal.privacy.usage.items.improvements', 'Develop new features and improvements')}</li>
+                <li>{t('legal.privacy.usage.items.communication', 'Send service updates and marketing communications (with consent)')}</li>
+                <li>{t('legal.privacy.usage.items.compliance', 'Comply with legal obligations')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">7. Children's Privacy</h2>
-              <p>
-                Our service is not intended for users under the age of 18. We do not knowingly collect personal
-                information from children under 18.
-              </p>
+              <h2 className="text-2xl font-semibold mb-4">{t('legal.privacy.gdpr.title', '4. GDPR Rights')}</h2>
+              <p>{t('legal.privacy.gdpr.content', 'Under GDPR, you have the right to:')}</p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>{t('legal.privacy.gdpr.items.access', 'Access your personal data')}</li>
+                <li>{t('legal.privacy.gdpr.items.rectification', 'Correct inaccurate data')}</li>
+                <li>{t('legal.privacy.gdpr.items.erasure', 'Request deletion of your data')}</li>
+                <li>{t('legal.privacy.gdpr.items.portability', 'Data portability')}</li>
+                <li>{t('legal.privacy.gdpr.items.objection', 'Object to data processing')}</li>
+                <li>{t('legal.privacy.gdpr.items.withdraw', 'Withdraw consent at any time')}</li>
+              </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">8. Changes to This Privacy Policy</h2>
-              <p>
-                We may update our Privacy Policy from time to time. We will notify you of any changes by posting the
-                new Privacy Policy on this page and updating the "Last updated" date.
-              </p>
+              <h2 className="text-2xl font-semibold mb-4">{t('legal.privacy.security.title', '5. Data Security')}</h2>
+              <p>{t('legal.privacy.security.content', 'We implement industry-standard security measures including encryption, secure servers, and regular security audits to protect your data from unauthorized access.')}</p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">9. Contact Us</h2>
-              <p>
-                If you have any questions about this Privacy Policy, please contact us at privacy@thetradingdiary.com
-              </p>
+              <h2 className="text-2xl font-semibold mb-4">{t('legal.privacy.cookies.title', '6. Cookies')}</h2>
+              <p>{t('legal.privacy.cookies.content', 'We use cookies to improve your experience. You can control cookies through your browser settings. Essential cookies are required for the service to function.')}</p>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-semibold mb-4">{t('legal.privacy.retention.title', '7. Data Retention')}</h2>
+              <p>{t('legal.privacy.retention.content', 'We retain your data for as long as your account is active or as needed to provide services. You can request deletion of your data at any time.')}</p>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-semibold mb-4">{t('legal.privacy.contact.title', '8. Contact Us')}</h2>
+              <p>{t('legal.privacy.contact.content', 'For privacy-related questions or to exercise your rights, please contact us at:')} privacy@thetradingdiary.com</p>
             </section>
           </div>
         </div>

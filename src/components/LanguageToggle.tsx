@@ -5,9 +5,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const languages = [
   { code: 'pt', name: 'Português', flag: '🇧🇷' },
@@ -18,13 +19,31 @@ const languages = [
 ];
 
 export const LanguageToggle = () => {
-  const { i18n } = useTranslation();
+  const { language, changeLanguage: i18nChangeLanguage } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
   
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  const currentLanguage = languages.find(lang => lang.code === language) || languages[0];
 
   const changeLanguage = (langCode: string) => {
-    i18n.changeLanguage(langCode);
+    i18nChangeLanguage(langCode);
     localStorage.setItem('app-language', langCode);
+    
+    // Get current path without existing language prefix
+    const currentPath = location.pathname;
+    const pathParts = currentPath.split('/').filter(Boolean);
+    const isLangPath = ['en', 'pt', 'es', 'ar', 'vi'].includes(pathParts[0]);
+    
+    // Remove language prefix if it exists
+    const pathWithoutLang = isLangPath 
+      ? '/' + pathParts.slice(1).join('/') 
+      : currentPath;
+    
+    // Build new path with language prefix (except for 'en' which stays at root)
+    const basePath = pathWithoutLang || '/';
+    const newPath = langCode === 'en' ? basePath : `/${langCode}${basePath}`;
+    
+    navigate(newPath, { replace: true });
   };
 
   return (
@@ -45,26 +64,26 @@ export const LanguageToggle = () => {
         align="end" 
         className="w-[180px] glass-strong backdrop-blur-xl border-border/50"
       >
-        {languages.map((language) => (
-          <DropdownMenuItem
-            key={language.code}
-            onClick={() => changeLanguage(language.code)}
-            className={cn(
-              "flex items-center justify-between cursor-pointer",
-              i18n.language === language.code && "bg-accent/50"
-            )}
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-lg" role="img" aria-label={language.name}>
-                {language.flag}
-              </span>
-              <span>{language.name}</span>
-            </div>
-            {i18n.language === language.code && (
-              <Check className="h-4 w-4 text-primary" />
-            )}
-          </DropdownMenuItem>
-        ))}
+      {languages.map((lang) => (
+        <DropdownMenuItem
+          key={lang.code}
+          onClick={() => changeLanguage(lang.code)}
+          className={cn(
+            "flex items-center justify-between cursor-pointer",
+            language === lang.code && "bg-accent/50"
+          )}
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-lg" role="img" aria-label={lang.name}>
+              {lang.flag}
+            </span>
+            <span>{lang.name}</span>
+          </div>
+          {language === lang.code && (
+            <Check className="h-4 w-4 text-primary" />
+          )}
+        </DropdownMenuItem>
+      ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -17,6 +17,7 @@ import { InstallPrompt } from "@/components/mobile/InstallPrompt";
 import { ThemeInitializer } from "@/components/ThemeInitializer";
 import { usePageTracking } from "@/hooks/usePageTracking";
 import { ConversionTracking } from "@/components/ConversionTracking";
+import { LanguageSync } from "@/components/LanguageSync";
 
 // Eagerly load critical pages (landing and auth)
 import Index from "./pages/Index";
@@ -115,8 +116,10 @@ const AppRoutes = () => {
   usePageTracking(); // Automatically track page views
   
   return (
-    <Suspense fallback={<PageLoader />}>
-      <Routes>
+    <>
+      <LanguageSync />
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
         {/* Landing pages by language */}
         <Route path="/" element={<Index />} />
         <Route path="/pt" element={<IndexPt />} />
@@ -124,29 +127,39 @@ const AppRoutes = () => {
         <Route path="/ar" element={<IndexAr />} />
         <Route path="/vi" element={<IndexVi />} />
         
-        {/* Auth with language detection */}
+        {/* Auth routes */}
         <Route path="/auth" element={<Auth />} />
+        <Route path="/:lang/auth" element={<Auth />} />
+        
+        {/* Public pages with language support */}
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/:lang/pricing" element={<PricingPage />} />
+        
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/:lang/contact" element={<Contact />} />
+        
+        <Route path="/legal" element={<Legal />} />
+        <Route path="/:lang/legal" element={<Legal />} />
+        
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/:lang/terms" element={<Terms />} />
+        
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/:lang/privacy" element={<Privacy />} />
+        
+        {/* Blog routes with language support */}
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/:lang/blog" element={<Blog />} />
+        <Route path="/blog/:slug" element={<BlogPost />} />
+        <Route path="/:lang/blog/:slug" element={<BlogPost />} />
+        <Route path="/author/:authorSlug" element={<Author />} />
+        
+        {/* Other public pages */}
         <Route path="/logo-download" element={<LogoDownload />} />
         <Route path="/crypto-trading-faq" element={<CryptoTradingFAQ />} />
         <Route path="/sitemap" element={<Sitemap />} />
         <Route path="/about" element={<About />} />
         <Route path="/seo-dashboard" element={<SEODashboard />} />
-        <Route path="/pricing" element={<PricingPage />} />
-        
-        {/* Language-specific pricing pages */}
-        <Route path="/pt/pricing" element={<PricingPage />} />
-        <Route path="/es/pricing" element={<PricingPage />} />
-        <Route path="/ar/pricing" element={<PricingPage />} />
-        <Route path="/vi/pricing" element={<PricingPage />} />
-        
-        {/* Blog routes with language support */}
-        <Route path="/blog" element={<Blog />} />
-        <Route path="/blog/:slug" element={<BlogPost />} />
-        <Route path="/author/:authorSlug" element={<Author />} />
-        
-        {/* Language-specific blog routes */}
-        <Route path="/:lang/blog" element={<Blog />} />
-        <Route path="/:lang/blog/:slug" element={<BlogPost />} />
         
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/upload" element={<ProtectedRoute><Upload /></ProtectedRoute>} />
@@ -179,11 +192,8 @@ const AppRoutes = () => {
         <Route path="/progress-analytics" element={<ProtectedRoute><ProgressAnalytics /></ProtectedRoute>} />
         <Route path="/my-metrics" element={<ProtectedRoute><MyMetrics /></ProtectedRoute>} />
         <Route path="/user-guide" element={<ProtectedRoute><UserGuide /></ProtectedRoute>} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/legal" element={<Legal />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/privacy" element={<Privacy />} />
         <Route path="/cookie-policy" element={<CookiePolicy />} />
+        <Route path="/:lang/cookie-policy" element={<CookiePolicy />} />
         <Route path="/blog/article/:slug" element={<BlogArticle />} />
         <Route path="/learn" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
         <Route path="/api-docs" element={<ProtectedRoute><ApiDocs /></ProtectedRoute>} />
@@ -196,7 +206,8 @@ const AppRoutes = () => {
         <Route path="/custom/:pageId" element={<ProtectedRoute><CustomPage /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </Suspense>
+      </Suspense>
+    </>
   );
 };
 

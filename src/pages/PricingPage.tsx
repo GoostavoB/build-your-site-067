@@ -4,7 +4,6 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { motion } from "framer-motion";
 import PricingComparison from "@/components/PricingComparison";
-import CTA from "@/components/CTA";
 import { OutcomeCard } from "@/components/premium/OutcomeCard";
 import { ParallaxTradingElements } from "@/components/premium/ParallaxTradingElements";
 import { PremiumPricingCard } from "@/components/PremiumPricingCard";
@@ -500,8 +499,17 @@ const PricingPage = () => {
       {/* Comparison Table */}
       <PricingComparison />
 
-      {/* Final CTA */}
-      <CTA />
+      {/* Final CTA Button */}
+      <section className="py-20 px-6">
+        <div className="container mx-auto max-w-4xl text-center">
+          <MagneticButton
+            onClick={() => navigate('/auth')}
+            className="text-lg px-12 py-6"
+          >
+            {t('pricing.hero.primaryCta')}
+          </MagneticButton>
+        </div>
+      </section>
     </div>
   );
 };

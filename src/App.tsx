@@ -57,6 +57,7 @@ const ExchangeConnections = lazy(() => import("./pages/ExchangeConnections"));
 const SpotWallet = lazy(() => import("./pages/SpotWallet"));
 const FeeAnalysis = lazy(() => import("./pages/FeeAnalysis"));
 const LogoDownload = lazy(() => import("./pages/LogoDownload"));
+const LogoGenerator = lazy(() => import("./pages/LogoGenerator"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const LongShortRatio = lazy(() => import("./pages/LongShortRatio"));
 const EconomicCalendar = lazy(() => import("./pages/EconomicCalendar"));
@@ -157,6 +158,7 @@ const AppRoutes = () => {
         
         {/* Other public pages */}
         <Route path="/logo-download" element={<LogoDownload />} />
+        <Route path="/logo-generator" element={<LogoGenerator />} />
         <Route path="/crypto-trading-faq" element={<CryptoTradingFAQ />} />
         <Route path="/sitemap" element={<Sitemap />} />
         <Route path="/about" element={<About />} />

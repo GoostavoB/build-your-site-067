@@ -66,15 +66,6 @@ export const OutcomeCard = ({
 
         <div className="outcome-card-refined relative overflow-hidden rounded-2xl p-8 h-[380px] flex flex-col justify-between">
           <div className="space-y-4">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.3, delay: index * 0.12 + 0.15 }}
-              className="text-[11px] uppercase tracking-[0.2em] text-primary font-medium"
-            >
-              Solution {index + 1}
-            </motion.div>
-
             <motion.h3
               initial={{ opacity: 0, y: 15 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}

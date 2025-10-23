@@ -92,7 +92,7 @@ export const MagneticButton = ({
             }}
           />
         )}
-        <span className="relative z-10">{children}</span>
+        <span className="relative z-10 text-lg font-semibold">{children}</span>
       </Button>
     </motion.div>
   );

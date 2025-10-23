@@ -330,7 +330,7 @@ const PricingPage = () => {
       </div>
 
       {/* Hero Section */}
-      <section ref={heroRef} className="relative py-20 md:py-24 px-6">
+      <section ref={heroRef} className="relative py-16 md:py-20 px-6">
         <div className="container relative mx-auto max-w-4xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -359,7 +359,7 @@ const PricingPage = () => {
       </section>
 
       {/* Solutions Section */}
-      <section className="relative py-24 px-6 overflow-hidden">
+      <section className="relative py-16 px-6 overflow-hidden">
         <ParallaxTradingElements />
         
         <div className="container mx-auto max-w-7xl relative z-10">
@@ -397,7 +397,7 @@ const PricingPage = () => {
         whileInView={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
-        className="py-16 px-6"
+        className="py-12 px-6"
       >
         <div className="container mx-auto max-w-3xl text-center">
           <h3 className="text-3xl md:text-4xl leading-tight font-sans">
@@ -408,7 +408,7 @@ const PricingPage = () => {
       </motion.section>
 
       {/* Pricing Cards */}
-      <section ref={pricingRef} className="py-32 px-6">
+      <section ref={pricingRef} className="py-16 px-6">
         <div className="container mx-auto max-w-7xl">
           <div className="text-center mb-16">
             <motion.h2 
@@ -451,7 +451,7 @@ const PricingPage = () => {
             </motion.p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             {plans.map((plan, index) => (
               <PremiumPricingCard 
                 key={plan.id} 
@@ -469,7 +469,7 @@ const PricingPage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="text-center mt-20"
+            className="text-center mt-12"
           >
             <div className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-primary/10 border border-primary/20 mb-4">
               <span className="text-lg font-bold text-primary uppercase tracking-wider">Coming Soon</span>
@@ -500,11 +500,11 @@ const PricingPage = () => {
       <PricingComparison />
 
       {/* Final CTA Button */}
-      <section className="py-20 px-6">
+      <section className="py-16 px-6">
         <div className="container mx-auto max-w-4xl text-center">
           <MagneticButton
             onClick={() => navigate('/auth')}
-            className="text-lg px-12 py-6"
+            className="text-xl px-16 py-8"
           >
             {t('pricing.hero.primaryCta')}
           </MagneticButton>

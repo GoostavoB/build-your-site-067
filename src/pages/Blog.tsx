@@ -67,10 +67,10 @@ const Blog = () => {
       <div className="max-w-5xl mx-auto space-y-8">
         <div className="text-center space-y-3">
           <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            Crypto Trading Blog
+            {t('blog.title')}
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Expert insights on AI-powered trading, psychology, risk management, and data-driven strategies
+            {t('blog.subtitle')}
           </p>
         </div>
         
@@ -80,7 +80,7 @@ const Blog = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search articles..."
+              placeholder={t('blog.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -95,7 +95,7 @@ const Blog = () => {
                 size="sm"
                 onClick={() => setSelectedCategory(category)}
               >
-                {category === 'all' ? 'All Articles' : category}
+                {category === 'all' ? t('blog.allArticles') : category}
               </Button>
             ))}
           </div>

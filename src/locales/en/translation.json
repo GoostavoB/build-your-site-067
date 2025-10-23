@@ -1434,6 +1434,106 @@
     "messageSent": "Message sent! We'll get back to you soon.",
     "directEmail": "Or email us directly at:"
   },
+  "legal": {
+    "title": "Legal Information",
+    "subtitle": "Terms of Service & Privacy Policy",
+    "termsTitle": "Terms of Service",
+    "privacyTitle": "Privacy Policy",
+    "lastUpdated": "Last Updated",
+    "betaNotice": "Beta Product Notice",
+    "betaDescription": "The Trading Diary is currently in beta. Features and services are provided \"as is\" and may change without notice. We appreciate your feedback as we continue to improve.",
+    "terms": {
+      "acceptance": {
+        "title": "1. Acceptance of Terms",
+        "content": "By accessing and using The Trading Diary, you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services."
+      },
+      "service": {
+        "title": "2. Description of Service",
+        "content": "The Trading Diary provides a comprehensive trading journal and analytics platform. Our services include:",
+        "features": {
+          "trading": "Trade logging and analysis tools",
+          "analytics": "Performance metrics and visualizations",
+          "ai": "AI-powered insights and pattern recognition",
+          "social": "Community features and leaderboards"
+        }
+      },
+      "accounts": {
+        "title": "3. User Accounts",
+        "content": "You are responsible for maintaining the confidentiality of your account credentials. You agree to notify us immediately of any unauthorized access to your account."
+      },
+      "payment": {
+        "title": "4. Payment and Subscriptions",
+        "content": "Subscription plans are billed monthly or annually. All fees are non-refundable except as required by law or specified in our refund policy.",
+        "refundPolicy": "7-Day Money-Back Guarantee",
+        "refundDetails": "If you are not satisfied with your subscription, you may request a full refund within 7 days of your initial purchase. Refunds are only available for first-time subscriptions."
+      },
+      "disclaimer": {
+        "title": "5. Trading Disclaimer",
+        "content": "The Trading Diary is a tool for tracking and analyzing your trades. We do not provide investment advice. Trading involves risk, and past performance does not guarantee future results. You are solely responsible for your trading decisions."
+      },
+      "termination": {
+        "title": "6. Termination",
+        "content": "We reserve the right to terminate or suspend your account at any time for violation of these terms. Upon termination, your right to use the service will immediately cease."
+      },
+      "changes": {
+        "title": "7. Changes to Terms",
+        "content": "We may modify these terms at any time. We will notify users of significant changes via email or through the platform. Continued use of the service after changes constitutes acceptance of the new terms."
+      }
+    },
+    "privacy": {
+      "intro": {
+        "title": "1. Introduction",
+        "content": "This Privacy Policy explains how The Trading Diary collects, uses, and protects your personal information. We are committed to protecting your privacy and complying with applicable data protection laws, including GDPR."
+      },
+      "collection": {
+        "title": "2. Information We Collect",
+        "content": "We collect the following types of information:",
+        "items": {
+          "account": "Account information (name, email, country)",
+          "trading": "Trading data (trades, performance metrics, journal entries)",
+          "usage": "Usage data (pages visited, features used, time spent)",
+          "technical": "Technical data (IP address, browser type, device information)"
+        }
+      },
+      "usage": {
+        "title": "3. How We Use Your Information",
+        "items": {
+          "service": "To provide and improve our services",
+          "analytics": "To generate analytics and insights",
+          "improvements": "To develop new features and improvements",
+          "communication": "To send service updates and marketing communications (with consent)",
+          "compliance": "To comply with legal obligations"
+        }
+      },
+      "gdpr": {
+        "title": "4. GDPR Rights",
+        "content": "If you are in the European Union, you have the following rights:",
+        "rights": {
+          "access": "Right to access your personal data",
+          "rectification": "Right to rectify inaccurate data",
+          "erasure": "Right to erasure ('right to be forgotten')",
+          "portability": "Right to data portability",
+          "objection": "Right to object to processing"
+        }
+      },
+      "security": {
+        "title": "5. Data Security",
+        "content": "We implement industry-standard security measures to protect your data, including encryption, secure servers, and regular security audits. However, no method of transmission over the internet is 100% secure."
+      },
+      "sharing": {
+        "title": "6. Data Sharing",
+        "content": "We do not sell your personal data. We may share anonymized, aggregated data for analytical purposes. We may share data with service providers who assist us in operating our platform (e.g., hosting, analytics)."
+      },
+      "cookies": {
+        "title": "7. Cookies",
+        "content": "We use cookies and similar technologies to enhance your experience, analyze usage, and provide personalized content. You can control cookies through your browser settings."
+      },
+      "contact": {
+        "title": "8. Contact Us",
+        "content": "For privacy-related questions or to exercise your rights, please contact us at:"
+      }
+    }
+  },
   "errors": {
     "generic": "Something went wrong",
     "network": "Network error. Please check your connection",

@@ -1313,6 +1313,106 @@
     "messageSent": "Mensagem enviada! Entraremos em contato em breve.",
     "directEmail": "Ou envie um e-mail diretamente para:"
   },
+  "legal": {
+    "title": "Informações Legais",
+    "subtitle": "Termos de Serviço & Política de Privacidade",
+    "termsTitle": "Termos de Serviço",
+    "privacyTitle": "Política de Privacidade",
+    "lastUpdated": "Última Atualização",
+    "betaNotice": "Aviso de Produto Beta",
+    "betaDescription": "O The Trading Diary está atualmente em beta. Os recursos e serviços são fornecidos \"como estão\" e podem mudar sem aviso prévio. Agradecemos seu feedback enquanto continuamos a melhorar.",
+    "terms": {
+      "acceptance": {
+        "title": "1. Aceitação dos Termos",
+        "content": "Ao acessar e usar o The Trading Diary, você aceita e concorda em estar vinculado a estes Termos de Serviço. Se você não concordar com estes termos, por favor não use nossos serviços."
+      },
+      "service": {
+        "title": "2. Descrição do Serviço",
+        "content": "O The Trading Diary fornece uma plataforma abrangente de diário e análise de trading. Nossos serviços incluem:",
+        "features": {
+          "trading": "Ferramentas de registro e análise de operações",
+          "analytics": "Métricas e visualizações de desempenho",
+          "ai": "Insights alimentados por IA e reconhecimento de padrões",
+          "social": "Recursos da comunidade e tabelas de classificação"
+        }
+      },
+      "accounts": {
+        "title": "3. Contas de Usuário",
+        "content": "Você é responsável por manter a confidencialidade das credenciais da sua conta. Você concorda em nos notificar imediatamente sobre qualquer acesso não autorizado à sua conta."
+      },
+      "payment": {
+        "title": "4. Pagamento e Assinaturas",
+        "content": "Os planos de assinatura são cobrados mensalmente ou anualmente. Todas as taxas não são reembolsáveis, exceto conforme exigido por lei ou especificado em nossa política de reembolso.",
+        "refundPolicy": "Garantia de Reembolso de 7 Dias",
+        "refundDetails": "Se você não estiver satisfeito com sua assinatura, poderá solicitar um reembolso total dentro de 7 dias da sua compra inicial. Os reembolsos estão disponíveis apenas para assinaturas pela primeira vez."
+      },
+      "disclaimer": {
+        "title": "5. Aviso Legal de Trading",
+        "content": "O The Trading Diary é uma ferramenta para rastrear e analisar suas operações. Não fornecemos consultoria de investimento. O trading envolve risco, e o desempenho passado não garante resultados futuros. Você é o único responsável por suas decisões de trading."
+      },
+      "termination": {
+        "title": "6. Rescisão",
+        "content": "Reservamo-nos o direito de encerrar ou suspender sua conta a qualquer momento por violação destes termos. Após a rescisão, seu direito de usar o serviço cessará imediatamente."
+      },
+      "changes": {
+        "title": "7. Alterações nos Termos",
+        "content": "Podemos modificar estes termos a qualquer momento. Notificaremos os usuários sobre mudanças significativas por e-mail ou através da plataforma. O uso contínuo do serviço após as alterações constitui aceitação dos novos termos."
+      }
+    },
+    "privacy": {
+      "intro": {
+        "title": "1. Introdução",
+        "content": "Esta Política de Privacidade explica como o The Trading Diary coleta, usa e protege suas informações pessoais. Estamos comprometidos em proteger sua privacidade e cumprir as leis de proteção de dados aplicáveis, incluindo o GDPR."
+      },
+      "collection": {
+        "title": "2. Informações que Coletamos",
+        "content": "Coletamos os seguintes tipos de informações:",
+        "items": {
+          "account": "Informações da conta (nome, e-mail, país)",
+          "trading": "Dados de trading (operações, métricas de desempenho, entradas de diário)",
+          "usage": "Dados de uso (páginas visitadas, recursos usados, tempo gasto)",
+          "technical": "Dados técnicos (endereço IP, tipo de navegador, informações do dispositivo)"
+        }
+      },
+      "usage": {
+        "title": "3. Como Usamos Suas Informações",
+        "items": {
+          "service": "Para fornecer e melhorar nossos serviços",
+          "analytics": "Para gerar análises e insights",
+          "improvements": "Para desenvolver novos recursos e melhorias",
+          "communication": "Para enviar atualizações de serviço e comunicações de marketing (com consentimento)",
+          "compliance": "Para cumprir obrigações legais"
+        }
+      },
+      "gdpr": {
+        "title": "4. Direitos GDPR",
+        "content": "Se você estiver na União Europeia, você tem os seguintes direitos:",
+        "rights": {
+          "access": "Direito de acessar seus dados pessoais",
+          "rectification": "Direito de retificar dados imprecisos",
+          "erasure": "Direito ao apagamento ('direito ao esquecimento')",
+          "portability": "Direito à portabilidade de dados",
+          "objection": "Direito de se opor ao processamento"
+        }
+      },
+      "security": {
+        "title": "5. Segurança de Dados",
+        "content": "Implementamos medidas de segurança padrão da indústria para proteger seus dados, incluindo criptografia, servidores seguros e auditorias de segurança regulares. No entanto, nenhum método de transmissão pela internet é 100% seguro."
+      },
+      "sharing": {
+        "title": "6. Compartilhamento de Dados",
+        "content": "Não vendemos seus dados pessoais. Podemos compartilhar dados anonimizados e agregados para fins analíticos. Podemos compartilhar dados com provedores de serviços que nos auxiliam na operação de nossa plataforma (por exemplo, hospedagem, análise)."
+      },
+      "cookies": {
+        "title": "7. Cookies",
+        "content": "Usamos cookies e tecnologias similares para melhorar sua experiência, analisar o uso e fornecer conteúdo personalizado. Você pode controlar os cookies através das configurações do seu navegador."
+      },
+      "contact": {
+        "title": "8. Contate-nos",
+        "content": "Para questões relacionadas à privacidade ou para exercer seus direitos, entre em contato conosco em:"
+      }
+    }
+  },
   "errors": {
     "generic": "Algo deu errado",
     "network": "Erro de rede. Verifique sua conexão",

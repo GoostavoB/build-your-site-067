@@ -107,9 +107,6 @@ export const OutcomeCard = ({
                 decimals={metricValue && metricValue % 1 !== 0 ? 1 : 0}
                 inView={inView}
               />
-              <p className="text-[11px] text-primary uppercase tracking-wider">
-                {metric}
-              </p>
             </motion.div>
 
             <motion.p

@@ -11,10 +11,13 @@ import wallpaperLogo from '@/assets/wallpaper-logo-center.png';
 import wallpaperTrading from '@/assets/wallpaper-trading-theme.png';
 import wallpaperCreative from '@/assets/wallpaper-creative.png';
 import tdLogoBlue from '@/assets/td-logo-official.png';
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const LogoDownload = () => {
   const navigate = useNavigate();
   const [selectedBg, setSelectedBg] = useState<'transparent' | 'white' | 'dark'>('transparent');
+  const [colorVariant, setColorVariant] = useState<"default" | "vietnam">("default");
   const logoRef = useRef<HTMLDivElement>(null);
 
   const downloadLogo = async (width: number, height: number, bgColor: 'transparent' | 'white' | 'dark') => {
@@ -206,6 +209,22 @@ const LogoDownload = () => {
             </Button>
           </div>
 
+          {/* Color Variant Selector */}
+          <div className="mb-6">
+            <Label htmlFor="colorVariant" className="text-sm font-medium mb-2 block">
+              Logo Color Variant
+            </Label>
+            <Select value={colorVariant} onValueChange={(value: any) => setColorVariant(value)}>
+              <SelectTrigger id="colorVariant" className="w-full max-w-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="default">Default (Blue)</SelectItem>
+                <SelectItem value="vietnam">Vietnam (Red with Star)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Logo Display */}
           <div
             className="rounded-xl p-12 flex items-center justify-center transition-colors"
@@ -226,7 +245,7 @@ const LogoDownload = () => {
                 padding: '24px 32px',
               }}
             >
-              <Logo size="xl" variant="horizontal" className={selectedBg === 'white' ? 'text-foreground' : 'text-white'} />
+              <Logo size="xl" variant="horizontal" colorVariant={colorVariant} className={selectedBg === 'white' ? 'text-foreground' : 'text-white'} />
             </div>
           </div>
 

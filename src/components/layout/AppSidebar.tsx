@@ -122,9 +122,19 @@ export function AppSidebar() {
       dataTour: 'community-group',
       items: [
         { title: t('navigation.social'), url: '/social', icon: Users, iconName: 'Users', keywords: ['social', 'community', 'feed', 'posts', 'share', 'friends', 'network', 'follow', 'followers', 'strategies', 'discussions', 'comments', 'likes', 'engagement', 'traders', 'public'] },
+        { title: 'Social Feed', url: '/social-feed', icon: Heart, iconName: 'Heart', keywords: ['feed', 'posts', 'community', 'share', 'social', 'network', 'connect', 'trading', 'ideas', 'discuss'] },
         { title: t('navigation.leaderboard'), url: '/leaderboard', icon: Trophy, iconName: 'Trophy', keywords: ['leaderboard', 'ranking', 'top', 'competition', 'scores', 'traders', 'best', 'performers', 'elite', 'standings', 'positions', 'compare', 'leaders', 'winners', 'rank', 'compete'] },
         { title: t('navigation.achievements'), url: '/achievements', icon: Award, iconName: 'Award', keywords: ['achievements', 'badges', 'rewards', 'unlocks', 'milestones', 'trophies', 'accomplishments', 'goals', 'completed', 'earned', 'collection', 'showcase', 'awards', 'earn', 'win', 'accomplish'] },
         { title: t('navigation.progressXP'), url: '/progress-analytics', icon: Zap, iconName: 'Zap', keywords: ['progress', 'xp', 'experience', 'level', 'achievements', 'gamification', 'points', 'rewards', 'streaks', 'challenges', 'daily', 'weekly', 'missions', 'unlock', 'growth', 'rank', 'leveling'] },
+      ],
+    },
+    {
+      label: 'Learning',
+      defaultOpen: false,
+      items: [
+        { title: 'Trading Lessons', url: '/learn', icon: BookOpen, iconName: 'BookOpen', keywords: ['learn', 'education', 'lessons', 'courses', 'training', 'tutorials', 'knowledge', 'improve', 'study'] },
+        { title: 'API Documentation', url: '/api-docs', icon: FileText, iconName: 'FileText', keywords: ['api', 'docs', 'documentation', 'developer', 'integration', 'endpoints', 'technical'] },
+        { title: 'Advanced Analytics', url: '/advanced-analytics', icon: TrendingUp, iconName: 'TrendingUp', keywords: ['advanced', 'analytics', 'metrics', 'deep', 'analysis', 'statistics', 'insights'] },
       ],
     },
   ];

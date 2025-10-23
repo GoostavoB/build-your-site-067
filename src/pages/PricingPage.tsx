@@ -11,6 +11,7 @@ import { ParallaxTradingElements } from "@/components/premium/ParallaxTradingEle
 import { PremiumPricingCard } from "@/components/PremiumPricingCard";
 import { MagneticButton } from "@/components/MagneticButton";
 import { PremiumBillingToggle } from "@/components/premium/PremiumBillingToggle";
+import { Logo } from "@/components/Logo";
 
 const PricingPage = () => {
   const navigate = useNavigate();
@@ -281,6 +282,19 @@ const PricingPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-background">
+      {/* Logo */}
+      <div 
+        className="absolute top-6 left-6 z-50 cursor-pointer" 
+        onClick={() => navigate('/')}
+      >
+        <Logo 
+          size="lg" 
+          variant="horizontal" 
+          showText={true} 
+          className="hover:opacity-80 transition-opacity"
+        />
+      </div>
+
       {/* Hero Section */}
       <section ref={heroRef} className="relative py-20 md:py-24 px-6">
         <div className="container relative mx-auto max-w-4xl text-center">

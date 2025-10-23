@@ -8,50 +8,60 @@ interface PremiumBillingToggleProps {
 export const PremiumBillingToggle = ({ billingCycle, onToggle }: PremiumBillingToggleProps) => {
   return (
     <div className="flex flex-col items-center gap-3 relative">
-      {/* Hand-drawn arrow pointing from SAVE 20% to Yearly */}
-      <motion.svg
-        initial={{ opacity: 0, pathLength: 0 }}
+      {/* Elegant animated glow connecting badge to Yearly button */}
+      <motion.div
+        className="absolute -right-8 top-1/2 w-16 h-0.5 pointer-events-none"
+        initial={{ opacity: 0, scaleX: 0 }}
         animate={{ 
-          opacity: billingCycle === 'annual' ? 0.9 : 0,
-          pathLength: billingCycle === 'annual' ? 1 : 0 
+          opacity: billingCycle === 'annual' ? 0.6 : 0,
+          scaleX: billingCycle === 'annual' ? 1 : 0
         }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className="absolute -right-20 -bottom-2 w-32 h-40 pointer-events-none"
-        viewBox="0 0 128 160"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        {/* Curved arrow path with hand-drawn style */}
-        <motion.path
-          d="M 10 145 Q 20 120, 35 95 T 70 50 Q 90 30, 115 15"
-          stroke="hsl(var(--primary))"
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-          style={{
-            filter: 'url(#roughen)',
-          }}
-        />
-        {/* Arrow head */}
-        <motion.path
-          d="M 115 15 L 108 12 M 115 15 L 110 21"
-          stroke="hsl(var(--primary))"
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: billingCycle === 'annual' ? 1 : 0 }}
-          transition={{ duration: 0.3, delay: 0.6 }}
-        />
-        {/* SVG filter for hand-drawn effect */}
-        <defs>
-          <filter id="roughen">
-            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </defs>
-      </motion.svg>
+        transition={{ duration: 0.5, delay: 0.1 }}
+        style={{
+          background: 'linear-gradient(90deg, hsl(var(--primary) / 0.8), hsl(var(--primary) / 0.2))',
+          boxShadow: '0 0 8px hsl(var(--primary) / 0.5), 0 0 16px hsl(var(--primary) / 0.3)',
+          transformOrigin: 'left center',
+        }}
+      />
+
+      {/* Pulsing particles */}
+      {billingCycle === 'annual' && (
+        <>
+          <motion.div
+            className="absolute -right-12 top-1/2 w-1.5 h-1.5 rounded-full bg-primary pointer-events-none"
+            animate={{
+              x: [0, 20, 40],
+              opacity: [0, 1, 0],
+              scale: [0.5, 1, 0.5],
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            style={{
+              boxShadow: '0 0 8px hsl(var(--primary))',
+            }}
+          />
+          <motion.div
+            className="absolute -right-12 top-1/2 w-1 h-1 rounded-full bg-primary pointer-events-none"
+            animate={{
+              x: [0, 20, 40],
+              opacity: [0, 0.8, 0],
+              scale: [0.5, 1.2, 0.5],
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.5,
+            }}
+            style={{
+              boxShadow: '0 0 6px hsl(var(--primary))',
+            }}
+          />
+        </>
+      )}
 
       <div className="relative inline-flex items-center rounded-full bg-card/40 backdrop-blur-sm border border-border/50 p-1.5">
         {/* Sliding indicator */}
@@ -84,24 +94,53 @@ export const PremiumBillingToggle = ({ billingCycle, onToggle }: PremiumBillingT
         {/* Annual button */}
         <button
           onClick={() => onToggle('annual')}
-          className={`relative z-10 px-6 py-2.5 text-sm font-medium rounded-full transition-colors ${
+          className={`relative z-10 px-6 py-2.5 text-sm font-medium rounded-full transition-all ${
             billingCycle === 'annual'
               ? 'text-primary-foreground'
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
-          Yearly
+          <motion.span
+            animate={{
+              textShadow: billingCycle === 'annual' 
+                ? ['0 0 0px transparent', '0 0 8px hsl(var(--primary))', '0 0 0px transparent']
+                : '0 0 0px transparent'
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            Yearly
+          </motion.span>
         </button>
       </div>
 
-      {/* Save badge */}
+      {/* Save badge with glow */}
       <motion.div
         initial={{ opacity: 0, y: -5 }}
-        animate={{ opacity: billingCycle === 'annual' ? 1 : 0.4, y: 0 }}
+        animate={{ 
+          opacity: billingCycle === 'annual' ? 1 : 0.4, 
+          y: 0,
+        }}
         transition={{ duration: 0.2 }}
-        className="text-xs font-semibold text-primary"
+        className="relative text-xs font-semibold text-primary"
       >
-        SAVE 20%
+        <motion.span
+          animate={{
+            textShadow: billingCycle === 'annual'
+              ? ['0 0 0px transparent', '0 0 12px hsl(var(--primary) / 0.6)', '0 0 0px transparent']
+              : '0 0 0px transparent'
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          SAVE 20%
+        </motion.span>
       </motion.div>
     </div>
   );

@@ -67,7 +67,7 @@ const IndexAr = () => {
           {t('navigation.blog')}
         </Button>
         <Button
-          onClick={() => navigate('/contact')}
+          onClick={() => navigate('/ar/contact')}
           variant="ghost"
           className="glass backdrop-blur-[10px] border border-primary/20 text-foreground hover:bg-primary/10 transition-all rounded-xl px-5 py-2 font-medium shadow-sm hover:shadow-md"
         >

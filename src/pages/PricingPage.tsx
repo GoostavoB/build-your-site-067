@@ -170,8 +170,8 @@ const PricingPage = () => {
               viewport={{ once: true }}
               className="text-3xl md:text-4xl font-bold mb-4"
             >
-              Your rules.{' '}
-              <span className="font-serif italic text-primary">Your results.</span>
+              {t('pricing.solutions.headline1', 'Your rules.')}{' '}
+              <span className="font-serif italic text-primary">{t('pricing.solutions.headline2', 'Your results.')}</span>
             </motion.h2>
             <motion.p
               initial={{ opacity: 0 }}
@@ -180,24 +180,24 @@ const PricingPage = () => {
               viewport={{ once: true }}
               className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto"
             >
-              If you cannot measure it, you cannot improve it.
+              {t('pricing.solutions.tagline', 'If you cannot measure it, you cannot improve it.')}
             </motion.p>
           </div>
 
           <div className="max-w-5xl mx-auto space-y-6 md:space-y-8">
             <WideOutcomeCard
-              headline="Upload 40x Faster"
-              subhead="Batch upload trades from screenshots instead of manual entry"
+              headline={t('pricing.solutions.outcome1.headline', 'Upload 40x Faster')}
+              subhead={t('pricing.solutions.outcome1.subhead', 'Batch upload trades from screenshots instead of manual entry')}
               metric="40x"
               metricValue={40}
-              proofPoint="Batch uploads from screenshots beat manual entry every time"
+              proofPoint={t('pricing.solutions.outcome1.proof', 'Batch uploads from screenshots beat manual entry every time')}
             />
             <WideOutcomeCard
-              headline="Save 75-97% of Your Time"
-              subhead="Spend less time logging, more time analyzing and trading"
+              headline={t('pricing.solutions.outcome2.headline', 'Save 75-97% of Your Time')}
+              subhead={t('pricing.solutions.outcome2.subhead', 'Spend less time logging, more time analyzing and trading')}
               metric="97%"
               metricValue={97}
-              proofPoint="Spend less time logging, more time winning"
+              proofPoint={t('pricing.solutions.outcome2.proof', 'Spend less time logging, more time winning')}
             />
           </div>
         </div>
@@ -270,21 +270,21 @@ const PricingPage = () => {
           >
             <GlassCard className="p-8 md:p-12 text-center">
               <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-gradient-to-r from-accent via-primary to-accent bg-size-200 animate-gradient mb-8 shadow-lg shadow-accent/20">
-                <span className="text-sm font-bold text-white uppercase tracking-wider">Coming Soon</span>
+                <span className="text-sm font-bold text-white uppercase tracking-wider">{t('pricing.comingSoon.badge', 'Coming Soon')}</span>
               </div>
               
               {/* Enterprise */}
               <div className="mb-12">
-                <h3 className="text-3xl md:text-4xl font-bold mb-4">Enterprise</h3>
+                <h3 className="text-3xl md:text-4xl font-bold mb-4">{t('pricing.comingSoon.enterprise.title', 'Enterprise')}</h3>
                 <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
-                  Team collaboration, powerful reports & white label solutions for professional trading teams
+                  {t('pricing.comingSoon.enterprise.description', 'Team collaboration, powerful reports & white label solutions for professional trading teams')}
                 </p>
                 <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
-                  <span>• Team Collaboration Tools</span>
-                  <span>• Advanced Reporting</span>
-                  <span>• White Label Solution</span>
-                  <span>• Priority Support</span>
-                  <span>• Custom Integrations</span>
+                  <span>• {t('pricing.comingSoon.enterprise.features.collaboration', 'Team Collaboration Tools')}</span>
+                  <span>• {t('pricing.comingSoon.enterprise.features.reporting', 'Advanced Reporting')}</span>
+                  <span>• {t('pricing.comingSoon.enterprise.features.whiteLabel', 'White Label Solution')}</span>
+                  <span>• {t('pricing.comingSoon.enterprise.features.support', 'Priority Support')}</span>
+                  <span>• {t('pricing.comingSoon.enterprise.features.integrations', 'Custom Integrations')}</span>
                 </div>
               </div>
 
@@ -294,20 +294,20 @@ const PricingPage = () => {
               {/* Mobile Apps */}
               <div>
                 <h3 className="text-2xl md:text-3xl font-bold mb-4">
-                  iOS & Android Apps
+                  {t('pricing.comingSoon.mobile.title', 'iOS & Android Apps')}
                 </h3>
                 <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-                  Native mobile apps are in development. Soon you'll be able to take your trading diary with you, track trades, analyze performance, and stay on top of your game from anywhere.
+                  {t('pricing.comingSoon.mobile.description', 'Native mobile apps are in development. Soon you\'ll be able to take your trading diary with you, track trades, analyze performance, and stay on top of your game from anywhere.')}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                   <img 
                     src={appStoreSoon} 
-                    alt="Coming soon to the App Store" 
+                    alt={t('pricing.comingSoon.mobile.appStoreAlt', 'Coming soon to the App Store')}
                     className="h-14 hover:opacity-80 transition-opacity"
                   />
                   <img 
                     src={googlePlaySoon} 
-                    alt="Coming soon to Google Play" 
+                    alt={t('pricing.comingSoon.mobile.playStoreAlt', 'Coming soon to Google Play')}
                     className="h-14 hover:opacity-80 transition-opacity"
                   />
                 </div>

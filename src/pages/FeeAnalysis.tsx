@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DashboardSkeleton } from '@/components/DashboardSkeleton';
 import { useTranslation } from '@/hooks/useTranslation';
 import { aggregateExchangeStats, calculateEnhancedMetrics } from '@/utils/feeCalculations';
+import { BlurToggleButton } from '@/components/ui/BlurToggleButton';
 
 const FeeAnalysis = () => {
   const { t } = useTranslation();
@@ -82,9 +83,12 @@ const FeeAnalysis = () => {
   return (
     <AppLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">{t('feeAnalysis.title')}</h1>
-          <p className="text-muted-foreground">{t('feeAnalysis.subtitle')}</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">{t('feeAnalysis.title')}</h1>
+            <p className="text-muted-foreground">{t('feeAnalysis.subtitle')}</p>
+          </div>
+          <BlurToggleButton />
         </div>
 
         <FeeOverviewCards {...overviewData} />

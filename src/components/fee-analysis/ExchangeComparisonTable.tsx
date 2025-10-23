@@ -9,6 +9,7 @@ import { ArrowUpDown } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { BlurredValue, BlurredCurrency, BlurredPercent } from '@/components/ui/BlurredValue';
 
 interface ExchangeComparisonTableProps {
   exchangeStats: ExchangeFeeStats[];
@@ -101,21 +102,26 @@ export const ExchangeComparisonTable = memo(({ exchangeStats }: ExchangeComparis
                   {stat.broker}
                 </div>
               </TableCell>
-              <TableCell className="text-right">{formatCurrency(stat.totalVolume)}</TableCell>
+              <TableCell className="text-right">
+                <BlurredValue value={formatCurrency(stat.totalVolume)} />
+              </TableCell>
               <TableCell className="text-right">{stat.tradeCount}</TableCell>
-              <TableCell className="text-right">{formatCurrency(stat.totalFees)}</TableCell>
+              <TableCell className="text-right">
+                <BlurredValue value={formatCurrency(stat.totalFees)} />
+              </TableCell>
               <TableCell className="text-right">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div className="flex items-center justify-end gap-2">
-                        <span className={cn(
-                          "font-mono cursor-help",
-                          stat.avgFeePercent < 0.05 ? "text-green-500" : 
-                          stat.avgFeePercent < 0.10 ? "text-amber-500" : "text-red-500"
-                        )}>
-                          {stat.avgFeePercent.toFixed(3)}%
-                        </span>
+                        <BlurredPercent 
+                          value={stat.avgFeePercent}
+                          className={cn(
+                            "font-mono cursor-help",
+                            stat.avgFeePercent < 0.05 ? "text-green-500" : 
+                            stat.avgFeePercent < 0.10 ? "text-amber-500" : "text-red-500"
+                          )}
+                        />
                         <Badge className={cn("text-xs", classifyFee(stat.avgFeePercent).bgColor, classifyFee(stat.avgFeePercent).color)}>
                           {classifyFee(stat.avgFeePercent).label}
                         </Badge>
@@ -135,9 +141,7 @@ export const ExchangeComparisonTable = memo(({ exchangeStats }: ExchangeComparis
                 <EfficiencyBadge score={stat.avgEfficiencyScore} />
               </TableCell>
               <TableCell className="text-right">
-                <span className="text-amber-500">
-                  {stat.feeImpactOnPnL.toFixed(2)}%
-                </span>
+                <BlurredPercent value={stat.feeImpactOnPnL} className="text-amber-500" />
               </TableCell>
             </TableRow>
           ))}

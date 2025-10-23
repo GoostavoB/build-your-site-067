@@ -8,6 +8,7 @@ import { FeeBreakdownTooltip } from './FeeBreakdownTooltip';
 import { getStrategyFeeTarget } from '@/utils/feeClassification';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { AlertTriangle } from 'lucide-react';
+import { BlurredValue, BlurredCurrency, BlurredPercent } from '@/components/ui/BlurredValue';
 
 interface TradeDetailsTableProps {
   trades: EnhancedTradeMetrics[];
@@ -74,20 +75,22 @@ export const TradeDetailsTable = memo(({ trades }: TradeDetailsTableProps) => {
                     )}
                   </div>
                 </TableCell>
-                <TableCell className="text-right">{formatCurrency(trade.margin)}</TableCell>
+                <TableCell className="text-right">
+                  <BlurredCurrency amount={trade.margin} />
+                </TableCell>
                 <TableCell className="text-center">{trade.leverage}x</TableCell>
                 <TableCell className={cn(
                   "text-right font-mono",
                   trade.grossReturnPercent >= 0 ? "text-profit" : "text-loss"
                 )}>
-                  {formatPercent(trade.grossReturnPercent)}
+                  <BlurredPercent value={trade.grossReturnPercent} />
                 </TableCell>
                 <TableCell className={cn(
                   "text-right font-mono",
                   exceedsTarget ? "text-red-500 font-bold" : "text-amber-500"
                 )}>
                   <div className="flex items-center justify-end gap-2">
-                    {trade.feePercentOfMargin.toFixed(3)}%
+                    <BlurredPercent value={trade.feePercentOfMargin} />
                     <FeeBreakdownTooltip
                       tradingFee={trade.tradingFee}
                       fundingFee={trade.fundingFee}
@@ -101,16 +104,17 @@ export const TradeDetailsTable = memo(({ trades }: TradeDetailsTableProps) => {
                   "text-right font-mono font-semibold",
                   trade.effectiveReturnOnMargin >= 0 ? "text-profit" : "text-loss"
                 )}>
-                  {formatPercent(trade.effectiveReturnOnMargin)}
+                  <BlurredPercent value={trade.effectiveReturnOnMargin} />
                 </TableCell>
                 <TableCell className="text-right text-red-500">
-                  {formatCurrency(trade.tradingFee)}
+                  <BlurredCurrency amount={trade.tradingFee} />
                 </TableCell>
                 <TableCell className={cn(
                   "text-right",
                   trade.fundingFee >= 0 ? "text-green-500" : "text-red-500"
                 )}>
-                  {trade.fundingFee >= 0 ? '+' : ''}{formatCurrency(trade.fundingFee)}
+                  {trade.fundingFee >= 0 ? '+' : ''}
+                  <BlurredCurrency amount={Math.abs(trade.fundingFee)} />
                 </TableCell>
                 <TableCell className="text-center">
                   <RedFlagAlert 

@@ -8,7 +8,7 @@ const CTA = () => {
   const { t } = useTranslation();
 
   return (
-    <section className="py-20 md:py-28 px-6">
+    <section className="py-20 md:py-28 px-6" aria-labelledby="cta-heading">
       <div className="container mx-auto max-w-3xl">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -17,7 +17,7 @@ const CTA = () => {
           viewport={{ once: true }}
           className="text-center space-y-6"
         >
-          <h2 className="text-3xl md:text-4xl font-bold leading-tight">
+          <h2 id="cta-heading" className="text-3xl md:text-4xl font-bold leading-tight">
             {t('landing.cta.title')}
           </h2>
           
@@ -30,6 +30,7 @@ const CTA = () => {
               onClick={() => navigate('/auth')}
               size="lg"
               className="px-10 py-7 text-base font-medium rounded-xl"
+              aria-label="Start using The Trading Diary for free"
             >
               {t('landing.cta.button')}
             </Button>

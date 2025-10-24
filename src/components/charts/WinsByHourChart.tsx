@@ -326,11 +326,14 @@ const WinsByHourChartComponent = ({ trades }: WinsByHourChartProps) => {
                   style={{
                     backgroundColor: getHeatmapColor(data.totalPnL, maxPnL),
                   }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Hour ${data.hourNum}: ${data.tradeCount} trades, P&L: $${formatNumber(data.totalPnL)}`}
                 >
-                  <span className="text-xs font-medium text-white drop-shadow-lg">
+                  <span className="text-xs font-medium text-primary-foreground drop-shadow-lg">
                     {data.hourNum}h
                   </span>
-                  <span className="text-[10px] text-white/80 drop-shadow">
+                  <span className="text-[10px] text-primary-foreground/80 drop-shadow">
                     {data.tradeCount}
                   </span>
                   

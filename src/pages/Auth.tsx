@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft } from 'lucide-react';
 import { Logo } from '@/components/Logo';
+import { SkipToContent } from '@/components/SkipToContent';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -158,15 +159,16 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4 relative overflow-hidden">
+      <SkipToContent />
       {/* Subtle background effect */}
-      <div className="absolute inset-0 bg-gradient-radial from-purple-accent/10 via-transparent to-transparent opacity-50" />
-      <div className="absolute top-20 left-20 w-96 h-96 bg-purple-accent/5 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-20 right-20 w-96 h-96 bg-neon-green/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+      <div className="absolute inset-0 bg-gradient-radial from-purple-accent/10 via-transparent to-transparent opacity-50" aria-hidden="true" />
+      <div className="absolute top-20 left-20 w-96 h-96 bg-purple-accent/5 rounded-full blur-3xl animate-float" aria-hidden="true" />
+      <div className="absolute bottom-20 right-20 w-96 h-96 bg-neon-green/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} aria-hidden="true" />
       <Card className="w-full max-w-md p-8 bg-card/80 backdrop-blur-xl border-border/50 shadow-2xl relative z-10">
-        <div className="flex items-center justify-center gap-2 mb-8">
+        <header className="flex items-center justify-center gap-2 mb-8">
           <Logo size="lg" variant="icon" />
           <h1 className="text-3xl font-bold gradient-text">The Trading Diary</h1>
-        </div>
+        </header>
 
         {isForgotPassword && (
           <Button
@@ -182,56 +184,63 @@ const Auth = () => {
           </Button>
         )}
 
-        <h2 className="text-2xl font-semibold mb-6 text-center">
+        <h2 className="text-2xl font-semibold mb-6 text-center" id="auth-heading">
           {isForgotPassword ? 'Reset Password' : isLogin ? 'Welcome Back' : 'Create Account'}
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" aria-labelledby="auth-heading">
           {!isLogin && !isForgotPassword && (
             <>
               <div>
-                <label className="text-sm font-medium text-foreground">Full Name</label>
+                <Label htmlFor="fullName" className="text-sm font-medium text-foreground">Full Name</Label>
                 <Input
+                  id="fullName"
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   required={!isLogin}
                   className="mt-1"
                   placeholder="John Doe"
+                  aria-required={!isLogin}
                 />
               </div>
 
               <div>
-                <label className="text-sm font-medium text-foreground">Country</label>
+                <Label htmlFor="country" className="text-sm font-medium text-foreground">Country</Label>
                 <Input
+                  id="country"
                   type="text"
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
                   required={!isLogin}
                   className="mt-1"
                   placeholder="United States"
+                  aria-required={!isLogin}
                 />
               </div>
             </>
           )}
 
           <div>
-            <label className="text-sm font-medium text-foreground">Email</label>
+            <Label htmlFor="email" className="text-sm font-medium text-foreground">Email</Label>
             <Input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               className="mt-1"
               placeholder="trader@example.com"
+              aria-required="true"
             />
           </div>
 
           {!isForgotPassword && (
             <>
               <div>
-                <label className="text-sm font-medium text-foreground">Password</label>
+                <Label htmlFor="password" className="text-sm font-medium text-foreground">Password</Label>
                 <Input
+                  id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -239,13 +248,21 @@ const Auth = () => {
                   className="mt-1"
                   placeholder="••••••••"
                   minLength={12}
+                  aria-required="true"
+                  aria-describedby={!isLogin ? "password-requirements" : undefined}
                 />
+                {!isLogin && (
+                  <p id="password-requirements" className="text-xs text-muted-foreground mt-1">
+                    12+ characters with uppercase, lowercase, number, and special character
+                  </p>
+                )}
               </div>
 
               {!isLogin && (
                 <div>
-                  <label className="text-sm font-medium text-foreground">Confirm Password</label>
+                  <Label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">Confirm Password</Label>
                   <Input
+                    id="confirmPassword"
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -253,6 +270,7 @@ const Auth = () => {
                     className="mt-1"
                     placeholder="••••••••"
                     minLength={12}
+                    aria-required={!isLogin}
                   />
                 </div>
               )}
@@ -323,6 +341,7 @@ const Auth = () => {
             type="submit"
             disabled={loading}
             className="w-full bg-foreground text-background hover:bg-foreground/90"
+            aria-busy={loading}
           >
             {loading ? 'Loading...' : isForgotPassword ? 'Send Reset Link' : isLogin ? 'Sign In' : 'Sign Up'}
           </Button>
@@ -330,7 +349,7 @@ const Auth = () => {
 
         {!isForgotPassword && (
           <>
-            <div className="relative my-6">
+            <div className="relative my-6" role="separator" aria-label="or">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-border" />
               </div>
@@ -345,6 +364,7 @@ const Auth = () => {
               onClick={handleGoogleSignIn}
               disabled={loading}
               className="w-full border-border hover:bg-accent/50"
+              aria-label={`Sign ${isLogin ? 'in' : 'up'} with Google`}
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

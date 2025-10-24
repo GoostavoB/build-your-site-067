@@ -29,7 +29,7 @@ export const ProofBar = () => {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
       viewport={{ once: true }}
-      className="relative -mt-24 z-20 py-12 px-6"
+      className="relative -mt-24 z-20 px-6"
       aria-label="Social proof metrics"
     >
       <div className="container mx-auto max-w-6xl">
@@ -46,7 +46,7 @@ export const ProofBar = () => {
                 className="relative group"
               >
                 {/* Card with glass effect and better shadows */}
-                <div className="relative bg-background/80 backdrop-blur-xl border border-primary/20 rounded-3xl p-10 flex flex-col items-center text-center gap-4 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 overflow-hidden">
+                <div className="relative bg-black/40 backdrop-blur-xl border border-primary/20 rounded-3xl p-10 flex flex-col items-center text-center gap-4 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 overflow-hidden">
                   {/* Subtle gradient overlay */}
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   

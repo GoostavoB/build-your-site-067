@@ -108,7 +108,33 @@
       "readMoreInsights": "Read More Trading Insights"
     },
     "testimonials": {
-      "approvedByTraders": "Approved by professional traders"
+      "sectionTitle": "Trusted by Traders",
+      "testimonial1": {
+        "quote": "This journal completely changed how I analyze my trades. The AI insights are incredible.",
+        "author": "Marcus Chen",
+        "role": "Day Trader",
+        "exchange": "Binance"
+      },
+      "testimonial2": {
+        "quote": "Finally, a tool that understands crypto trading. The fee tracking alone saved me thousands.",
+        "author": "Sarah Rodriguez",
+        "role": "Swing Trader",
+        "exchange": "Coinbase"
+      }
+    },
+    "proofBar": {
+      "activeTraders": "Active Traders",
+      "tradesAnalyzed": "Trades Analyzed",
+      "averageRating": "Average Rating"
+    },
+    "hero": {
+      "titleShort": "Track every crypto trade. Learn faster.",
+      "benefits": [
+        "Import trades in minutes",
+        "See true PnL with fees",
+        "Review setups with tags"
+      ],
+      "ctaPrimary": "Get started free"
     },
     "cta": {
       "title": "Ready to Level Up Your Trading?",
@@ -128,6 +154,7 @@
       "legal": "Legal",
       "terms": "Terms",
       "privacy": "Privacy",
+      "securityBadge": "Data encrypted at rest and in transit",
       "allRightsReserved": "All rights reserved.",
       "madeWith": "Made with ❤️ for traders"
     }
@@ -298,6 +325,7 @@
     },
     "plans": {
       "cta": "Start Free Trial",
+      "terms": "7-day free trial • Cancel anytime • Billed in USD",
       "basic": {
         "name": "Basic",
         "description": "Perfect for active traders building structure",

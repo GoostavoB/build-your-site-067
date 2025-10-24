@@ -14,7 +14,7 @@ const Hero = () => {
   }
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-6 py-16" aria-labelledby="hero-title">
+    <section className="relative min-h-[100vh] md:min-h-[90vh] flex items-center justify-center px-6 pt-24 pb-10 overflow-hidden" aria-labelledby="hero-title">
       {/* Background Image */}
       <div className="absolute inset-0 z-0" role="presentation" aria-hidden="true">
         <img 
@@ -26,75 +26,59 @@ const Hero = () => {
           width="1920"
           height="1080"
         />
-        <div className="absolute inset-0 bg-background/50 backdrop-blur-[50px]"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/90 to-background"></div>
       </div>
       
       {/* Dynamic Glow Effects */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[150px] animate-pulse"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/15 rounded-full blur-[150px] animate-pulse" style={{ animationDelay: '1s' }}></div>
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
 
-      <div className="container mx-auto max-w-6xl relative z-10">
-        <header className="text-center space-y-8">
-          {/* Main Headline */}
+      <div className="container mx-auto max-w-4xl relative z-10">
+        <div className="text-center space-y-6">
+          {/* Title - Short & Punchy */}
           <motion.h1 
             id="hero-title"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight"
+            transition={{ duration: 0.5 }}
+            className="text-[clamp(28px,4.5vw,40px)] font-bold leading-[1.2] max-w-2xl mx-auto"
           >
-            {t('landing.hero.title').split(' ').slice(0, -2).join(' ')}{" "}
-            <span className="text-gradient-primary inline-block animate-fade-in">{t('landing.hero.title').split(' ').slice(-2).join(' ')}</span>
+            {t('landing.hero.titleShort')}
           </motion.h1>
 
-          {/* Supporting Text */}
-          <motion.p 
+          {/* Benefit Bullets */}
+          <motion.ul 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="flex flex-col items-center gap-2 text-base md:text-lg text-muted-foreground"
+            role="list"
           >
-            {t('landing.hero.subtitle')}
-          </motion.p>
+            {(t('landing.hero.benefits', { returnObjects: true }) as string[]).map((benefit: string, index: number) => (
+              <li key={index} className="flex items-center gap-2">
+                <span className="w-1 h-1 rounded-full bg-primary" aria-hidden="true" />
+                {benefit}
+              </li>
+            ))}
+          </motion.ul>
 
-          {/* CTA Button */}
+          {/* Primary CTA */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="pt-2"
           >
             <Button 
               onClick={() => navigate('/auth')}
-              className="px-8 py-7 text-lg font-medium rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+              size="lg"
+              className="h-12 px-8 min-w-[200px] text-base font-medium rounded-xl"
               aria-label="Start using The Trading Diary for free"
             >
-              {t('landing.hero.cta')}
+              {t('landing.hero.ctaPrimary')}
             </Button>
           </motion.div>
-        </header>
-
-          {/* Benefit Cards */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto mt-16"
-            role="group"
-            aria-label="Platform benefits"
-          >
-            <article className="glass-strong backdrop-blur-[20px] p-6 rounded-xl shadow-lg border border-primary/10 text-center flex flex-col items-center justify-center">
-              <h3 className="text-lg md:text-xl font-bold text-primary mb-2">{t('landing.benefits.fasterUploads.title')}</h3>
-              <p className="text-sm text-muted-foreground">{t('landing.benefits.fasterUploads.description')}</p>
-            </article>
-            <article className="glass-strong backdrop-blur-[20px] p-6 rounded-xl shadow-lg border border-primary/10 text-center flex flex-col items-center justify-center">
-              <h3 className="text-lg md:text-xl font-bold text-primary mb-2">{t('landing.benefits.knowEveryFee.title')}</h3>
-              <p className="text-sm text-muted-foreground">{t('landing.benefits.knowEveryFee.description')}</p>
-            </article>
-            <article className="glass-strong backdrop-blur-[20px] p-6 rounded-xl shadow-lg border border-primary/10 text-center flex flex-col items-center justify-center">
-              <h3 className="text-lg md:text-xl font-bold text-primary mb-2">{t('landing.benefits.yourRules.title')}</h3>
-              <p className="text-sm text-muted-foreground">{t('landing.benefits.yourRules.description')}</p>
-            </article>
-          </motion.div>
+        </div>
       </div>
     </section>
   );

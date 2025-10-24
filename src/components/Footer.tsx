@@ -42,9 +42,9 @@ const Footer = () => {
           {/* Product */}
           <div>
             <h4 className="font-semibold mb-3 text-sm">{t('landing.footer.product')}</h4>
-            <ul className="space-y-2.5">
+            <ul className="space-y-2">
               <li>
-                <a href="/features" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
+                <a href="/features" className="inline-block py-2 text-muted-foreground hover:text-foreground transition-colors text-sm">
                   {t('landing.footer.features')}
                 </a>
               </li>
@@ -141,8 +141,31 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* Security Badge */}
+        <div className="pb-6 border-b border-border/50">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg glass-subtle border border-primary/20">
+            <svg
+              className="h-4 w-4 text-primary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+            <span className="text-xs md:text-sm text-muted-foreground">
+              {t('landing.footer.securityBadge')}
+            </span>
+          </div>
+        </div>
+
         {/* Bottom Bar */}
-        <div className="pt-6 border-t border-border/50 flex flex-col md:flex-row justify-between items-center gap-3">
+        <div className="pt-6 flex flex-col md:flex-row justify-between items-center gap-3">
           <p className="text-muted-foreground text-xs md:text-sm">
             © 2025 The Trading Diary. {t('landing.footer.allRightsReserved')}
           </p>

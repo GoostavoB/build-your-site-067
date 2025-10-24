@@ -76,7 +76,10 @@ const DashboardShowcase = () => {
               {/* Dashboard content - Real Screenshot */}
               <Dialog open={isImageOpen} onOpenChange={setIsImageOpen}>
                 <DialogTrigger asChild>
-                  <div className="aspect-[16/10] bg-background relative overflow-hidden cursor-pointer group">
+                  <button 
+                    className="aspect-[16/10] bg-background relative overflow-hidden cursor-pointer group w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    aria-label="View full dashboard screenshot"
+                  >
                     <img 
                       src={dashboardScreenshot}
                       alt="Trading Dashboard showing real-time analytics, win rate, ROI, and capital growth charts"
@@ -86,16 +89,16 @@ const DashboardShowcase = () => {
                       loading="eager"
                     />
                     
-                    {/* Hover overlay with expand icon */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 glass-strong p-3 rounded-full border border-white/20">
-                        <Expand className="w-6 h-6 text-white" />
+                    {/* Centered expand icon - hidden by default, shows on hover/focus */}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                      <div className="p-4 rounded-full bg-primary backdrop-blur-sm">
+                        <Expand className="h-6 w-6 text-primary-foreground" aria-hidden="true" />
                       </div>
                     </div>
                     
                     {/* Subtle glow overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-transparent pointer-events-none"></div>
-                  </div>
+                  </button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden">
                   <div className="relative w-full h-full flex items-center justify-center bg-background/95 backdrop-blur-xl p-4">

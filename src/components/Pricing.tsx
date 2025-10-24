@@ -198,7 +198,7 @@ const Pricing = () => {
 
                 <Button
                   onClick={handleAuthNavigate}
-                  className={`w-full mb-5 rounded-xl font-medium transition-all ${
+                  className={`w-full h-12 mb-3 rounded-xl font-medium transition-all ${
                     plan.popular
                       ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md"
                       : "glass border border-primary/30 hover:bg-primary/10 hover:border-primary/50"
@@ -207,6 +207,10 @@ const Pricing = () => {
                 >
                   {t(plan.ctaKey)}
                 </Button>
+
+                <p className="text-xs text-muted-foreground text-center mb-5 leading-relaxed">
+                  {t('pricing.plans.terms')}
+                </p>
 
                 <ul className="space-y-2.5">
                   {plan.featuresKeys.map((featureKey, i) => (

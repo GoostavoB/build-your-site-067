@@ -1,12 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar as CalendarIcon, X } from 'lucide-react';
-import { format } from 'date-fns';
+import { Calendar as CalendarIcon, X, Sparkles } from 'lucide-react';
+import { format, isToday as checkIsToday } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Badge } from '@/components/ui/badge';
 
 export type DateRange = {
   from: Date | undefined;
@@ -83,12 +84,20 @@ export const DateRangeFilter = ({ dateRange, onDateRangeChange }: DateRangeFilte
     onDateRangeChange(finalRange);
     setIsOpen(false);
     
-    if (finalRange?.from && finalRange?.to) {
-      const isSingleDay = finalRange.from.toDateString() === finalRange.to.toDateString();
-      const message = isSingleDay
-        ? `${t('dateRange.showingData')} ${format(finalRange.from, 'MMM dd, yyyy')}`
-        : `${t('dateRange.showingData')} ${format(finalRange.from, 'MMM dd')} - ${format(finalRange.to, 'MMM dd, yyyy')}`;
-      toast.success(message);
+    if (finalRange?.from) {
+      const isSingleDay = !finalRange.to || finalRange.from.toDateString() === finalRange.to.toDateString();
+      const isToday = checkIsToday(finalRange.from) && isSingleDay;
+      
+      if (isToday) {
+        toast.success("Showing today's data", {
+          icon: <Sparkles className="h-4 w-4 text-primary" />,
+        });
+      } else if (isSingleDay) {
+        toast.success(`Showing data for ${format(finalRange.from, "PPP")}`);
+      } else if (finalRange.to) {
+        const message = `${t('dateRange.showingData')} ${format(finalRange.from, 'MMM dd')} - ${format(finalRange.to, 'MMM dd, yyyy')}`;
+        toast.success(message);
+      }
     }
   };
 
@@ -101,6 +110,16 @@ export const DateRangeFilter = ({ dateRange, onDateRangeChange }: DateRangeFilte
     setTempRange(range);
   };
 
+  // Check if selected date is today
+  const isTodaySelected = dateRange?.from 
+    ? checkIsToday(dateRange.from) && 
+      (!dateRange.to || checkIsToday(dateRange.to))
+    : false;
+
+  const isSingleDay = dateRange?.from && dateRange?.to
+    ? dateRange.from.toDateString() === dateRange.to.toDateString()
+    : !!dateRange?.from && !dateRange?.to;
+
   return (
     <div className="flex items-center gap-2">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -108,20 +127,34 @@ export const DateRangeFilter = ({ dateRange, onDateRangeChange }: DateRangeFilte
           <Button
             variant="outline"
             className={cn(
-              'justify-start text-left font-normal',
-              !dateRange && 'text-muted-foreground'
+              'justify-start text-left font-normal relative',
+              !dateRange && 'text-muted-foreground',
+              isTodaySelected && 'border-primary shadow-sm shadow-primary/20'
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {dateRange?.from ? (
-              dateRange.to && dateRange.from.toDateString() !== dateRange.to.toDateString() ? (
-                <>
-                  {format(dateRange.from, 'LLL dd, y')} -{' '}
-                  {format(dateRange.to, 'LLL dd, y')}
-                </>
-              ) : (
-                format(dateRange.from, 'LLL dd, y')
-              )
+              <div className="flex items-center gap-2 flex-1">
+                <span>
+                  {dateRange.to && !isSingleDay ? (
+                    <>
+                      {format(dateRange.from, 'LLL dd, y')} -{' '}
+                      {format(dateRange.to, 'LLL dd, y')}
+                    </>
+                  ) : (
+                    <>
+                      {format(dateRange.from, 'LLL dd, y')}
+                      {isSingleDay && <span className="text-muted-foreground text-xs">(Single Day)</span>}
+                    </>
+                  )}
+                </span>
+                {isTodaySelected && (
+                  <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 h-5 bg-primary/10 text-primary border-primary/20">
+                    <Sparkles className="h-3 w-3 mr-0.5" />
+                    Today
+                  </Badge>
+                )}
+              </div>
             ) : (
               <span>{t('dateRange.pickDateRange')}</span>
             )}

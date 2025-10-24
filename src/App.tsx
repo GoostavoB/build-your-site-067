@@ -9,6 +9,7 @@ import { AIAssistantProvider } from "@/contexts/AIAssistantContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { BlurProvider } from "@/contexts/BlurContext";
 import { CalmModeProvider } from "@/contexts/CalmModeContext";
+import { DateRangeProvider } from "@/contexts/DateRangeContext";
 import { ThemeProvider } from "next-themes";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -233,12 +234,14 @@ const App = () => (
                 <CurrencyProvider>
                   <BlurProvider>
                     <AIAssistantProvider>
-                      <AppRoutes />
-                      <ConversionTracking />
-                      <PerformanceMonitor />
-                      <GlobalSearch />
-                      <OfflineIndicator />
-                      <InstallPrompt />
+                      <DateRangeProvider>
+                        <AppRoutes />
+                        <ConversionTracking />
+                        <PerformanceMonitor />
+                        <GlobalSearch />
+                        <OfflineIndicator />
+                        <InstallPrompt />
+                      </DateRangeProvider>
                     </AIAssistantProvider>
                   </BlurProvider>
                 </CurrencyProvider>

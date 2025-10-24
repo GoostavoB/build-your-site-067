@@ -24,7 +24,8 @@ import { useXPSystem } from '@/hooks/useXPSystem';
 import { useDailyChallenges } from '@/hooks/useDailyChallenges';
 import { useTradeXPRewards } from '@/hooks/useTradeXPRewards';
 import { TradingStreaks } from '@/components/TradingStreaks';
-import { DateRangeFilter, DateRange } from '@/components/DateRangeFilter';
+import { DateRangeFilter } from '@/components/DateRangeFilter';
+import { useDateRange } from '@/contexts/DateRangeContext';
 import { CustomizeDashboardControls } from '@/components/CustomizeDashboardControls';
 import { useWidgetLayout } from '@/hooks/useWidgetLayout';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
@@ -104,7 +105,7 @@ const Dashboard = () => {
   const [initialInvestment, setInitialInvestment] = useState(0);
   const [capitalLog, setCapitalLog] = useState<any[]>([]);
   const [includeFeesInPnL, setIncludeFeesInPnL] = useState(true);
-  const [dateRange, setDateRange] = useState<DateRange>(undefined);
+  const { dateRange, setDateRange, clearDateRange, isToday } = useDateRange();
   const [filteredTrades, setFilteredTrades] = useState<Trade[]>([]);
   const [activeTab, setActiveTab] = useState<string>('overview');
   const tabsContainerRef = useRef<HTMLDivElement>(null);
@@ -497,9 +498,9 @@ const Dashboard = () => {
   }, []);
 
   // Memoize handlers
-  const handleDateRangeChange = useCallback((range: DateRange) => {
+  const handleDateRangeChange = useCallback((range: typeof dateRange) => {
     setDateRange(range);
-  }, []);
+  }, [setDateRange]);
 
   const handleStartCustomize = useCallback(() => {
     setOriginalPositions([...positions]);

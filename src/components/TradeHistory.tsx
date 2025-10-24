@@ -58,6 +58,8 @@ import { useTradePagination } from '@/components/trade-history/useTradePaginatio
 import { PaginationControls } from '@/components/trade-history/PaginationControls';
 import { useBrokerPreferences } from '@/hooks/useBrokerPreferences';
 import { ExportTradesDialog } from '@/components/ExportTradesDialog';
+import { DateRangeFilter } from '@/components/DateRangeFilter';
+import { useDateRange } from '@/contexts/DateRangeContext';
 
 type ColumnKey = 'date' | 'symbol' | 'setup' | 'broker' | 'type' | 'entry' | 'exit' | 'size' | 'pnl' | 'roi' | 'fundingFee' | 'tradingFee';
 
@@ -89,6 +91,7 @@ interface TradeHistoryProps {
 export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) => {
   const { user } = useAuth();
   const { sortedBrokers, incrementUsage: incrementBrokerUsage } = useBrokerPreferences();
+  const { dateRange, setDateRange, clearDateRange } = useDateRange();
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -119,6 +122,17 @@ export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) =>
   // Filter and sort trades with memoization
   const filterAndSortTrades = useCallback(() => {
     let filtered = [...trades];
+
+    // Filter by date range
+    if (dateRange?.from) {
+      filtered = filtered.filter(trade => {
+        const tradeDate = new Date(trade.trade_date);
+        const from = dateRange.from!;
+        const to = dateRange.to || dateRange.from!;
+        
+        return tradeDate >= from && tradeDate <= to;
+      });
+    }
 
     // Filter by deleted status
     if (showDeleted) {
@@ -157,7 +171,7 @@ export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) =>
     });
 
     return filtered;
-  }, [trades, debouncedSearchTerm, filterType, sortBy, showDeleted]);
+  }, [trades, debouncedSearchTerm, filterType, sortBy, showDeleted, dateRange]);
 
   // Memoized filtered trades
   const filteredTrades = useMemo(() => filterAndSortTrades(), [filterAndSortTrades]);
@@ -179,7 +193,7 @@ export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) =>
   // Reset pagination when filters change
   useEffect(() => {
     pagination.reset();
-  }, [debouncedSearchTerm, filterType, sortBy, showDeleted]);
+  }, [debouncedSearchTerm, filterType, sortBy, showDeleted, dateRange]);
 
   useEffect(() => {
     localStorage.setItem('tradeHistoryColumns', JSON.stringify(columns));
@@ -496,7 +510,24 @@ export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) =>
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold">Trade History</h2>
-        <BlurToggleButton />
+        <div className="flex items-center gap-2">
+          <DateRangeFilter 
+            dateRange={dateRange} 
+            onDateRangeChange={setDateRange}
+          />
+          {dateRange?.from && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearDateRange}
+              className="h-9"
+            >
+              <X className="h-4 w-4 mr-1" />
+              Clear
+            </Button>
+          )}
+          <BlurToggleButton />
+        </div>
       </div>
       
       <div className="flex flex-col md:flex-row gap-4 items-start">

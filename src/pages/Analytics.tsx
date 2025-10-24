@@ -17,13 +17,17 @@ import { ExpenseTracker } from "@/components/ExpenseTracker";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Trade } from "@/types/trade";
-import { BarChart3, TrendingUp, Clock, Target, DollarSign, Percent, Shield, Brain } from "lucide-react";
+import { BarChart3, TrendingUp, Clock, Target, DollarSign, Percent, Shield, Brain, X } from "lucide-react";
 import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { pageMeta } from "@/utils/seoHelpers";
+import { DateRangeFilter } from "@/components/DateRangeFilter";
+import { useDateRange } from "@/contexts/DateRangeContext";
+import { Button } from "@/components/ui/button";
 
 export default function Analytics() {
   usePageMeta(pageMeta.analytics);
+  const { dateRange, setDateRange, clearDateRange } = useDateRange();
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTrades, setSelectedTrades] = useState<Trade[]>([]);
@@ -36,11 +40,20 @@ export default function Analytics() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
+      let query = supabase
         .from("trades")
         .select("*")
         .eq("user_id", user.id)
-        .is("deleted_at", null)
+        .is("deleted_at", null);
+
+      // Apply date filter if present
+      if (dateRange?.from) {
+        const fromDate = dateRange.from.toISOString();
+        const toDate = dateRange.to ? dateRange.to.toISOString() : dateRange.from.toISOString();
+        query = query.gte('trade_date', fromDate).lte('trade_date', toDate);
+      }
+
+      const { data, error } = await query
         .order("trade_date", { ascending: false })
         .limit(100);
 
@@ -51,7 +64,7 @@ export default function Analytics() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [dateRange]);
 
   useEffect(() => {
     fetchTrades();
@@ -89,7 +102,24 @@ export default function Analytics() {
             <h1 className="text-3xl font-bold">Advanced Analytics</h1>
             <p className="text-muted-foreground mt-1">Deep dive into your trading performance</p>
           </div>
-          <BlurToggleButton />
+          <div className="flex items-center gap-2">
+            <DateRangeFilter 
+              dateRange={dateRange} 
+              onDateRangeChange={setDateRange}
+            />
+            {dateRange?.from && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearDateRange}
+                className="h-9"
+              >
+                <X className="h-4 w-4 mr-1" />
+                Clear Filter
+              </Button>
+            )}
+            <BlurToggleButton />
+          </div>
         </div>
 
         <Tabs defaultValue="charts" className="space-y-6">

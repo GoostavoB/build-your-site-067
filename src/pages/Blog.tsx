@@ -1,6 +1,8 @@
 import { Card } from '@/components/ui/card';
-import AppLayout from '@/components/layout/AppLayout';
 import { Link, useParams } from 'react-router-dom';
+import { MobileHeader } from '@/components/MobileHeader';
+import Footer from '@/components/Footer';
+import { SkipToContent } from '@/components/SkipToContent';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, User, Search } from 'lucide-react';
 import { blogArticles, getArticlesByLanguage } from '@/data/blogArticles';
@@ -86,8 +88,12 @@ const Blog = () => {
   }, [filteredArticles]);
   
   return (
-    <AppLayout>
-      <div className="max-w-5xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black">
+      <SkipToContent />
+      <MobileHeader />
+      
+      <main id="main-content" className="pt-20 pb-16 px-4">
+        <div className="max-w-5xl mx-auto space-y-8">
         <div className="text-center space-y-3">
           <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             {t('blog.title', 'Crypto Trading Blog')}
@@ -168,8 +174,11 @@ const Blog = () => {
             </Link>
           ))}
         </div>
-      </div>
-    </AppLayout>
+        </div>
+      </main>
+      
+      <Footer />
+    </div>
   );
 };
 

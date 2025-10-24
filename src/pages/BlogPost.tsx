@@ -2,8 +2,10 @@ import { useParams, Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import AppLayout from '@/components/layout/AppLayout';
 import { blogArticles, getRelatedArticles } from '@/data/blogArticles';
+import { MobileHeader } from '@/components/MobileHeader';
+import Footer from '@/components/Footer';
+import { SkipToContent } from '@/components/SkipToContent';
 import { ArrowLeft, Calendar, Clock, User, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
@@ -152,26 +154,37 @@ const BlogPost = () => {
 
   if (!article) {
     return (
-      <AppLayout>
-        <div className="max-w-4xl mx-auto text-center py-12">
-          <h1 className="text-3xl font-bold mb-4">Article Not Found</h1>
-          <p className="text-muted-foreground mb-6">
-            The article you're looking for doesn't exist.
-          </p>
-          <Link to="/blog">
-            <Button variant="outline" className="gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Blog
-            </Button>
-          </Link>
-        </div>
-      </AppLayout>
+      <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black">
+        <SkipToContent />
+        <MobileHeader />
+        
+        <main id="main-content" className="pt-20 pb-16 px-4">
+          <div className="max-w-4xl mx-auto text-center py-12">
+            <h1 className="text-3xl font-bold mb-4">Article Not Found</h1>
+            <p className="text-muted-foreground mb-6">
+              The article you're looking for doesn't exist.
+            </p>
+            <Link to="/blog">
+              <Button variant="outline" className="gap-2">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Blog
+              </Button>
+            </Link>
+          </div>
+        </main>
+        
+        <Footer />
+      </div>
     );
   }
 
   return (
-    <AppLayout>
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black">
+      <SkipToContent />
+      <MobileHeader />
+      
+      <main id="main-content" className="pt-20 pb-16 px-4">
+        <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">
           <div className="space-y-6">
         {/* Breadcrumb Navigation */}
@@ -320,8 +333,11 @@ const BlogPost = () => {
             <TableOfContents content={article.content} />
           </aside>
         </div>
-      </div>
-    </AppLayout>
+        </div>
+      </main>
+      
+      <Footer />
+    </div>
   );
 };
 

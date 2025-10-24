@@ -1,6 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import AppLayout from '@/components/layout/AppLayout';
+import { MobileHeader } from '@/components/MobileHeader';
+import Footer from '@/components/Footer';
+import { SkipToContent } from '@/components/SkipToContent';
 import { Clock, Calendar, User, ArrowLeft, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -47,18 +49,25 @@ export default function BlogArticle() {
 
   if (!article) {
     return (
-      <AppLayout>
-        <div className="container max-w-4xl mx-auto px-4 py-12 text-center">
-          <h1 className="text-4xl font-bold mb-4">Article Not Found</h1>
-          <p className="text-muted-foreground mb-8">The article you're looking for doesn't exist.</p>
-          <Link to="/blog">
-            <Button>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Blog
-            </Button>
-          </Link>
-        </div>
-      </AppLayout>
+      <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black">
+        <SkipToContent />
+        <MobileHeader />
+        
+        <main id="main-content" className="pt-20 pb-16 px-4">
+          <div className="container max-w-4xl mx-auto px-4 py-12 text-center">
+            <h1 className="text-4xl font-bold mb-4">Article Not Found</h1>
+            <p className="text-muted-foreground mb-8">The article you're looking for doesn't exist.</p>
+            <Link to="/blog">
+              <Button>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Blog
+              </Button>
+            </Link>
+          </div>
+        </main>
+        
+        <Footer />
+      </div>
     );
   }
 
@@ -90,8 +99,12 @@ export default function BlogArticle() {
         <meta name="twitter:card" content="summary_large_image" />
       </Helmet>
 
-      <AppLayout>
-        <article className="container max-w-4xl mx-auto px-4 py-12">
+      <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black">
+        <SkipToContent />
+        <MobileHeader />
+        
+        <main id="main-content" className="pt-20 pb-16 px-4">
+          <article className="container max-w-4xl mx-auto px-4 py-12">
           <Link to="/blog" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8 transition-colors">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Blog
@@ -154,7 +167,10 @@ export default function BlogArticle() {
             </div>
           </footer>
         </article>
-      </AppLayout>
+        </main>
+        
+        <Footer />
+      </div>
     </>
   );
 }

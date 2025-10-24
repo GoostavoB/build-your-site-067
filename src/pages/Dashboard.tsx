@@ -30,6 +30,7 @@ import { CustomizeDashboardControls } from '@/components/CustomizeDashboardContr
 import { useWidgetLayout } from '@/hooks/useWidgetLayout';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
+import { LessonLearnedPopup } from '@/components/lessons/LessonLearnedPopup';
 import { useBadgeNotifications } from '@/hooks/useBadgeNotifications';
 import { useSpotWallet } from '@/hooks/useSpotWallet';
 import { useTokenPrices } from '@/hooks/useTokenPrices';
@@ -840,6 +841,7 @@ const Dashboard = () => {
       <FloatingXP />
       <MicroFeedbackOverlay />
       <WeeklySummaryRecap />
+      <LessonLearnedPopup />
       <LevelUpModal
         show={showLevelUp} 
         level={xpData.currentLevel} 

@@ -1192,6 +1192,36 @@ export type Database = {
           },
         ]
       }
+      lesson_learned_log: {
+        Row: {
+          confirmed_at: string
+          created_at: string | null
+          errors_shown: Json
+          hold_duration_seconds: number
+          id: string
+          shown_date: string
+          user_id: string
+        }
+        Insert: {
+          confirmed_at?: string
+          created_at?: string | null
+          errors_shown?: Json
+          hold_duration_seconds: number
+          id?: string
+          shown_date?: string
+          user_id: string
+        }
+        Update: {
+          confirmed_at?: string
+          created_at?: string | null
+          errors_shown?: Json
+          hold_duration_seconds?: number
+          id?: string
+          shown_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       lsr_alert_daily_stats: {
         Row: {
           alerts_clicked: number

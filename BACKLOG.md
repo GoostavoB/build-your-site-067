@@ -684,23 +684,26 @@ Replace confusing logic with useful calculators. Redesign Drawdown. Remove "Limi
 ---
 
 ### #27 - Pop-up diário 'Lesson Learned' com press-and-hold
-**Status:** Planned | **Complexity:** M
+**Status:** ✅ Completed | **Complexity:** M
 
 **Description:**  
 Daily summary of yesterday's and last week's errors. Close only by holding button for 5 seconds.
 
 **Technical Actions:**
-- Trigger popup once per day (on first visit)
-- Pull error data from tags and trades
-- Create press-and-hold button with animation
-- Log confirmation when user completes hold
-- Prevent re-showing same day
+- ✅ Trigger popup once per day (on first visit)
+- ✅ Pull error data from tags and trades (top 5 errors by frequency)
+- ✅ Create press-and-hold button with animation (5-second hold required)
+- ✅ Log confirmation when user completes hold (lesson_learned_log table)
+- ✅ Prevent re-showing same day (database check)
+- ✅ Show total loss per error + occurrence count
 
 **Acceptance Criteria:**
-- ✅ Popup appears once per day
+- ✅ Popup appears once per day if errors exist
 - ✅ Only closes after 5s hold
 - ✅ Confirmation is logged
 - ✅ Content is relevant and data-driven
+
+**Completed:** October 24, 2025
 
 ---
 

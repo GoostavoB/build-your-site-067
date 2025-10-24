@@ -5,6 +5,7 @@ import AppLayout from '@/components/layout/AppLayout';
 import { DashboardSkeleton } from '@/components/DashboardSkeleton';
 import { useBadgeNotifications } from '@/hooks/useBadgeNotifications';
 import type { Trade } from '@/types/trade';
+import { SkipToContent } from '@/components/SkipToContent';
 
 const AchievementBadges = lazy(() => import('@/components/AchievementBadges').then(m => ({ default: m.AchievementBadges })));
 
@@ -42,9 +43,10 @@ const Achievements = () => {
 
   return (
     <AppLayout>
-      <div className="container mx-auto py-6 space-y-6">
+      <SkipToContent />
+      <main id="main-content" className="container mx-auto py-6 space-y-6">
         <header className="mb-6">
-          <h1 className="text-3xl font-bold mb-2">Achievement Badges</h1>
+          <h1 className="text-3xl font-bold mb-2" id="achievements-heading">Achievement Badges</h1>
           <p className="text-muted-foreground">
             Track your trading milestones and unlock badges as you progress
           </p>
@@ -57,7 +59,7 @@ const Achievements = () => {
             <AchievementBadges trades={trades} />
           </Suspense>
         )}
-      </div>
+      </main>
     </AppLayout>
   );
 };

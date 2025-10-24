@@ -25,6 +25,7 @@ import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { useDateRange } from "@/contexts/DateRangeContext";
 import { Button } from "@/components/ui/button";
 import { layout, spacing, typography } from "@/styles/design-tokens";
+import { SkipToContent } from "@/components/SkipToContent";
 
 export default function Analytics() {
   usePageMeta(pageMeta.analytics);
@@ -97,11 +98,12 @@ export default function Analytics() {
 
   return (
     <AppLayout>
-      <div className={layout.container}>
+      <SkipToContent />
+      <main id="main-content" className={layout.container}>
         <div className={spacing.section}>
           <div className={layout.flex.between}>
             <header>
-              <h1 className="text-3xl font-bold">Advanced Analytics</h1>
+              <h1 className="text-3xl font-bold" id="analytics-heading">Advanced Analytics</h1>
               <p className="text-muted-foreground mt-1">Deep dive into your trading performance</p>
             </header>
             <div className="flex items-center gap-2">
@@ -115,8 +117,9 @@ export default function Analytics() {
                   size="sm"
                   onClick={clearDateRange}
                   className="h-9"
+                  aria-label="Clear date range filter"
                 >
-                  <X className="h-4 w-4 mr-1" />
+                  <X className="h-4 w-4 mr-1" aria-hidden="true" />
                   Clear Filter
                 </Button>
               )}
@@ -196,7 +199,7 @@ export default function Analytics() {
           </TabsContent>
         </Tabs>
         </div>
-      </div>
+      </main>
     </AppLayout>
   );
 }

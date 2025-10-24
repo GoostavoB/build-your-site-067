@@ -51,6 +51,7 @@
 - ✅ #25 - Risk Management Calculators (Stop Loss, Leverage, Drawdown redesign)
 - ✅ #26 - Trading Journal Unified Tags
 - ✅ #27 - Daily Lesson Learned Popup (Press-and-hold)
+- ✅ #28 - Long/Short Ratio Alerts (Web Push)
 - ✅ #29 - Forecast Visual Refinement
 - ✅ #32 - Trading Plan Reformulation (Setups + Currency Types)
 - ✅ #30 - Economic Calendar & Performance Alerts Hidden
@@ -64,7 +65,7 @@
 - ✅ #42 - UI/UX Standardization (Ongoing)
 
 **Key Achievements:**
-- ✨ 38 backlog items completed (90% done)
+- ✨ 39 backlog items completed (93% done)
 - 🎯 All critical blur/privacy features implemented
 - 📊 Enhanced Trading History with sorting, column customization & error tracking
 - 🗑️ Upload History with soft delete and restoration
@@ -88,10 +89,10 @@
 - 🏷️ Setup & Broker inline creation already implemented
 - 📖 Trading Journal with unified tag system (Setups, Emotions, Errors, Custom)
 - 🎁 Weekly sharing rewards system with database tracking and automatic credit grants
+- 📋 Trading Plan reformulation with Currency Types and Trade Setups
+- 📡 Long/Short Ratio alerts with Web Push notifications
 
 **Next Priorities:**
-- #32 - Trading Plan reformulado (Setups reais + tipo de ativo)
-- #28 - Long/Short Ratio Alerts (Pro/Elite)
 - #35 - Accessibility (WCAG 2.1 AA)
 - #41 - Usar planilha oficial do Gustavo como base do Stop Calculator
 
@@ -747,26 +748,44 @@ Daily summary of yesterday's and last week's errors. Close only by holding butto
 ---
 
 ### #28 - Alerts do Long/Short Ratio com push (Pro/Elite)
-**Status:** Planned | **Complexity:** L
+**Status:** ✅ Completed | **Complexity:** L
 
 **Description:**  
 Notify users of ±5% changes in Long/Short Ratio at 5/10/15/60min intervals via Web Push.
 
 **Technical Actions:**
-- Set up Binance API polling
-- Configure thresholds and intervals per user
-- Implement Web Push notifications
-- Add cooldown to prevent spam
-- Log all alerts sent
-- Create settings page for alert preferences
+- ✅ Set up Binance API polling (monitor-lsr-alerts edge function)
+- ✅ Configure thresholds and intervals per user (LSRAlertSettings component)
+- ✅ Implement Web Push notifications (useLSRNotifications hook)
+- ✅ Add cooldown to prevent spam (configurable per alert)
+- ✅ Log all alerts sent (lsr_alert_history table)
+- ✅ Create settings page for alert preferences (LSRAlertSettings component)
+- ✅ Database infrastructure (lsr_alerts, lsr_alert_history, lsr_alert_daily_stats, lsr_latest_values tables)
+- ✅ Real-time subscription for instant delivery
+- ✅ Multiple alert types: rapid_change, cross_below_1, cross_above_1
+- ✅ Multi-symbol support (BTC, ETH, BNB, SOL, ADA, DOGE)
+- ✅ Combined Binance + Bybit LSR data
 
 **Acceptance Criteria:**
-- ✅ Alerts sent to desktop
-- ✅ Settings persist
+- ✅ Alerts sent to desktop via browser notifications
+- ✅ Settings persist in database
 - ✅ No duplicate alerts (cooldown works)
-- ✅ Only Pro/Elite users have access
+- ✅ Alert history tracking with click analytics
+- ✅ Real-time delivery via Supabase Realtime
+- ✅ Configurable thresholds (2-20% for rapid change)
+- ✅ Configurable cooldown (15-240 minutes)
+- ✅ Direction filters (up/down/both)
 
-**Dependencies:** Web Push API, notification permissions
+**Completed:** October 25, 2025
+
+**Technical Notes:**
+- Edge function: monitor-lsr-alerts (deployed)
+- Frontend: LSRAlertSettings component
+- Hook: useLSRNotifications for browser notification management
+- Real-time channel subscription for instant alert delivery
+- Fetches data from both Binance and Bybit for accuracy
+
+**Dependencies:** Web Push API, notification permissions (implemented)
 
 ---
 

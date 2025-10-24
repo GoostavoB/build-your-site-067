@@ -32,6 +32,12 @@
     --neon-purple: 270 67% 62%;
     --neon-yellow: 45 93% 57%;
 
+    /* Hero premium accent colors */
+    --hero-lime: 84 81% 44%;
+    --hero-yellow: 48 96% 53%;
+    --hero-gradient-start: 84 81% 44%;
+    --hero-gradient-end: 48 96% 53%;
+
     /* Semantic colors */
     --positive: var(--neon-green);
     --negative: var(--neon-red);
@@ -173,6 +179,40 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  /* Hero-specific gradient text (lime to yellow) */
+  .gradient-text-hero {
+    background: linear-gradient(135deg, 
+      hsl(var(--hero-lime)) 0%, 
+      hsl(var(--hero-yellow)) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+  }
+
+  /* Diagonal gradient beam effect */
+  .gradient-beam {
+    position: absolute;
+    width: 1200px;
+    height: 1200px;
+    background: linear-gradient(135deg, 
+      hsl(var(--hero-lime) / 0.25) 0%, 
+      hsl(var(--hero-yellow) / 0.15) 100%
+    );
+    filter: blur(150px);
+    transform: rotate(-45deg);
+    pointer-events: none;
+  }
+
+  /* Glow orb effects */
+  .glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    pointer-events: none;
   }
 
   /* Outcome card premium styling */

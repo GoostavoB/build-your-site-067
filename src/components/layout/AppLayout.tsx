@@ -31,7 +31,7 @@ const AppLayout = ({ children, isGamificationOpen, onGamificationToggle }: AppLa
   const { isCollapsed, setIsCollapsed } = useSidebarState();
 
   return (
-    <SidebarProvider defaultOpen={!isCollapsed} onOpenChange={(open) => setIsCollapsed(!open)}>
+    <SidebarProvider open={!isCollapsed} onOpenChange={(open) => setIsCollapsed(!open)}>
       <ThemeUnlockNotification />
       <UpdatesModal />
       <GuidedTour />

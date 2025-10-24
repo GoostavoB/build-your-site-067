@@ -26,7 +26,7 @@ export default function Reports() {
     queryKey: ['generated-reports'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('generated_reports')
+        .from('generated_reports' as any)
         .select('*')
         .order('generated_at', { ascending: false });
       
@@ -34,7 +34,7 @@ export default function Reports() {
       return data || [];
     },
     enabled: !!user,
-  });
+  }) as any;
 
   const generateMutation = useMutation({
     mutationFn: async () => {
@@ -74,13 +74,13 @@ export default function Reports() {
       const result = await response.json();
 
       // Save to database
-      const { error } = await supabase.from('generated_reports').insert({
+      const { error } = await (supabase.from('generated_reports' as any).insert({
         report_type: reportType,
         period_start: format(dateRange.from, 'yyyy-MM-dd'),
         period_end: format(dateRange.to, 'yyyy-MM-dd'),
         report_data: result.report,
         trade_count: trades.length
-      });
+      }) as any);
 
       if (error) throw error;
       return result;
@@ -96,10 +96,10 @@ export default function Reports() {
 
   const deleteMutation = useMutation({
     mutationFn: async (reportId: string) => {
-      const { error } = await supabase
-        .from('generated_reports')
+      const { error } = await (supabase
+        .from('generated_reports' as any)
         .delete()
-        .eq('id', reportId);
+        .eq('id', reportId) as any);
       
       if (error) throw error;
     },
@@ -165,8 +165,9 @@ ${JSON.stringify(report.report_data, null, 2)}
               <div className="space-y-2">
                 <Label>Date Range</Label>
                 <DateRangePicker
-                  value={dateRange}
-                  onChange={setDateRange}
+                  startDate={dateRange.from}
+                  endDate={dateRange.to}
+                  onDateChange={(start, end) => start && end && setDateRange({ from: start, to: end })}
                 />
               </div>
             </div>

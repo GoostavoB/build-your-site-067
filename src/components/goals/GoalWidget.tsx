@@ -42,7 +42,7 @@ export function GoalWidget() {
     queryFn: async () => {
       const results = await Promise.all(
         goals.map(async (goal) => {
-          const { data, error } = await supabase.rpc('calculate_goal_projection', {
+          const { data, error } = await supabase.rpc('calculate_goal_projection' as any, {
             p_goal_id: goal.id,
             p_user_id: user!.id
           });
@@ -52,7 +52,7 @@ export function GoalWidget() {
             return { goalId: goal.id, projection: null };
           }
           
-          return { goalId: goal.id, projection: data };
+          return { goalId: goal.id, projection: data as GoalProjection };
         })
       );
       return results;

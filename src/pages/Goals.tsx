@@ -28,6 +28,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { layout, spacing, typography } from "@/styles/design-tokens";
+import { SkipToContent } from "@/components/SkipToContent";
 
 export default function Goals() {
   const { user } = useAuth();
@@ -120,13 +121,14 @@ export default function Goals() {
 
   return (
     <AppLayout>
-      <div className={layout.container}>
+      <SkipToContent />
+      <main id="main-content" className={layout.container}>
         <div className={spacing.section}>
           {/* Header */}
-          <div className={layout.flex.between}>
+          <header className={layout.flex.between}>
             <div>
-              <h1 className={`${typography.pageTitle} flex items-center gap-2`}>
-                <Target className="h-8 w-8" />
+              <h1 className={`${typography.pageTitle} flex items-center gap-2`} id="goals-heading">
+                <Target className="h-8 w-8" aria-hidden="true" />
                 Goals & Milestones
               </h1>
               <p className={typography.pageSubtitle}>
@@ -138,22 +140,23 @@ export default function Goals() {
               editingGoal={editingGoal}
               onClose={() => setEditingGoal(null)}
             />
-          </div>
+          </header>
 
           {/* Stats Cards */}
-          <div className={layout.grid.stats}>
+          <section className={layout.grid.stats} aria-labelledby="goals-stats-heading">
+            <h2 id="goals-stats-heading" className="sr-only">Goal Statistics</h2>
             {stats.map((stat, index) => (
-              <Card key={index} className="p-4">
+              <Card key={index} className="p-4" role="article">
                 <div className={layout.flex.between}>
                   <div>
                     <p className={typography.body}>{stat.label}</p>
                     <p className="text-2xl font-bold mt-1">{stat.value}</p>
                   </div>
-                  <stat.icon className={`h-8 w-8 ${stat.color}`} />
+                  <stat.icon className={`h-8 w-8 ${stat.color}`} aria-hidden="true" />
                 </div>
               </Card>
             ))}
-          </div>
+          </section>
 
           {/* Goal Projections */}
         {activeGoals.length > 0 && trades && trades.length > 0 && (
@@ -177,7 +180,8 @@ export default function Goals() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="active" className="space-y-4">
+          <TabsContent value="active" className="space-y-4" role="region" aria-labelledby="active-goals-heading">
+            <h2 id="active-goals-heading" className="sr-only">Active Goals</h2>
             {activeGoals.length === 0 ? (
               <Card className="p-12 text-center">
                 <Target className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
@@ -297,7 +301,7 @@ export default function Goals() {
 
         {/* Floating Action Button - Temporarily disabled */}
         </div>
-      </div>
+      </main>
     </AppLayout>
   );
 }

@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/layout/AppLayout';
 import { PremiumFeatureLock } from '@/components/PremiumFeatureLock';
 import { usePremiumFeatures } from '@/hooks/usePremiumFeatures';
+import { SkipToContent } from '@/components/SkipToContent';
 
 interface LeaderboardEntry {
   user_id: string;
@@ -109,12 +110,13 @@ const Leaderboard = () => {
 
   return (
     <AppLayout>
+      <SkipToContent />
       <PremiumFeatureLock requiredPlan="pro" isLocked={isPremiumLocked}>
-        <div className="container mx-auto p-6 max-w-7xl space-y-6">
-        <div className="flex items-center justify-between">
+        <main id="main-content" className="container mx-auto p-6 max-w-7xl space-y-6">
+        <header className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold flex items-center gap-3">
-              <Trophy className="w-8 h-8 text-primary" />
+            <h1 className="text-3xl font-bold flex items-center gap-3" id="leaderboard-heading">
+              <Trophy className="w-8 h-8 text-primary" aria-hidden="true" />
               Leaderboard
             </h1>
             <p className="text-muted-foreground mt-1">
@@ -122,28 +124,30 @@ const Leaderboard = () => {
             </p>
           </div>
           {userRank && (
-            <Badge variant="outline" className="text-lg px-4 py-2">
+            <Badge variant="outline" className="text-lg px-4 py-2" aria-label={`Your rank: ${userRank.rank}`}>
               Your Rank: #{userRank.rank}
             </Badge>
           )}
-        </div>
+        </header>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full max-w-md grid-cols-2">
             <TabsTrigger value="current" className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
+              <Calendar className="w-4 h-4" aria-hidden="true" />
               Current Season
             </TabsTrigger>
             <TabsTrigger value="alltime" className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
+              <Users className="w-4 h-4" aria-hidden="true" />
               All-Time
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value={activeTab} className="space-y-4 mt-6">
+          <TabsContent value={activeTab} className="space-y-4 mt-6" role="region" aria-labelledby="leaderboard-rankings-heading">
+            <h2 id="leaderboard-rankings-heading" className="sr-only">Leaderboard Rankings</h2>
             {/* Top 3 Podium */}
             {entries.length >= 3 && (
-              <div className="grid grid-cols-3 gap-4 mb-8">
+              <section className="grid grid-cols-3 gap-4 mb-8" aria-labelledby="top-three-heading">
+                <h3 id="top-three-heading" className="sr-only">Top 3 Traders</h3>
                 {[1, 0, 2].map((idx) => {
                   const entry = entries[idx];
                   if (!entry) return null;
@@ -159,15 +163,15 @@ const Leaderboard = () => {
                       <Card className={`
                         relative p-6 text-center
                         bg-gradient-to-br ${getPodiumColor(entry.rank)}
-                        text-white border-0 overflow-hidden
-                      `}>
-                        <div className="absolute inset-0 bg-black/20" />
+                        text-primary-foreground border-0 overflow-hidden
+                      `} role="article" aria-label={`Rank ${entry.rank}: ${entry.profile?.username || entry.profile?.full_name || 'Anonymous'} with score ${entry.performance_score}`}>
+                        <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
                         <div className="relative z-10">
-                          <div className="mb-4 flex justify-center">
+                          <div className="mb-4 flex justify-center" role="img" aria-label={`Rank ${entry.rank} medal`}>
                             {getRankIcon(entry.rank)}
                           </div>
                           <Avatar className="w-20 h-20 mx-auto mb-3 border-4 border-white/30">
-                            <AvatarImage src={entry.profile?.avatar_url} />
+                            <AvatarImage src={entry.profile?.avatar_url} alt={`${entry.profile?.username || entry.profile?.full_name || 'Anonymous'} avatar`} />
                             <AvatarFallback>
                               {entry.profile?.username?.[0] || entry.profile?.full_name?.[0] || '?'}
                             </AvatarFallback>
@@ -194,7 +198,7 @@ const Leaderboard = () => {
                     </motion.div>
                   );
                 })}
-              </div>
+              </section>
             )}
 
             {/* Remaining Rankings */}
@@ -266,7 +270,7 @@ const Leaderboard = () => {
             )}
           </TabsContent>
         </Tabs>
-      </div>
+      </main>
       </PremiumFeatureLock>
     </AppLayout>
   );

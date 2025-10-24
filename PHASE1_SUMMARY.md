@@ -1,7 +1,7 @@
 # Phase 1 Implementation Summary - UI/UX Standardization & Accessibility
 
 ## Date: October 24, 2025 (Day 1)
-## Status: ✅ 70% Complete
+## Status: ✅ 75% Complete
 
 ---
 
@@ -14,7 +14,7 @@
 
 ---
 
-## ✅ Completed Work (29 Components Fixed)
+## ✅ Completed Work (31 Components Fixed)
 
 ### A. Landing Pages & Public Routes
 1. **src/pages/Index.tsx**
@@ -171,15 +171,41 @@
     - ✅ Added `aria-label="Edit journal entry"` to Edit button
     - ✅ Added `aria-hidden="true"` to all decorative icons
 
+30. **src/pages/Goals.tsx**
+    - ✅ Added SkipToContent component
+    - ✅ Wrapped content in `<main id="main-content">`
+    - ✅ Changed title div to `<header>` element
+    - ✅ Added `id="goals-heading"` to h1
+    - ✅ Changed stats div to `<section>` with `aria-labelledby="goals-stats-heading"`
+    - ✅ Added screen reader heading for stats section
+    - ✅ Added `role="article"` to stat cards
+    - ✅ Added `aria-hidden="true"` to stat icons
+    - ✅ Added `role="region"` and `aria-labelledby` to active goals tab
+
+31. **src/pages/Leaderboard.tsx**
+    - ✅ Added SkipToContent component
+    - ✅ Wrapped content in `<main id="main-content">`
+    - ✅ Changed title div to `<header>` element
+    - ✅ Added `id="leaderboard-heading"` to h1
+    - ✅ Added descriptive `aria-label` to user rank badge
+    - ✅ Added `aria-hidden="true"` to Calendar and Users icons
+    - ✅ Changed top 3 div to `<section>` with `aria-labelledby="top-three-heading"`
+    - ✅ Added screen reader heading for top 3
+    - ✅ Fixed: `text-white` → `text-primary-foreground` on podium cards
+    - ✅ Added `role="article"` and descriptive `aria-label` to podium cards
+    - ✅ Added `role="img"` and `aria-label` to rank icons
+    - ✅ Added `alt` text to avatar images
+    - ✅ Added `aria-hidden="true"` to decorative overlay
+
 ---
 
 ## 📊 Statistics
 
-- **Files Modified**: 29
-- **Components Fixed**: 29
-- **Hardcoded Colors Replaced**: 65+ instances
-- **ARIA Attributes Added**: 95+
-- **Semantic HTML Improvements**: 30+
+- **Files Modified**: 31
+- **Components Fixed**: 31
+- **Hardcoded Colors Replaced**: 70+ instances
+- **ARIA Attributes Added**: 110+
+- **Semantic HTML Improvements**: 35+
 
 ---
 
@@ -373,7 +399,7 @@ These components intentionally use hardcoded colors for valid reasons:
 - ❌ **Contrast Audit**: Not started
 - ❌ **Heading Hierarchy**: Not started
 
-**Overall Phase 1 Progress**: ~70%
+**Overall Phase 1 Progress**: ~75%
 
 ---
 

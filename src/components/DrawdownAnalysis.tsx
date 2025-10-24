@@ -133,13 +133,13 @@ const DrawdownAnalysisComponent = ({ trades, initialInvestment }: DrawdownAnalys
   };
 
   return (
-    <Card className="p-6 bg-card border-border">
+    <Card className="p-6 bg-gradient-to-br from-card via-card to-card/50 border-border shadow-xl">
       <div className="mb-6">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <TrendingDown className="w-5 h-5 text-neon-red" />
+        <h3 className="text-xl font-bold flex items-center gap-2">
+          <TrendingDown className="w-5 h-5 text-secondary" />
           Drawdown Analysis
         </h3>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground mt-1">
           Understand your account's peak-to-trough declines
         </p>
       </div>
@@ -151,156 +151,191 @@ const DrawdownAnalysisComponent = ({ trades, initialInvestment }: DrawdownAnalys
         </div>
       ) : (
         <>
-          {/* Current Status */}
+          {/* Premium Status Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <Card className={`p-4 ${
+            {/* Current Drawdown Card */}
+            <Card className={`p-6 relative overflow-hidden border-2 transition-all duration-300 hover:scale-105 ${
               currentDrawdown 
-                ? 'bg-neon-red/10 border-neon-red/30' 
-                : 'bg-neon-green/10 border-neon-green/30'
+                ? 'bg-gradient-to-br from-secondary/20 via-secondary/10 to-transparent border-secondary/40 shadow-lg shadow-secondary/20' 
+                : 'bg-gradient-to-br from-primary/20 via-primary/10 to-transparent border-primary/40 shadow-lg shadow-primary/20'
             }`}>
-              <div className="flex items-center gap-2 mb-2">
-                <Activity className={`w-4 h-4 ${
-                  currentDrawdown ? 'text-neon-red' : 'text-neon-green'
-                }`} />
-                <span className="text-xs text-muted-foreground">Current Status</span>
-              </div>
-              <div className={`text-2xl font-bold ${
-                currentDrawdown ? 'text-neon-red' : 'text-neon-green'
-              }`}>
-                {currentDrawdown ? 'In Drawdown' : 'At Peak'}
-              </div>
-              {currentDrawdown && (
-                <div className="text-xs text-muted-foreground mt-1">
-                  {currentDrawdown.daysInDrawdown} days, {currentDrawdown.tradesInDrawdown} trades
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white/5 to-transparent rounded-full -mr-16 -mt-16" />
+              <div className="relative">
+                <p className="text-xs font-medium text-muted-foreground/80 mb-1 uppercase tracking-wider">
+                  Current Drawdown
+                </p>
+                <div className={`text-4xl font-black mb-2 ${
+                  currentDrawdown ? 'text-secondary' : 'text-foreground'
+                }`}>
+                  {currentDrawdown ? '-' : ''}<BlurredPercent value={currentDrawdown?.drawdownPercent || 0} />
                 </div>
-              )}
-            </Card>
-
-            <Card className="p-4 bg-muted/20 border-border">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground">Current Balance</span>
-              </div>
-              <div className={`text-2xl font-bold ${
-                totalReturn >= 0 ? 'text-neon-green' : 'text-neon-red'
-              }`}>
-                <BlurredCurrency amount={currentBalance} />
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                {totalReturn >= 0 ? '+' : ''}<BlurredPercent value={totalReturn} className="inline" /> total return
+                <div className="flex items-center gap-2">
+                  <div className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                    currentDrawdown 
+                      ? 'bg-secondary/20 text-secondary' 
+                      : 'bg-primary/20 text-primary'
+                  }`}>
+                    {currentDrawdown ? 'Active' : 'At Peak'}
+                  </div>
+                </div>
               </div>
             </Card>
 
-            <Card className={`p-4 ${
+            {/* Maximum Drawdown Card */}
+            <Card className={`p-6 relative overflow-hidden border-2 transition-all duration-300 hover:scale-105 ${
               maxDrawdown && maxDrawdown.drawdownPercent > 20
-                ? 'bg-neon-red/10 border-neon-red/30'
-                : 'bg-primary/10 border-primary/30'
+                ? 'bg-gradient-to-br from-secondary/20 via-secondary/10 to-transparent border-secondary/40 shadow-lg shadow-secondary/20'
+                : 'bg-gradient-to-br from-card via-card/80 to-card/50 border-border/60 shadow-lg'
             }`}>
-              <div className="flex items-center gap-2 mb-2">
-                <AlertTriangle className="w-4 h-4 text-neon-red" />
-                <span className="text-xs text-muted-foreground">Max Drawdown</span>
-              </div>
-              <div className="text-2xl font-bold text-neon-red">
-                {maxDrawdown ? <BlurredPercent value={maxDrawdown.drawdownPercent} /> : '0%'}
-              </div>
-              {maxDrawdown && (
-                <div className="text-xs text-muted-foreground mt-1">
-                  -<BlurredCurrency amount={maxDrawdown.drawdownAmount} className="inline" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white/5 to-transparent rounded-full -mr-16 -mt-16" />
+              <div className="relative">
+                <p className="text-xs font-medium text-muted-foreground/80 mb-1 uppercase tracking-wider">
+                  Maximum Drawdown
+                </p>
+                <div className="text-4xl font-black text-secondary mb-2">
+                  {maxDrawdown ? '-' : ''}<BlurredPercent value={maxDrawdown?.drawdownPercent || 0} />
                 </div>
-              )}
+                {maxDrawdown && (
+                  <p className="text-xs text-muted-foreground">
+                    -<BlurredCurrency amount={maxDrawdown.drawdownAmount} className="inline font-semibold" />
+                  </p>
+                )}
+              </div>
+            </Card>
+
+            {/* Recovery Needed Card */}
+            <Card className={`p-6 relative overflow-hidden border-2 transition-all duration-300 hover:scale-105 ${
+              currentDrawdown
+                ? 'bg-gradient-to-br from-primary/20 via-primary/10 to-transparent border-primary/40 shadow-lg shadow-primary/20'
+                : 'bg-gradient-to-br from-card via-card/80 to-card/50 border-border/60 shadow-lg'
+            }`}>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white/5 to-transparent rounded-full -mr-16 -mt-16" />
+              <div className="relative">
+                <p className="text-xs font-medium text-muted-foreground/80 mb-1 uppercase tracking-wider">
+                  Recovery Needed
+                </p>
+                <div className="text-4xl font-black text-primary mb-2">
+                  <BlurredPercent value={currentDrawdown?.drawdownPercent || 0} />
+                </div>
+                {currentDrawdown && (
+                  <p className="text-xs text-muted-foreground">
+                    <BlurredCurrency amount={currentDrawdown.drawdownAmount} className="inline font-semibold" /> to recover
+                  </p>
+                )}
+              </div>
             </Card>
           </div>
 
-          {/* Current Drawdown Details */}
+          {/* Active Drawdown Alert - Premium */}
           {currentDrawdown && (
-            <Card className="p-4 bg-neon-red/10 border-neon-red/30 mb-6">
-              <div className="flex items-center gap-2 mb-3">
-                <AlertTriangle className="w-5 h-5 text-neon-red" />
-                <h4 className="font-semibold">Active Drawdown</h4>
-                <Badge variant="destructive">ALERT</Badge>
+            <Card className="p-6 bg-gradient-to-br from-secondary/20 via-secondary/10 to-transparent border-2 border-secondary/40 mb-6 shadow-xl shadow-secondary/10">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 rounded-xl bg-secondary/20">
+                  <AlertTriangle className="w-5 h-5 text-secondary" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-bold text-lg">Active Drawdown</h4>
+                  <p className="text-xs text-muted-foreground">Monitor your recovery progress</p>
+                </div>
+                <Badge variant="destructive" className="font-bold">ALERT</Badge>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">Peak Value</div>
-                    <div className="font-semibold"><BlurredCurrency amount={currentDrawdown.peakValue} className="inline" /></div>
+                  <div className="bg-card/50 backdrop-blur-sm rounded-lg p-3 border border-border/50">
+                    <div className="text-xs text-muted-foreground mb-1.5 font-medium">Peak Value</div>
+                    <div className="font-bold text-base text-foreground">
+                      <BlurredCurrency amount={currentDrawdown.peakValue} className="inline" />
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">Current Value</div>
-                    <div className="font-semibold text-neon-red">
+                  <div className="bg-secondary/10 backdrop-blur-sm rounded-lg p-3 border border-secondary/30">
+                    <div className="text-xs text-muted-foreground mb-1.5 font-medium">Current Value</div>
+                    <div className="font-bold text-base text-secondary">
                       <BlurredCurrency amount={currentDrawdown.troughValue} className="inline" />
                     </div>
                   </div>
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">Drawdown</div>
-                    <div className="font-semibold text-neon-red">
+                  <div className="bg-secondary/10 backdrop-blur-sm rounded-lg p-3 border border-secondary/30">
+                    <div className="text-xs text-muted-foreground mb-1.5 font-medium">Drawdown</div>
+                    <div className="font-bold text-base text-secondary">
                       -<BlurredPercent value={currentDrawdown.drawdownPercent} className="inline" />
                     </div>
                   </div>
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">Days</div>
-                    <div className="font-semibold">{currentDrawdown.daysInDrawdown}</div>
+                  <div className="bg-card/50 backdrop-blur-sm rounded-lg p-3 border border-border/50">
+                    <div className="text-xs text-muted-foreground mb-1.5 font-medium">Days</div>
+                    <div className="font-bold text-base text-foreground">{currentDrawdown.daysInDrawdown}</div>
                   </div>
                 </div>
-                <div>
-                  <div className="text-xs text-muted-foreground mb-2">
-                    Recovery Progress: Need <BlurredCurrency amount={currentDrawdown.drawdownAmount} className="inline" /> to reach peak
+                <div className="bg-card/50 backdrop-blur-sm rounded-lg p-4 border border-border/50">
+                  <div className="text-sm text-foreground/90 mb-3 font-medium">
+                    Recovery Progress: Need <BlurredCurrency amount={currentDrawdown.drawdownAmount} className="inline font-bold" /> to reach peak
                   </div>
                   <Progress 
                     value={0} 
-                    className="h-2 [&>div]:bg-neon-red" 
+                    className="h-2.5 bg-secondary/20 [&>div]:bg-gradient-to-r [&>div]:from-secondary [&>div]:to-secondary/70" 
                   />
                 </div>
-                <div className="text-xs text-muted-foreground bg-yellow-500/10 border border-yellow-500/30 rounded p-2">
-                  ⚠️ Consider reducing position sizes and reviewing your strategy during drawdown periods
+                <div className="bg-yellow-500/10 backdrop-blur-sm border border-yellow-500/30 rounded-lg p-3">
+                  <p className="text-sm text-foreground/90 flex items-start gap-2">
+                    <span className="text-yellow-500 text-lg leading-none">⚠️</span>
+                    <span>Consider reducing position sizes and reviewing your strategy during drawdown periods</span>
+                  </p>
                 </div>
               </div>
             </Card>
           )}
 
-          {/* Historical Drawdowns */}
+          {/* Historical Drawdowns - Premium */}
           {drawdowns.length > 0 && (
-            <div className="space-y-4">
-              <h4 className="font-semibold flex items-center gap-2">
-                <Activity className="w-4 h-4" />
+            <div className="space-y-4 mb-6">
+              <h4 className="font-bold text-lg flex items-center gap-2">
+                <Activity className="w-5 h-5 text-primary" />
                 Historical Drawdowns ({drawdowns.length})
               </h4>
               
               <div className="space-y-3">
                 {drawdowns.slice(0, 5).map((dd, index) => (
-                  <Card key={index} className="p-4 bg-muted/20 border-border">
-                    <div className="flex items-start justify-between mb-2">
+                  <Card key={index} className="p-5 bg-gradient-to-br from-card via-card/90 to-card/70 border-border/50 hover:border-border transition-all duration-300 hover:shadow-lg">
+                    <div className="flex items-start justify-between mb-3">
                       <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge variant={dd.drawdownPercent > 20 ? 'destructive' : 'secondary'}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge 
+                            variant={dd.drawdownPercent > 20 ? 'destructive' : 'secondary'}
+                            className="font-bold text-sm px-3 py-1"
+                          >
                             -{dd.drawdownPercent.toFixed(2)}%
                           </Badge>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs font-medium">
                             {dd.recovered ? '✓ Recovered' : 'In Progress'}
                           </Badge>
                         </div>
-                        <div className="text-xs text-muted-foreground">
-                          {new Date(dd.startDate).toLocaleDateString()} - {new Date(dd.endDate).toLocaleDateString()}
+                        <div className="text-xs text-muted-foreground font-medium">
+                          {new Date(dd.startDate).toLocaleDateString()} → {new Date(dd.endDate).toLocaleDateString()}
                         </div>
                       </div>
                       <div className="text-right">
-                      <div className="text-lg font-bold text-neon-red">
-                        -<BlurredCurrency amount={dd.drawdownAmount} className="inline" />
-                      </div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-xl font-black text-secondary">
+                          -<BlurredCurrency amount={dd.drawdownAmount} className="inline" />
+                        </div>
+                        <div className="text-xs text-muted-foreground font-medium mt-1">
                           {dd.daysInDrawdown} days
                         </div>
                       </div>
                     </div>
-                    <div className="grid grid-cols-3 gap-3 text-xs">
+                    <div className="grid grid-cols-3 gap-4 text-sm bg-muted/30 rounded-lg p-3">
                       <div>
-                        <span className="text-muted-foreground">Peak:</span> <BlurredCurrency amount={dd.peakValue} className="inline" />
+                        <span className="text-muted-foreground font-medium">Peak:</span>
+                        <div className="font-bold text-foreground mt-0.5">
+                          <BlurredCurrency amount={dd.peakValue} className="inline" />
+                        </div>
                       </div>
                       <div>
-                        <span className="text-muted-foreground">Trough:</span> <BlurredCurrency amount={dd.troughValue} className="inline" />
+                        <span className="text-muted-foreground font-medium">Trough:</span>
+                        <div className="font-bold text-foreground mt-0.5">
+                          <BlurredCurrency amount={dd.troughValue} className="inline" />
+                        </div>
                       </div>
                       <div>
-                        <span className="text-muted-foreground">Trades:</span> {dd.tradesInDrawdown}
+                        <span className="text-muted-foreground font-medium">Trades:</span>
+                        <div className="font-bold text-foreground mt-0.5">{dd.tradesInDrawdown}</div>
                       </div>
                     </div>
                   </Card>
@@ -308,37 +343,36 @@ const DrawdownAnalysisComponent = ({ trades, initialInvestment }: DrawdownAnalys
               </div>
 
               {drawdowns.length > 5 && (
-                <p className="text-sm text-muted-foreground text-center">
+                <p className="text-sm text-muted-foreground text-center py-2 bg-muted/30 rounded-lg">
                   Showing 5 most recent of {drawdowns.length} total drawdowns
                 </p>
               )}
             </div>
           )}
 
-          {/* Insights */}
-          <Card className="p-4 bg-primary/5 border-primary/20 mt-6">
-            <h4 className="font-semibold mb-3 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" />
-              Key Insights
+          {/* Recovery Strategy - Premium Styling */}
+          <Card className="p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-primary/30 mt-6">
+            <h4 className="font-bold mb-4 flex items-center gap-2 text-lg">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              Recovery Strategy
             </h4>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              {maxDrawdown && maxDrawdown.drawdownPercent > 30 ? (
-                <p>🚨 Your max drawdown of {maxDrawdown.drawdownPercent.toFixed(2)}% is concerning. Professional traders typically keep drawdowns under 20%.</p>
-              ) : maxDrawdown && maxDrawdown.drawdownPercent > 20 ? (
-                <p>⚠️ Your max drawdown of {maxDrawdown.drawdownPercent.toFixed(2)}% is elevated. Focus on better risk management.</p>
-              ) : (
-                <p>✅ Your max drawdown of {maxDrawdown?.drawdownPercent.toFixed(2) || '0'}% is well-controlled. Great risk management!</p>
-              )}
-              
-              {currentDrawdown ? (
-                <p><TrendingDown className="inline h-4 w-4 mr-1 text-secondary" />You're currently {currentDrawdown.daysInDrawdown} days into a drawdown. Consider taking a break or reducing your position sizes until you find your edge again.</p>
-              ) : (
-                <p><TrendingUp className="inline h-4 w-4 mr-1 text-primary" />You're trading at or near peak equity. Stay disciplined and stick to your strategy!</p>
-              )}
-              
-              {drawdowns.length > 3 && (
-                <p>💡 You've experienced {drawdowns.length} drawdown periods. Review what led to each one and identify patterns to avoid.</p>
-              )}
+            <div className="space-y-2.5">
+              <div className="flex items-start gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                <p className="text-sm text-foreground/90">Continue current strategy</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                <p className="text-sm text-foreground/90">Maintain discipline and consistency</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                <p className="text-sm text-foreground/90">Keep tracking your performance</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                <p className="text-sm text-foreground/90">Stay within risk parameters</p>
+              </div>
             </div>
           </Card>
         </>

@@ -301,17 +301,18 @@ export const ImageAnnotator = ({ imageUrl, onAnnotationsChange, initialAnnotatio
                       }}
                     >
                       <div className="relative flex flex-col items-center pointer-events-auto">
-                        <div className="w-4 h-4 rounded-full bg-accent border-2 border-white shadow-lg animate-pulse" />
+                        <div className="w-4 h-4 rounded-full bg-accent border-2 border-primary-foreground shadow-lg animate-pulse" />
                         <Badge 
                           variant="secondary" 
-                          className="mt-1 text-xs whitespace-nowrap bg-accent text-white shadow-lg"
+                          className="mt-1 text-xs whitespace-nowrap bg-accent text-primary-foreground shadow-lg"
                         >
                           {annotation.label}
                           <button
                             onClick={() => removeAnnotation(annotation.id)}
                             className="ml-1 hover:text-destructive"
+                            aria-label={`Remove ${annotation.label} marker`}
                           >
-                            <X className="w-3 h-3" />
+                            <X className="w-3 h-3" aria-hidden="true" />
                           </button>
                         </Badge>
                       </div>
@@ -321,7 +322,7 @@ export const ImageAnnotator = ({ imageUrl, onAnnotationsChange, initialAnnotatio
 
                 {pendingPosition && isAdding && newLabel && (
                   <div
-                    className="absolute w-4 h-4 rounded-full bg-accent/50 border-2 border-white shadow-lg transform -translate-x-1/2 -translate-y-1/2 animate-ping"
+                    className="absolute w-4 h-4 rounded-full bg-accent/50 border-2 border-primary-foreground shadow-lg transform -translate-x-1/2 -translate-y-1/2 animate-ping"
                     style={{
                       left: `${pendingPosition.x}px`,
                       top: `${pendingPosition.y}px`,

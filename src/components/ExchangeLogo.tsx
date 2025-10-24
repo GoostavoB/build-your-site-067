@@ -70,7 +70,7 @@ export const ExchangeLogo = ({
     <img
       src={imgSrc}
       alt={`${exchangeName} logo`}
-      className={`${sizeClasses[size]} w-auto object-contain dark:bg-white dark:rounded-lg dark:p-2 ${className}`}
+      className={`${sizeClasses[size]} w-auto object-contain dark:bg-background dark:rounded-lg dark:p-2 ${className}`}
       onError={handleError}
       loading="lazy"
       decoding="async"

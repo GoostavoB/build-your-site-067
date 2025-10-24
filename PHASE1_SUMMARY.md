@@ -1,7 +1,7 @@
 # Phase 1 Implementation Summary - UI/UX Standardization & Accessibility
 
 ## Date: October 24, 2025 (Day 1)
-## Status: ✅ 50% Complete
+## Status: ✅ 65% Complete
 
 ---
 
@@ -14,7 +14,7 @@
 
 ---
 
-## ✅ Completed Work (25 Components Fixed)
+## ✅ Completed Work (28 Components Fixed)
 
 ### A. Landing Pages & Public Routes
 1. **src/pages/Index.tsx**
@@ -140,17 +140,31 @@
     - ✅ Cells have `role="button"`, `tabIndex={0}`
     - ✅ Added descriptive `aria-label` with hour, trades, and P&L
 
-25. **Total Summary**: Updated PHASE1_SUMMARY.md with all progress
+25. **src/components/upload/ImageAnnotator.tsx**
+    - ✅ Fixed: `border-white` → `border-primary-foreground`
+    - ✅ Fixed: `text-white` → `text-primary-foreground` on badges
+    - ✅ Added `aria-label` to remove marker buttons
+    - ✅ Added `aria-hidden="true"` to X icons
+
+26. **src/components/upload/MultiImageUpload.tsx**
+    - ✅ Fixed: `text-white` → `text-primary-foreground` on status icons
+    - ✅ Fixed: `text-white` → `text-foreground` on trade count text
+    - ✅ Added `aria-label` to status icons (analyzing, success, error)
+
+27. **src/components/ExchangeLogo.tsx**
+    - ✅ Fixed: `dark:bg-white` → `dark:bg-background`
+
+28. **Total Summary**: Updated PHASE1_SUMMARY.md with all progress
 
 ---
 
 ## 📊 Statistics
 
-- **Files Modified**: 25
-- **Components Fixed**: 25
-- **Hardcoded Colors Replaced**: 50+ instances
-- **ARIA Attributes Added**: 75+
-- **Semantic HTML Improvements**: 20+
+- **Files Modified**: 28
+- **Components Fixed**: 28
+- **Hardcoded Colors Replaced**: 60+ instances
+- **ARIA Attributes Added**: 85+
+- **Semantic HTML Improvements**: 25+
 
 ---
 
@@ -344,7 +358,7 @@ These components intentionally use hardcoded colors for valid reasons:
 - ❌ **Contrast Audit**: Not started
 - ❌ **Heading Hierarchy**: Not started
 
-**Overall Phase 1 Progress**: ~60%
+**Overall Phase 1 Progress**: ~65%
 
 ---
 

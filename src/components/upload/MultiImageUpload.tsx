@@ -199,22 +199,22 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
               </div>
               {image.status === 'analyzing' && (
                 <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-white" />
+                  <Loader2 className="h-8 w-8 animate-spin text-primary-foreground" aria-label="Analyzing image" />
                 </div>
               )}
               {image.status === 'success' && (
                 <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1">
-                  <CheckCircle2 className="h-4 w-4 text-white" />
+                  <CheckCircle2 className="h-4 w-4 text-primary-foreground" aria-label="Analysis successful" />
                 </div>
               )}
               {image.status === 'error' && (
                 <div className="absolute top-2 right-2 bg-destructive rounded-full p-1">
-                  <AlertCircle className="h-4 w-4 text-white" />
+                  <AlertCircle className="h-4 w-4 text-primary-foreground" aria-label="Analysis failed" />
                 </div>
               )}
             </div>
             {image.tradesDetected !== undefined && (
-              <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-white text-xs p-2 text-center">
+              <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-foreground text-xs p-2 text-center">
                 {image.tradesDetected} {image.tradesDetected === 1 ? 'trade' : 'trades'} detected
               </div>
             )}

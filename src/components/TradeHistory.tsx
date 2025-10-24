@@ -1183,6 +1183,13 @@ export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) =>
         onOpenChange={setShareDialogOpen}
         trade={tradeToShare}
       />
+
+      {/* Export Trades Dialog */}
+      <ExportTradesDialog
+        open={exportDialogOpen}
+        onOpenChange={setExportDialogOpen}
+        trades={filteredTrades}
+      />
     </div>
   );
 });

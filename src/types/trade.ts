@@ -26,6 +26,8 @@ export interface Trade {
   period_of_day: string | null;
   setup: string | null;
   emotional_tag: string | null;
+  emotion_tags?: string[];
+  error_tags?: string[];
   notes: string | null;
   error_description?: string | null;
   screenshot_url: string | null;

@@ -60,6 +60,7 @@ import { useBrokerPreferences } from '@/hooks/useBrokerPreferences';
 import { ExportTradesDialog } from '@/components/ExportTradesDialog';
 import { DateRangeFilter } from '@/components/DateRangeFilter';
 import { useDateRange } from '@/contexts/DateRangeContext';
+import { TradeTagSelector } from '@/components/trades/TradeTagSelector';
 
 type ColumnKey = 'date' | 'symbol' | 'setup' | 'broker' | 'type' | 'entry' | 'exit' | 'size' | 'pnl' | 'roi' | 'fundingFee' | 'tradingFee' | 'error';
 
@@ -436,6 +437,8 @@ export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) =>
         setup: editingTrade.setup || null,
         broker: editingTrade.broker || null,
         emotional_tag: editingTrade.emotional_tag || null,
+        emotion_tags: editingTrade.emotion_tags || [],
+        error_tags: editingTrade.error_tags || [],
         notes: editingTrade.notes || null,
         pnl,
         roi,
@@ -1276,15 +1279,14 @@ export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) =>
                   />
                 </div>
 
-                <div>
-                  <Label>Emotional Tag</Label>
-                  <Input
-                    value={editingTrade.emotional_tag || ''}
-                    onChange={(e) => setEditingTrade({ ...editingTrade, emotional_tag: e.target.value })}
-                    className="mt-1"
-                  />
-                </div>
               </div>
+
+              <TradeTagSelector
+                emotionTags={editingTrade.emotion_tags || []}
+                errorTags={editingTrade.error_tags || []}
+                onEmotionTagsChange={(tags) => setEditingTrade({ ...editingTrade, emotion_tags: tags })}
+                onErrorTagsChange={(tags) => setEditingTrade({ ...editingTrade, error_tags: tags })}
+              />
 
               <div>
                 <Label>Notes</Label>

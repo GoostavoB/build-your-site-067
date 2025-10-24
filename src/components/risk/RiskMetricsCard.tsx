@@ -3,6 +3,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, TrendingUp, Shield, AlertCircle } from "lucide-react";
 import { BlurredCurrency } from "@/components/ui/BlurredValue";
+import { LearnMoreLink } from "@/components/ui/LearnMoreLink";
 
 interface RiskMetricsCardProps {
   title: string;
@@ -11,9 +12,10 @@ interface RiskMetricsCardProps {
   status: "safe" | "warning" | "danger";
   description: string;
   unit?: string;
+  learnMoreHref?: string;
 }
 
-export function RiskMetricsCard({ title, value, maxValue, status, description, unit = '' }: RiskMetricsCardProps) {
+export function RiskMetricsCard({ title, value, maxValue, status, description, unit = '', learnMoreHref }: RiskMetricsCardProps) {
   const percentage = (value / maxValue) * 100;
   
   const getStatusColor = () => {
@@ -70,7 +72,10 @@ export function RiskMetricsCard({ title, value, maxValue, status, description, u
         </Badge>
       </div>
       
-      <p className="text-xs text-muted-foreground">{description}</p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground">{description}</p>
+        {learnMoreHref && <LearnMoreLink href={learnMoreHref} />}
+      </div>
     </Card>
   );
 }

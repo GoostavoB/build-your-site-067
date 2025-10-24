@@ -410,6 +410,126 @@ export default function UserGuide() {
                       </ol>
                     </AccordionContent>
                   </AccordionItem>
+
+                  <AccordionItem value="risk-management" id="risk-management">
+                    <AccordionTrigger>Risk Management</AccordionTrigger>
+                    <AccordionContent className="space-y-4">
+                      <p><strong>Purpose:</strong> Monitor and control your trading risk exposure across multiple dimensions.</p>
+                      
+                      <div className="space-y-3">
+                        <h4 className="font-semibold text-sm">Overview Tab - Key Metrics:</h4>
+                        
+                        <div className="space-y-3 ml-4">
+                          <div className="p-3 border rounded-lg space-y-1" id="daily-risk">
+                            <strong className="text-sm">Daily Risk Exposure</strong>
+                            <p className="text-xs text-muted-foreground">
+                              <strong>Formula:</strong> Average loss per trade × 0.5 (estimated daily exposure)
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              <strong>What it means:</strong> Maximum acceptable loss per trading day based on your historical average losses.
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              <strong>Safe zone:</strong> Below 50% of your daily limit. Yellow at 50-80%, red above 80%.
+                            </p>
+                          </div>
+
+                          <div className="p-3 border rounded-lg space-y-1" id="weekly-risk">
+                            <strong className="text-sm">Weekly Risk Exposure</strong>
+                            <p className="text-xs text-muted-foreground">
+                              <strong>Formula:</strong> Daily Risk × 3 (cumulative exposure over 7 days)
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              <strong>What it means:</strong> Total risk accumulated over the week to prevent overtrading.
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              <strong>Interpretation:</strong> If you hit your weekly limit by Wednesday, stop trading until next week.
+                            </p>
+                          </div>
+
+                          <div className="p-3 border rounded-lg space-y-1" id="monthly-risk">
+                            <strong className="text-sm">Monthly Risk Exposure</strong>
+                            <p className="text-xs text-muted-foreground">
+                              <strong>Formula:</strong> Daily Risk × 12 (monthly exposure estimate)
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              <strong>What it means:</strong> Maximum acceptable loss for the current month based on your risk profile.
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              <strong>Example:</strong> If daily risk is $100, monthly risk is $1,200 (12 trading days).
+                            </p>
+                          </div>
+
+                          <div className="p-3 border rounded-lg space-y-1" id="current-drawdown">
+                            <strong className="text-sm">Current Drawdown</strong>
+                            <p className="text-xs text-muted-foreground">
+                              <strong>Formula:</strong> ((Current Equity - Peak Equity) / Peak Equity) × 100
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              <strong>What it means:</strong> How far your account has fallen from its highest point.
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              <strong>Warning levels:</strong> 5-10% = caution, 10-20% = high risk, &gt;20% = critical.
+                            </p>
+                          </div>
+
+                          <div className="p-3 border rounded-lg space-y-1" id="var">
+                            <strong className="text-sm">Value at Risk (VaR 95%)</strong>
+                            <p className="text-xs text-muted-foreground">
+                              <strong>Formula:</strong> 5th percentile of all historical losses
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              <strong>What it means:</strong> The maximum expected loss with 95% confidence on a single trade.
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              <strong>Example:</strong> VaR of $200 means 95% of your trades won't lose more than $200.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <Separator />
+
+                      <div className="space-y-3">
+                        <h4 className="font-semibold text-sm">Calculators Tab:</h4>
+                        
+                        <div className="space-y-3 ml-4">
+                          <div className="p-3 bg-accent/50 rounded-lg">
+                            <strong className="text-sm">Position Size Calculator</strong>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Calculate how many units to trade based on your risk tolerance and stop loss distance.
+                            </p>
+                          </div>
+
+                          <div className="p-3 bg-accent/50 rounded-lg">
+                            <strong className="text-sm">Stop Loss Calculator</strong>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Determine where to place your stop loss for both long and short positions to maintain your risk per trade.
+                            </p>
+                          </div>
+
+                          <div className="p-3 bg-accent/50 rounded-lg">
+                            <strong className="text-sm">Leverage Calculator</strong>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Calculate margin requirements and liquidation prices for leveraged positions. Shows risk levels from low to extreme.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <Separator />
+
+                      <div className="space-y-3">
+                        <h4 className="font-semibold text-sm">Drawdown Tab:</h4>
+                        <p className="text-xs text-muted-foreground ml-4">
+                          Visualize your equity curve and drawdown periods. Includes recovery strategy recommendations based on your current drawdown level.
+                        </p>
+                      </div>
+
+                      <div className="p-3 bg-primary/10 rounded-lg text-sm mt-3">
+                        <strong>Best Practice:</strong> Check Risk Management daily before trading. If any metric is in the red zone, reduce position sizes or take a break.
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
                 </Accordion>
               </CardContent>
             </Card>

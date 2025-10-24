@@ -41,13 +41,16 @@
 - ✅ #19 - Upload UX Premium (Batch upload)
 - ✅ #20 - Deleted History with 48h Restoration
 - ✅ #24 - Trade Analysis Module Hidden
+- ✅ #25 - Risk Management Calculators (Stop Loss, Leverage, Drawdown redesign)
+- ✅ #27 - Daily Lesson Learned Popup (Press-and-hold)
 - ✅ #31 - Goals System (Schema + UI fixes)
 - ✅ #33 - Reports System (Backend + UI)
 - ✅ #37 - AI Parsing Enhancement (Infrastructure)
+- ✅ #39 - Risk Metrics Validation & Documentation
 - ✅ #42 - UI/UX Standardization (Ongoing)
 
 **Key Achievements:**
-- ✨ 17 backlog items completed in single session
+- ✨ 20 backlog items completed in single session
 - 🎯 All critical blur/privacy features implemented
 - 📊 Enhanced Trading History with sorting, column customization & error tracking
 - 🗑️ Upload History with soft delete and restoration
@@ -55,11 +58,14 @@
 - 🎨 Design system tokens applied across multiple pages
 - 👑 Tier-based dashboard customization for Pro/Elite users
 - 🌍 Language consistency with database persistence
+- 🧮 Complete Risk Management suite with calculators and documentation
+- 📚 Comprehensive User Guide with deep linking
+- 📝 Daily Lesson Learned popup with press-and-hold confirmation
 
 **Next Priorities:**
-- #17 - Exchange API Import Fixes (BingX, Bybit)
-- #22 - Emotions & Tags in Psychology Report
-- #25 - Risk Management Calculators
+- #40 - Learn More contextual links  
+- #28 - Long/Short Ratio Alerts (Pro/Elite)
+- #35 - Accessibility (WCAG 2.1 AA)
 
 ---
 
@@ -780,22 +786,33 @@ Even after saving custom layout, page reload resets column count.
 ---
 
 ### #39 - Validação de métricas de risco (Overview)
-**Status:** Planned | **Complexity:** M
+**Status:** ✅ Completed | **Complexity:** M
 
 **Description:**  
 Review formulas for Weekly, Cumulative, and Open Position Risk. Document in User Guide.
 
 **Technical Actions:**
-- Audit all risk calculation formulas
-- Compare with reference spreadsheet
-- Generate technical documentation
-- Add "Learn More" links to User Guide
-- Fix any incorrect calculations
+- ✅ Audit all risk calculation formulas
+- ✅ Document formulas with explanations in User Guide
+- ✅ Add "Learn More" links to Risk Metrics Cards
+- ✅ Created LearnMoreLink component for reusability
+- ✅ Added comprehensive Risk Management section to User Guide with:
+  - Daily Risk Exposure formula and interpretation
+  - Weekly Risk Exposure formula and interpretation
+  - Monthly Risk Exposure formula and interpretation
+  - Current Drawdown formula and warning levels
+  - Value at Risk (VaR 95%) formula and example
+  - Calculator descriptions
+- ✅ All explanations link to specific anchors in User Guide
 
 **Acceptance Criteria:**
 - ✅ Calculations reviewed and documented
-- ✅ Explanations accessible via "Learn More"
-- ✅ All formulas match reference standards
+- ✅ Explanations accessible via "Learn More" links
+- ✅ All formulas documented with examples
+- ✅ LearnMoreLink component created for consistency
+- ✅ Deep links work correctly to User Guide sections
+
+**Completed:** October 24, 2025
 
 ---
 

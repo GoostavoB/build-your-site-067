@@ -160,6 +160,7 @@ export default function RiskManagement() {
                 status={getRiskStatus(metrics.dailyRisk, 300)}
                 description="Maximum acceptable loss per day"
                 unit="$"
+                learnMoreHref="/user-guide#daily-risk"
               />
               <RiskMetricsCard
                 title="Weekly Risk Exposure"
@@ -168,6 +169,7 @@ export default function RiskManagement() {
                 status={getRiskStatus(metrics.weeklyRisk, 1000)}
                 description="Cumulative risk over 7 days"
                 unit="$"
+                learnMoreHref="/user-guide#weekly-risk"
               />
               <RiskMetricsCard
                 title="Monthly Risk Exposure"
@@ -176,6 +178,7 @@ export default function RiskManagement() {
                 status={getRiskStatus(metrics.monthlyRisk, 3000)}
                 description="Total risk for current month"
                 unit="$"
+                learnMoreHref="/user-guide#monthly-risk"
               />
               <RiskMetricsCard
                 title="Open Positions Risk"
@@ -192,6 +195,7 @@ export default function RiskManagement() {
                 status={getRiskStatus(Math.abs(metrics.currentDrawdown), 20)}
                 description="Distance from equity peak"
                 unit="%"
+                learnMoreHref="/user-guide#current-drawdown"
               />
               <RiskMetricsCard
                 title="Value at Risk (95%)"
@@ -200,6 +204,7 @@ export default function RiskManagement() {
                 status={getRiskStatus(metrics.varValue, 500)}
                 description="Maximum expected loss (95% confidence)"
                 unit="$"
+                learnMoreHref="/user-guide#var"
               />
             </div>
           </TabsContent>

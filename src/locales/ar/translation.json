@@ -1038,6 +1038,33 @@
     "messageSent": "تم إرسال الرسالة! سنتواصل معك قريبًا.",
     "directEmail": "أو أرسل لنا بريدًا إلكترونيًا مباشرة على:"
   },
+  "support": {
+    "pageTitle": "الدعم",
+    "pageDescription": "احصل على الدعم الفني لـ The Trading Diary",
+    "title": "الحصول على الدعم",
+    "description": "هل تحتاج إلى مساعدة؟ فريقنا هنا لمساعدتك",
+    "form": {
+      "email": "بريدك الإلكتروني",
+      "category": "الفئة",
+      "categoryPlaceholder": "اختر فئة",
+      "subject": "الموضوع",
+      "subjectPlaceholder": "وصف مختصر لمشكلتك",
+      "message": "الرسالة",
+      "messagePlaceholder": "يرجى وصف مشكلتك بالتفصيل...",
+      "submit": "إرسال طلب الدعم",
+      "sending": "جارٍ الإرسال...",
+      "successMessage": "تم إرسال الطلب! سنرد خلال 24 ساعة.",
+      "errorMessage": "فشل الإرسال. يرجى المحاولة مرة أخرى.",
+      "responseTime": "نرد خلال 24 ساعة"
+    },
+    "categories": {
+      "technical": "الدعم الفني",
+      "billing": "الفواتير",
+      "feature": "طلب ميزة",
+      "bug": "تقرير خطأ",
+      "other": "آخر"
+    }
+  },
   "legal": {
     "title": "المعلومات القانونية",
     "subtitle": "شروط الخدمة وسياسة الخصوصية",

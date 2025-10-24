@@ -1558,6 +1558,33 @@
     "messageSent": "¡Mensaje enviado! Te contactaremos pronto.",
     "directEmail": "O envíanos un correo directamente a:"
   },
+  "support": {
+    "pageTitle": "Soporte",
+    "pageDescription": "Obtén soporte técnico y ayuda para The Trading Diary",
+    "title": "Obtener Soporte",
+    "description": "¿Necesitas ayuda? Nuestro equipo está aquí para asistirte",
+    "form": {
+      "email": "Tu Correo",
+      "category": "Categoría",
+      "categoryPlaceholder": "Selecciona una categoría",
+      "subject": "Asunto",
+      "subjectPlaceholder": "Breve descripción de tu problema",
+      "message": "Mensaje",
+      "messagePlaceholder": "Por favor describe tu problema en detalle...",
+      "submit": "Enviar Solicitud",
+      "sending": "Enviando...",
+      "successMessage": "¡Solicitud enviada! Responderemos en 24 horas.",
+      "errorMessage": "Error al enviar. Por favor, intenta nuevamente.",
+      "responseTime": "Respondemos en 24 horas"
+    },
+    "categories": {
+      "technical": "Soporte Técnico",
+      "billing": "Facturación",
+      "feature": "Solicitud de Función",
+      "bug": "Reporte de Error",
+      "other": "Otro"
+    }
+  },
   "legal": {
     "title": "Información Legal",
     "subtitle": "Términos de Servicio y Política de Privacidad",

@@ -1672,6 +1672,33 @@
     "messageSent": "Message sent! We'll get back to you soon.",
     "directEmail": "Or email us directly at:"
   },
+  "support": {
+    "pageTitle": "Support",
+    "pageDescription": "Get technical support and help for The Trading Diary",
+    "title": "Get Support",
+    "description": "Need help? Our support team is here to assist you",
+    "form": {
+      "email": "Your Email",
+      "category": "Category",
+      "categoryPlaceholder": "Select a category",
+      "subject": "Subject",
+      "subjectPlaceholder": "Brief description of your issue",
+      "message": "Message",
+      "messagePlaceholder": "Please describe your issue in detail...",
+      "submit": "Submit Support Request",
+      "sending": "Sending...",
+      "successMessage": "Support request submitted successfully! We'll respond within 24 hours.",
+      "errorMessage": "Failed to submit support request. Please try again.",
+      "responseTime": "We typically respond within 24 hours"
+    },
+    "categories": {
+      "technical": "Technical Support",
+      "billing": "Billing & Subscription",
+      "feature": "Feature Request",
+      "bug": "Bug Report",
+      "other": "Other"
+    }
+  },
   "legal": {
     "title": "Legal Information",
     "subtitle": "Terms of Service & Privacy Policy",

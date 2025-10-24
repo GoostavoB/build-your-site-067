@@ -133,6 +133,33 @@
     "success": "Đã gửi tin nhắn thành công!",
     "error": "Không thể gửi tin nhắn. Vui lòng thử lại."
   },
+  "support": {
+    "pageTitle": "Hỗ trợ",
+    "pageDescription": "Nhận hỗ trợ kỹ thuật cho The Trading Diary",
+    "title": "Nhận hỗ trợ",
+    "description": "Cần trợ giúp? Chúng tôi sẵn sàng hỗ trợ bạn",
+    "form": {
+      "email": "Email của bạn",
+      "category": "Danh mục",
+      "categoryPlaceholder": "Chọn danh mục",
+      "subject": "Chủ đề",
+      "subjectPlaceholder": "Mô tả ngắn về vấn đề",
+      "message": "Tin nhắn",
+      "messagePlaceholder": "Vui lòng mô tả vấn đề chi tiết...",
+      "submit": "Gửi yêu cầu",
+      "sending": "Đang gửi...",
+      "successMessage": "Đã gửi yêu cầu! Chúng tôi sẽ phản hồi trong 24 giờ.",
+      "errorMessage": "Gửi thất bại. Vui lòng thử lại.",
+      "responseTime": "Phản hồi trong 24 giờ"
+    },
+    "categories": {
+      "technical": "Hỗ trợ kỹ thuật",
+      "billing": "Thanh toán",
+      "feature": "Yêu cầu tính năng",
+      "bug": "Báo cáo lỗi",
+      "other": "Khác"
+    }
+  },
   "achievements": {
     "title": "Thành tích",
     "firstUpload": "Tải lên đầu tiên",

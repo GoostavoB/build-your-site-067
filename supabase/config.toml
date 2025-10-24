@@ -3,6 +3,9 @@ project_id = "qziawervfvptoretkjrn"
 [functions.ai-dashboard-assistant]
 verify_jwt = true
 
+[functions.send-support-email]
+verify_jwt = true
+
 [functions.ai-psychology-analysis]
 verify_jwt = true
 

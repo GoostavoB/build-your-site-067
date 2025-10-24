@@ -19,7 +19,7 @@
     <meta name="format-detection" content="telephone=no, date=no, email=no, address=no" />
     <meta name="mobile-web-app-capable" content="yes" />
     <title>The #1 Crypto Trading Journal | Track &amp; Analyze Every Trade</title>
-    <meta name="description" content="Track, analyze, and review every crypto trade with AI. Built exclusively for crypto traders. Advanced analytics, automated insights, and performance tracking.">
+    <meta name="description" content="Track, analyze, and review every crypto trade with AI-powered insights. Built exclusively for crypto traders with advanced analytics, automated trade import, risk management tools, and real-time performance tracking. Free to start.">
     <meta name="author" content="The Trading Diary" />
     <meta name="keywords" content="crypto trading journal, cryptocurrency trading, crypto trade tracker, bitcoin trading journal, crypto analytics, trading performance, blockchain trading, crypto trading analysis">
     <link rel="canonical" href="https://www.thetradingdiary.com/" />
@@ -148,20 +148,45 @@
     <link rel="dns-prefetch" href="https://www.google-analytics.com">
     <link rel="dns-prefetch" href="https://analytics.google.com">
     
-    <!-- Preload critical resources -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" as="style">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <!-- Phase 1: Async Font Loading with Fallbacks -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet';document.body.classList.add('fonts-loaded')">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"></noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" media="print" onload="this.media='all'">
+    
+    <!-- Phase 4: Critical CSS Inline -->
+    <style>
+      /* Critical above-the-fold styles */
+      body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+      body.fonts-loaded { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+      .hero-section { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+      .hero-title { font-size: 3rem; font-weight: 700; line-height: 1.2; }
+      .hero-subtitle { font-size: 1.25rem; opacity: 0.9; margin-top: 1rem; }
+      .cta-button { padding: 1rem 2rem; border-radius: 0.5rem; background: #4A90E2; color: white; font-weight: 600; transition: all 0.3s; }
+      .cta-button:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(74, 144, 226, 0.3); }
+      .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 2s infinite; }
+      @keyframes shimmer { 0%, 100% { background-position: 200% 0; } 50% { background-position: -200% 0; } }
+      @media (prefers-color-scheme: dark) {
+        body { background: #050a14; color: #f2f2f2; }
+        .skeleton { background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%); background-size: 200% 100%; }
+      }
+    </style>
+    
+    <!-- Phase 6: Preload Critical Resources -->
+    <link rel="modulepreload" href="/src/main.tsx">
+    <link rel="modulepreload" href="/src/App.tsx">
+    <link rel="prefetch" href="/src/pages/Dashboard.tsx" as="script">
+    <link rel="prefetch" href="/src/pages/Upload.tsx" as="script">
     
     <!-- Preload hero image for faster LCP -->
-    <link rel="preload" as="image" href="/src/assets/bull-bear-realistic.png" fetchpriority="high">
+    <link rel="preload" as="image" href="/src/assets/bull-bear-realistic.png" fetchpriority="high" imagesrcset="/src/assets/bull-bear-realistic.png 1x" imagesizes="100vw">
     
     <!-- RSS Feed -->
     <link rel="alternate" type="application/rss+xml" title="The Trading Diary Blog RSS" href="https://www.thetradingdiary.com/blog/rss.xml">
 
     <meta property="og:title" content="The #1 Crypto Trading Journal | Track &amp; Analyze Every Trade">
   <meta name="twitter:title" content="The #1 Crypto Trading Journal | Track &amp; Analyze Every Trade">
-  <meta property="og:description" content="Track, analyze, and review every crypto trade with AI. Built exclusively for crypto traders. Advanced analytics, automated insights, and performance tracking.">
-  <meta name="twitter:description" content="Track, analyze, and review every crypto trade with AI. Built exclusively for crypto traders. Advanced analytics, automated insights, and performance tracking.">
+  <meta property="og:description" content="Track, analyze, and review every crypto trade with AI-powered insights. Built exclusively for crypto traders with advanced analytics, automated trade import, risk management tools, and real-time performance tracking. Free to start.">
+  <meta name="twitter:description" content="Track, analyze, and review every crypto trade with AI-powered insights. Built exclusively for crypto traders with advanced analytics, automated trade import, risk management tools, and real-time performance tracking. Free to start.">
 </head>
 
   <body>

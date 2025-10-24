@@ -11,5 +11,13 @@ setupGlobalErrorHandling();
 
 createRoot(document.getElementById("root")!).render(<App />);
 
-// Report web vitals for performance monitoring
-reportWebVitals(sendVitalsToAnalytics);
+// Phase 7: Defer analytics until after page is interactive
+if ('requestIdleCallback' in window) {
+  requestIdleCallback(() => {
+    reportWebVitals(sendVitalsToAnalytics);
+  }, { timeout: 2000 });
+} else {
+  setTimeout(() => {
+    reportWebVitals(sendVitalsToAnalytics);
+  }, 2000);
+}

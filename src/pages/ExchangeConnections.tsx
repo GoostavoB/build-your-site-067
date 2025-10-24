@@ -14,6 +14,7 @@ import { ExchangeLogo } from '@/components/ExchangeLogo';
 import { formatDistanceToNow } from 'date-fns';
 import AppLayout from '@/components/layout/AppLayout';
 import { useTranslation } from '@/hooks/useTranslation';
+import { SkipToContent } from '@/components/SkipToContent';
 
 interface ExchangeConnection {
   id: string;
@@ -268,15 +269,16 @@ export default function ExchangeConnections() {
 
   return (
     <AppLayout>
-      <div className="container max-w-7xl mx-auto p-6 space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold">{t('exchanges.title')}</h1>
+      <SkipToContent />
+      <main id="main-content" className="container max-w-7xl mx-auto p-6 space-y-8">
+      <header>
+        <h1 className="text-3xl font-bold" id="exchanges-heading">{t('exchanges.title')}</h1>
         <p className="text-muted-foreground mt-2">
           {t('exchanges.subtitle')}
         </p>
-      </div>
+      </header>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3" role="list">
         {exchanges.map((exchange) => {
           const connection = getConnection(exchange.id);
           const isConnected = !!connection;
@@ -417,7 +419,7 @@ export default function ExchangeConnections() {
           queryClient.invalidateQueries({ queryKey: ['trades'] });
         }}
       />
-      </div>
+      </main>
     </AppLayout>
   );
 }

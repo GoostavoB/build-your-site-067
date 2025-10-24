@@ -20,6 +20,7 @@ import { BlurSettings } from '@/components/settings/BlurSettings';
 import { SocialShareRewards } from '@/components/SocialShareRewards';
 import { ReferralProgram } from '@/components/ReferralProgram';
 import { useCalmMode } from '@/contexts/CalmModeContext';
+import { SkipToContent } from '@/components/SkipToContent';
 
 const Settings = () => {
   const { user } = useAuth();
@@ -280,24 +281,25 @@ const Settings = () => {
 
   return (
     <AppLayout>
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-4xl font-bold mb-2">Settings</h1>
+      <SkipToContent />
+      <main id="main-content" className="max-w-4xl mx-auto space-y-6">
+        <header>
+          <h1 className="text-4xl font-bold mb-2" id="settings-heading">Settings</h1>
           <p className="text-muted-foreground">Manage your account and preferences</p>
-        </div>
+        </header>
 
         <Tabs defaultValue="profile" className="w-full">
           <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="profile">
-              <User className="w-4 h-4 mr-2" />
+              <User className="w-4 h-4 mr-2" aria-hidden="true" />
               Profile
             </TabsTrigger>
             <TabsTrigger value="trading">
-              <TrendingUp className="w-4 h-4 mr-2" />
+              <TrendingUp className="w-4 h-4 mr-2" aria-hidden="true" />
               Trading
             </TabsTrigger>
             <TabsTrigger value="setups">
-              <Edit2 className="w-4 h-4 mr-2" />
+              <Edit2 className="w-4 h-4 mr-2" aria-hidden="true" />
               Setups
             </TabsTrigger>
             <TabsTrigger value="appearance">
@@ -618,7 +620,7 @@ const Settings = () => {
         </Card>
       </TabsContent>
     </Tabs>
-  </div>
+  </main>
     </AppLayout>
   );
 };

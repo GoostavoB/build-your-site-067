@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { layout, spacing, typography } from '@/styles/design-tokens';
+import { SkipToContent } from '@/components/SkipToContent';
 
 export default function Reports() {
   const { user } = useAuth();
@@ -131,14 +132,15 @@ ${JSON.stringify(report.report_data, null, 2)}
 
   return (
     <AppLayout>
-      <div className={layout.container}>
+      <SkipToContent />
+      <main id="main-content" className={layout.container}>
         <div className={spacing.section}>
-          <div>
-            <h1 className={typography.pageTitle}>Trading Reports</h1>
+          <header>
+            <h1 className={typography.pageTitle} id="reports-heading">Trading Reports</h1>
             <p className={typography.pageSubtitle}>
               Generate AI-powered reports on your trading performance
             </p>
-          </div>
+          </header>
 
           {/* Generation Section */}
           <Card>
@@ -247,7 +249,7 @@ ${JSON.stringify(report.report_data, null, 2)}
         </CardContent>
       </Card>
         </div>
-      </div>
+      </main>
     </AppLayout>
   );
 }

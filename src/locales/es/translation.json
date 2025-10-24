@@ -108,7 +108,33 @@
       "readMoreInsights": "Leer Más Perspectivas de Trading"
     },
     "testimonials": {
-      "approvedByTraders": "Aprobado por traders profesionales"
+      "sectionTitle": "Confiado por Traders",
+      "testimonial1": {
+        "quote": "Este diario cambió completamente cómo analizo mis operaciones. Los insights de IA son increíbles.",
+        "author": "Marcus Chen",
+        "role": "Day Trader",
+        "exchange": "Binance"
+      },
+      "testimonial2": {
+        "quote": "Finalmente, una herramienta que entiende el trading cripto. Solo el seguimiento de comisiones me ahorró miles.",
+        "author": "Sarah Rodríguez",
+        "role": "Swing Trader",
+        "exchange": "Coinbase"
+      }
+    },
+    "proofBar": {
+      "activeTraders": "Traders Activos",
+      "tradesAnalyzed": "Operaciones Analizadas",
+      "averageRating": "Calificación Promedio"
+    },
+    "hero": {
+      "titleShort": "Rastrea cada operación cripto. Aprende más rápido.",
+      "benefits": [
+        "Importa operaciones en minutos",
+        "Ve P&L real con comisiones",
+        "Revisa setups con etiquetas"
+      ],
+      "ctaPrimary": "Comenzar gratis"
     },
     "cta": {
       "title": "¿Listo para Mejorar Tu Trading?",
@@ -128,6 +154,7 @@
       "legal": "Legal",
       "terms": "Términos",
       "privacy": "Privacidad",
+      "securityBadge": "Datos encriptados en reposo y en tránsito",
       "allRightsReserved": "Todos los derechos reservados.",
       "madeWith": "Hecho con ❤️ para traders"
     }

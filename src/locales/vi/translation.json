@@ -108,7 +108,33 @@
       "readMoreInsights": "Đọc Thêm Insights Giao Dịch"
     },
     "testimonials": {
-      "approvedByTraders": "Được Trader Chuyên Nghiệp Chấp Thuận"
+      "sectionTitle": "Được Trader Tin Tưởng",
+      "testimonial1": {
+        "quote": "Nhật ký này đã thay đổi hoàn toàn cách tôi phân tích các giao dịch của mình. Thông tin chi tiết AI thật đáng kinh ngạc.",
+        "author": "Marcus Chen",
+        "role": "Day Trader",
+        "exchange": "Binance"
+      },
+      "testimonial2": {
+        "quote": "Cuối cùng, một công cụ hiểu về giao dịch tiền điện tử. Chỉ riêng theo dõi phí đã tiết kiệm cho tôi hàng nghìn đô la.",
+        "author": "Sarah Rodriguez",
+        "role": "Swing Trader",
+        "exchange": "Coinbase"
+      }
+    },
+    "proofBar": {
+      "activeTraders": "Trader Đang Hoạt Động",
+      "tradesAnalyzed": "Giao Dịch Đã Phân Tích",
+      "averageRating": "Đánh Giá Trung Bình"
+    },
+    "hero": {
+      "titleShort": "Theo dõi mọi giao dịch tiền điện tử. Học nhanh hơn.",
+      "benefits": [
+        "Nhập giao dịch trong vài phút",
+        "Xem P&L thực với phí",
+        "Xem lại thiết lập với thẻ"
+      ],
+      "ctaPrimary": "Bắt đầu miễn phí"
     },
     "cta": {
       "title": "Sẵn Sàng Nâng Cấp Giao Dịch của Bạn?",
@@ -128,6 +154,7 @@
       "legal": "Pháp Lý",
       "terms": "Điều Khoản",
       "privacy": "Quyền Riêng Tư",
+      "securityBadge": "Dữ liệu được mã hóa khi lưu trữ và truyền tải",
       "allRightsReserved": "Đã đăng ký bản quyền.",
       "madeWith": "Được tạo với ❤️ cho trader"
     }

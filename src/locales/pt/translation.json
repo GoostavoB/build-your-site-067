@@ -108,7 +108,33 @@
       "readMoreInsights": "Leia Mais Insights de Trading"
     },
     "testimonials": {
-      "approvedByTraders": "Aprovado por traders profissionais"
+      "sectionTitle": "Confiado por Traders",
+      "testimonial1": {
+        "quote": "Este diário mudou completamente como analiso minhas negociações. Os insights de IA são incríveis.",
+        "author": "Marcus Chen",
+        "role": "Day Trader",
+        "exchange": "Binance"
+      },
+      "testimonial2": {
+        "quote": "Finalmente, uma ferramenta que entende trading cripto. Só o rastreamento de taxas me economizou milhares.",
+        "author": "Sarah Rodriguez",
+        "role": "Swing Trader",
+        "exchange": "Coinbase"
+      }
+    },
+    "proofBar": {
+      "activeTraders": "Traders Ativos",
+      "tradesAnalyzed": "Negociações Analisadas",
+      "averageRating": "Avaliação Média"
+    },
+    "hero": {
+      "titleShort": "Rastreie cada negociação cripto. Aprenda mais rápido.",
+      "benefits": [
+        "Importe negociações em minutos",
+        "Veja P&L real com taxas",
+        "Revise setups com tags"
+      ],
+      "ctaPrimary": "Começar grátis"
     },
     "cta": {
       "title": "Pronto para Melhorar Seu Trading?",
@@ -128,6 +154,7 @@
       "legal": "Legal",
       "terms": "Termos",
       "privacy": "Privacidade",
+      "securityBadge": "Dados criptografados em repouso e em trânsito",
       "allRightsReserved": "Todos os direitos reservados.",
       "madeWith": "Feito com ❤️ para traders"
     }

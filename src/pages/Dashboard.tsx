@@ -848,9 +848,6 @@ const Dashboard = () => {
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <DateRangeFilter dateRange={dateRange} onDateRangeChange={handleDateRangeChange} />
-            {trades.length > 0 && (
-              <ExportTradesDialog trades={processedTrades} />
-            )}
             {/* Gamification Button */}
             <Button
               size="icon"

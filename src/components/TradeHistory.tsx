@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Pencil, Trash2, Eye, Search, Settings2, X, Share2 } from 'lucide-react';
+import { Pencil, Trash2, Eye, Search, Settings2, X, Share2, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { BlurToggleButton } from '@/components/ui/BlurToggleButton';
 import { BlurredCurrency } from '@/components/ui/BlurredValue';
@@ -57,6 +57,7 @@ import { BulkActionsToolbar } from '@/components/trade-history/BulkActionsToolba
 import { useTradePagination } from '@/components/trade-history/useTradePagination';
 import { PaginationControls } from '@/components/trade-history/PaginationControls';
 import { useBrokerPreferences } from '@/hooks/useBrokerPreferences';
+import { ExportTradesDialog } from '@/components/ExportTradesDialog';
 
 type ColumnKey = 'date' | 'symbol' | 'setup' | 'broker' | 'type' | 'entry' | 'exit' | 'size' | 'pnl' | 'roi' | 'fundingFee' | 'tradingFee';
 
@@ -113,6 +114,7 @@ export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) =>
   const [brokerPopoverOpen, setBrokerPopoverOpen] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [tradeToShare, setTradeToShare] = useState<Trade | null>(null);
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
 
   // Filter and sort trades with memoization
   const filterAndSortTrades = useCallback(() => {
@@ -497,7 +499,7 @@ export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) =>
         <BlurToggleButton />
       </div>
       
-      <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex flex-col md:flex-row gap-4 items-start">
         <TradeFilters
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
@@ -513,6 +515,16 @@ export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) =>
             localStorage.setItem('tradeHistoryColumns', JSON.stringify(newColumns));
           }}
         />
+        {!showDeleted && trades.length > 0 && (
+          <Button
+            onClick={() => setExportDialogOpen(true)}
+            variant="outline"
+            className="md:ml-auto"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Export CSV
+          </Button>
+        )}
       </div>
 
       {showDeleted && (

@@ -1,6 +1,15 @@
 import type { Trade } from '@/types/trade';
 import { format } from 'date-fns';
 
+export interface ExportFilters {
+  dateFrom?: Date;
+  dateTo?: Date;
+  exchanges?: string[];
+  symbols?: string[];
+  minPnl?: number;
+  maxPnl?: number;
+}
+
 export const exportToCSV = (trades: Trade[], filename: string = 'trades') => {
   if (!trades.length) return;
 
@@ -166,4 +175,65 @@ export const exportWithSummary = (trades: Trade[], filename: string = 'trades') 
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+};
+
+/**
+ * Apply filters to trades
+ */
+export const filterTrades = (trades: Trade[], filters: ExportFilters): Trade[] => {
+  return trades.filter(trade => {
+    // Date range filter
+    if (filters.dateFrom && trade.trade_date) {
+      const tradeDate = new Date(trade.trade_date);
+      if (tradeDate < filters.dateFrom) return false;
+    }
+    if (filters.dateTo && trade.trade_date) {
+      const tradeDate = new Date(trade.trade_date);
+      if (tradeDate > filters.dateTo) return false;
+    }
+
+    // Exchange filter
+    if (filters.exchanges && filters.exchanges.length > 0) {
+      if (!trade.broker || !filters.exchanges.includes(trade.broker)) return false;
+    }
+
+    // Symbol filter
+    if (filters.symbols && filters.symbols.length > 0) {
+      if (!trade.symbol || !filters.symbols.includes(trade.symbol)) return false;
+    }
+
+    // P&L range filter
+    const pnl = trade.pnl || trade.profit_loss || 0;
+    if (filters.minPnl !== undefined && pnl < filters.minPnl) return false;
+    if (filters.maxPnl !== undefined && pnl > filters.maxPnl) return false;
+
+    return true;
+  });
+};
+
+/**
+ * Export filtered trades
+ */
+export const exportFilteredTrades = (
+  trades: Trade[],
+  filters: ExportFilters,
+  filename: string = 'trades'
+): void => {
+  const filteredTrades = filterTrades(trades, filters);
+  
+  if (filteredTrades.length === 0) {
+    throw new Error('No trades match the selected filters');
+  }
+
+  exportToCSV(filteredTrades, filename);
+};
+
+/**
+ * Get unique values for filter options
+ */
+export const getFilterOptions = (trades: Trade[]) => {
+  const exchanges = [...new Set(trades.map(t => t.broker).filter(Boolean))] as string[];
+  const symbols = [...new Set(trades.map(t => t.symbol).filter(Boolean))] as string[];
+  
+  return { exchanges, symbols };
 };

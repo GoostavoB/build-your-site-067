@@ -17,7 +17,7 @@ import { SUPPORTED_LANGUAGES } from "@/utils/languageRouting";
 
 const IndexPt = () => {
   const navigate = useNavigate();
-  const { t, changeLanguage } = useTranslation();
+  const { t } = useTranslation();
 
   // Add hreflang tags for SEO
   useHreflang({
@@ -26,9 +26,6 @@ const IndexPt = () => {
   });
 
   useEffect(() => {
-    // Set language to Portuguese
-    changeLanguage('pt');
-    
     // Update meta tags and SEO
     updateLandingMeta('pt');
     addStructuredData('pt');

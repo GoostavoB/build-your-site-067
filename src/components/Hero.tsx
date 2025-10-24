@@ -4,13 +4,19 @@ import { motion } from "framer-motion";
 import bullBearRealistic from "@/assets/bull-bear-realistic.png";
 import { useTranslation } from "@/hooks/useTranslation";
 
+
 const Hero = () => {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { t, i18n, ready, language, isLoading } = useTranslation();
 
-  // Ensure i18n is initialized
-  if (!i18n.isInitialized) {
-    return null;
+  // Wait until translations are fully ready for the current language
+  const heroKey = 'landing.hero.titleShort';
+  if (!i18n.isInitialized || isLoading || !ready || i18n.language !== language || t(heroKey) === heroKey) {
+    return (
+      <section className="relative min-h-[100vh] md:min-h-[90vh] flex items-center justify-center px-6 pt-24 pb-10 overflow-hidden" aria-labelledby="hero-title">
+        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      </section>
+    );
   }
 
   return (

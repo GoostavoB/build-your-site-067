@@ -17,7 +17,7 @@ import { SUPPORTED_LANGUAGES } from "@/utils/languageRouting";
 
 const IndexVi = () => {
   const navigate = useNavigate();
-  const { t, changeLanguage } = useTranslation();
+  const { t } = useTranslation();
 
   // Add hreflang tags for SEO
   useHreflang({
@@ -26,9 +26,6 @@ const IndexVi = () => {
   });
 
   useEffect(() => {
-    // Set language to Vietnamese
-    changeLanguage('vi');
-    
     // Update meta tags and SEO
     updateLandingMeta('vi');
     addStructuredData('vi');

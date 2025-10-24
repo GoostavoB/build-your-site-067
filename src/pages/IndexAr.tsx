@@ -17,7 +17,7 @@ import { SUPPORTED_LANGUAGES } from "@/utils/languageRouting";
 
 const IndexAr = () => {
   const navigate = useNavigate();
-  const { t, changeLanguage } = useTranslation();
+  const { t } = useTranslation();
 
   // Add hreflang tags for SEO
   useHreflang({
@@ -26,9 +26,6 @@ const IndexAr = () => {
   });
 
   useEffect(() => {
-    // Set language to Arabic
-    changeLanguage('ar');
-    
     // Update meta tags and SEO
     updateLandingMeta('ar');
     addStructuredData('ar');

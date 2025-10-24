@@ -17,7 +17,7 @@ import { SUPPORTED_LANGUAGES } from "@/utils/languageRouting";
 
 const IndexEs = () => {
   const navigate = useNavigate();
-  const { t, changeLanguage } = useTranslation();
+  const { t } = useTranslation();
 
   // Add hreflang tags for SEO
   useHreflang({
@@ -26,9 +26,6 @@ const IndexEs = () => {
   });
 
   useEffect(() => {
-    // Set language to Spanish
-    changeLanguage('es');
-    
     // Update meta tags and SEO
     updateLandingMeta('es');
     addStructuredData('es');

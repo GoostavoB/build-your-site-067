@@ -6,13 +6,15 @@ import { useLanguage } from '@/contexts/LanguageContext';
  * Now integrated with LanguageContext for database persistence
  */
 export const useTranslation = () => {
-  const { t, i18n } = useI18nTranslation();
-  const { language, changeLanguage: contextChangeLanguage } = useLanguage();
+  const { t, i18n, ready } = useI18nTranslation();
+  const { language, changeLanguage: contextChangeLanguage, isLoading } = useLanguage();
   
   return {
     t,
     i18n,
+    ready,
     language,
     changeLanguage: contextChangeLanguage,
+    isLoading,
   };
 };

@@ -24,6 +24,7 @@ import { pageMeta } from "@/utils/seoHelpers";
 import { DateRangeFilter } from "@/components/DateRangeFilter";
 import { useDateRange } from "@/contexts/DateRangeContext";
 import { Button } from "@/components/ui/button";
+import { layout, spacing, typography } from "@/styles/design-tokens";
 
 export default function Analytics() {
   usePageMeta(pageMeta.analytics);
@@ -96,33 +97,34 @@ export default function Analytics() {
 
   return (
     <AppLayout>
-      <div className="container mx-auto p-4 max-w-7xl space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Advanced Analytics</h1>
-            <p className="text-muted-foreground mt-1">Deep dive into your trading performance</p>
+      <div className={layout.container}>
+        <div className={spacing.section}>
+          <div className={layout.flex.between}>
+            <div>
+              <h1 className="text-3xl font-bold">Advanced Analytics</h1>
+              <p className="text-muted-foreground mt-1">Deep dive into your trading performance</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <DateRangeFilter 
+                dateRange={dateRange} 
+                onDateRangeChange={setDateRange}
+              />
+              {dateRange?.from && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearDateRange}
+                  className="h-9"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Clear Filter
+                </Button>
+              )}
+              <BlurToggleButton />
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <DateRangeFilter 
-              dateRange={dateRange} 
-              onDateRangeChange={setDateRange}
-            />
-            {dateRange?.from && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearDateRange}
-                className="h-9"
-              >
-                <X className="h-4 w-4 mr-1" />
-                Clear Filter
-              </Button>
-            )}
-            <BlurToggleButton />
-          </div>
-        </div>
 
-        <Tabs defaultValue="charts" className="space-y-6">
+          <Tabs defaultValue="charts" className="space-y-6">
           <TabsList className="grid w-full max-w-4xl grid-cols-3 md:grid-cols-5 glass p-1">
             <TabsTrigger value="charts" className="gap-2 text-xs md:text-sm data-[state=active]:shadow-sm">
               <BarChart3 className="h-4 w-4" />
@@ -193,6 +195,7 @@ export default function Analytics() {
             <PeriodBasedROI />
           </TabsContent>
         </Tabs>
+        </div>
       </div>
     </AppLayout>
   );

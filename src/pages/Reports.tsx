@@ -12,6 +12,7 @@ import { Download, Mail, Trash, Loader2, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
+import { layout, spacing, typography } from '@/styles/design-tokens';
 
 export default function Reports() {
   const { user } = useAuth();
@@ -130,25 +131,26 @@ ${JSON.stringify(report.report_data, null, 2)}
 
   return (
     <AppLayout>
-      <div className="container max-w-7xl mx-auto p-6 space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold">Trading Reports</h1>
-          <p className="text-muted-foreground mt-2">
-            Generate AI-powered reports on your trading performance
-          </p>
-        </div>
+      <div className={layout.container}>
+        <div className={spacing.section}>
+          <div>
+            <h1 className={typography.pageTitle}>Trading Reports</h1>
+            <p className={typography.pageSubtitle}>
+              Generate AI-powered reports on your trading performance
+            </p>
+          </div>
 
-        {/* Generation Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Generate New Report</CardTitle>
-            <CardDescription>
-              Select a date range and report type to analyze your trading performance
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
+          {/* Generation Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className={typography.cardTitle}>Generate New Report</CardTitle>
+              <CardDescription className={typography.cardDescription}>
+                Select a date range and report type to analyze your trading performance
+              </CardDescription>
+            </CardHeader>
+            <CardContent className={spacing.card}>
+              <div className={layout.grid.twoCol}>
+                <div className="space-y-2">
                 <Label>Report Type</Label>
                 <Select value={reportType} onValueChange={(value: any) => setReportType(value)}>
                   <SelectTrigger>
@@ -240,10 +242,11 @@ ${JSON.stringify(report.report_data, null, 2)}
                     </div>
                   </div>
                 ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+        </div>
       </div>
     </AppLayout>
   );

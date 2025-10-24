@@ -26,6 +26,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { layout, spacing, typography } from "@/styles/design-tokens";
 
 export default function Goals() {
   const { user } = useAuth();
@@ -118,41 +119,42 @@ export default function Goals() {
 
   return (
     <AppLayout>
-      <div className="container mx-auto p-6 max-w-7xl relative">
-        {/* Main Content */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold flex items-center gap-2">
-              <Target className="h-8 w-8" />
-              Goals & Milestones
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              Set and track your trading objectives
-            </p>
+      <div className={layout.container}>
+        <div className={spacing.section}>
+          {/* Header */}
+          <div className={layout.flex.between}>
+            <div>
+              <h1 className={`${typography.pageTitle} flex items-center gap-2`}>
+                <Target className="h-8 w-8" />
+                Goals & Milestones
+              </h1>
+              <p className={typography.pageSubtitle}>
+                Set and track your trading objectives
+              </p>
+            </div>
+            <CreateGoalDialog 
+              onGoalCreated={refetch}
+              editingGoal={editingGoal}
+              onClose={() => setEditingGoal(null)}
+            />
           </div>
-          <CreateGoalDialog 
-            onGoalCreated={refetch}
-            editingGoal={editingGoal}
-            onClose={() => setEditingGoal(null)}
-          />
-        </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          {stats.map((stat, index) => (
-            <Card key={index} className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">{stat.label}</p>
-                  <p className="text-2xl font-bold mt-1">{stat.value}</p>
+          {/* Stats Cards */}
+          <div className={layout.grid.stats}>
+            {stats.map((stat, index) => (
+              <Card key={index} className="p-4">
+                <div className={layout.flex.between}>
+                  <div>
+                    <p className={typography.body}>{stat.label}</p>
+                    <p className="text-2xl font-bold mt-1">{stat.value}</p>
+                  </div>
+                  <stat.icon className={`h-8 w-8 ${stat.color}`} />
                 </div>
-                <stat.icon className={`h-8 w-8 ${stat.color}`} />
-              </div>
-            </Card>
-          ))}
-        </div>
+              </Card>
+            ))}
+          </div>
 
-        {/* Goal Projections */}
+          {/* Goal Projections */}
         {activeGoals.length > 0 && trades && trades.length > 0 && (
           <GoalProjection 
             goals={(goals || []) as any} 
@@ -375,9 +377,10 @@ export default function Goals() {
             size="lg"
             className="h-16 w-16 rounded-full shadow-2xl bg-gradient-to-br from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 border-2 border-primary/20 backdrop-blur-sm transition-all duration-300 hover:scale-110"
           >
-            <Zap className="h-7 w-7 text-primary-foreground animate-pulse" />
-          </Button>
-        </motion.div>
+          <Zap className="h-7 w-7 text-primary-foreground animate-pulse" />
+        </Button>
+      </motion.div>
+        </div>
       </div>
     </AppLayout>
   );

@@ -100,10 +100,10 @@ export default function Analytics() {
       <div className={layout.container}>
         <div className={spacing.section}>
           <div className={layout.flex.between}>
-            <div>
+            <header>
               <h1 className="text-3xl font-bold">Advanced Analytics</h1>
               <p className="text-muted-foreground mt-1">Deep dive into your trading performance</p>
-            </div>
+            </header>
             <div className="flex items-center gap-2">
               <DateRangeFilter 
                 dateRange={dateRange} 

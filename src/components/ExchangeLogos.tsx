@@ -6,8 +6,8 @@ const ExchangeLogos = () => {
   const { t } = useTranslation();
   
   return (
-    <section className="py-16 md:py-20 px-6 relative overflow-hidden">
-      <div className="absolute inset-0 border-t border-b border-primary/10"></div>
+    <section className="py-16 md:py-20 px-6 relative overflow-hidden" aria-labelledby="exchanges-heading">
+      <div className="absolute inset-0 border-t border-b border-primary/10" aria-hidden="true"></div>
       
       <div className="container mx-auto max-w-6xl relative z-10">
         <motion.div
@@ -17,7 +17,7 @@ const ExchangeLogos = () => {
           viewport={{ once: true }}
           className="text-center space-y-8"
         >
-          <h2 className="text-2xl md:text-3xl font-bold">
+          <h2 id="exchanges-heading" className="text-2xl md:text-3xl font-bold">
             {t('landing.exchangeLogos.title').split('crypto traders')[0]}
             <span className="text-gradient-primary">crypto traders</span>
             {t('landing.exchangeLogos.title').split('crypto traders')[1]}

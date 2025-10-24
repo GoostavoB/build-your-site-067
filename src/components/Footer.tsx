@@ -7,7 +7,7 @@ const Footer = () => {
   const { t } = useTranslation();
   
   return (
-    <footer className="border-t border-border/50 py-12 px-6 bg-background/60 backdrop-blur-sm">
+    <footer className="border-t border-border/50 py-12 px-6 bg-background/60 backdrop-blur-sm" role="contentinfo">
       <div className="container mx-auto max-w-6xl">
         {/* Newsletter Section */}
         <div className="mb-10">
@@ -23,25 +23,25 @@ const Footer = () => {
             <p className="text-muted-foreground text-sm mb-5 leading-relaxed">
               {t('landing.footer.tagline')}
             </p>
-            <div className="flex gap-3">
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors p-1.5 glass-subtle rounded-lg hover-lift">
-                <Twitter size={18} />
+            <nav aria-label="Social media links" className="flex gap-3">
+              <a href="#" className="text-muted-foreground hover:text-primary transition-colors p-1.5 glass-subtle rounded-lg hover-lift" aria-label="Follow us on Twitter">
+                <Twitter size={18} aria-hidden="true" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors p-1.5 glass-subtle rounded-lg hover-lift">
-                <Github size={18} />
+              <a href="#" className="text-muted-foreground hover:text-primary transition-colors p-1.5 glass-subtle rounded-lg hover-lift" aria-label="Follow us on GitHub">
+                <Github size={18} aria-hidden="true" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors p-1.5 glass-subtle rounded-lg hover-lift">
-                <Linkedin size={18} />
+              <a href="#" className="text-muted-foreground hover:text-primary transition-colors p-1.5 glass-subtle rounded-lg hover-lift" aria-label="Connect on LinkedIn">
+                <Linkedin size={18} aria-hidden="true" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors p-1.5 glass-subtle rounded-lg hover-lift">
-                <Mail size={18} />
+              <a href="#" className="text-muted-foreground hover:text-primary transition-colors p-1.5 glass-subtle rounded-lg hover-lift" aria-label="Contact us via Email">
+                <Mail size={18} aria-hidden="true" />
               </a>
-            </div>
+            </nav>
           </div>
 
           {/* Product */}
-          <div>
-            <h4 className="font-semibold mb-3 text-sm">{t('landing.footer.product')}</h4>
+          <nav aria-labelledby="footer-product">
+            <h3 id="footer-product" className="font-semibold mb-3 text-sm">{t('landing.footer.product')}</h3>
             <ul className="space-y-2">
               <li>
                 <a href="/features" className="inline-block py-2 text-muted-foreground hover:text-foreground transition-colors text-sm">
@@ -64,11 +64,11 @@ const Footer = () => {
                 </a>
               </li>
             </ul>
-          </div>
+          </nav>
 
           {/* Resources */}
-          <div>
-            <h4 className="font-semibold mb-3 text-sm">{t('landing.footer.support')}</h4>
+          <nav aria-labelledby="footer-support">
+            <h3 id="footer-support" className="font-semibold mb-3 text-sm">{t('landing.footer.support')}</h3>
             <ul className="space-y-2.5">
               <li>
                 <a href="/blog" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
@@ -101,11 +101,11 @@ const Footer = () => {
                 </a>
               </li>
             </ul>
-          </div>
+          </nav>
 
           {/* Company */}
-          <div>
-            <h4 className="font-semibold mb-3 text-sm">{t('landing.footer.legal')}</h4>
+          <nav aria-labelledby="footer-legal">
+            <h3 id="footer-legal" className="font-semibold mb-3 text-sm">{t('landing.footer.legal')}</h3>
             <ul className="space-y-2.5">
               <li>
                 <a href="/about" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
@@ -138,7 +138,7 @@ const Footer = () => {
                 </a>
               </li>
             </ul>
-          </div>
+          </nav>
         </div>
 
         {/* Security Badge */}

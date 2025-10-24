@@ -1,5 +1,6 @@
 import AppLayout from '@/components/layout/AppLayout';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useHreflang } from '@/hooks/useHreflang';
@@ -36,14 +37,14 @@ const About = () => {
   return (
     <AppLayout>
       <div className="max-w-4xl mx-auto space-y-12">
-        <div className="text-center space-y-4">
+        <header className="text-center space-y-4">
           <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             {t('about.title', 'About The Trading Diary')}
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             {t('about.subtitle', 'Empowering crypto traders with AI-powered insights and analytics')}
           </p>
-        </div>
+        </header>
         
         {/* Mission */}
         <Card className="p-8">
@@ -131,18 +132,19 @@ const About = () => {
         </Card>
         
         {/* Join Us */}
-        <div className="text-center py-8">
-          <h2 className="text-3xl font-bold mb-4">{t('about.cta.title', 'Join Thousands of Traders')}</h2>
+        <section className="text-center py-8" aria-labelledby="about-cta-heading">
+          <h2 id="about-cta-heading" className="text-3xl font-bold mb-4">{t('about.cta.title', 'Join Thousands of Traders')}</h2>
           <p className="text-muted-foreground mb-6">
             {t('about.cta.subtitle', 'Start tracking your trades and improving your performance today')}
           </p>
-          <button
+          <Button
             onClick={() => navigate('/auth')} 
-            className="inline-block px-8 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:opacity-90 transition-opacity"
+            size="lg"
+            aria-label="Get started with The Trading Diary for free"
           >
             {t('about.cta.button', 'Get Started Free')}
-          </button>
-        </div>
+          </Button>
+        </section>
       </div>
     </AppLayout>
   );

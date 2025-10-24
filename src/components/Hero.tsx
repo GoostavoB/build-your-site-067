@@ -2,19 +2,15 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import bullBearRealistic from "@/assets/bull-bear-realistic.png";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const Hero = () => {
   const navigate = useNavigate();
-  const { t, i18n, ready } = useTranslation();
+  const { t, i18n } = useTranslation();
 
-  // Ensure i18n is initialized and translations are loaded
-  if (!i18n.isInitialized || !ready || !i18n.exists('landing.hero.titleShort')) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
-      </div>
-    );
+  // Ensure i18n is initialized
+  if (!i18n.isInitialized) {
+    return null;
   }
 
   return (

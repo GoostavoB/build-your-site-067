@@ -7,8 +7,11 @@ import ptTranslations from './locales/pt/translation.json';
 import arTranslations from './locales/ar/translation.json';
 import viTranslations from './locales/vi/translation.json';
 
-// Get language from localStorage or default to 'en'
-const savedLanguage = localStorage.getItem('app-language') || 'en';
+// Normalize language to base code (e.g., 'en-US' -> 'en')
+const supportedLanguages = ['en', 'es', 'pt', 'ar', 'vi'] as const;
+const rawLanguage = localStorage.getItem('app-language') || navigator.language || 'en';
+const baseLanguage = rawLanguage.split('-')[0];
+const savedLanguage = supportedLanguages.includes(baseLanguage as any) ? baseLanguage : 'en';
 
 i18n
   .use(initReactI18next)
@@ -32,6 +35,10 @@ i18n
     },
     lng: savedLanguage,
     fallbackLng: 'en',
+    supportedLngs: ['en', 'es', 'pt', 'ar', 'vi'],
+    load: 'languageOnly',
+    defaultNS: 'translation',
+    ns: ['translation'],
     debug: false,
     interpolation: {
       escapeValue: false, // React already escapes values
@@ -40,5 +47,13 @@ i18n
       useSuspense: false, // Prevent suspense-related loading issues
     }
   });
+
+// Debug check in development
+if (process.env.NODE_ENV !== 'production') {
+  console.debug('i18n initialized', {
+    language: i18n.language,
+    hasTranslations: i18n.exists('landing.stats.fasterUploads.title')
+  });
+}
 
 export default i18n;

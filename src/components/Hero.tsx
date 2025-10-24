@@ -2,11 +2,16 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import bullBearRealistic from "@/assets/bull-bear-realistic.png";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "react-i18next";
 
 const Hero = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  // Ensure i18n is initialized before rendering
+  if (!i18n.isInitialized) {
+    return null;
+  }
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-6 py-16" aria-labelledby="hero-title">

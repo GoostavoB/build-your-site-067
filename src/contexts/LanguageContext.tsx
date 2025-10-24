@@ -30,8 +30,12 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     if (pathLang !== DEFAULT_LANGUAGE) return pathLang;
     
     const stored = localStorage.getItem('app-language');
-    if (stored && SUPPORTED_LANGUAGES.includes(stored as SupportedLanguage)) {
-      return stored as SupportedLanguage;
+    if (stored) {
+      // Normalize to base language code (e.g., 'en-US' -> 'en')
+      const base = stored.split('-')[0];
+      if (SUPPORTED_LANGUAGES.includes(base as SupportedLanguage)) {
+        return base as SupportedLanguage;
+      }
     }
     
     return DEFAULT_LANGUAGE;

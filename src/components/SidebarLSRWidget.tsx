@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Activity, ChevronDown } from 'lucide-react';
 import { useSidebar } from '@/components/ui/sidebar';
+import { useNavigate } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,8 +32,13 @@ const TIME_FRAMES: { value: TimeFrame; label: string }[] = [
 
 export function SidebarLSRWidget() {
   const { open } = useSidebar();
+  const navigate = useNavigate();
   const [lsrData, setLsrData] = useState<LSRData | null>(null);
   const [timeFrame, setTimeFrame] = useState<TimeFrame>('15m');
+
+  const handleWidgetClick = () => {
+    navigate('/market-data');
+  };
 
   useEffect(() => {
     const fetchBinanceLSR = async () => {
@@ -85,7 +91,11 @@ export function SidebarLSRWidget() {
   const isOiPositive = lsrData.openInterestChange >= 0;
 
   return (
-    <div className="mx-3 my-2 rounded-lg border border-border/40 bg-card/30 backdrop-blur-sm" data-tour="market-data-widget">
+    <div 
+      className="mx-3 my-2 rounded-lg border border-border/40 bg-card/30 backdrop-blur-sm cursor-pointer hover:border-primary/50 hover:bg-card/50 transition-all duration-200" 
+      data-tour="market-data-widget"
+      onClick={handleWidgetClick}
+    >
       {/* Header with Time Frame Selector */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-border/40">
         <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70">Market Data</span>
@@ -95,6 +105,7 @@ export function SidebarLSRWidget() {
               variant="ghost" 
               size="sm" 
               className="h-5 px-1.5 text-[10px] font-medium hover:bg-accent/50"
+              onClick={(e) => e.stopPropagation()}
             >
               {timeFrame}
               <ChevronDown className="h-3 w-3 ml-0.5 opacity-50" />

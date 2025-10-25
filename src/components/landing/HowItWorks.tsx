@@ -21,8 +21,8 @@ const HowItWorks = () => {
     },
     {
       icon: CheckCircle,
-      title: "Get 3 practical actions to apply today",
-      description: "Receive specific, actionable recommendations to improve your trading"
+      title: "Get practical actions you can apply today",
+      description: "• See what to adjust next, with clear, data-based suggestions"
     }
   ];
 

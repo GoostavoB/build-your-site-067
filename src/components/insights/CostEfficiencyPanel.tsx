@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Receipt, TrendingDown, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { ExchangeBadge } from '@/components/exchanges/ExchangeBadge';
 import { EfficiencyBadge } from '@/components/fee-analysis/EfficiencyBadge';
 import { formatCurrency } from '@/utils/formatNumber';
 import { aggregateExchangeStats } from '@/utils/feeCalculations';
@@ -66,23 +65,18 @@ export const CostEfficiencyPanel = memo(({ trades }: CostEfficiencyPanelProps) =
                   <Badge variant={idx === 0 ? 'default' : 'secondary'} className="font-mono text-base w-9 h-9 flex items-center justify-center flex-shrink-0 p-0">
                     {idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}
                   </Badge>
-                  <div className="flex-shrink-0">
-                    <ExchangeBadge source={exchange.broker} />
-                  </div>
+                  <p className="font-medium">{exchange.broker}</p>
                 </div>
                 <p className="text-base font-mono font-bold">
                   {exchange.avgFeePercent.toFixed(3)}%
                 </p>
               </div>
               
-              {/* Bottom row: Broker name + trades | Efficiency badge */}
+              {/* Bottom row: trades | Efficiency badge */}
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-sm">{exchange.broker}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {exchange.tradeCount} {t('insights.trades')}
-                  </p>
-                </div>
+                <p className="text-xs text-muted-foreground">
+                  {exchange.tradeCount} {t('insights.trades')}
+                </p>
                 <EfficiencyBadge score={exchange.avgEfficiencyScore} />
               </div>
             </div>

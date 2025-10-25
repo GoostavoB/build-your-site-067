@@ -4,12 +4,6 @@ import { Plus } from "lucide-react";
 const PricingAddOns = () => {
   const addOns = [
     {
-      title: "Extra exchanges",
-      price: "$5",
-      period: "/exchange/month",
-      description: "Connect additional exchanges beyond your plan limit"
-    },
-    {
       title: "Extra AI uploads",
       price: "$10",
       period: "/1,000 uploads",
@@ -34,7 +28,7 @@ const PricingAddOns = () => {
         >
           <h2 className="text-3xl font-bold text-center mb-8">Add-ons</h2>
           
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             {addOns.map((addon, index) => (
               <motion.div
                 key={index}

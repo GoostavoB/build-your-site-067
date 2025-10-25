@@ -8,7 +8,6 @@ import PainToValue from "@/components/landing/PainToValue";
 import BuildSection from "@/components/landing/BuildSection";
 import BenefitBadges from "@/components/BenefitBadges";
 import Testimonials from "@/components/Testimonials";
-import IntegrationsBlock from "@/components/landing/IntegrationsBlock";
 import Pricing from "@/components/Pricing";
 import SecurityTrust from "@/components/landing/SecurityTrust";
 import CTA from "@/components/CTA";
@@ -60,7 +59,6 @@ const Index = () => {
         <BuildSection />
         <BenefitBadges />
         <Testimonials />
-        <IntegrationsBlock />
         <Pricing />
         <SecurityTrust />
         <CTA />

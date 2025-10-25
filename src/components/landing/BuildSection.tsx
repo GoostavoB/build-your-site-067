@@ -16,7 +16,7 @@ const BuildSection = () => {
     {
       icon: Plug,
       title: "Install",
-      description: "Connect your exchange in minutes"
+      description: "Upload your trade history instantly"
     },
     {
       icon: Rocket,

@@ -60,7 +60,6 @@ const Psychology = lazy(() => import("./pages/Psychology"));
 const TradingPlan = lazy(() => import("./pages/TradingPlan"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const CustomPage = lazy(() => import("./pages/CustomPage"));
-const ExchangeConnections = lazy(() => import("./pages/ExchangeConnections"));
 const SpotWallet = lazy(() => import("./pages/SpotWallet"));
 const FeeAnalysis = lazy(() => import("./pages/FeeAnalysis"));
 const LogoDownload = lazy(() => import("./pages/LogoDownload"));

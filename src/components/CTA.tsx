@@ -18,11 +18,11 @@ const CTA = () => {
           className="text-center space-y-6"
         >
           <h2 id="cta-heading" className="text-3xl md:text-4xl font-bold leading-tight">
-            {t('landing.cta.title')}
+            Start today
           </h2>
           
           <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto">
-            {t('landing.cta.subtitle')}
+            Upload your last 30 days and get 3 actions to raise your average R
           </p>
           
           <div>
@@ -30,13 +30,13 @@ const CTA = () => {
               onClick={() => navigate('/auth')}
               size="lg"
               className="px-10 py-7 text-base font-medium rounded-xl"
-              aria-label="Start using The Trading Diary for free"
+              aria-label="Start free trial"
             >
-              {t('landing.cta.button')}
+              Start free trial
             </Button>
             
             <p className="mt-4 text-xs text-muted-foreground">
-              {t('landing.cta.note')}
+              No credit card required • 7-day free trial
             </p>
           </div>
         </motion.div>

@@ -38,24 +38,51 @@ const Hero = () => {
               id="hero-title"
               className="text-[clamp(40px,6vw,68px)] font-bold leading-[1.1] tracking-tight"
             >
-              {t('landing.hero.mainTitle', 'The #1 Crypto Trading Journal')}
+              Maximize your trading performance
             </h1>
 
             {/* Subtitle - Left Aligned */}
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl">
-              {t('landing.hero.subtitle', 'Track, analyze, and review every crypto trade with AI. Built exclusively for crypto traders.')}
+              Upload your trades, AI fills the journal, you get 3 actions to lift your average R today
             </p>
 
-            {/* CTA Button */}
-            <div className="pt-4">
+            {/* CTA Buttons */}
+            <div className="pt-4 flex flex-col sm:flex-row gap-4">
               <Button 
                 onClick={() => navigate('/auth')}
                 size="lg"
                 className="h-14 px-10 text-base font-semibold rounded-xl bg-primary hover:bg-primary/90 transition-all duration-300"
-                aria-label="Start using The Trading Diary for free"
+                aria-label="Start free trial"
               >
-                {t('landing.hero.ctaPrimary', 'Get Started Free')}
+                Start free trial
               </Button>
+              <Button 
+                onClick={() => navigate('/demo')}
+                size="lg"
+                variant="outline"
+                className="h-14 px-10 text-base font-semibold rounded-xl border-2 border-primary/30 hover:bg-primary/10"
+                aria-label="Watch 2-minute demo"
+              >
+                Watch 2-minute demo
+              </Button>
+            </div>
+
+            {/* Proof Badges */}
+            <div className="pt-6 space-y-3">
+              <div className="flex flex-wrap gap-3">
+                <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-lg text-sm font-medium">
+                  Up to 40x faster logging
+                </div>
+                <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-lg text-sm font-medium">
+                  Win rate up to +8 points
+                </div>
+                <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-lg text-sm font-medium">
+                  Max weekly drawdown −30%
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Results observed in pilot groups, vary by risk, market, and discipline
+              </p>
             </div>
           </motion.div>
 

@@ -20,12 +20,13 @@ const Pricing = () => {
 
   const plans = [
     {
-      id: 'basic',
+      id: 'starter',
       nameKey: "pricing.plans.basic.name",
       descriptionKey: "pricing.plans.basic.description",
-      monthlyPrice: 15,
-      annualPrice: 12,
-      annualTotal: 144,
+      monthlyPrice: 0,
+      annualPrice: 0,
+      annualTotal: 0,
+      tradeLimit: "500 trades/month",
       featuresKeys: [
         "pricing.plans.basic.features.uploads",
         "pricing.plans.basic.features.manualUploads",
@@ -36,7 +37,7 @@ const Pricing = () => {
         "pricing.plans.basic.features.csv",
         "pricing.plans.basic.features.social",
       ],
-      ctaKey: "pricing.plans.cta",
+      ctaText: "Start free",
       popular: false,
       priceCurrency: "USD",
     },
@@ -47,6 +48,7 @@ const Pricing = () => {
       monthlyPrice: 35,
       annualPrice: 28,
       annualTotal: 336,
+      tradeLimit: "2000 trades/month",
       featuresKeys: [
         "pricing.plans.pro.features.uploads",
         "pricing.plans.pro.features.aiAnalysis",
@@ -57,7 +59,7 @@ const Pricing = () => {
         "pricing.plans.pro.features.fullSocial",
         "pricing.plans.pro.features.everythingBasic",
       ],
-      ctaKey: "pricing.plans.cta",
+      ctaText: "Start 7-day trial",
       popular: true,
       priceCurrency: "USD",
     },
@@ -68,6 +70,7 @@ const Pricing = () => {
       monthlyPrice: 79,
       annualPrice: 63,
       annualTotal: 756,
+      tradeLimit: "5000 trades/month",
       featuresKeys: [
         "pricing.plans.elite.features.uploads",
         "pricing.plans.elite.features.aiAnalysis",
@@ -77,7 +80,7 @@ const Pricing = () => {
         "pricing.plans.elite.features.advancedAlerts",
         "pricing.plans.elite.features.everythingPro",
       ],
-      ctaKey: "pricing.plans.cta",
+      ctaText: "Start 7-day trial",
       popular: false,
       priceCurrency: "USD",
     },
@@ -124,6 +127,13 @@ const Pricing = () => {
     <>
       <section className="py-16 md:py-20 px-6" aria-labelledby="pricing-heading">
         <div className="container mx-auto max-w-6xl">
+          {/* Speed banner */}
+          <div className="text-center mb-6 p-4 bg-primary/10 rounded-lg">
+            <p className="text-base font-medium">
+              Get 3 actions right after your first upload
+            </p>
+          </div>
+
           <div className="text-center mb-8 md:mb-12 animate-fade-in">
             <h2 id="pricing-heading" className="text-3xl md:text-4xl font-bold mb-3">
               {t('pricing.title')}
@@ -154,7 +164,7 @@ const Pricing = () => {
               >
                 {t('pricing.billing.annual')}
                 <span className="absolute -top-2 -right-2 bg-green-500 text-primary-foreground text-xs px-2 py-0.5 rounded-full font-semibold">
-                  {t('pricing.billing.save20')}
+                  Save 2 months
                 </span>
               </button>
             </div>
@@ -182,19 +192,30 @@ const Pricing = () => {
                   <p className="text-muted-foreground text-xs md:text-sm mb-3">
                     {t(plan.descriptionKey)}
                   </p>
-                  <div className="flex items-baseline gap-2 mb-2">
-                    <span className="text-3xl md:text-4xl font-bold" style={{ color: 'hsl(var(--primary))' }}>
-                      ${getDisplayPrice(plan)}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      /{billingCycle === 'monthly' ? t('pricing.perMonth') : t('pricing.perMonthBilledAnnually')}
-                    </span>
-                  </div>
-                  {billingCycle === 'annual' && (
-                    <div className="text-xs text-green-600 dark:text-green-400 font-medium">
-                      {t('pricing.savingsAmount', { amount: getSavings(plan) })}
+                  {plan.monthlyPrice > 0 ? (
+                    <>
+                      <div className="flex items-baseline gap-2 mb-2">
+                        <span className="text-3xl md:text-4xl font-bold" style={{ color: 'hsl(var(--primary))' }}>
+                          ${getDisplayPrice(plan)}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          /{billingCycle === 'monthly' ? t('pricing.perMonth') : t('pricing.perMonthBilledAnnually')}
+                        </span>
+                      </div>
+                      {billingCycle === 'annual' && (
+                        <div className="text-xs text-green-600 dark:text-green-400 font-medium">
+                          {t('pricing.savingsAmount', { amount: getSavings(plan) })}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-3xl md:text-4xl font-bold mb-2" style={{ color: 'hsl(var(--primary))' }}>
+                      Free
                     </div>
                   )}
+                  <div className="text-xs text-muted-foreground mt-2">
+                    {plan.tradeLimit} • Each closed order counts as 1 trade
+                  </div>
                 </div>
 
                 <Button
@@ -206,12 +227,18 @@ const Pricing = () => {
                   }`}
                   variant={plan.popular ? "default" : "outline"}
                 >
-                  {t(plan.ctaKey)}
+                  {plan.ctaText}
                 </Button>
 
-                <p className="text-xs text-muted-foreground text-center mb-5 leading-relaxed">
-                  {t('pricing.plans.terms')}
-                </p>
+                {plan.monthlyPrice > 0 ? (
+                  <p className="text-xs text-muted-foreground text-center mb-5 leading-relaxed">
+                    7-day trial • Cancel anytime • Prorated refund in first 14 days on annual
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground text-center mb-5 leading-relaxed">
+                    No credit card required
+                  </p>
+                )}
 
                 <ul className="space-y-2.5">
                   {plan.featuresKeys.map((featureKey, i) => (

@@ -1,14 +1,19 @@
 import { useEffect } from "react";
 import Hero from "@/components/Hero";
+import { ValueBar } from "@/components/landing/ValueBar";
+import HowItWorks from "@/components/landing/HowItWorks";
 import DashboardShowcase from "@/components/DashboardShowcase";
 import Features from "@/components/Features";
+import PainToValue from "@/components/landing/PainToValue";
+import BuildSection from "@/components/landing/BuildSection";
 import BenefitBadges from "@/components/BenefitBadges";
 import Testimonials from "@/components/Testimonials";
+import IntegrationsBlock from "@/components/landing/IntegrationsBlock";
 import Pricing from "@/components/Pricing";
+import SecurityTrust from "@/components/landing/SecurityTrust";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import { MobileHeader } from "@/components/MobileHeader";
-import { ProofBar } from "@/components/ProofBar";
 import { SkipToContent } from "@/components/SkipToContent";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -43,16 +48,21 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black">
       <SkipToContent />
+      <ValueBar />
       <MobileHeader />
       
       <main id="main-content" className="pt-14">
         <Hero />
-        <ProofBar />
+        <HowItWorks />
         <DashboardShowcase />
+        <PainToValue />
         <Features />
+        <BuildSection />
         <BenefitBadges />
         <Testimonials />
+        <IntegrationsBlock />
         <Pricing />
+        <SecurityTrust />
         <CTA />
       </main>
       

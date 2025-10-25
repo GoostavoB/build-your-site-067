@@ -7,16 +7,18 @@ const Testimonials = () => {
 
   const testimonials = [
     {
-      quote: t('landing.testimonials.testimonial1.quote'),
-      author: t('landing.testimonials.testimonial1.author'),
-      role: t('landing.testimonials.testimonial1.role'),
-      exchange: t('landing.testimonials.testimonial1.exchange'),
+      quote: "Cut 0.2 R per trade by moving to maker on 2 pairs in 7 days",
+      author: "Carlos M.",
+      role: "Futures Trader",
+      exchange: "Binance",
+      timeframe: "4-hour charts"
     },
     {
-      quote: t('landing.testimonials.testimonial2.quote'),
-      author: t('landing.testimonials.testimonial2.author'),
-      role: t('landing.testimonials.testimonial2.role'),
-      exchange: t('landing.testimonials.testimonial2.exchange'),
+      quote: "−28% weekly drawdown after setting a limit and alerts",
+      author: "Sarah K.",
+      role: "Swing Trader",
+      exchange: "Bybit",
+      timeframe: "Daily charts"
     },
   ];
 
@@ -81,7 +83,7 @@ const Testimonials = () => {
                       {testimonial.author}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {testimonial.role} • {testimonial.exchange}
+                      {testimonial.role} • {testimonial.exchange} • {testimonial.timeframe}
                     </div>
                   </div>
                 </div>

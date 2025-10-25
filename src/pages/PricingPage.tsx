@@ -73,8 +73,8 @@ const PricingPage = () => {
       nameKey: "pricing.plans.pro.name",
       descriptionKey: "pricing.plans.pro.description",
       monthlyPrice: 35,
-      annualPrice: 28,
-      annualTotal: 336,
+      annualPrice: 27,
+      annualTotal: 324,
       featuresKeys: [
         "pricing.plans.pro.features.uploads",
         "pricing.plans.pro.features.aiAnalysis",

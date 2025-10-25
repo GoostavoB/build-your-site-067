@@ -9,17 +9,17 @@ interface ExchangeLogoProps {
 }
 
 const exchangeLogos: Record<string, { svg: string; png?: string }> = {
-  binance: { svg: "/exchange-logos/binance.png?v=20251022-1" },
-  bybit: { svg: "/exchange-logos/bybit.png?v=20251022-1" },
+  binance: { svg: "/exchange-logos/binance.png" },
+  bybit: { svg: "/exchange-logos/bybit.png" },
   coinbase: { svg: "/exchange-logos/coinbase.png" },
-  okx: { svg: "/exchange-logos/okx.svg" },
-  kraken: { svg: "/exchange-logos/kraken.svg" },
-  kucoin: { svg: "/exchange-logos/kucoin.png?v=20251022-1" },
-  gateio: { svg: "/exchange-logos/gateio.svg" },
-  mexc: { svg: "/exchange-logos/mexc.png?v=20251022-1" },
+  okx: { svg: "/exchange-logos/okx.png" },
+  kraken: { svg: "/exchange-logos/kraken.png" },
+  kucoin: { svg: "/exchange-logos/kucoin.png" },
+  gateio: { svg: "/exchange-logos/gateio.png" },
+  mexc: { svg: "/exchange-logos/mexc.png" },
   bitfinex: { svg: "/exchange-logos/bitfinex.png" },
   bitstamp: { svg: "/exchange-logos/bitstamp.png" },
-  bingx: { svg: "/exchange-logos/bingx.png?v=20251022-1" },
+  bingx: { svg: "/exchange-logos/bingx.png" },
 };
 
 const sizeClasses = {
@@ -70,7 +70,7 @@ export const ExchangeLogo = ({
     <img
       src={imgSrc}
       alt={`${exchangeName} logo`}
-      className={`${sizeClasses[size]} w-auto object-contain dark:bg-background dark:rounded-lg dark:p-2 ${className}`}
+      className={`${sizeClasses[size]} w-auto object-contain ${className}`}
       onError={handleError}
       loading="lazy"
       decoding="async"

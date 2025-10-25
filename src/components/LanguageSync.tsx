@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/hooks/useTranslation';
-import { getLanguageFromPath, getPathWithoutLanguage, getLocalizedPath } from '@/utils/languageRouting';
+import { getLanguageFromPath, getPathWithoutLanguage, getLocalizedPath, isPublicRoute } from '@/utils/languageRouting';
 
 /**
  * Component to sync i18n language with URL path
@@ -24,8 +24,11 @@ export const LanguageSync = () => {
     }
   }, [location.pathname, language, changeLanguage]);
 
-  // Ensure the current path is valid for the selected language
+  // Ensure the current path is valid for the selected language (only for public routes)
   useEffect(() => {
+    // Skip URL sync for protected routes - they don't use language prefixes
+    if (!isPublicRoute(location.pathname)) return;
+    
     const pathLanguage = getLanguageFromPath(location.pathname);
     
     // If path doesn't match current language, update the URL
@@ -37,7 +40,7 @@ export const LanguageSync = () => {
       // Use replace to avoid adding to history
       navigate(newPath, { replace: true });
     }
-  }, [language]);
+  }, [language, location.pathname, navigate]);
 
   return null; // This component doesn't render anything
 };

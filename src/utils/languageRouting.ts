@@ -8,13 +8,60 @@ export type SupportedLanguage = typeof SUPPORTED_LANGUAGES[number];
 export const DEFAULT_LANGUAGE: SupportedLanguage = 'en';
 
 /**
+ * Public routes that should have language prefixes in URLs
+ */
+const PUBLIC_ROUTES = [
+  '/',
+  '/auth',
+  '/pricing',
+  '/contact',
+  '/legal',
+  '/terms',
+  '/privacy',
+  '/blog',
+  '/about',
+  '/sitemap',
+  '/seo-dashboard',
+  '/logo-download',
+  '/logo-generator',
+  '/crypto-trading-faq',
+  '/testimonials',
+  '/changelog',
+  '/how-it-works',
+  '/features',
+  '/cookie-policy',
+  '/learn',
+];
+
+/**
+ * Check if a route is public (should have language prefix)
+ */
+export const isPublicRoute = (pathname: string): boolean => {
+  const basePath = getPathWithoutLanguage(pathname);
+  return PUBLIC_ROUTES.some(route => 
+    basePath === route || 
+    basePath.startsWith(`${route}/`) ||
+    basePath.startsWith('/blog/') ||
+    basePath.startsWith('/author/')
+  );
+};
+
+/**
  * Get the current language from the URL path
+ * For protected routes, returns DEFAULT_LANGUAGE since they don't use URL prefixes
  */
 export const getLanguageFromPath = (pathname: string): SupportedLanguage => {
   const firstSegment = pathname.split('/')[1];
-  return SUPPORTED_LANGUAGES.includes(firstSegment as SupportedLanguage)
+  const urlLang = SUPPORTED_LANGUAGES.includes(firstSegment as SupportedLanguage)
     ? (firstSegment as SupportedLanguage)
-    : DEFAULT_LANGUAGE;
+    : null;
+  
+  // For protected routes, ignore URL language prefix
+  if (!isPublicRoute(pathname)) {
+    return DEFAULT_LANGUAGE;
+  }
+  
+  return urlLang || DEFAULT_LANGUAGE;
 };
 
 /**

@@ -8,7 +8,9 @@ import {
   SupportedLanguage, 
   DEFAULT_LANGUAGE,
   getLanguageFromPath,
-  getLocalizedPath 
+  getLocalizedPath,
+  isPublicRoute,
+  getPathWithoutLanguage
 } from '@/utils/languageRouting';
 
 interface LanguageContextType {
@@ -75,15 +77,39 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     loadUserLanguage();
   }, [user]);
 
-  // Sync with URL path changes
+  // Cleanup: redirect protected routes with language prefix to base path
   useEffect(() => {
+    const pathLang = getLanguageFromPath(location.pathname);
+    const firstSegment = location.pathname.split('/')[1];
+    const hasLangPrefix = SUPPORTED_LANGUAGES.includes(firstSegment as SupportedLanguage);
+    
+    // If on protected route with language prefix, clean it up
+    if (!isPublicRoute(location.pathname) && hasLangPrefix) {
+      const basePath = getPathWithoutLanguage(location.pathname);
+      console.log(`Cleaning up language prefix from protected route: ${basePath}`);
+      
+      // Set the language from URL before redirecting
+      if (pathLang !== language) {
+        setLanguage(pathLang);
+        i18n.changeLanguage(pathLang);
+        localStorage.setItem('app-language', pathLang);
+      }
+      
+      navigate(basePath, { replace: true });
+    }
+  }, [location.pathname, navigate, language]);
+
+  // Sync with URL path changes (only for public routes)
+  useEffect(() => {
+    if (!isPublicRoute(location.pathname)) return;
+    
     const pathLang = getLanguageFromPath(location.pathname);
     if (pathLang !== language && !isLoading) {
       setLanguage(pathLang);
       i18n.changeLanguage(pathLang);
       localStorage.setItem('app-language', pathLang);
     }
-  }, [location.pathname]);
+  }, [location.pathname, language, isLoading]);
 
   const changeLanguage = useCallback(async (newLang: SupportedLanguage, updateUrl: boolean = true) => {
     if (!SUPPORTED_LANGUAGES.includes(newLang)) {
@@ -110,8 +136,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // Update URL if requested
-    if (updateUrl) {
+    // Update URL if requested (only for public routes)
+    if (updateUrl && isPublicRoute(location.pathname)) {
       const currentPath = location.pathname;
       const pathWithoutLang = currentPath.replace(/^\/(en|pt|es|ar|vi)/, '') || '/';
       const newPath = getLocalizedPath(pathWithoutLang, newLang);
@@ -120,6 +146,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         navigate(newPath, { replace: true });
       }
     }
+    // For protected routes, language change happens via state only (no URL update)
   }, [user, location.pathname, navigate]);
 
   return (

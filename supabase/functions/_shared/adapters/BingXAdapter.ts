@@ -99,30 +99,31 @@ export class BingXAdapter extends BaseExchangeAdapter {
         params.symbol = options.symbol.replace('/', '-');
       }
 
-      // BingX uses /openApi/spot/v2/trade/query for historical trades
-      const response = await this.makeRequest<{ orders: any[] }>(
-        '/openApi/spot/v2/trade/query', 
+      // BingX spot historical trades (v1)
+      const response = await this.makeRequest<any>(
+        '/openApi/spot/v1/trade/query',
         params
       );
-      
-      if (!response.orders || !Array.isArray(response.orders)) {
-        console.warn('BingX returned no trades or invalid format');
+
+      const items = (response?.orders || response?.fills || response?.list || (Array.isArray(response) ? response : [])) as any[];
+      if (!Array.isArray(items) || items.length === 0) {
+        console.warn('BingX returned no spot trades or invalid format');
         return [];
       }
 
-      return response.orders
-        .filter(trade => trade && trade.orderId)
+      return items
+        .filter(trade => trade && (trade.orderId || trade.tradeId || trade.id))
         .map(trade => ({
-          id: trade.orderId?.toString() || trade.tradeId?.toString() || '',
+          id: (trade.orderId || trade.tradeId || trade.id || '').toString(),
           exchange: 'bingx',
-          symbol: trade.symbol?.replace('-', '/') || '',
-          side: trade.side?.toLowerCase() as 'buy' | 'sell',
-          price: parseFloat(trade.price || '0'),
-          quantity: parseFloat(trade.executedQty || trade.quantity || trade.origQty || '0'),
+          symbol: (trade.symbol || '').replace('-', '/'),
+          side: (trade.side || '').toLowerCase() as 'buy' | 'sell',
+          price: parseFloat(trade.price || trade.avgPrice || '0'),
+          quantity: parseFloat(trade.executedQty || trade.qty || trade.quantity || trade.origQty || '0'),
           fee: parseFloat(trade.commission || trade.fee || '0'),
           feeCurrency: trade.commissionAsset || trade.feeAsset || 'USDT',
           timestamp: new Date(parseInt(trade.time || trade.transactTime) || Date.now()),
-          orderId: trade.orderId?.toString(),
+          orderId: trade.orderId ? String(trade.orderId) : undefined,
         }));
     } catch (error) {
       console.error('Error fetching BingX trades:', error);
@@ -195,6 +196,34 @@ export class BingXAdapter extends BaseExchangeAdapter {
           if (Array.isArray(list2)) items = list2;
         } catch (e2) {
           console.warn('BingX fillHistory failed:', e2 instanceof Error ? e2.message : e2);
+        }
+      }
+
+      // COIN-M fallback (cswap) if USDT-M endpoints returned nothing
+      if (!Array.isArray(items) || items.length === 0) {
+        console.log('BingX futures USDT-M empty; trying COIN-M endpoints (cswap)...');
+        try {
+          const resp3 = await this.makeRequest<any>(
+            '/openApi/cswap/v2/trade/allFillOrders',
+            baseParams
+          );
+          const list3 = resp3?.orders || resp3?.fills || resp3?.list || resp3;
+          if (Array.isArray(list3)) items = list3;
+        } catch (e3) {
+          console.warn('BingX cswap allFillOrders failed:', e3 instanceof Error ? e3.message : e3);
+        }
+
+        if (!Array.isArray(items) || items.length === 0) {
+          try {
+            const resp4 = await this.makeRequest<any>(
+              '/openApi/cswap/v2/trade/fillHistory',
+              baseParams
+            );
+            const list4 = resp4?.orders || resp4?.fills || resp4?.list || resp4;
+            if (Array.isArray(list4)) items = list4;
+          } catch (e4) {
+            console.warn('BingX cswap fillHistory failed:', e4 instanceof Error ? e4.message : e4);
+          }
         }
       }
 

@@ -162,13 +162,18 @@ export class BingXAdapter extends BaseExchangeAdapter {
       return items.map((trade: any) => ({
         id: (trade.tradeId || trade.id || trade.orderId || '').toString(),
         exchange: 'bingx',
-        symbol: (trade.symbol || '').replace('-', '/'),
-        side: (trade.side || '').toLowerCase() as 'buy' | 'sell',
+        symbol: (trade.symbol || trade.pair || trade.contractId || '').replace('-', '/').replace('_', '/'),
+        side: (() => {
+          let s = (trade.side || trade.positionSide || trade.type || '').toLowerCase();
+          if (s === 'long') return 'buy';
+          if (s === 'short') return 'sell';
+          return s;
+        })() as 'buy' | 'sell',
         price: parseFloat(trade.avgPrice || trade.price || trade.dealAvgPrice || trade.dealPrice || '0'),
-        quantity: parseFloat(trade.executedQty || trade.qty || trade.volume || trade.dealVol || trade.origQty || '0'),
+        quantity: parseFloat(trade.executedQty || trade.qty || trade.volume || trade.dealVol || trade.origQty || trade.executedVolume || '0'),
         fee: parseFloat(trade.commission || trade.fee || '0'),
         feeCurrency: trade.commissionAsset || trade.feeAsset || 'USDT',
-        timestamp: new Date(parseInt(trade.time || trade.updateTime || trade.updatedTime || trade.fillTime || trade.createTime) || Date.now()),
+        timestamp: new Date(parseInt(trade.time || trade.updateTime || trade.updatedTime || trade.fillTime || trade.createTime || trade.transactTime) || Date.now()),
         orderId: trade.orderId?.toString(),
         role: trade.positionSide || trade.role,
       }));

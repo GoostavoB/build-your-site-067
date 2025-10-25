@@ -239,7 +239,10 @@ export class BingXAdapter extends BaseExchangeAdapter {
             contractParams
           );
           const list5 = resp5?.orders || resp5?.list || (Array.isArray(resp5) ? resp5 : []);
-          if (Array.isArray(list5)) items = list5;
+          if (Array.isArray(list5)) {
+            items = list5;
+            console.log(`BingX contract returned ${list5.length} items. Sample:`, list5[0] ? JSON.stringify(Object.keys(list5[0])) : 'none');
+          }
         } catch (e5) {
           console.warn('BingX contract allOrders failed:', e5 instanceof Error ? e5.message : e5);
         }
@@ -257,18 +260,32 @@ export class BingXAdapter extends BaseExchangeAdapter {
             t.avgPrice || t.price || t.dealAvgPrice || t.dealPrice || '0'
           );
           const qty = parseFloat(
-            t.executedQty || t.qty || t.volume || t.dealVol || t.origQty || '0'
+            t.executedQty || t.qty || t.volume || t.dealVol || t.origQty || t.executedVolume || '0'
           );
           const fee = parseFloat(t.commission || t.fee || '0');
           const tsRaw =
-            t.time || t.updateTime || t.updatedTime || t.fillTime || t.createTime;
+            t.time || t.updateTime || t.updatedTime || t.fillTime || t.createTime || t.transactTime;
           const ts = new Date(parseInt(tsRaw) || Date.now());
+
+          // Enhanced symbol extraction for different response formats
+          let symbol = t.symbol || t.pair || t.contractId || '';
+          if (symbol) symbol = symbol.replace('-', '/').replace('_', '/');
+
+          // Enhanced side extraction
+          let side = (t.side || t.positionSide || '').toLowerCase();
+          if (!side && t.type) {
+            // Standard contract might use 'type' for side
+            side = t.type.toLowerCase();
+          }
+          // Map common variations
+          if (side === 'long') side = 'buy';
+          if (side === 'short') side = 'sell';
 
           return {
             id: (t.tradeId || t.id || t.orderId || '').toString(),
             exchange: 'bingx',
-            symbol: (t.symbol || '').replace('-', '/'),
-            side: (t.side || '').toLowerCase() as 'buy' | 'sell',
+            symbol,
+            side: side as 'buy' | 'sell',
             price,
             quantity: qty,
             fee,

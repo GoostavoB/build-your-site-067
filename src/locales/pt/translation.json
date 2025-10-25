@@ -1288,60 +1288,29 @@
         "subtitle": "Aqui está o que os usuários normalmente alcançam em 8-12 semanas de revisões semanais consistentes",
         "metrics": {
           "winRate": {
-            "label": "Taxa de Acerto",
-            "value": "+3 a +8 pts",
-            "description": "Melhoria em pontos percentuais"
-          },
-          "expectancy": {
-            "label": "Expectativa por Operação",
-            "value": "+0.05 a +0.20 R",
-            "description": "Lucro esperado por operação"
-          },
-          "profitFactor": {
-            "label": "Fator de Lucro",
-            "value": "+0.1 a +0.4",
-            "description": "Proporção de ganhos para perdas"
+            "label": "Melhoria na Taxa de Acerto",
+            "description": "Aumente sua porcentagem de acertos identificando e repetindo padrões bem-sucedidos",
+            "proof": "Melhor seleção e timing através de revisões semanais"
           },
           "drawdown": {
-            "label": "Drawdown Semanal Máximo",
-            "value": "−15 a −30%",
-            "description": "Exposição ao risco reduzida"
-          }
-        },
-        "example": {
-          "title": "Exemplo Antes e Depois",
-          "before": "Antes",
-          "after": "Depois de 12 Semanas",
-          "winRate": "Taxa de Acerto",
-          "avgWin": "Ganho Médio",
-          "avgLoss": "Perda Média",
-          "profitFactor": "Fator de Lucro",
-          "expectancy": "Expectativa"
-        },
-        "additional": {
-          "avgLoss": {
-            "label": "Tamanho da Perda Média",
-            "value": "−10 a −30%"
-          },
-          "avgWin": {
-            "label": "Tamanho do Ganho Médio",
-            "value": "+5 a +15%"
-          },
-          "planAdherence": {
-            "label": "Aderência ao Plano",
-            "value": "80-90%"
+            "label": "Redução do Drawdown Semanal Máximo",
+            "description": "Proteja seu capital cortando perdas mais rápido e gerenciando melhor o risco",
+            "proof": "Melhor gestão de risco e disciplina no tamanho das posições"
           },
           "ruleBreaks": {
-            "label": "Violações de Regras por Semana",
-            "value": "−50 a −80%"
+            "label": "Menos Violações de Regras por Semana",
+            "description": "Construa consistência rastreando e eliminando comportamentos de negociação impulsivos",
+            "proof": "Autoconsciência leva a melhor disciplina de negociação"
           },
-          "returnVolatility": {
-            "label": "Volatilidade de Retorno (R Diário)",
-            "value": "−10 a −25%"
+          "avgLoss": {
+            "label": "Perdas Médias Menores",
+            "description": "Corte perdas mais cedo e melhore a execução do stop-loss",
+            "proof": "Melhor controle de risco através de revisão e análise de operações"
           },
-          "overtrading": {
-            "label": "Dias de Overtrading",
-            "value": "−50%"
+          "avgWin": {
+            "label": "Ganhos Médios Maiores",
+            "description": "Deixe os vencedores correrem mais e melhore as decisões de realização de lucros",
+            "proof": "Confiança para manter posições vencedoras vem dos dados"
           }
         }
       },

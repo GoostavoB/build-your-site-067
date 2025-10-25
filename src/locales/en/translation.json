@@ -269,6 +269,19 @@
     "solutions": {
       "title": "Outcomes That Matter",
       "subtitle": "Premium capabilities built for elite traders",
+      "headline1": "Your rules.",
+      "headline2": "Your results.",
+      "tagline": "If you cannot measure it, you cannot improve it.",
+      "outcome1": {
+        "headline": "Upload 40x Faster",
+        "subhead": "Batch upload trades from screenshots instead of manual entry",
+        "proof": "Batch uploads from screenshots beat manual entry every time"
+      },
+      "outcome2": {
+        "headline": "Save 75-97% of Your Time",
+        "subhead": "Spend less time logging, more time analyzing and trading",
+        "proof": "Spend less time logging, more time winning"
+      },
       "seePatterns": {
         "headline": "See patterns instantly",
         "subhead": "AI reads your entire history. Highlights what actually makes money.",
@@ -429,6 +442,26 @@
         "teamCollaboration": "Team Collaboration Tools"
       },
       "disclaimer": "Features and timeline subject to change based on user feedback and development priorities"
+    },
+    "comingSoon": {
+      "badge": "Coming Soon",
+      "enterprise": {
+        "title": "Enterprise",
+        "description": "Team collaboration, powerful reports & white label solutions for professional trading teams",
+        "features": {
+          "collaboration": "Team Collaboration Tools",
+          "reporting": "Advanced Reporting",
+          "whiteLabel": "White Label Solution",
+          "support": "Priority Support",
+          "integrations": "Custom Integrations"
+        }
+      },
+      "mobile": {
+        "title": "iOS & Android Apps",
+        "description": "Native mobile apps are in development. Soon you'll be able to take your trading diary with you, track trades, analyze performance, and stay on top of your game from anywhere.",
+        "appStoreAlt": "Coming soon to the App Store",
+        "playStoreAlt": "Coming soon to Google Play"
+      }
     }
   },
   "achievements": {

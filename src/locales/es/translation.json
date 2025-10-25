@@ -1746,6 +1746,19 @@
     "solutions": {
       "title": "Resultados que Importan",
       "subtitle": "Capacidades premium diseñadas para traders de élite",
+      "headline1": "Tus reglas.",
+      "headline2": "Tus resultados.",
+      "tagline": "Si no puedes medirlo, no puedes mejorarlo.",
+      "outcome1": {
+        "headline": "Carga 40x Más Rápido",
+        "subhead": "Carga por lotes de capturas de pantalla en lugar de entrada manual",
+        "proof": "Las cargas por lotes desde capturas de pantalla superan la entrada manual siempre"
+      },
+      "outcome2": {
+        "headline": "Ahorra 75-97% de Tu Tiempo",
+        "subhead": "Pasa menos tiempo registrando, más tiempo analizando y operando",
+        "proof": "Pasa menos tiempo registrando, más tiempo ganando"
+      },
       "seePatterns": {
         "headline": "Ve patrones al instante",
         "subhead": "La IA lee todo tu historial. Resalta lo que realmente genera dinero.",
@@ -1906,6 +1919,26 @@
         "teamCollaboration": "Herramientas de Colaboración en Equipo"
       },
       "disclaimer": "Las funciones y el cronograma están sujetos a cambios según los comentarios de los usuarios y las prioridades de desarrollo"
+    },
+    "comingSoon": {
+      "badge": "Próximamente",
+      "enterprise": {
+        "title": "Empresarial",
+        "description": "Colaboración en equipo, informes potentes y soluciones de marca blanca para equipos de trading profesionales",
+        "features": {
+          "collaboration": "Herramientas de Colaboración en Equipo",
+          "reporting": "Informes Avanzados",
+          "whiteLabel": "Solución de Marca Blanca",
+          "support": "Soporte Prioritario",
+          "integrations": "Integraciones Personalizadas"
+        }
+      },
+      "mobile": {
+        "title": "Aplicaciones iOS y Android",
+        "description": "Las aplicaciones móviles nativas están en desarrollo. Pronto podrás llevar tu diario de trading contigo, rastrear operaciones, analizar el rendimiento y mantenerte al día desde cualquier lugar.",
+        "appStoreAlt": "Próximamente en la App Store",
+        "playStoreAlt": "Próximamente en Google Play"
+      }
     }
   },
   "about": {

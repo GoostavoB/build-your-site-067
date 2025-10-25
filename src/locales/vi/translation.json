@@ -619,6 +619,19 @@
     "solutions": {
       "title": "Kết Quả Quan Trọng",
       "subtitle": "Khả năng cao cấp được xây dựng cho các trader chuyên nghiệp",
+      "headline1": "Quy tắc của bạn.",
+      "headline2": "Kết quả của bạn.",
+      "tagline": "Nếu bạn không thể đo lường nó, bạn không thể cải thiện nó.",
+      "outcome1": {
+        "headline": "Tải lên Nhanh hơn 40 lần",
+        "subhead": "Tải lên hàng loạt từ ảnh chụp màn hình thay vì nhập thủ công",
+        "proof": "Tải lên hàng loạt từ ảnh chụp màn hình luôn nhanh hơn nhập thủ công"
+      },
+      "outcome2": {
+        "headline": "Tiết kiệm 75-97% Thời gian",
+        "subhead": "Dành ít thời gian ghi chép hơn, nhiều thời gian phân tích và giao dịch hơn",
+        "proof": "Dành ít thời gian ghi chép hơn, nhiều thời gian chiến thắng hơn"
+      },
       "seePatterns": {
         "headline": "Nhìn thấy mẫu hình ngay lập tức",
         "subhead": "AI đọc toàn bộ lịch sử của bạn. Làm nổi bật những gì thực sự tạo ra tiền.",
@@ -779,6 +792,26 @@
         "teamCollaboration": "Công cụ Cộng tác Nhóm"
       },
       "disclaimer": "Các tính năng và thời gian biểu có thể thay đổi dựa trên phản hồi của người dùng và ưu tiên phát triển"
+    },
+    "comingSoon": {
+      "badge": "Sắp Ra Mắt",
+      "enterprise": {
+        "title": "Doanh nghiệp",
+        "description": "Công cụ cộng tác nhóm, báo cáo mạnh mẽ và giải pháp nhãn trắng cho các đội giao dịch chuyên nghiệp",
+        "features": {
+          "collaboration": "Công cụ Cộng tác Nhóm",
+          "reporting": "Báo cáo Nâng cao",
+          "whiteLabel": "Giải pháp Nhãn Trắng",
+          "support": "Hỗ trợ Ưu tiên",
+          "integrations": "Tích hợp Tùy chỉnh"
+        }
+      },
+      "mobile": {
+        "title": "Ứng dụng iOS & Android",
+        "description": "Ứng dụng di động native đang được phát triển. Sớm thôi bạn sẽ có thể mang theo nhật ký giao dịch của mình, theo dõi giao dịch, phân tích hiệu suất và luôn nắm bắt tình hình từ mọi nơi.",
+        "appStoreAlt": "Sắp ra mắt trên App Store",
+        "playStoreAlt": "Sắp ra mắt trên Google Play"
+      }
     }
   },
   "about": {

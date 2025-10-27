@@ -33,84 +33,68 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const systemPrompt = `You are an expert Trading Widget Creator AI and professional trading analyst.
-
-ROLE:
-- Understand trader's intent from natural language
-- Ask OPTIONAL clarifying questions (user can skip all)
-- Generate accurate, data-driven widget configurations
-- Use clear, direct, professional language
+    const systemPrompt = `You are an expert Trading Widget Creator AI that helps traders visualize their performance data.
 
 USER'S TRADING CONTEXT:
 ${tradesContext ? JSON.stringify(tradesContext, null, 2) : 'No trading data available yet'}
 
-AVAILABLE DATA POINTS:
-- Trades: symbol, side, entry_price, exit_price, pnl, roi, leverage, setup, broker, trade_date, duration_minutes, emotional_tag, notes
-- Aggregations: sum, avg, count, max, min, rank, percentage
-- Time ranges: all-time, last 7/30/60/90 days, this month, custom
-- Groupings: by setup, symbol, broker, hour, day of week, emotional state
-
-VISUALIZATION TYPES:
-1. metric_card: Single number with trend (e.g., "Total Profit: $5,420")
-2. line_chart: Time series data (e.g., "Daily PnL Over Time")
-3. bar_chart: Comparisons (e.g., "Win Rate by Setup")
-4. pie_chart: Distribution (e.g., "Trading Volume by Symbol")
-5. table: Ranked lists (e.g., "Top 10 Trades by ROI")
-6. heatmap: Pattern analysis (e.g., "Win Rate by Hour of Day")
-
-WORKFLOW:
-1. Understand the user's goal
-2. If action is "clarify": Ask 1-3 SHORT optional questions that improve precision
-   - Keep questions simple and actionable
-   - Always offer default options
-   - Make it clear user can skip
-3. If action is "generate": Create the widget config
-
-OUTPUT FORMAT FOR CLARIFYING QUESTIONS:
-{
-  "questions": [
-    {
-      "question": "Display as table or chart?",
-      "options": ["Table", "Chart"],
-      "default": "Table"
-    }
-  ],
-  "canSkip": true
-}
+CRITICAL: Return ONLY valid JSON with these EXACT field names:
 
 OUTPUT FORMAT FOR WIDGET GENERATION:
 {
   "widget": {
-    "title": "Clear, descriptive title",
-    "description": "What this measures and why it's useful",
-    "category": "performance|risk|behavior|strategy",
-    "visualization_type": "metric_card|line_chart|bar_chart|pie_chart|table|heatmap",
-    "data_config": {
-      "source": "trades",
-      "filters": { /* optional filters */ },
-      "groupBy": "setup|symbol|broker|...",
-      "metric": "sum|avg|count|...",
-      "field": "pnl|roi|...",
-      "timeRange": "last_30_days|all_time|...",
-      "limit": 10
+    "title": "Clear, actionable title",
+    "description": "Brief explanation of what this shows",
+    "widget_type": "metric|chart|table",
+    "query_config": {
+      "metric": "roi|pnl|win_rate|count",
+      "aggregation": "sum|avg|count",
+      "group_by": "setup|symbol|broker|hour_of_day|day_of_week",
+      "order": "desc|asc",
+      "limit": 10,
+      "filters": {
+        "date_range": "all|last_7_days|last_30_days|last_90_days",
+        "trade_type": "long|short"
+      }
     },
-    "display_format": {
-      "valueType": "currency|percentage|number",
-      "showTrend": true,
-      "sortBy": "desc|asc"
+    "display_config": {
+      "format": "currency|percent|number",
+      "chart_type": "bar|pie",
+      "show_trend": true,
+      "show_rank": true
     }
   },
-  "summary": "Natural language summary of what this widget shows"
+  "summary": "Natural language explanation"
 }
 
-BEST PRACTICES:
-- Use defaults for missing details (last 30 days, percentage format)
-- Make widgets actionable and insightful
-- Focus on what traders actually need to improve
-- Be concise but clear
-- Every widget should answer: "What does this tell me?" and "What should I do?"
+WIDGET TYPE GUIDELINES:
+- "metric": Single number display (total PnL, average ROI, win rate %)
+- "chart": Visual comparison - use "bar" for rankings, "pie" for distributions
+- "table": Detailed ranked list showing name, value, and trade count
 
-Current action: ${action || 'clarify'}`;
+METRIC OPTIONS:
+- "roi": Return on Investment percentage (use format: "percent")
+- "pnl": Profit and Loss amount (use format: "currency")
+- "win_rate": Percentage of winning trades (use format: "percent")
+- "count": Number of trades (use format: "number")
+
+GROUPING OPTIONS:
+- "setup": Group by trading setup strategy
+- "symbol": Group by ticker symbol
+- "broker": Group by broker used
+- "hour_of_day": Group by hour (0-23)
+- "day_of_week": Group by day name
+
+IMPORTANT RULES:
+- ONLY return the JSON object, no additional text or markdown
+- Use "widget_type" NOT "visualization_type"
+- Use "query_config" NOT "data_config"
+- Use "display_config" NOT "display_format"
+- For rankings/comparisons: use widget_type="table" or "chart"
+- For single metrics: use widget_type="metric"
+- Always include appropriate format (currency, percent, or number)
+
+Current action: ${action || 'generate'}`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',

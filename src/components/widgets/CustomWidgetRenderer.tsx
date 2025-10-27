@@ -63,24 +63,69 @@ export const CustomWidgetRenderer = ({ widget, onDelete, showAddToDashboard = fa
   };
 
   const processTradeData = (trades: any[], config: any): any => {
-    const { metric, aggregation, group_by } = config;
+    const { metric, aggregation, group_by, order, limit, filters } = config;
+
+    // Apply filters
+    let filteredTrades = trades;
+    if (filters) {
+      if (filters.trade_type) {
+        filteredTrades = filteredTrades.filter(t => t.trade_type === filters.trade_type);
+      }
+      if (filters.date_range && filters.date_range !== 'all') {
+        const now = new Date();
+        const daysAgo = filters.date_range === 'last_7_days' ? 7 :
+                        filters.date_range === 'last_30_days' ? 30 :
+                        filters.date_range === 'last_90_days' ? 90 : 0;
+        if (daysAgo > 0) {
+          const cutoff = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
+          filteredTrades = filteredTrades.filter(t => new Date(t.trade_date) >= cutoff);
+        }
+      }
+    }
 
     if (group_by) {
       // Group data
-      const grouped: Record<string, any[]> = trades.reduce((acc: Record<string, any[]>, trade: any) => {
-        const key = trade[group_by] || 'Unknown';
+      const grouped: Record<string, any[]> = filteredTrades.reduce((acc: Record<string, any[]>, trade: any) => {
+        let key: string;
+        
+        // Handle special grouping cases
+        if (group_by === 'hour_of_day') {
+          const date = new Date(trade.trade_date);
+          key = `${date.getHours()}:00`;
+        } else if (group_by === 'day_of_week') {
+          const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+          const date = new Date(trade.trade_date);
+          key = days[date.getDay()];
+        } else {
+          key = trade[group_by] || 'Unknown';
+        }
+        
         if (!acc[key]) acc[key] = [];
         acc[key].push(trade);
         return acc;
       }, {});
 
-      return Object.entries(grouped).map(([key, tradeGroup]) => {
+      const result = Object.entries(grouped).map(([key, tradeGroup]) => {
         const value = calculateMetric(tradeGroup, metric, aggregation);
-        return { name: key, value };
-      }).sort((a, b) => b.value - a.value);
+        return { 
+          name: key, 
+          value,
+          count: tradeGroup.length,
+          trades: tradeGroup
+        };
+      });
+
+      // Sort
+      const sorted = result.sort((a, b) => {
+        if (order === 'asc') return a.value - b.value;
+        return b.value - a.value;
+      });
+
+      // Apply limit
+      return limit ? sorted.slice(0, limit) : sorted;
     } else {
       // Single metric
-      return calculateMetric(trades, metric, aggregation);
+      return calculateMetric(filteredTrades, metric, aggregation);
     }
   };
 
@@ -237,6 +282,7 @@ export const CustomWidgetRenderer = ({ widget, onDelete, showAddToDashboard = fa
   const renderTableWidget = () => {
     const tableData = Array.isArray(data) ? data : [];
     const format = widget.display_config?.format || 'number';
+    const showRank = widget.display_config?.show_rank !== false;
     
     const formatValue = (val: number) => {
       if (format === 'currency') return `$${formatNumber(val)}`;
@@ -249,15 +295,23 @@ export const CustomWidgetRenderer = ({ widget, onDelete, showAddToDashboard = fa
         <table className="w-full">
           <thead>
             <tr className="border-b border-border">
+              {showRank && <th className="text-left p-2 text-sm font-medium w-12">#</th>}
               <th className="text-left p-2 text-sm font-medium">Item</th>
               <th className="text-right p-2 text-sm font-medium">Value</th>
+              <th className="text-right p-2 text-sm font-medium">Trades</th>
             </tr>
           </thead>
           <tbody>
             {tableData.slice(0, 10).map((row, idx) => (
               <tr key={idx} className="border-b border-border/50 hover:bg-accent/50 transition-colors">
-                <td className="p-2 text-sm">{row.name || 'Unknown'}</td>
-                <td className="p-2 text-right font-medium text-sm">{formatValue(row.value)}</td>
+                {showRank && (
+                  <td className="p-2 text-sm font-bold text-muted-foreground">
+                    {idx + 1}
+                  </td>
+                )}
+                <td className="p-2 text-sm font-medium">{row.name || 'Unknown'}</td>
+                <td className="p-2 text-right font-bold text-sm">{formatValue(row.value)}</td>
+                <td className="p-2 text-right text-sm text-muted-foreground">{row.count || 0}</td>
               </tr>
             ))}
           </tbody>

@@ -1,13 +1,14 @@
 import AppLayout from '@/components/layout/AppLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Star, BarChart, TrendingUp, Target, Trash2 } from 'lucide-react';
+import { Sparkles, Star } from 'lucide-react';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { AIMetricsChat } from '@/components/metrics/AIMetricsChat';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
+import { CustomWidgetRenderer } from '@/components/widgets/CustomWidgetRenderer';
 
 const MyMetrics = () => {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -49,18 +50,6 @@ const MyMetrics = () => {
     } catch (error: any) {
       console.error('Error deleting metric:', error);
       toast.error('Failed to delete metric');
-    }
-  };
-
-  const getVisualizationIcon = (type: string) => {
-    switch (type) {
-      case 'bar_chart':
-      case 'line_chart':
-        return BarChart;
-      case 'metric_card':
-        return TrendingUp;
-      default:
-        return Target;
     }
   };
 
@@ -117,51 +106,22 @@ const MyMetrics = () => {
               </p>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               {isLoading ? (
                 <Card className="p-4">
                   <p className="text-sm text-muted-foreground">Loading metrics...</p>
                 </Card>
               ) : savedMetrics && savedMetrics.length > 0 ? (
-                savedMetrics.map((metric) => {
-                  const IconComponent = getVisualizationIcon(metric.widget_type);
-                  return (
-                    <Card key={metric.id} className="p-4 hover:shadow-md transition-shadow">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-start gap-3 flex-1">
-                          <div className="p-2 rounded-lg bg-primary/10 mt-1">
-                            <IconComponent className="h-4 w-4 text-primary" />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-sm leading-tight mb-1">
-                              {metric.title}
-                            </h3>
-                            <p className="text-xs text-muted-foreground line-clamp-2">
-                              {metric.description}
-                            </p>
-                            {metric.created_via === 'ai_assistant' && (
-                              <Badge variant="secondary" className="mt-2 text-xs">
-                                <Sparkles className="h-3 w-3 mr-1" />
-                                AI Created
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => handleDeleteMetric(metric.id)}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                      <Button variant="outline" size="sm" className="w-full mt-2">
-                        Add to Dashboard
-                      </Button>
-                    </Card>
-                  );
-                })
+                savedMetrics.map((metric) => (
+                  <CustomWidgetRenderer
+                    key={metric.id}
+                    widget={metric}
+                    onDelete={() => {
+                      handleDeleteMetric(metric.id);
+                    }}
+                    showAddToDashboard={true}
+                  />
+                ))
               ) : (
                 <Card className="p-6 text-center">
                   <Star className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />

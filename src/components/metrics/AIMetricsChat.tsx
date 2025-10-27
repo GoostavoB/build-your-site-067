@@ -16,10 +16,9 @@ interface Message {
 interface WidgetConfig {
   title: string;
   description: string;
-  category: string;
-  visualization_type: string;
-  data_config: any;
-  display_format: any;
+  widget_type: string;
+  query_config: any;
+  display_config: any;
 }
 
 interface AIMetricsChatProps {
@@ -78,7 +77,7 @@ export const AIMetricsChat = ({ onWidgetCreated }: AIMetricsChatProps) => {
           ...newMessages,
           {
             role: 'assistant',
-            content: data.summary || `I've created "${data.widget.title}" for you. This ${data.widget.visualization_type.replace('_', ' ')} ${data.widget.description}. Would you like to add it to your dashboard?`
+            content: data.summary || `I've created "${data.widget.title}" for you. This ${data.widget.widget_type?.replace('_', ' ') || 'widget'} ${data.widget.description}. Would you like to add it to your dashboard?`
           }
         ]);
         setCurrentAction('clarify'); // Reset for next widget
@@ -130,11 +129,11 @@ export const AIMetricsChat = ({ onWidgetCreated }: AIMetricsChatProps) => {
         .from('custom_dashboard_widgets')
         .insert({
           user_id: user.id,
-          widget_type: pendingWidget.visualization_type || 'metric_card',
+          widget_type: pendingWidget.widget_type || 'metric',
           title: pendingWidget.title,
           description: pendingWidget.description,
-          query_config: pendingWidget.data_config || {},
-          display_config: pendingWidget.display_format || {},
+          query_config: pendingWidget.query_config || {},
+          display_config: pendingWidget.display_config || {},
           is_permanent: true,
           created_via: 'ai_assistant',
           ai_prompt: messages.find(m => m.role === 'user')?.content || '',

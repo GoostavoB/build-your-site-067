@@ -19,7 +19,7 @@ const Hero = () => {
   }
 
   return (
-    <section className="relative min-h-screen flex items-center px-4 sm:px-6 pt-24 pb-32 overflow-hidden" aria-labelledby="hero-title">
+    <section className="relative min-h-screen flex items-center px-4 sm:px-6 pt-24 pb-32 overflow-hidden hidden lg:flex" aria-labelledby="hero-title">
       {/* Enhanced ambient glow effects - hidden on mobile to reduce visual bias */}
       <div className="hidden sm:block absolute top-1/4 left-1/4 w-[min(500px,80vw)] h-[min(500px,80vw)] bg-primary/10 rounded-full blur-[150px] animate-pulse-slow"></div>
       <div className="hidden sm:block absolute bottom-1/4 right-1/4 w-[min(500px,80vw)] h-[min(500px,80vw)] bg-accent/10 rounded-full blur-[150px] animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
@@ -47,7 +47,7 @@ const Hero = () => {
               className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-md lg:max-w-xl"
               style={{ textWrap: 'balance' as any }}
             >
-              Upload your trades, AI fills the journal, you get 3 actions to lift your average R today
+              Upload your trades — TD tracks, analyzes, and reveals your performance with AI-powered insights
             </p>
 
             {/* CTA Buttons */}

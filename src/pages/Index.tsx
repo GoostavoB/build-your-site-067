@@ -1,5 +1,8 @@
 import { useEffect } from "react";
 import Hero from "@/components/Hero";
+import MobileHero from "@/components/landing/MobileHero";
+import FeatureBlocks from "@/components/landing/FeatureBlocks";
+import VideoSection from "@/components/landing/VideoSection";
 import { ValueBar } from "@/components/landing/ValueBar";
 import { WaveDivider } from "@/components/landing/WaveDivider";
 import HowItWorks from "@/components/landing/HowItWorks";
@@ -56,7 +59,18 @@ const Index = () => {
       <MobileHeader />
       
       <main id="main-content" className="pt-14 overflow-x-hidden">
+        {/* Mobile Hero with Dashboard Preview */}
+        <MobileHero />
+        
+        {/* Desktop Hero */}
         <Hero />
+        
+        {/* Mobile Feature Blocks */}
+        <FeatureBlocks />
+        
+        {/* Mobile Video Section */}
+        <VideoSection />
+        
         <WaveDivider color="hsl(var(--background))" className="text-background -mt-1" />
         <HowItWorks />
         <DashboardShowcase />

@@ -7,7 +7,7 @@ const FirstWeekBlock = () => {
       plan: "Basic",
       activities: [
         "Upload 30 days",
-        "Get 3 actions",
+        "Get AI insights",
         "Set per-trade risk"
       ]
     },

@@ -22,7 +22,7 @@ const CTA = () => {
           </h2>
           
           <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto">
-            {t('landing.cta.mainSubtitle', 'Upload your last 30 days and get 3 actions to raise your average R')}
+            {t('landing.cta.mainSubtitle', 'Upload your last 30 days and get AI-powered insights to raise your average R')}
           </p>
           
           <div>

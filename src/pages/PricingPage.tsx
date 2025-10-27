@@ -120,7 +120,7 @@ const PricingPage = () => {
                 Choose your plan and start today
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Upload your trades; AI fills the journal; get 3 actions after your first upload
+                Upload your trades; AI fills the journal; get instant insights after your first upload
               </p>
 
               {/* CTAs */}
@@ -405,7 +405,7 @@ const PricingPage = () => {
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Start today</h2>
               <p className="text-lg text-muted-foreground mb-6">
-                Upload your last 30 days and get 3 actions to raise your average R
+                Upload your last 30 days and get AI-powered insights to raise your average R
               </p>
               <Button
                 size="lg"

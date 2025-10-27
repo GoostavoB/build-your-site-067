@@ -21,7 +21,7 @@ const BuildSection = () => {
     {
       icon: Rocket,
       title: "Launch",
-      description: "Get 3 actions today"
+      description: "Get AI-powered insights instantly"
     },
     {
       icon: Award,

@@ -83,7 +83,7 @@ export const VietnamLogoWrapper = ({ children }: VietnamLogoWrapperProps) => {
 
       {/* Vietnam logo - fades in on hover */}
       <div
-        className="absolute top-0 left-0 transition-all duration-[600ms]"
+        className="absolute top-0 left-0 w-full h-full transition-all duration-[600ms]"
         style={{
           transform: isHovered ? 'scale(1.02) rotate(2deg)' : 'scale(0.98) rotate(-2deg)',
           opacity: isHovered ? 1 : 0,
@@ -96,9 +96,9 @@ export const VietnamLogoWrapper = ({ children }: VietnamLogoWrapperProps) => {
         <img 
           src={logoVietnam} 
           alt="The Trading Diary - Vietnam" 
-          className="h-full w-auto object-contain"
+          className="w-full h-full object-contain"
           style={{
-            height: 'var(--logo-height, 32px)',
+            maxWidth: '100%',
             maxHeight: '100%',
           }}
         />

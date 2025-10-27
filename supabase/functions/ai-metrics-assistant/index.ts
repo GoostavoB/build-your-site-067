@@ -48,6 +48,7 @@ OUTPUT FORMAT FOR WIDGET GENERATION:
     "widget_type": "metric|chart|table",
     "query_config": {
       "metric": "roi|pnl|win_rate|count",
+      "calculated_metric": "revenue_per_hour|revenue_per_day|profit_factor|avg_win|avg_loss|largest_win|largest_loss",
       "aggregation": "sum|avg|count",
       "group_by": "setup|symbol|broker|hour_of_day|day_of_week",
       "order": "desc|asc",
@@ -58,7 +59,9 @@ OUTPUT FORMAT FOR WIDGET GENERATION:
       }
     },
     "display_config": {
-      "format": "currency|percent|number",
+      "format": "currency|percent|number|decimal",
+      "suffix": "/hour|/day|x",
+      "decimals": 2,
       "chart_type": "bar|pie",
       "show_trend": true,
       "show_rank": true
@@ -72,11 +75,20 @@ WIDGET TYPE GUIDELINES:
 - "chart": Visual comparison - use "bar" for rankings, "pie" for distributions
 - "table": Detailed ranked list showing name, value, and trade count
 
-METRIC OPTIONS:
+STANDARD METRIC OPTIONS (use "metric" field):
 - "roi": Return on Investment percentage (use format: "percent")
 - "pnl": Profit and Loss amount (use format: "currency")
 - "win_rate": Percentage of winning trades (use format: "percent")
 - "count": Number of trades (use format: "number")
+
+CALCULATED METRIC OPTIONS (use "calculated_metric" field instead of "metric"):
+- "revenue_per_hour": Total PnL / hours since first trade (format: "currency", suffix: "/hour")
+- "revenue_per_day": Total PnL / days since first trade (format: "currency", suffix: "/day")
+- "profit_factor": Sum of wins / Sum of losses (format: "decimal", decimals: 2)
+- "avg_win": Average profit from winning trades (format: "currency")
+- "avg_loss": Average loss from losing trades (format: "currency")
+- "largest_win": Biggest winning trade (format: "currency")
+- "largest_loss": Biggest losing trade (format: "currency")
 
 GROUPING OPTIONS:
 - "setup": Group by trading setup strategy
@@ -92,7 +104,47 @@ IMPORTANT RULES:
 - Use "display_config" NOT "display_format"
 - For rankings/comparisons: use widget_type="table" or "chart"
 - For single metrics: use widget_type="metric"
-- Always include appropriate format (currency, percent, or number)
+- When user asks "per hour" or "per day", use calculated_metric field
+- Always include appropriate format (currency, percent, number, or decimal)
+- Add suffix when showing rates (e.g., "/hour", "/day", "x" for multipliers)
+
+EXAMPLES:
+
+User: "show me revenue per hour"
+{
+  "widget": {
+    "title": "Revenue per Hour",
+    "description": "Average revenue earned per hour since your first trade",
+    "widget_type": "metric",
+    "query_config": {
+      "calculated_metric": "revenue_per_hour"
+    },
+    "display_config": {
+      "format": "currency",
+      "suffix": "/hour",
+      "decimals": 2
+    }
+  },
+  "summary": "Showing your average revenue per hour since your first trade."
+}
+
+User: "what's my profit factor?"
+{
+  "widget": {
+    "title": "Profit Factor",
+    "description": "Ratio of total wins to total losses",
+    "widget_type": "metric",
+    "query_config": {
+      "calculated_metric": "profit_factor"
+    },
+    "display_config": {
+      "format": "decimal",
+      "decimals": 2,
+      "suffix": "x"
+    }
+  },
+  "summary": "Your profit factor shows the ratio of wins to losses."
+}
 
 Current action: ${action || 'generate'}`;
 

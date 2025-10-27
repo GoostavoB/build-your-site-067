@@ -106,7 +106,7 @@ export const CustomWidgetRenderer = ({ widget, onDelete, showAddToDashboard = fa
       }, {});
 
       const result = Object.entries(grouped).map(([key, tradeGroup]) => {
-        const value = calculateMetric(tradeGroup, metric, aggregation);
+        const value = calculateMetric(tradeGroup, config);
         return { 
           name: key, 
           value,
@@ -125,11 +125,68 @@ export const CustomWidgetRenderer = ({ widget, onDelete, showAddToDashboard = fa
       return limit ? sorted.slice(0, limit) : sorted;
     } else {
       // Single metric
-      return calculateMetric(filteredTrades, metric, aggregation);
+      return calculateMetric(filteredTrades, config);
     }
   };
 
-  const calculateMetric = (trades: any[], metric: string, aggregation: string) => {
+  const calculateMetric = (trades: any[], config: any): number => {
+    if (!trades || trades.length === 0) return 0;
+
+    const { metric, calculated_metric, aggregation } = config;
+
+    // Handle calculated metrics
+    if (calculated_metric) {
+      switch (calculated_metric) {
+        case 'revenue_per_hour': {
+          const totalPnl = trades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+          const dates = trades.map(t => new Date(t.trade_date).getTime());
+          const firstTrade = Math.min(...dates);
+          const lastTrade = Math.max(...dates);
+          const hoursElapsed = (lastTrade - firstTrade) / (1000 * 60 * 60);
+          return hoursElapsed > 0 ? totalPnl / hoursElapsed : totalPnl;
+        }
+        
+        case 'revenue_per_day': {
+          const totalPnl = trades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+          const dates = trades.map(t => new Date(t.trade_date).getTime());
+          const firstTrade = Math.min(...dates);
+          const lastTrade = Math.max(...dates);
+          const daysElapsed = (lastTrade - firstTrade) / (1000 * 60 * 60 * 24);
+          return daysElapsed > 0 ? totalPnl / daysElapsed : totalPnl;
+        }
+        
+        case 'profit_factor': {
+          const totalWins = trades.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + t.pnl, 0);
+          const totalLosses = Math.abs(trades.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + t.pnl, 0));
+          return totalLosses > 0 ? totalWins / totalLosses : totalWins;
+        }
+        
+        case 'avg_win': {
+          const wins = trades.filter(t => (t.pnl || 0) > 0);
+          return wins.length > 0 ? wins.reduce((sum, t) => sum + t.pnl, 0) / wins.length : 0;
+        }
+        
+        case 'avg_loss': {
+          const losses = trades.filter(t => (t.pnl || 0) < 0);
+          return losses.length > 0 ? losses.reduce((sum, t) => sum + t.pnl, 0) / losses.length : 0;
+        }
+        
+        case 'largest_win': {
+          const pnls = trades.map(t => t.pnl || 0);
+          return Math.max(...pnls, 0);
+        }
+        
+        case 'largest_loss': {
+          const pnls = trades.map(t => t.pnl || 0);
+          return Math.min(...pnls, 0);
+        }
+        
+        default:
+          return 0;
+      }
+    }
+
+    // Handle standard metrics
     switch (metric) {
       case 'roi':
         const avgROI = trades.reduce((sum, t) => sum + (t.roi || 0), 0) / trades.length;
@@ -224,7 +281,20 @@ export const CustomWidgetRenderer = ({ widget, onDelete, showAddToDashboard = fa
   const renderMetricWidget = () => {
     const value = typeof data === 'number' ? data : 0;
     const format = widget.display_config?.format || 'number';
+    const suffix = widget.display_config?.suffix || '';
+    const decimals = widget.display_config?.decimals || 2;
     const isPositive = value > 0;
+
+    let displayValue = '';
+    if (format === 'currency') {
+      displayValue = `$${formatNumber(value)}${suffix}`;
+    } else if (format === 'percent') {
+      displayValue = formatPercent(value);
+    } else if (format === 'decimal') {
+      displayValue = `${value.toFixed(decimals)}${suffix}`;
+    } else {
+      displayValue = `${formatNumber(value)}${suffix}`;
+    }
 
     return (
       <div className="text-center space-y-2">
@@ -235,9 +305,7 @@ export const CustomWidgetRenderer = ({ widget, onDelete, showAddToDashboard = fa
             <TrendingDown className="h-5 w-5 text-destructive" />
           )}
           <span className="text-3xl font-bold">
-            {format === 'currency' ? `$${formatNumber(value)}` : 
-             format === 'percent' ? formatPercent(value) :
-             formatNumber(value)}
+            {displayValue}
           </span>
         </div>
         {widget.description && (

@@ -157,25 +157,6 @@ const BenefitsGrid = () => {
             {t("landing.benefits.ctaButton")}
           </Button>
         </motion.div>
-
-        {/* Trust indicators */}
-        <motion.div 
-          className="mt-16 text-center"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          <p className="text-sm text-muted-foreground mb-6">
-            {t("landing.benefits.trustedBy")}
-          </p>
-          <div className="flex flex-wrap justify-center gap-8 items-center opacity-50 hover:opacity-75 transition-opacity">
-            <span className="text-xl font-semibold text-muted-foreground">Binance</span>
-            <span className="text-xl font-semibold text-muted-foreground">Bybit</span>
-            <span className="text-xl font-semibold text-muted-foreground">OKX</span>
-            <span className="text-xl font-semibold text-muted-foreground">Kraken</span>
-          </div>
-        </motion.div>
       </div>
     </section>
   );

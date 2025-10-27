@@ -1275,14 +1275,7 @@ const Upload = () => {
           <TabsContent value="batch-upload" className="space-y-6">
             <Card className="p-6 glass">
               <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-semibold">Multi-Image Batch Upload</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Upload up to 3 trade screenshots at once. AI will detect and extract all trades from each image.
-                  </p>
-                </div>
-                
-                <MultiImageUpload 
+                <MultiImageUpload
                   onTradesExtracted={(trades) => {
                     setExtractedTrades(trades);
                     toast.success(`Extracted ${trades.length} trades from batch upload`);

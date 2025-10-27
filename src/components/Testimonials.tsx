@@ -7,18 +7,18 @@ const Testimonials = () => {
 
   const testimonials = [
     {
-      quote: "Cut 0.2 R per trade by moving to maker on 2 pairs in 7 days",
-      author: "Carlos M.",
-      role: "Futures Trader",
-      exchange: "Binance",
-      timeframe: "4-hour charts"
+      quoteKey: "landing.testimonials.testimonial3.quote",
+      authorKey: "landing.testimonials.testimonial3.author",
+      roleKey: "landing.testimonials.testimonial3.role",
+      exchangeKey: "landing.testimonials.testimonial3.exchange",
+      timeframeKey: "landing.testimonials.testimonial3.timeframe"
     },
     {
-      quote: "−28% weekly drawdown after setting a limit and alerts",
-      author: "Sarah K.",
-      role: "Swing Trader",
-      exchange: "Bybit",
-      timeframe: "Daily charts"
+      quoteKey: "landing.testimonials.testimonial4.quote",
+      authorKey: "landing.testimonials.testimonial4.author",
+      roleKey: "landing.testimonials.testimonial4.role",
+      exchangeKey: "landing.testimonials.testimonial4.exchange",
+      timeframeKey: "landing.testimonials.testimonial4.timeframe"
     },
   ];
 
@@ -68,22 +68,22 @@ const Testimonials = () => {
                   className="flex-shrink-0 h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold text-sm"
                   aria-hidden="true"
                 >
-                  {getInitials(testimonial.author)}
+                  {getInitials(t(testimonial.authorKey))}
                 </div>
 
                 <div className="flex-1 min-w-0">
                   {/* Quote */}
                   <blockquote className="text-sm md:text-base text-foreground mb-4 italic leading-relaxed line-clamp-3">
-                    "{testimonial.quote}"
+                    "{t(testimonial.quoteKey)}"
                   </blockquote>
 
                   {/* Author Info */}
                   <div className="space-y-0.5">
                     <div className="font-semibold text-sm text-foreground">
-                      {testimonial.author}
+                      {t(testimonial.authorKey)}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {testimonial.role} • {testimonial.exchange} • {testimonial.timeframe}
+                      {t(testimonial.roleKey)} • {t(testimonial.exchangeKey)} • {t(testimonial.timeframeKey)}
                     </div>
                   </div>
                 </div>

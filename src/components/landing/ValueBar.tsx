@@ -1,6 +1,9 @@
 import { motion } from "framer-motion";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export const ValueBar = () => {
+  const { t } = useTranslation();
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -10,7 +13,7 @@ export const ValueBar = () => {
     >
       <div className="container mx-auto max-w-7xl">
         <p className="text-center text-sm md:text-base font-medium">
-          Clear data today, better decisions on your next trade
+          {t('landing.valueBar.message', 'Clear data today, better decisions on your next trade')}
         </p>
       </div>
     </motion.div>

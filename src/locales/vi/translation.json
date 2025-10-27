@@ -124,12 +124,31 @@
     },
     "hero": {
       "titleShort": "Theo dõi mọi giao dịch tiền điện tử. Học nhanh hơn.",
+      "mainTitle": "Tối đa hóa hiệu suất giao dịch của bạn",
+      "mainSubtitle": "Tải lên giao dịch của bạn, AI điền nhật ký, bạn nhận được 3 hành động để nâng cao R trung bình ngày hôm nay",
+      "ctaStartTrial": "Bắt đầu dùng thử miễn phí",
+      "ctaWatchDemo": "Xem demo 2 phút",
+      "proofBadge1": "Ghi nhật ký nhanh hơn tới 40 lần",
+      "proofBadge2": "Tỷ lệ thắng tới +8 điểm",
+      "proofBadge3": "Giảm drawdown hàng tuần tối đa −30%",
+      "proofDisclaimer": "Kết quả quan sát được ở các nhóm thử nghiệm, khác nhau tùy theo rủi ro, thị trường và kỷ luật",
       "benefits": [
         "Nhập giao dịch trong vài phút",
         "Xem P&L thực với phí",
         "Xem lại thiết lập với thẻ"
       ],
       "ctaPrimary": "Bắt đầu miễn phí"
+    },
+    "valueBar": {
+      "message": "Dữ liệu rõ ràng hôm nay, quyết định tốt hơn trong giao dịch tiếp theo của bạn"
+    },
+    "benefits": {
+      "centerTitle": "Xây Dựng Cho Mọi Trader",
+      "noApiKeys": "Không cần khóa API",
+      "allExchanges": "Hoạt động với mọi sàn giao dịch",
+      "privateDefault": "Riêng tư theo mặc định",
+      "saferDesign": "An toàn hơn nhờ thiết kế",
+      "uploadGo": "Tải lên và sử dụng"
     },
     "cta": {
       "title": "Sẵn Sàng Nâng Cấp Giao Dịch của Bạn?",

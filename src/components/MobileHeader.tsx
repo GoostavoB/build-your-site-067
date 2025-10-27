@@ -47,7 +47,7 @@ export const MobileHeader = () => {
             onClick={() => navigate('/blog')}
             className="h-11 px-4"
           >
-            Blog
+            {t('navigation.blog', 'Blog')}
           </Button>
           <Button
             variant="ghost"
@@ -106,7 +106,7 @@ export const MobileHeader = () => {
                     onClick={() => navigate('/blog')}
                     className="h-12 w-full justify-start text-base"
                   >
-                    Blog
+                    {t('navigation.blog', 'Blog')}
                   </Button>
                   <Button
                     variant="ghost"
@@ -126,12 +126,12 @@ export const MobileHeader = () => {
 
                 <div className="pt-6 border-t border-border/50 flex flex-col gap-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Language</span>
+                    <span className="text-sm text-muted-foreground">{t('navigation.language', 'Language')}</span>
                     <LanguageToggle />
                   </div>
                   {!isPublicRoute && (
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Theme</span>
+                      <span className="text-sm text-muted-foreground">{t('navigation.theme', 'Theme')}</span>
                       <ThemeStudio />
                     </div>
                   )}

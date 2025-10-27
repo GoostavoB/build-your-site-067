@@ -124,12 +124,31 @@
     },
     "hero": {
       "titleShort": "Rastreie cada negociação cripto. Aprenda mais rápido.",
+      "mainTitle": "Maximize seu desempenho de trading",
+      "mainSubtitle": "Carregue suas negociações, a IA preenche o diário, você recebe 3 ações para elevar seu R médio hoje",
+      "ctaStartTrial": "Começar teste grátis",
+      "ctaWatchDemo": "Assistir demo de 2 minutos",
+      "proofBadge1": "Até 40x mais rápido no registro",
+      "proofBadge2": "Taxa de vitória até +8 pontos",
+      "proofBadge3": "Rebaixamento semanal máximo −30%",
+      "proofDisclaimer": "Resultados observados em grupos piloto, variam por risco, mercado e disciplina",
       "benefits": [
         "Importe negociações em minutos",
         "Veja P&L real com taxas",
         "Revise setups com tags"
       ],
       "ctaPrimary": "Começar grátis"
+    },
+    "valueBar": {
+      "message": "Dados claros hoje, melhores decisões na próxima negociação"
+    },
+    "benefits": {
+      "centerTitle": "Feito para Cada Trader",
+      "noApiKeys": "Sem chaves API necessárias",
+      "allExchanges": "Funciona com todas as exchanges",
+      "privateDefault": "Privado por padrão",
+      "saferDesign": "Mais seguro por design",
+      "uploadGo": "Carregue e pronto"
     },
     "cta": {
       "title": "Pronto para Melhorar Seu Trading?",

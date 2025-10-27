@@ -130,7 +130,7 @@ const Pricing = () => {
           {/* Speed banner */}
           <div className="text-center mb-6 p-4 bg-primary/10 rounded-lg">
             <p className="text-base font-medium">
-              Get 3 actions right after your first upload
+              {t('pricing.speedBanner', 'Get 3 actions right after your first upload')}
             </p>
           </div>
 
@@ -164,7 +164,7 @@ const Pricing = () => {
               >
                 {t('pricing.billing.annual')}
                 <span className="absolute -top-2 -right-2 bg-green-500 text-primary-foreground text-xs px-2 py-0.5 rounded-full font-semibold">
-                  Save 2 months
+                  {t('pricing.saveBadge', 'Save 2 months')}
                 </span>
               </button>
             </div>
@@ -214,7 +214,7 @@ const Pricing = () => {
                     </div>
                   )}
                   <div className="text-xs text-muted-foreground mt-2">
-                    {plan.tradeLimit} • Each closed order counts as 1 trade
+                    {plan.tradeLimit} • {t('pricing.tradeNote', 'Each closed order counts as 1 trade')}
                   </div>
                 </div>
 
@@ -232,11 +232,11 @@ const Pricing = () => {
 
                 {plan.monthlyPrice > 0 ? (
                   <p className="text-xs text-muted-foreground text-center mb-5 leading-relaxed">
-                    7-day trial • Cancel anytime • Prorated refund in first 14 days on annual
+                    {t('pricing.trialTerms', '7-day trial • Cancel anytime • Prorated refund in first 14 days on annual')}
                   </p>
                 ) : (
                   <p className="text-xs text-muted-foreground text-center mb-5 leading-relaxed">
-                    No credit card required
+                    {t('pricing.noCardRequired', 'No credit card required')}
                   </p>
                 )}
 

@@ -18,11 +18,11 @@ const CTA = () => {
           className="text-center space-y-6"
         >
           <h2 id="cta-heading" className="text-3xl md:text-4xl font-bold leading-tight">
-            Start today
+            {t('landing.cta.mainTitle', 'Start today')}
           </h2>
           
           <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto">
-            Upload your last 30 days and get 3 actions to raise your average R
+            {t('landing.cta.mainSubtitle', 'Upload your last 30 days and get 3 actions to raise your average R')}
           </p>
           
           <div>
@@ -32,11 +32,11 @@ const CTA = () => {
               className="px-10 py-7 text-base font-medium rounded-xl"
               aria-label="Start free trial"
             >
-              Start free trial
+              {t('landing.cta.buttonText', 'Start free trial')}
             </Button>
             
             <p className="mt-4 text-xs text-muted-foreground">
-              No credit card required • 7-day free trial
+              {t('landing.cta.disclaimer', 'No credit card required • 7-day free trial')}
             </p>
           </div>
         </motion.div>

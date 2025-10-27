@@ -79,6 +79,33 @@
     "features": {
       "title": "Trade Better with Data",
       "subtitle": "Everything you need to improve your trading performance",
+      "mainTitle": "Features That Drive Results",
+      "mainSubtitle": "Tools designed to improve your trading performance",
+      "leverage": {
+        "title": "Leverage and position size by risk and stop",
+        "description": "Calculate the right position size for every trade based on your risk tolerance",
+        "action": "Set your risk parameters now"
+      },
+      "fees": {
+        "title": "Fees dashboard and maker vs taker simulation with funding",
+        "description": "Understand your true trading costs and optimize fee structures",
+        "action": "Cut costs by switching high fee pairs in one click"
+      },
+      "heatmap": {
+        "title": "Weekly heatmap, best assets and hours",
+        "description": "Identify your most profitable trading patterns and timeframes",
+        "action": "Find your edge with visual analytics"
+      },
+      "mfeMae": {
+        "title": "MFE and MAE to tune target and stop",
+        "description": "Optimize your exit strategies with maximum favorable and adverse excursion analysis",
+        "action": "Improve your exits today"
+      },
+      "riskAlerts": {
+        "title": "Risk alerts and pre-trade checklist",
+        "description": "Stay disciplined with automated warnings and systematic trade validation",
+        "action": "Enable smart protection"
+      },
       "smartLogging": {
         "title": "Smart Logging",
         "description": "Capture screenshots, add emotional tags, track errors—all in one place.",
@@ -120,6 +147,20 @@
         "author": "Sarah Rodriguez",
         "role": "Swing Trader",
         "exchange": "Coinbase"
+      },
+      "testimonial3": {
+        "quote": "Cut 0.2 R per trade by moving to maker on 2 pairs in 7 days",
+        "author": "Carlos M.",
+        "role": "Futures Trader",
+        "exchange": "Binance",
+        "timeframe": "4-hour charts"
+      },
+      "testimonial4": {
+        "quote": "−28% weekly drawdown after setting a limit and alerts",
+        "author": "Sarah K.",
+        "role": "Swing Trader",
+        "exchange": "Bybit",
+        "timeframe": "Daily charts"
       }
     },
     "proofBar": {
@@ -129,6 +170,14 @@
     },
     "hero": {
       "titleShort": "Track every crypto trade. Learn faster.",
+      "mainTitle": "Maximize your trading performance",
+      "mainSubtitle": "Upload your trades, AI fills the journal, you get 3 actions to lift your average R today",
+      "ctaStartTrial": "Start free trial",
+      "ctaWatchDemo": "Watch 2-minute demo",
+      "proofBadge1": "Up to 40x faster logging",
+      "proofBadge2": "Win rate up to +8 points",
+      "proofBadge3": "Max weekly drawdown −30%",
+      "proofDisclaimer": "Results observed in pilot groups, vary by risk, market, and discipline",
       "benefits": [
         "Import trades in minutes",
         "See true PnL with fees",
@@ -136,9 +185,24 @@
       ],
       "ctaPrimary": "Get started free"
     },
+    "valueBar": {
+      "message": "Clear data today, better decisions on your next trade"
+    },
+    "benefits": {
+      "centerTitle": "Built for Every Trader",
+      "noApiKeys": "No API keys needed",
+      "allExchanges": "Works with every exchange",
+      "privateDefault": "Private by default",
+      "saferDesign": "Safer by design",
+      "uploadGo": "Upload and go"
+    },
     "cta": {
       "title": "Ready to Level Up Your Trading?",
       "subtitle": "Join thousands of traders improving their discipline and profitability.",
+      "mainTitle": "Start today",
+      "mainSubtitle": "Upload your last 30 days and get 3 actions to raise your average R",
+      "buttonText": "Start free trial",
+      "disclaimer": "No credit card required • 7-day free trial",
       "button": "Start Free Trial",
       "note": "No credit card required"
     },
@@ -154,6 +218,14 @@
       "legal": "Legal",
       "terms": "Terms",
       "privacy": "Privacy",
+      "howItWorks": "How It Works",
+      "cryptoFaq": "Crypto Trading FAQ",
+      "testimonials": "Testimonials",
+      "aboutUs": "About Us",
+      "sitemap": "Sitemap",
+      "cookiePolicy": "Cookie Policy",
+      "changelog": "Changelog",
+      "copyright": "© 2025 The Trading Diary.",
       "securityBadge": "Data encrypted at rest and in transit",
       "allRightsReserved": "All rights reserved.",
       "madeWith": "Made with ❤️ for traders"
@@ -260,6 +332,11 @@
     "perMonthBilledAnnually": "month, billed annually",
     "savingsAmount": "Save ${{amount}}/year",
     "guaranteeNote": "7-day money-back guarantee • Cancel anytime • No hidden fees",
+    "speedBanner": "Get 3 actions right after your first upload",
+    "saveBadge": "Save 2 months",
+    "tradeNote": "Each closed order counts as 1 trade",
+    "trialTerms": "7-day trial • Cancel anytime • Prorated refund in first 14 days on annual",
+    "noCardRequired": "No credit card required",
     "hero": {
       "title": "Trade with clarity.",
       "subtitle": "An AI-powered trading diary for crypto investors. Capture every trade, find patterns, and track your edge.",
@@ -586,6 +663,11 @@
     "tools": "Tools",
     "settings": "Settings",
     "social": "Social",
+    "contact": "Contact",
+    "signIn": "Sign In",
+    "blog": "Blog",
+    "language": "Language",
+    "theme": "Theme",
     "aiTools": "AI Tools",
     "achievements": "Achievements",
     "forecast": "Forecast",

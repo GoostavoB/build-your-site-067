@@ -254,6 +254,9 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
  * Default dashboard layout for new users - simplified to just widget IDs in order
  */
 export const DEFAULT_DASHBOARD_LAYOUT = [
+  // Most important widget
+  'absoluteProfit',
+  
   // Top row
   'currentROI',
   'winRate',
@@ -273,7 +276,6 @@ export const DEFAULT_DASHBOARD_LAYOUT = [
   'spotWallet',
   'totalTrades',
   'goals',
-  'absoluteProfit',
   'recentTransactions',
   'aiInsights',
   'quickActions',

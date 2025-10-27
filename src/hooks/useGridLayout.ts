@@ -14,29 +14,31 @@ export interface LayoutData {
 }
 
 const DEFAULT_POSITIONS: WidgetPosition[] = [
-  // Row 0: Current ROI / Win Rate / Avg PNL Per Trade / Avg PNL Per Day
-  { id: 'currentROI', column: 0, row: 0 },
-  { id: 'winRate', column: 1, row: 0 },
-  { id: 'avgPnLPerTrade', column: 2, row: 0 },
-  { id: 'avgPnLPerDay', column: 3, row: 0 },
+  // Row 0: Total Trading Profit (most important widget)
+  { id: 'absoluteProfit', column: 0, row: 0 },
   
-  // Row 1: Capital Growth / Weekly Heatmap / Top Movers
-  { id: 'capitalGrowth', column: 0, row: 1 },
-  { id: 'heatmap', column: 1, row: 1 },
-  { id: 'topMovers', column: 2, row: 1 },
+  // Row 1: Current ROI / Win Rate / Avg PNL Per Trade / Avg PNL Per Day
+  { id: 'currentROI', column: 0, row: 1 },
+  { id: 'winRate', column: 1, row: 1 },
+  { id: 'avgPnLPerTrade', column: 2, row: 1 },
+  { id: 'avgPnLPerDay', column: 3, row: 1 },
   
-  // Row 2: Trading Behaviour Patterns
-  { id: 'behaviorAnalytics', column: 0, row: 2 },
+  // Row 2: Capital Growth / Weekly Heatmap / Top Movers
+  { id: 'capitalGrowth', column: 0, row: 2 },
+  { id: 'heatmap', column: 1, row: 2 },
+  { id: 'topMovers', column: 2, row: 2 },
+  
+  // Row 3: Trading Behaviour Patterns
+  { id: 'behaviorAnalytics', column: 0, row: 3 },
   
   // Additional widgets
-  { id: 'totalBalance', column: 0, row: 3 },
-  { id: 'spotWallet', column: 1, row: 3 },
-  { id: 'totalTrades', column: 2, row: 3 },
-  { id: 'goals', column: 3, row: 3 },
-  { id: 'recentTransactions', column: 0, row: 4 },
-  { id: 'quickActions', column: 1, row: 4 },
-  { id: 'aiInsights', column: 2, row: 4 },
-  { id: 'absoluteProfit', column: 0, row: 5 },
+  { id: 'totalBalance', column: 0, row: 4 },
+  { id: 'spotWallet', column: 1, row: 4 },
+  { id: 'totalTrades', column: 2, row: 4 },
+  { id: 'goals', column: 3, row: 4 },
+  { id: 'recentTransactions', column: 0, row: 5 },
+  { id: 'quickActions', column: 1, row: 5 },
+  { id: 'aiInsights', column: 2, row: 5 },
 ];
 
 export const useGridLayout = (userId: string | undefined, availableWidgets: string[]) => {

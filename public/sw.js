@@ -1,6 +1,6 @@
 // Service Worker for The Trading Diary
-const CACHE_NAME = 'trading-diary-v3';
-const RUNTIME_CACHE = 'runtime-cache-v3';
+const CACHE_NAME = 'trading-diary-v5';
+const RUNTIME_CACHE = 'runtime-cache-v5';
 
 // Static assets to cache on install
 const STATIC_CACHE_URLS = [
@@ -84,10 +84,10 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // HTML pages - Stale while revalidate
+  // HTML pages - Network first with cache fallback to ensure fresh index.html
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      const fetchPromise = fetch(request).then((networkResponse) => {
+    fetch(request)
+      .then((networkResponse) => {
         if (networkResponse.status === 200) {
           const responseClone = networkResponse.clone();
           caches.open(RUNTIME_CACHE).then((cache) => {
@@ -95,9 +95,8 @@ self.addEventListener('fetch', (event) => {
           });
         }
         return networkResponse;
-      });
-      return cachedResponse || fetchPromise;
-    })
+      })
+      .catch(() => caches.match(request))
   );
 });
 

@@ -50,7 +50,7 @@ const BenefitsGrid = () => {
 
   return (
     <section 
-      className="py-20 md:py-32 px-4 relative overflow-hidden bg-gradient-to-br from-background via-secondary/30 to-background"
+      className="py-20 md:py-32 px-4 relative overflow-hidden bg-gradient-to-br from-background via-secondary/30 to-background border-t-2 border-primary/40"
       data-testid="benefits-v2"
       aria-label="Key Benefits"
     >

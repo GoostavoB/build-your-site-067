@@ -6,8 +6,8 @@ const HowItWorks = () => {
   const steps = [
     {
       icon: Upload,
-      title: "Upload screenshots or CSV",
-      description: "Drag and drop your trade screenshots or export from any exchange"
+      title: "Upload screenshots (images only)",
+      description: "Drag and drop your trade screenshots; AI handles the rest."
     },
     {
       icon: Sparkles,

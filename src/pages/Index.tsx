@@ -19,6 +19,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { updateLandingMeta, addStructuredData, trackLandingView, trackCTAClick } from "@/utils/i18nLandingMeta";
 import { useHreflang } from "@/hooks/useHreflang";
 import { SUPPORTED_LANGUAGES } from "@/utils/languageRouting";
+import { swCleanup } from "@/utils/swCleanup";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -31,6 +32,9 @@ const Index = () => {
   });
 
   useEffect(() => {
+    // Temporary: clear old service worker and caches to avoid stale UI
+    swCleanup();
+
     // Update meta tags and SEO for English (USA)
     updateLandingMeta('en');
     addStructuredData('en');

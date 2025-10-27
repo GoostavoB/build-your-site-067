@@ -33,10 +33,10 @@ const Hero = () => {
             transition={{ duration: 0.6 }}
             className="space-y-8 text-center lg:text-left flex flex-col items-center lg:items-start"
           >
-            {/* Hero Title - Left Aligned */}
+            {/* Hero Title - Centered on mobile, left-aligned on desktop */}
             <h1 
               id="hero-title"
-              className="text-[clamp(40px,6vw,68px)] font-bold leading-[1.1] tracking-tight max-w-3xl mx-auto lg:mx-0"
+              className="text-[clamp(40px,6vw,68px)] font-bold leading-[1.1] tracking-tight max-w-md lg:max-w-3xl mx-auto lg:mx-0"
             >
               Maximize your trading performance
             </h1>

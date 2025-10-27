@@ -280,7 +280,19 @@ export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) =>
       if (error) {
         toast.error('Failed to delete trades');
       } else {
-        toast.success(`${selectedTradeIds.size} trade(s) deleted successfully`);
+        const count = selectedTradeIds.size;
+        toast.success(
+          <div className="space-y-2">
+            <div className="font-semibold">{count} trade{count > 1 ? 's' : ''} deleted</div>
+            <div className="text-sm opacity-90">
+              You have <strong>48 hours</strong> to recover {count > 1 ? 'them' : 'it'}
+            </div>
+            <div className="text-xs opacity-75 pt-1 border-t border-white/10">
+              💡 Go to <strong>Trade Analysis</strong> → Click <strong>⚙️ Settings</strong> → Enable <strong>"Show deleted trades"</strong>
+            </div>
+          </div>,
+          { duration: 8000 }
+        );
         setSelectedTradeIds(new Set());
         fetchTrades();
         onTradesChange?.();
@@ -381,7 +393,18 @@ export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) =>
       if (error) {
         toast.error('Failed to delete trade');
       } else {
-        toast.success('Trade deleted');
+        toast.success(
+          <div className="space-y-2">
+            <div className="font-semibold">Trade deleted</div>
+            <div className="text-sm opacity-90">
+              You have <strong>48 hours</strong> to recover it
+            </div>
+            <div className="text-xs opacity-75 pt-1 border-t border-white/10">
+              💡 Go to <strong>Trade Analysis</strong> → Click <strong>⚙️ Settings</strong> → Enable <strong>"Show deleted trades"</strong>
+            </div>
+          </div>,
+          { duration: 8000 }
+        );
         fetchTrades();
         onTradesChange?.();
       }

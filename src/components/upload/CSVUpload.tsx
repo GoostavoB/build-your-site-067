@@ -9,6 +9,7 @@ import { CSVColumnMapper } from "./CSVColumnMapper";
 import { BrokerTemplateManager } from "./BrokerTemplateManager";
 import { CSVPreviewWithEdit } from "./CSVPreviewWithEdit";
 import { BrokerSelect } from "./BrokerSelect";
+import { EnhancedFileUpload } from "./EnhancedFileUpload";
 import { toast } from "sonner";
 import { useBrokerTemplates } from "@/hooks/useBrokerTemplates";
 import { findBestTemplateMatch } from "@/utils/csvAutoMapper";
@@ -296,29 +297,12 @@ export const CSVUpload = ({ onTradesExtracted }: CSVUploadProps) => {
   if (currentStep === 'upload') {
     return (
       <Card className="p-8">
-        <div className="border-2 border-dashed rounded-lg p-12 text-center">
-          <input
-            type="file"
-            accept=".csv,.xlsx,.xls"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) handleFileSelect(file);
-            }}
-            className="hidden"
-            id="csv-upload"
-          />
-          <label htmlFor="csv-upload" className="cursor-pointer">
-            <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-semibold mb-2">Upload CSV or Excel File</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              We'll help you map the columns to your trades
-            </p>
-            <Button type="button" variant="outline" asChild>
-              <span>Select File</span>
-            </Button>
-          </label>
-        </div>
-
+        <EnhancedFileUpload
+          onFileSelected={handleFileSelect}
+          acceptedTypes={['.csv', '.xlsx', '.xls']}
+          maxSize={20 * 1024 * 1024}
+        />
+        
         <div className="mt-6">
           <BrokerTemplateManager onLoadTemplate={handleLoadTemplate} />
         </div>

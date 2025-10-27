@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import Hero from "@/components/Hero";
 import DashboardShowcase from "@/components/DashboardShowcase";
 import Features from "@/components/Features";
-import BenefitBadges from "@/components/BenefitBadges";
+import BenefitsGrid from "@/components/landing/BenefitsGrid";
 import Testimonials from "@/components/Testimonials";
 import Pricing from "@/components/Pricing";
 import CTA from "@/components/CTA";
@@ -48,7 +48,7 @@ const IndexPt = () => {
         <ProofBar />
         <DashboardShowcase />
         <Features />
-        <BenefitBadges />
+        <BenefitsGrid />
         <Testimonials />
         <Pricing />
         <CTA />

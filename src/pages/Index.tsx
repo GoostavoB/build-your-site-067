@@ -6,7 +6,7 @@ import DashboardShowcase from "@/components/DashboardShowcase";
 import Features from "@/components/Features";
 import PainToValue from "@/components/landing/PainToValue";
 import BuildSection from "@/components/landing/BuildSection";
-import BenefitBadges from "@/components/BenefitBadges";
+import BenefitsGrid from "@/components/landing/BenefitsGrid";
 import Testimonials from "@/components/Testimonials";
 import Pricing from "@/components/Pricing";
 import SecurityTrust from "@/components/landing/SecurityTrust";
@@ -57,7 +57,7 @@ const Index = () => {
         <PainToValue />
         <Features />
         <BuildSection />
-        <BenefitBadges />
+        <BenefitsGrid />
         <Testimonials />
         <Pricing />
         <SecurityTrust />

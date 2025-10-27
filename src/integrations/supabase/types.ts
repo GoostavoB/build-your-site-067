@@ -2617,6 +2617,45 @@ export type Database = {
         }
         Relationships: []
       }
+      streak_reminder_log: {
+        Row: {
+          clicked: boolean | null
+          clicked_at: string | null
+          created_at: string
+          id: string
+          last_login_at: string | null
+          last_reminder_sent_at: string | null
+          message_variant: string | null
+          notification_paused: boolean | null
+          reminder_count: number | null
+          user_id: string
+        }
+        Insert: {
+          clicked?: boolean | null
+          clicked_at?: string | null
+          created_at?: string
+          id?: string
+          last_login_at?: string | null
+          last_reminder_sent_at?: string | null
+          message_variant?: string | null
+          notification_paused?: boolean | null
+          reminder_count?: number | null
+          user_id: string
+        }
+        Update: {
+          clicked?: boolean | null
+          clicked_at?: string | null
+          created_at?: string
+          id?: string
+          last_login_at?: string | null
+          last_reminder_sent_at?: string | null
+          message_variant?: string | null
+          notification_paused?: boolean | null
+          reminder_count?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           billing_cycle: string | null
@@ -3418,6 +3457,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_events: {
+        Row: {
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_favorites: {
         Row: {
           created_at: string | null
@@ -3498,15 +3561,22 @@ export type Database = {
       }
       user_progression: {
         Row: {
+          combo_bonus_awarded_at: string | null
           created_at: string
           customization_count: number
           daily_streak: number
           id: string
           last_active_date: string
+          last_login_date: string | null
+          last_reengagement_sent_at: string | null
+          last_trade_date: string | null
           level: number
+          login_streak: number | null
           rank: string
           rank_expires_at: string | null
+          reengagement_cooldown_until: string | null
           total_badges_unlocked: number
+          trade_streak: number | null
           trader_identity_scores: Json | null
           updated_at: string
           user_id: string
@@ -3514,15 +3584,22 @@ export type Database = {
           xp: number
         }
         Insert: {
+          combo_bonus_awarded_at?: string | null
           created_at?: string
           customization_count?: number
           daily_streak?: number
           id?: string
           last_active_date?: string
+          last_login_date?: string | null
+          last_reengagement_sent_at?: string | null
+          last_trade_date?: string | null
           level?: number
+          login_streak?: number | null
           rank?: string
           rank_expires_at?: string | null
+          reengagement_cooldown_until?: string | null
           total_badges_unlocked?: number
+          trade_streak?: number | null
           trader_identity_scores?: Json | null
           updated_at?: string
           user_id: string
@@ -3530,15 +3607,22 @@ export type Database = {
           xp?: number
         }
         Update: {
+          combo_bonus_awarded_at?: string | null
           created_at?: string
           customization_count?: number
           daily_streak?: number
           id?: string
           last_active_date?: string
+          last_login_date?: string | null
+          last_reengagement_sent_at?: string | null
+          last_trade_date?: string | null
           level?: number
+          login_streak?: number | null
           rank?: string
           rank_expires_at?: string | null
+          reengagement_cooldown_until?: string | null
           total_badges_unlocked?: number
+          trade_streak?: number | null
           trader_identity_scores?: Json | null
           updated_at?: string
           user_id?: string
@@ -3634,11 +3718,13 @@ export type Database = {
           initial_investment: number | null
           language: string | null
           last_seen_updates_version: number | null
+          last_streak_milestone: number | null
           layout_json: Json | null
           monthly_report: boolean | null
           onboarding_completed: boolean | null
           performance_alerts: boolean | null
           sidebar_style: string | null
+          streak_reminders_enabled: boolean | null
           theme: string | null
           tour_version_completed: number | null
           trade_reminders: boolean | null
@@ -3660,11 +3746,13 @@ export type Database = {
           initial_investment?: number | null
           language?: string | null
           last_seen_updates_version?: number | null
+          last_streak_milestone?: number | null
           layout_json?: Json | null
           monthly_report?: boolean | null
           onboarding_completed?: boolean | null
           performance_alerts?: boolean | null
           sidebar_style?: string | null
+          streak_reminders_enabled?: boolean | null
           theme?: string | null
           tour_version_completed?: number | null
           trade_reminders?: boolean | null
@@ -3686,11 +3774,13 @@ export type Database = {
           initial_investment?: number | null
           language?: string | null
           last_seen_updates_version?: number | null
+          last_streak_milestone?: number | null
           layout_json?: Json | null
           monthly_report?: boolean | null
           onboarding_completed?: boolean | null
           performance_alerts?: boolean | null
           sidebar_style?: string | null
+          streak_reminders_enabled?: boolean | null
           theme?: string | null
           tour_version_completed?: number | null
           trade_reminders?: boolean | null

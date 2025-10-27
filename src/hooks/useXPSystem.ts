@@ -3,6 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { getStreakMultiplier } from '@/utils/xpEngine';
+import { trackStreakEvents } from '@/utils/analyticsEvents';
 
 interface XPData {
   currentXP: number;
@@ -99,20 +101,21 @@ export const useXPSystem = () => {
     if (!user || amount <= 0) return;
 
     try {
-      // Check for streak multiplier
+      // Check for streak multiplier using centralized XP engine
       const { data: progression } = await supabase
         .from('user_progression')
-        .select('daily_streak')
+        .select('login_streak, trade_streak')
         .eq('user_id', user.id)
         .single();
 
-      let multiplier = 1;
-      const streak = progression?.daily_streak || 0;
+      // Use the higher streak for multiplier (rewards consistency)
+      const loginStreak = progression?.login_streak || 0;
+      const tradeStreak = progression?.trade_streak || 0;
+      const bestStreak = Math.max(loginStreak, tradeStreak);
       
-      if (streak >= 30) multiplier = 2.0;
-      else if (streak >= 14) multiplier = 1.5;
-      else if (streak >= 7) multiplier = 1.25;
-      else if (streak >= 3) multiplier = 1.1;
+      // Determine multiplier type based on activity
+      const streakType = activityType.includes('trade') ? 'trade' : 'login';
+      const multiplier = getStreakMultiplier(streakType, bestStreak);
 
       const finalAmount = Math.floor(amount * multiplier);
 

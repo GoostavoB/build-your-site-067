@@ -1,10 +1,57 @@
 // Analytics event tracking utilities
+import { supabase } from '@/integrations/supabase/client';
 
 export const trackEvent = (eventName: string, properties?: Record<string, any>) => {
   if (typeof window !== 'undefined' && (window as any).gtag) {
     (window as any).gtag('event', eventName, properties);
   }
   console.log('Analytics event:', eventName, properties);
+};
+
+/**
+ * Track streak-related events to user_events table
+ */
+export const trackStreakEvent = async (
+  eventType: string,
+  eventData: Record<string, any> = {}
+) => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase.from('user_events').insert({
+      user_id: user.id,
+      event_type: eventType,
+      event_data: eventData
+    });
+
+    // Also track to external analytics
+    trackEvent(eventType, eventData);
+  } catch (error) {
+    console.error('Failed to track streak event:', error);
+  }
+};
+
+// Streak-specific event trackers
+export const trackStreakEvents = {
+  loginDay: (streak: number) => trackStreakEvent('streak_login_day', { streak }),
+  tradeDay: (streak: number) => trackStreakEvent('streak_trade_day', { streak }),
+  comboBonusAwarded: (loginStreak: number, tradeStreak: number) => 
+    trackStreakEvent('streak_combo_bonus_awarded', { loginStreak, tradeStreak }),
+  milestoneReached: (milestone: number, type: 'login' | 'trade') =>
+    trackStreakEvent('streak_milestone_reached', { milestone, type }),
+  streakBroken: (streak: number, type: 'login' | 'trade') =>
+    trackStreakEvent('streak_broken', { streak, type }),
+  reminderSent: (dayNumber: number, variant: string) =>
+    trackStreakEvent('reminder_sent', { dayNumber, variant }),
+  reminderClicked: (dayNumber: number) =>
+    trackStreakEvent('reminder_clicked', { dayNumber }),
+  reminderPaused: (afterDays: number) =>
+    trackStreakEvent('reminder_paused', { afterDays }),
+  freezeTokenUsed: (streak: number) =>
+    trackStreakEvent('freeze_token_used', { streak }),
+  reengagementSent: (daysInactive: number, lastStreak: number) =>
+    trackStreakEvent('reengagement_sent', { daysInactive, lastStreak })
 };
 
 export const trackLandingEvents = {

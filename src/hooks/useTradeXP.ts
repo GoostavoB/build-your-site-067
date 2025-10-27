@@ -1,11 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { useXPSystem } from './useXPSystem';
 import { useDailyChallenges } from './useDailyChallenges';
+import { useRetentionMechanics } from './useRetentionMechanics';
 import type { Trade } from '@/types/trade';
 
 export const useTradeXP = (trades: Trade[]) => {
   const { addXP } = useXPSystem();
   const { updateChallengeProgress } = useDailyChallenges();
+  const { updateTradeStreak } = useRetentionMechanics();
   const processedTradesRef = useRef(new Set<string>());
 
   useEffect(() => {
@@ -71,5 +73,10 @@ export const useTradeXP = (trades: Trade[]) => {
     const todayProfit = todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
     updateChallengeProgress('profit_target', Math.floor(todayProfit));
 
-  }, [trades, addXP, updateChallengeProgress]);
+    // Update trade streak when new trades are added
+    if (newTrades.length > 0) {
+      updateTradeStreak();
+    }
+
+  }, [trades, addXP, updateChallengeProgress, updateTradeStreak]);
 };

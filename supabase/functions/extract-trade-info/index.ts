@@ -37,21 +37,35 @@ const TRADE_SCHEMA = {
 };
 
 function extractJSON(text: string): any {
-  // Remove markdown code blocks if present
   let cleaned = text.trim();
   
-  // Strip ```json or ``` wrappers
-  cleaned = cleaned.replace(/^```(?:json)?\s*/i, '');
-  cleaned = cleaned.replace(/\s*```\s*$/i, '');
+  // Remove markdown code blocks (both start and end markers)
+  cleaned = cleaned.replace(/^```(?:json)?\s*/gim, '');
+  cleaned = cleaned.replace(/\s*```\s*$/gim, '');
+  cleaned = cleaned.trim();
   
-  // Extract JSON array or object
-  const jsonMatch = cleaned.match(/(\[[\s\S]*\]|\{[\s\S]*\})/);
-  if (jsonMatch) {
-    return JSON.parse(jsonMatch[0]);
+  // Find the JSON array/object boundaries
+  const startIdx = cleaned.search(/[\[{]/);
+  if (startIdx === -1) {
+    throw new Error('No JSON found in response');
   }
   
-  // Fallback: try parsing directly
-  return JSON.parse(cleaned);
+  // Find the last closing bracket/brace
+  let endIdx = cleaned.length - 1;
+  while (endIdx >= startIdx) {
+    const char = cleaned[endIdx];
+    if (char === ']' || char === '}') {
+      break;
+    }
+    endIdx--;
+  }
+  
+  if (endIdx < startIdx) {
+    throw new Error('Invalid JSON structure in response');
+  }
+  
+  const jsonStr = cleaned.substring(startIdx, endIdx + 1);
+  return JSON.parse(jsonStr);
 }
 
 function estimateTradeCount(ocrText: string): number {

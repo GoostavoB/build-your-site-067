@@ -27,6 +27,7 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showPurchaseDialog, setShowPurchaseDialog] = useState(false);
   const [detectedTrades, setDetectedTrades] = useState<any[]>([]);
+  const [selectedTrades, setSelectedTrades] = useState<Set<number>>(new Set());
   const credits = useUploadCredits();
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,6 +112,8 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
 
       if (allTrades.length > 0) {
         setDetectedTrades(allTrades);
+        // Select all trades by default
+        setSelectedTrades(new Set(allTrades.map((_, idx) => idx)));
         setShowConfirmDialog(true);
       } else {
         toast.error('No trades detected in the uploaded images');
@@ -125,28 +128,48 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
 
   const handleConfirmImport = async () => {
     try {
-      const totalTrades = detectedTrades.length;
+      // Get only selected trades
+      const tradesToImport = detectedTrades.filter((_, idx) => selectedTrades.has(idx));
+      
+      if (tradesToImport.length === 0) {
+        toast.error('Please select at least one trade to import');
+        return;
+      }
 
-      const { data, error } = await supabase.functions.invoke('process-multi-upload', {
-        body: {
-          trades: detectedTrades,
-        },
-      });
-
-      if (error) throw error;
-
-      toast.success(`Successfully imported ${totalTrades} trades`);
-
-      onTradesExtracted(data.trades);
+      // Pass selected trades to parent component for import
+      onTradesExtracted(tradesToImport);
+      
+      toast.success(`Successfully imported ${tradesToImport.length} trade${tradesToImport.length !== 1 ? 's' : ''}`);
       
       setShowConfirmDialog(false);
       setImages([]);
       setDetectedTrades([]);
+      setSelectedTrades(new Set());
       
       await credits.refetch();
     } catch (error) {
       console.error('Error importing trades:', error);
       toast.error('Failed to import trades. Please try again.');
+    }
+  };
+
+  const toggleTradeSelection = (index: number) => {
+    setSelectedTrades(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(index)) {
+        newSet.delete(index);
+      } else {
+        newSet.add(index);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleAllTrades = () => {
+    if (selectedTrades.size === detectedTrades.length) {
+      setSelectedTrades(new Set());
+    } else {
+      setSelectedTrades(new Set(detectedTrades.map((_, idx) => idx)));
     }
   };
 
@@ -284,22 +307,53 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
                 <span className="font-medium">Trades Detected:</span>
                 <span className="text-lg font-bold">{detectedTrades.length}</span>
               </div>
+              <div className="flex justify-between items-center mt-2">
+                <span className="text-sm text-muted-foreground">
+                  {selectedTrades.size} of {detectedTrades.length} selected
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleAllTrades}
+                >
+                  {selectedTrades.size === detectedTrades.length ? 'Deselect All' : 'Select All'}
+                </Button>
+              </div>
             </div>
             
             <div className="max-h-[300px] overflow-y-auto space-y-2">
               {detectedTrades.map((trade, index) => (
-                <div key={index} className="p-3 bg-muted/50 rounded border">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="font-medium">{trade.symbol}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {trade.side} • ${trade.entry_price}
+                <div 
+                  key={index} 
+                  className={`p-3 rounded border cursor-pointer transition-colors ${
+                    selectedTrades.has(index) 
+                      ? 'bg-primary/10 border-primary' 
+                      : 'bg-muted/50 border-border hover:bg-muted'
+                  }`}
+                  onClick={() => toggleTradeSelection(index)}
+                >
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedTrades.has(index)}
+                      onChange={() => toggleTradeSelection(index)}
+                      className="mt-1 h-4 w-4 rounded border-gray-300"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="font-medium">{trade.symbol}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {trade.side} • ${trade.entry_price}
+                          </div>
+                        </div>
+                        <div className={`px-2 py-1 rounded text-xs font-medium ${
+                          trade.side === 'long' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'
+                        }`}>
+                          {trade.side}
+                        </div>
                       </div>
-                    </div>
-                    <div className={`px-2 py-1 rounded text-xs font-medium ${
-                      trade.side === 'long' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'
-                    }`}>
-                      {trade.side}
                     </div>
                   </div>
                 </div>
@@ -311,8 +365,11 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
             <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleConfirmImport}>
-              Import Trades
+            <Button 
+              onClick={handleConfirmImport}
+              disabled={selectedTrades.size === 0}
+            >
+              Import {selectedTrades.size} Trade{selectedTrades.size !== 1 ? 's' : ''}
             </Button>
           </DialogFooter>
         </DialogContent>

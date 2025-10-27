@@ -143,12 +143,30 @@
       "message": "Dữ liệu rõ ràng hôm nay, quyết định tốt hơn trong giao dịch tiếp theo của bạn"
     },
     "benefits": {
-      "centerTitle": "Xây Dựng Cho Mọi Trader",
-      "noApiKeys": "Không cần khóa API",
-      "allExchanges": "Hoạt động với mọi sàn giao dịch",
-      "privateDefault": "Riêng tư theo mặc định",
-      "saferDesign": "An toàn hơn nhờ thiết kế",
-      "uploadGo": "Tải lên và sử dụng"
+      "mainTitle": "Xây Dựng Cho Trader Đòi Hỏi Tốt Nhất",
+      "mainSubtitle": "Bảo mật, quyền riêng tư và tương thích với mọi sàn giao dịch.",
+      "noApiKeys": {
+        "title": "Không cần khóa API. Bảo mật tối đa.",
+        "description": "Tránh rủi ro và đơn giản hóa thiết lập. Không có khóa API nghĩa là không có lỗ hổng truy cập."
+      },
+      "allExchanges": {
+        "title": "Tương thích với mọi sàn giao dịch.",
+        "description": "Hoạt động liền mạch với Binance, Bybit, OKX và tất cả các nền tảng chính."
+      },
+      "privateDefault": {
+        "title": "Quyền riêng tư được đảm bảo mặc định.",
+        "description": "Dữ liệu của bạn vẫn là của bạn. Mã hóa đầu cuối và không chia sẻ dữ liệu."
+      },
+      "saferDesign": {
+        "title": "Bảo mật đầu tiên, theo thiết kế.",
+        "description": "Được xây dựng với các tiêu chuẩn bảo mật hàng đầu ngành từ đầu."
+      },
+      "uploadGo": {
+        "title": "Tải lên và giao dịch ngay lập tức.",
+        "description": "Chụp ảnh màn hình giao dịch và tải lên. AI xử lý phần còn lại trong vài giây."
+      },
+      "trustedBy": "Được tin tưởng bởi hơn 45,000 trader trên toàn thế giới",
+      "ctaButton": "Dùng thử miễn phí ngay"
     },
     "cta": {
       "title": "Sẵn Sàng Nâng Cấp Giao Dịch của Bạn?",

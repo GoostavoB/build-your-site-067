@@ -143,12 +143,30 @@
       "message": "Dados claros hoje, melhores decisões na próxima negociação"
     },
     "benefits": {
-      "centerTitle": "Feito para Cada Trader",
-      "noApiKeys": "Sem chaves API necessárias",
-      "allExchanges": "Funciona com todas as exchanges",
-      "privateDefault": "Privado por padrão",
-      "saferDesign": "Mais seguro por design",
-      "uploadGo": "Carregue e pronto"
+      "mainTitle": "Construído para Traders que Exigem o Melhor",
+      "mainSubtitle": "Segurança, privacidade e compatibilidade com todas as exchanges.",
+      "noApiKeys": {
+        "title": "Sem chaves API. Máxima segurança.",
+        "description": "Evite riscos e simplifique a configuração. Sem chaves API significa sem vulnerabilidades de acesso."
+      },
+      "allExchanges": {
+        "title": "Compatível com todas as exchanges.",
+        "description": "Funciona perfeitamente com Binance, Bybit, OKX e todas as principais plataformas."
+      },
+      "privateDefault": {
+        "title": "Privacidade garantida por padrão.",
+        "description": "Seus dados permanecem seus. Criptografia ponta a ponta e zero compartilhamento de dados."
+      },
+      "saferDesign": {
+        "title": "Segurança em primeiro lugar, por design.",
+        "description": "Construído com padrões de segurança líderes do setor desde o início."
+      },
+      "uploadGo": {
+        "title": "Faça upload e negocie instantaneamente.",
+        "description": "Capture a tela de suas operações e faça upload. A IA cuida do resto em segundos."
+      },
+      "trustedBy": "Confiado por mais de 45.000 traders em todo o mundo",
+      "ctaButton": "Experimente grátis agora"
     },
     "cta": {
       "title": "Pronto para Melhorar Seu Trading?",

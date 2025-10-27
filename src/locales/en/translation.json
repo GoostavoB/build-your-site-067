@@ -188,14 +188,32 @@
     "valueBar": {
       "message": "Clear data today, better decisions on your next trade"
     },
-    "benefits": {
-      "centerTitle": "Built for Every Trader",
-      "noApiKeys": "No API keys needed",
-      "allExchanges": "Works with every exchange",
-      "privateDefault": "Private by default",
-      "saferDesign": "Safer by design",
-      "uploadGo": "Upload and go"
+  "benefits": {
+    "mainTitle": "Built for Traders Who Demand the Best",
+    "mainSubtitle": "Security, privacy, and compatibility with every exchange.",
+    "noApiKeys": {
+      "title": "No API keys. Maximum security.",
+      "description": "Avoid risks and simplify setup. No API keys means no access vulnerabilities."
     },
+    "allExchanges": {
+      "title": "Compatible with every exchange.",
+      "description": "Works seamlessly with Binance, Bybit, OKX, and all major platforms."
+    },
+    "privateDefault": {
+      "title": "Privacy guaranteed by default.",
+      "description": "Your data stays yours. End-to-end encryption and zero data sharing."
+    },
+    "saferDesign": {
+      "title": "Security first, by design.",
+      "description": "Built with industry-leading security standards from the ground up."
+    },
+    "uploadGo": {
+      "title": "Upload and trade instantly.",
+      "description": "Screenshot your trades and upload. AI handles the rest in seconds."
+    },
+    "trustedBy": "Trusted by 45,000+ traders worldwide",
+    "ctaButton": "Try it free now"
+  },
     "cta": {
       "title": "Ready to Level Up Your Trading?",
       "subtitle": "Join thousands of traders improving their discipline and profitability.",

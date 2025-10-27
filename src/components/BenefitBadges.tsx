@@ -1,135 +1,161 @@
 import { motion } from "framer-motion";
-import { Shield, Key, Globe, Lock, Upload } from "lucide-react";
-
-const benefits = [
-  { text: "No API keys needed", icon: Key },
-  { text: "Works with every exchange", icon: Globe },
-  { text: "Private by default", icon: Shield },
-  { text: "Safer by design", icon: Lock },
-  { text: "Upload and go", icon: Upload },
-];
+import { Shield, Key, Globe, Lock, Upload, ArrowRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
+import { getLocalizedPath, getLanguageFromPath } from "@/utils/languageRouting";
+import { useLocation } from "react-router-dom";
 
 const BenefitBadges = () => {
-  // Calculate positions for circular orbit
-  const getPosition = (index: number, total: number, radius: number) => {
-    const angle = (index * 360) / total - 90; // Start from top
-    const radian = (angle * Math.PI) / 180;
-    return {
-      x: radius * Math.cos(radian),
-      y: radius * Math.sin(radian),
-    };
-  };
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const currentLang = getLanguageFromPath(location.pathname);
+
+  const benefits = [
+    { 
+      titleKey: "landing.benefits.noApiKeys.title",
+      descriptionKey: "landing.benefits.noApiKeys.description",
+      icon: Key 
+    },
+    { 
+      titleKey: "landing.benefits.allExchanges.title",
+      descriptionKey: "landing.benefits.allExchanges.description",
+      icon: Globe 
+    },
+    { 
+      titleKey: "landing.benefits.privateDefault.title",
+      descriptionKey: "landing.benefits.privateDefault.description",
+      icon: Shield 
+    },
+    { 
+      titleKey: "landing.benefits.saferDesign.title",
+      descriptionKey: "landing.benefits.saferDesign.description",
+      icon: Lock 
+    },
+    { 
+      titleKey: "landing.benefits.uploadGo.title",
+      descriptionKey: "landing.benefits.uploadGo.description",
+      icon: Upload 
+    },
+  ];
 
   return (
-    <section className="py-32 md:py-40 px-6 relative overflow-hidden" aria-label="Key benefits">
-      <style>{`
-        @media (min-width: 768px) {
-          .motion-div {
-            transform: translate(calc(-50% + var(--tablet-x)), calc(-50% + var(--tablet-y))) !important;
-          }
-        }
-        @media (min-width: 1024px) {
-          .motion-div {
-            transform: translate(calc(-50% + var(--desktop-x)), calc(-50% + var(--desktop-y))) !important;
-          }
-        }
-      `}</style>
+    <section className="py-24 md:py-32 px-6 relative overflow-hidden bg-gradient-to-b from-background via-background/95 to-background" aria-label="Key benefits">
       <div className="absolute inset-0 border-t border-b border-primary/10" aria-hidden="true"></div>
       
-      <div className="container mx-auto max-w-7xl relative z-10">
-        <div className="relative w-full flex items-center justify-center" style={{ minHeight: '600px' }}>
-          {/* Central Circle */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            viewport={{ once: true }}
-            className="absolute z-20"
-          >
-            <motion.div
-              animate={{ 
-                scale: [1, 1.05, 1],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              className="w-[200px] h-[200px] md:w-[280px] md:h-[280px] lg:w-[320px] lg:h-[320px] rounded-full bg-gradient-to-br from-primary via-primary/90 to-primary/70 flex flex-col items-center justify-center text-center p-6 shadow-2xl shadow-primary/30 border-4 border-primary/20"
-            >
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white">
-                Built for<br />Every Trader
-              </h2>
-            </motion.div>
-          </motion.div>
+      {/* Background pattern */}
+      <div 
+        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px)
+          `,
+          backgroundSize: '40px 40px',
+        }}
+      />
+      
+      <div className="container mx-auto max-w-6xl relative z-10">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+            {t('landing.benefits.mainTitle')}
+          </h2>
+          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+            {t('landing.benefits.mainSubtitle')}
+          </p>
+        </motion.div>
 
-          {/* Orbital Badges */}
+        {/* Benefits Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {benefits.map((benefit, index) => {
             const Icon = benefit.icon;
-            const mobileRadius = 140;
-            const tabletRadius = 200;
-            const desktopRadius = 260;
-            
-            const mobilePos = getPosition(index, benefits.length, mobileRadius);
-            const tabletPos = getPosition(index, benefits.length, tabletRadius);
-            const desktopPos = getPosition(index, benefits.length, desktopRadius);
             
             return (
               <motion.div
-                key={benefit.text}
-                initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
-                whileInView={{ 
-                  opacity: 1, 
-                  scale: 1,
-                }}
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 transition={{ 
-                  duration: 0.5, 
-                  delay: 0.3 + index * 0.15,
+                  duration: 0.4, 
+                  delay: index * 0.1,
                   ease: "easeOut"
                 }}
                 viewport={{ once: true }}
-                className="absolute z-10 motion-div"
-                style={{
-                  left: '50%',
-                  top: '50%',
-                  transform: `translate(calc(-50% + ${mobilePos.x}px), calc(-50% + ${mobilePos.y}px))`,
-                  ['--tablet-x' as string]: `${tabletPos.x}px`,
-                  ['--tablet-y' as string]: `${tabletPos.y}px`,
-                  ['--desktop-x' as string]: `${desktopPos.x}px`,
-                  ['--desktop-y' as string]: `${desktopPos.y}px`,
-                } as React.CSSProperties}
+                className="group"
               >
-                
-                <motion.div
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  transition={{ duration: 0.2 }}
-                  className="relative"
-                >
-                  <div className="w-[90px] h-[90px] md:w-[110px] md:h-[110px] lg:w-[130px] lg:h-[130px] rounded-full bg-background/80 backdrop-blur-md border-2 border-primary/40 hover:border-primary/70 shadow-lg hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 flex flex-col items-center justify-center gap-2 p-3">
-                    <Icon className="h-6 w-6 md:h-7 md:w-7 lg:h-8 lg:w-8 text-primary" aria-hidden="true" />
-                    <span className="text-[10px] md:text-xs font-semibold text-center leading-tight text-foreground/90">
-                      {benefit.text}
-                    </span>
+                <div className="relative h-full p-6 rounded-2xl bg-card/40 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1">
+                  {/* Icon with glow effect */}
+                  <div className="mb-4 relative inline-block">
+                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="relative w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
+                      <Icon 
+                        className="w-6 h-6 text-primary group-hover:scale-110 transition-transform duration-300" 
+                        strokeWidth={1.5}
+                        aria-hidden="true" 
+                      />
+                    </div>
                   </div>
-                  
-                  {/* Connection line to center */}
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 0.15 }}
-                    transition={{ duration: 0.5, delay: 0.5 + index * 0.15 }}
-                    viewport={{ once: true }}
-                    className="absolute top-1/2 left-1/2 w-[2px] bg-gradient-to-r from-primary/30 to-transparent origin-left pointer-events-none"
-                    style={{
-                      height: '2px',
-                      width: `${Math.sqrt(mobilePos.x ** 2 + mobilePos.y ** 2)}px`,
-                      transform: `translate(-50%, -50%) rotate(${Math.atan2(-mobilePos.y, -mobilePos.x) * 180 / Math.PI}deg)`,
-                    }}
-                  />
-                </motion.div>
+
+                  {/* Content */}
+                  <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors duration-300">
+                    {t(benefit.titleKey)}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {t(benefit.descriptionKey)}
+                  </p>
+
+                  {/* Hover accent line */}
+                  <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-primary/0 group-hover:w-full transition-all duration-500" />
+                </div>
               </motion.div>
             );
           })}
         </div>
+
+        {/* Trust Indicators */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center mb-10"
+        >
+          <p className="text-sm text-muted-foreground mb-4">
+            {t('landing.benefits.trustedBy', 'Trusted by 45,000+ traders worldwide')}
+          </p>
+          <div className="flex items-center justify-center gap-8 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+            <span className="text-xs font-semibold uppercase tracking-wider">Binance</span>
+            <span className="text-xs font-semibold uppercase tracking-wider">Bybit</span>
+            <span className="text-xs font-semibold uppercase tracking-wider">OKX</span>
+            <span className="text-xs font-semibold uppercase tracking-wider">Kraken</span>
+          </div>
+        </motion.div>
+
+        {/* CTA Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <Button
+            onClick={() => navigate(getLocalizedPath('/auth', currentLang))}
+            size="lg"
+            className="group gap-2 px-8 py-6 text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
+          >
+            {t('landing.benefits.ctaButton', 'Try it free now')}
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+          </Button>
+        </motion.div>
       </div>
     </section>
   );

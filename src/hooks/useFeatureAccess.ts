@@ -31,87 +31,32 @@ export const useFeatureAccess = () => {
   });
 
   const fetchAccess = async () => {
-    if (!user) {
-      setAccess({
-        hasFeeAnalysis: false,
-        connectedAccountsLimit: 1,
-        currentAccountsCount: 0,
-        canAddAccount: true,
-        customMetricsLimit: 0,
-        customMetricsUsed: 0,
-        canCreateCustomMetric: false,
-        planType: 'basic',
-        isLoading: false,
-      });
-      return;
+    // Temporary: Grant elite-level access to all users
+    let currentCount = 0;
+    if (user) {
+      try {
+        const { count: accountsCount } = await supabase
+          .from('connected_accounts')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('is_active', true);
+        currentCount = accountsCount || 0;
+      } catch (error) {
+        console.error('Error fetching accounts count:', error);
+      }
     }
 
-    try {
-      // Fetch subscription details
-      const { data: subscription, error: subError } = await supabase
-        .from('subscriptions')
-        .select('plan_type, has_fee_analysis_access, connected_accounts_limit, custom_metrics_limit, custom_metrics_used_this_month')
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-        .single();
-
-      if (subError) {
-        console.error('Error fetching subscription:', subError);
-        setAccess({
-          hasFeeAnalysis: false,
-          connectedAccountsLimit: 1,
-          currentAccountsCount: 0,
-          canAddAccount: true,
-          customMetricsLimit: 0,
-          customMetricsUsed: 0,
-          canCreateCustomMetric: false,
-          planType: 'basic',
-          isLoading: false,
-        });
-        return;
-      }
-
-      // Fetch current accounts count
-      const { count: accountsCount, error: accountsError } = await supabase
-        .from('connected_accounts')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('is_active', true);
-
-      if (accountsError) {
-        console.error('Error fetching accounts count:', accountsError);
-      }
-
-      const currentCount = accountsCount || 0;
-      const accountLimit = subscription?.connected_accounts_limit || 1;
-      const metricsLimit = subscription?.custom_metrics_limit || 0;
-      const metricsUsed = subscription?.custom_metrics_used_this_month || 0;
-
-      setAccess({
-        hasFeeAnalysis: subscription?.has_fee_analysis_access || false,
-        connectedAccountsLimit: accountLimit,
-        currentAccountsCount: currentCount,
-        canAddAccount: currentCount < accountLimit,
-        customMetricsLimit: metricsLimit,
-        customMetricsUsed: metricsUsed,
-        canCreateCustomMetric: metricsUsed < metricsLimit && metricsLimit > 0,
-        planType: (subscription?.plan_type as PlanType) || 'basic',
-        isLoading: false,
-      });
-    } catch (error) {
-      console.error('Error checking feature access:', error);
-      setAccess({
-        hasFeeAnalysis: false,
-        connectedAccountsLimit: 1,
-        currentAccountsCount: 0,
-        canAddAccount: true,
-        customMetricsLimit: 0,
-        customMetricsUsed: 0,
-        canCreateCustomMetric: false,
-        planType: 'basic',
-        isLoading: false,
-      });
-    }
+    setAccess({
+      hasFeeAnalysis: true,
+      connectedAccountsLimit: 999,
+      currentAccountsCount: currentCount,
+      canAddAccount: true,
+      customMetricsLimit: 999,
+      customMetricsUsed: 0,
+      canCreateCustomMetric: true,
+      planType: 'elite',
+      isLoading: false,
+    });
   };
 
   useEffect(() => {

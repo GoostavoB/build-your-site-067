@@ -17,46 +17,21 @@ export const useUserRole = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (!user) {
-        setRole(null);
-        setSubscription(null);
-        setLoading(false);
-        return;
-      }
+    // Temporary: Grant elite subscription to all users
+    if (!user) {
+      setRole(null);
+      setSubscription(null);
+      setLoading(false);
+      return;
+    }
 
-      try {
-        // Fetch user role
-        const { data: roleData } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .single();
-
-        setRole(roleData?.role as UserRole || 'user');
-
-        // Fetch subscription info
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('subscription_tier, subscription_status, trial_end_date')
-          .eq('id', user.id)
-          .single();
-
-        if (profileData) {
-          setSubscription({
-            tier: (profileData.subscription_tier as any) || 'free',
-            status: (profileData.subscription_status as any) || 'inactive',
-            trialEndDate: profileData.trial_end_date || undefined
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
+    setRole('user');
+    setSubscription({
+      tier: 'elite',
+      status: 'active',
+      trialEndDate: undefined
+    });
+    setLoading(false);
   }, [user]);
 
   const isAdmin = role === 'admin';

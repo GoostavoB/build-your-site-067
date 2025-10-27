@@ -10,52 +10,9 @@ export const useUserTier = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchTier = async () => {
-      if (!user) {
-        setTier('free');
-        setIsLoading(false);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('subscription_tier')
-        .eq('id', user.id)
-        .single();
-
-      if (error) {
-        console.error('Error fetching user tier:', error);
-        setTier('free');
-      } else {
-        setTier((data?.subscription_tier as UserTier) || 'free');
-      }
-      setIsLoading(false);
-    };
-
-    fetchTier();
-
-    // Subscribe to profile changes
-    const channel = supabase
-      .channel('profile-tier-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'profiles',
-          filter: `id=eq.${user?.id}`,
-        },
-        (payload) => {
-          if (payload.new && 'subscription_tier' in payload.new) {
-            setTier((payload.new.subscription_tier as UserTier) || 'free');
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    // Temporary: Grant elite tier to all users
+    setTier('elite');
+    setIsLoading(false);
   }, [user]);
 
   const isPro = tier === 'pro' || tier === 'elite';

@@ -8,9 +8,9 @@ const MobileHero = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative min-h-[calc(100vh-3.5rem)] flex flex-col px-4 pt-20 pb-4 overflow-hidden lg:hidden">
+    <section className="relative flex flex-col px-4 pt-8 pb-4 overflow-hidden lg:hidden">
       {/* Hero Content */}
-      <div className="flex flex-col items-center text-center space-y-5 pb-6">
+      <div className="flex flex-col items-center text-center space-y-5 pb-4">
         {/* Headline */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
@@ -96,21 +96,19 @@ const MobileHero = () => {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.5 }}
-        className="relative -mb-20 max-w-[420px] mx-auto mt-8"
+        className="relative -mb-16 max-w-[420px] mx-auto mt-4 h-[320px] sm:h-[360px]"
       >
         {/* Gradient fade at top */}
-        <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-background via-background/70 to-transparent z-10" />
+        <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-background via-background/70 to-transparent z-10" />
         
         {/* Dashboard Screenshot */}
-        <div className="relative rounded-t-2xl overflow-hidden shadow-2xl border-t border-x border-primary/20">
+        <div className="relative h-full rounded-t-2xl overflow-hidden shadow-2xl border-t border-x border-primary/20">
           <img
             src={dashboardScreenshot}
             alt="Trading Dashboard Preview showing analytics and performance metrics"
             loading="eager"
-            className="w-full h-auto"
+            className="w-full h-full object-cover object-top"
             style={{
-              objectFit: 'cover',
-              objectPosition: 'center top',
               maskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 100%)',
               WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 100%)'
             }}

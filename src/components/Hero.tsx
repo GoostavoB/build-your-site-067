@@ -19,39 +19,43 @@ const Hero = () => {
   }
 
   return (
-    <section className="relative min-h-screen flex items-center px-6 pt-24 pb-32 overflow-hidden" aria-labelledby="hero-title">
-      {/* Enhanced ambient glow effects with smooth transitions - responsive sizing */}
-      <div className="absolute top-1/4 left-1/4 w-[min(500px,80vw)] h-[min(500px,80vw)] bg-primary/10 rounded-full blur-[150px] animate-pulse-slow"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-[min(500px,80vw)] h-[min(500px,80vw)] bg-accent/10 rounded-full blur-[150px] animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
+    <section className="relative min-h-screen flex items-center px-4 sm:px-6 pt-24 pb-32 overflow-hidden" aria-labelledby="hero-title">
+      {/* Enhanced ambient glow effects - hidden on mobile to reduce visual bias */}
+      <div className="hidden sm:block absolute top-1/4 left-1/4 w-[min(500px,80vw)] h-[min(500px,80vw)] bg-primary/10 rounded-full blur-[150px] animate-pulse-slow"></div>
+      <div className="hidden sm:block absolute bottom-1/4 right-1/4 w-[min(500px,80vw)] h-[min(500px,80vw)] bg-accent/10 rounded-full blur-[150px] animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
 
       <div className="container mx-auto max-w-7xl relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center justify-items-center lg:justify-items-stretch">
           {/* LEFT SIDE - Text Content */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="space-y-8 text-center lg:text-left flex flex-col items-center lg:items-start"
+            className="space-y-8 text-center lg:text-left flex flex-col items-center lg:items-start w-full max-w-[560px] lg:max-w-none"
           >
             {/* Hero Title - Centered on mobile, left-aligned on desktop */}
             <h1 
               id="hero-title"
-              className="text-[clamp(40px,6vw,68px)] font-bold leading-[1.1] tracking-tight max-w-md lg:max-w-3xl mx-auto lg:mx-0"
+              className="text-[clamp(40px,6vw,68px)] font-bold leading-[1.1] tracking-tight max-w-md lg:max-w-3xl"
+              style={{ textWrap: 'balance' as any }}
             >
               Maximize your trading performance
             </h1>
 
-            {/* Subtitle - Left Aligned */}
-            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl lg:max-w-xl mx-auto lg:mx-0">
+            {/* Subtitle - Centered on mobile, left-aligned on desktop */}
+            <p 
+              className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-md lg:max-w-xl"
+              style={{ textWrap: 'balance' as any }}
+            >
               Upload your trades, AI fills the journal, you get 3 actions to lift your average R today
             </p>
 
             {/* CTA Buttons */}
-            <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center w-full lg:w-auto">
+            <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-stretch sm:items-center w-full sm:w-auto">
               <Button 
                 onClick={() => navigate('/auth')}
                 size="lg"
-                className="h-14 px-10 text-base font-semibold rounded-xl bg-primary hover:bg-primary/90 transition-all duration-300 w-full sm:w-auto"
+                className="h-14 px-10 text-base font-semibold rounded-xl bg-primary hover:bg-primary/90 transition-all duration-300"
                 aria-label="Start free trial"
               >
                 Start free trial
@@ -60,7 +64,7 @@ const Hero = () => {
                 onClick={() => navigate('/demo')}
                 size="lg"
                 variant="outline"
-                className="h-14 px-10 text-base font-semibold rounded-xl border-2 border-primary/30 hover:bg-primary/10 w-full sm:w-auto"
+                className="h-14 px-10 text-base font-semibold rounded-xl border-2 border-primary/30 hover:bg-primary/10"
                 aria-label="Watch 2-minute demo"
               >
                 Watch 2-minute demo
@@ -70,17 +74,17 @@ const Hero = () => {
             {/* Proof Badges */}
             <div className="pt-6 space-y-3 w-full">
               <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-                <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-lg text-sm font-medium">
+                <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-lg text-sm font-medium whitespace-nowrap">
                   Up to 40x faster logging
                 </div>
-                <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-lg text-sm font-medium">
+                <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-lg text-sm font-medium whitespace-nowrap">
                   Win rate up to +8 points
                 </div>
-                <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-lg text-sm font-medium">
+                <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-lg text-sm font-medium whitespace-nowrap">
                   Max weekly drawdown −30%
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground text-center lg:text-left">
+              <p className="text-xs text-muted-foreground text-center lg:text-left px-2">
                 Results observed in pilot groups, vary by risk, market, and discipline
               </p>
             </div>

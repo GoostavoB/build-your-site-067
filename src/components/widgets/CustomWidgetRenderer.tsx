@@ -63,6 +63,15 @@ export const CustomWidgetRenderer = ({ widget, onDelete, showAddToDashboard = fa
   };
 
   const processTradeData = (trades: any[], config: any): any => {
+    // NEW: If AI calculated the data, use it directly
+    if (config.calculated_data) {
+      return config.calculated_data;
+    }
+    if (config.calculated_value !== undefined) {
+      return config.calculated_value;
+    }
+
+    // FALLBACK: Legacy processing for old widgets
     const { metric, aggregation, group_by, order, limit, filters } = config;
 
     // Apply filters
@@ -130,63 +139,16 @@ export const CustomWidgetRenderer = ({ widget, onDelete, showAddToDashboard = fa
   };
 
   const calculateMetric = (trades: any[], config: any): number => {
-    if (!trades || trades.length === 0) return 0;
-
-    const { metric, calculated_metric, aggregation } = config;
-
-    // Handle calculated metrics
-    if (calculated_metric) {
-      switch (calculated_metric) {
-        case 'revenue_per_hour': {
-          const totalPnl = trades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-          const dates = trades.map(t => new Date(t.trade_date).getTime());
-          const firstTrade = Math.min(...dates);
-          const lastTrade = Math.max(...dates);
-          const hoursElapsed = (lastTrade - firstTrade) / (1000 * 60 * 60);
-          return hoursElapsed > 0 ? totalPnl / hoursElapsed : totalPnl;
-        }
-        
-        case 'revenue_per_day': {
-          const totalPnl = trades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-          const dates = trades.map(t => new Date(t.trade_date).getTime());
-          const firstTrade = Math.min(...dates);
-          const lastTrade = Math.max(...dates);
-          const daysElapsed = (lastTrade - firstTrade) / (1000 * 60 * 60 * 24);
-          return daysElapsed > 0 ? totalPnl / daysElapsed : totalPnl;
-        }
-        
-        case 'profit_factor': {
-          const totalWins = trades.filter(t => (t.pnl || 0) > 0).reduce((sum, t) => sum + t.pnl, 0);
-          const totalLosses = Math.abs(trades.filter(t => (t.pnl || 0) < 0).reduce((sum, t) => sum + t.pnl, 0));
-          return totalLosses > 0 ? totalWins / totalLosses : totalWins;
-        }
-        
-        case 'avg_win': {
-          const wins = trades.filter(t => (t.pnl || 0) > 0);
-          return wins.length > 0 ? wins.reduce((sum, t) => sum + t.pnl, 0) / wins.length : 0;
-        }
-        
-        case 'avg_loss': {
-          const losses = trades.filter(t => (t.pnl || 0) < 0);
-          return losses.length > 0 ? losses.reduce((sum, t) => sum + t.pnl, 0) / losses.length : 0;
-        }
-        
-        case 'largest_win': {
-          const pnls = trades.map(t => t.pnl || 0);
-          return Math.max(...pnls, 0);
-        }
-        
-        case 'largest_loss': {
-          const pnls = trades.map(t => t.pnl || 0);
-          return Math.min(...pnls, 0);
-        }
-        
-        default:
-          return 0;
-      }
+    // NEW: Check if AI already calculated the value
+    if (config.calculated_value !== undefined) {
+      return config.calculated_value;
     }
 
-    // Handle standard metrics
+    // FALLBACK: Legacy calculation for old widgets
+    if (!trades || trades.length === 0) return 0;
+
+    const { metric, aggregation } = config;
+
     switch (metric) {
       case 'roi':
         const avgROI = trades.reduce((sum, t) => sum + (t.roi || 0), 0) / trades.length;
@@ -284,6 +246,7 @@ export const CustomWidgetRenderer = ({ widget, onDelete, showAddToDashboard = fa
     const suffix = widget.display_config?.suffix || '';
     const decimals = widget.display_config?.decimals || 2;
     const isPositive = value > 0;
+    const calculation = (widget.query_config as any)?.calculation;
 
     let displayValue = '';
     if (format === 'currency') {
@@ -297,7 +260,7 @@ export const CustomWidgetRenderer = ({ widget, onDelete, showAddToDashboard = fa
     }
 
     return (
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-3">
         <div className="flex items-center justify-center gap-2">
           {isPositive ? (
             <TrendingUp className="h-5 w-5 text-success" />
@@ -308,8 +271,40 @@ export const CustomWidgetRenderer = ({ widget, onDelete, showAddToDashboard = fa
             {displayValue}
           </span>
         </div>
+        
         {widget.description && (
           <p className="text-sm text-muted-foreground">{widget.description}</p>
+        )}
+        
+        {/* NEW: Show AI's reasoning if available */}
+        {calculation && (
+          <details className="text-left mt-4 pt-3 border-t border-border">
+            <summary className="text-xs font-medium cursor-pointer text-muted-foreground hover:text-foreground transition-colors">
+              How was this calculated?
+            </summary>
+            <div className="mt-2 space-y-2 text-xs">
+              <p className="font-medium text-foreground">{calculation.method}</p>
+              
+              {calculation.steps && (
+                <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
+                  {calculation.steps.map((step: string, i: number) => (
+                    <li key={i}>{step}</li>
+                  ))}
+                </ol>
+              )}
+              
+              {calculation.assumptions && calculation.assumptions.length > 0 && (
+                <div className="pt-2">
+                  <p className="font-medium text-foreground mb-1">Assumptions:</p>
+                  <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                    {calculation.assumptions.map((assumption: string, i: number) => (
+                      <li key={i}>{assumption}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </details>
         )}
       </div>
     );

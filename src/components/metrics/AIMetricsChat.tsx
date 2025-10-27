@@ -70,14 +70,37 @@ export const AIMetricsChat = ({ onWidgetCreated }: AIMetricsChatProps) => {
 
       console.log('AI Response:', data);
 
-      // Check if this is a widget config response
-      if (data.widget) {
-        setPendingWidget(data.widget);
+      // Check if AI needs clarification
+      if (data.clarification_needed && data.options) {
+        const optionsText = data.options
+          .map((opt: any, idx: number) => `${idx + 1}. ${opt.label}: ${opt.explanation || ''}`)
+          .join('\n');
         setMessages([
           ...newMessages,
           {
             role: 'assistant',
-            content: data.summary || `I've created "${data.widget.title}" for you. This ${data.widget.widget_type?.replace('_', ' ') || 'widget'} ${data.widget.description}. Would you like to add it to your dashboard?`
+            content: `${data.question}\n\n${optionsText}\n\nYou can choose an option by number, or I'll use "${data.default}" if you say "skip" or "just create it".`
+          }
+        ]);
+        return;
+      }
+
+      // Check if this is a widget config response
+      if (data.widget) {
+        setPendingWidget(data.widget);
+        
+        // Build explanation with calculation details
+        let explanation = data.summary || `I've created "${data.widget.title}" for you.`;
+        
+        if (data.widget.calculation?.steps) {
+          explanation += '\n\nCalculation:\n' + data.widget.calculation.steps.slice(0, 3).join('\n');
+        }
+        
+        setMessages([
+          ...newMessages,
+          {
+            role: 'assistant',
+            content: explanation + '\n\nWould you like to add it to your dashboard?'
           }
         ]);
         setCurrentAction('clarify'); // Reset for next widget
@@ -125,6 +148,14 @@ export const AIMetricsChat = ({ onWidgetCreated }: AIMetricsChatProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      // Merge AI calculation data into query_config for rendering
+      const queryConfig = {
+        ...(pendingWidget.query_config || {}),
+        calculated_value: (pendingWidget as any).calculated_value,
+        calculated_data: (pendingWidget as any).calculated_data,
+        calculation: (pendingWidget as any).calculation,
+      };
+
       const { error } = await supabase
         .from('custom_dashboard_widgets')
         .insert({
@@ -132,7 +163,7 @@ export const AIMetricsChat = ({ onWidgetCreated }: AIMetricsChatProps) => {
           widget_type: pendingWidget.widget_type || 'metric',
           title: pendingWidget.title,
           description: pendingWidget.description,
-          query_config: pendingWidget.query_config || {},
+          query_config: queryConfig,
           display_config: pendingWidget.display_config || {},
           is_permanent: true,
           created_via: 'ai_assistant',

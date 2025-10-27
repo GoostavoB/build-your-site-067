@@ -31,22 +31,52 @@ export const EnhancedFileUpload = ({
   const [isDragging, setIsDragging] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [isValidating, setIsValidating] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Human-friendly labels for accepted types (handles extensions and MIME types)
+  const getTypeLabels = useCallback((types: string[]) => {
+    const labels: string[] = [];
+    types.forEach((t) => {
+      if (t.startsWith('.')) {
+        labels.push(t.slice(1).toUpperCase());
+      } else if (t.includes('/')) {
+        const subtype = t.split('/')[1] || t;
+        if (subtype.includes('spreadsheetml')) labels.push('XLSX');
+        else if (subtype.includes('ms-excel')) labels.push('XLS');
+        else if (subtype.includes('csv')) labels.push('CSV');
+        else labels.push(subtype.toUpperCase());
+      }
+    });
+    return Array.from(new Set(labels)).join(', ');
+  }, []);
+
+  // For display: treat values >1024 as bytes, otherwise MB
+  const displayMaxMB = maxSize > 1024 ? Math.round(maxSize / (1024 * 1024)) : maxSize;
 
   const validateFile = useCallback((file: File): string | null => {
-    // Check file type
-    if (!acceptedTypes.includes(file.type)) {
-      return `Invalid file type. Please upload ${acceptedTypes.map(t => t.split('/')[1]).join(', ').toUpperCase()} files only.`;
+    // Determine acceptance via MIME or file extension
+    const lowerName = file.name.toLowerCase();
+    const ext = lowerName.includes('.') ? lowerName.split('.').pop() || '' : '';
+    const mimeList = acceptedTypes.filter(t => t.includes('/')).map(t => t.toLowerCase());
+    const extList = acceptedTypes.filter(t => t.startsWith('.')).map(t => t.slice(1).toLowerCase());
+
+    const mimeOk = !!file.type && mimeList.includes(file.type.toLowerCase());
+    const extOk = !!ext && extList.includes(ext);
+
+    if (!(mimeOk || extOk)) {
+      return `Invalid file type. Please upload ${getTypeLabels(acceptedTypes)} files only.`;
     }
 
-    // Check file size
-    const fileSizeMB = file.size / (1024 * 1024);
-    if (fileSizeMB > maxSize) {
-      return `File size (${fileSizeMB.toFixed(1)}MB) exceeds maximum allowed size (${maxSize}MB).`;
+    // Normalize size: values >1024 are bytes, otherwise MB
+    const maxBytes = maxSize > 1024 ? maxSize : maxSize * 1024 * 1024;
+    if (file.size > maxBytes) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      const limitMB = Math.round(maxBytes / (1024 * 1024));
+      return `File size (${sizeMB}MB) exceeds maximum allowed size (${limitMB}MB).`;
     }
 
     return null;
-  }, [acceptedTypes, maxSize]);
+  }, [acceptedTypes, maxSize, getTypeLabels]);
 
   const handleFile = useCallback(async (file: File) => {
     setIsValidating(true);
@@ -261,7 +291,7 @@ export const EnhancedFileUpload = ({
                 Click to upload or drag and drop
               </p>
               <p className="text-sm text-muted-foreground mb-2">
-                {acceptedTypes.map(t => t.split('/')[1]).join(', ').toUpperCase()} up to {maxSize}MB
+                {getTypeLabels(acceptedTypes)} up to {displayMaxMB}MB
               </p>
               <div className="flex gap-2 mt-3">
                 <div className="px-3 py-1 rounded-full bg-muted text-xs font-medium">

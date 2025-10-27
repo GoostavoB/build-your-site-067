@@ -9,11 +9,6 @@ import { setupGlobalErrorHandling } from "./utils/errorTracking";
 // Set up global error tracking
 setupGlobalErrorHandling();
 
-// QA: Build timestamp for verification
-const buildTimestamp = new Date().toISOString();
-console.log('🔧 Build:', buildTimestamp);
-document.body?.setAttribute('data-build', buildTimestamp);
-
 createRoot(document.getElementById("root")!).render(<App />);
 
 // Phase 7: Defer analytics until after page is interactive

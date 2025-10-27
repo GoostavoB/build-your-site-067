@@ -127,8 +127,12 @@ serve(async (req) => {
     // Check rate limit first
     const rateLimit = await checkRateLimit(supabaseClient, user.id, 'extract-trade-info');
     if (!rateLimit.allowed) {
+      console.error(`❌ Rate limit exceeded for user ${user.id}:`, rateLimit.message);
       return new Response(
-        JSON.stringify({ error: rateLimit.message }),
+        JSON.stringify({ 
+          error: rateLimit.message,
+          retryAfterSec: rateLimit.retryAfterSec || 60
+        }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

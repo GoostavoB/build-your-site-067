@@ -43,6 +43,13 @@ export const PreAnalysisConfirmDialog = ({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
+          <div className="p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg text-sm">
+            <p className="text-muted-foreground">
+              <strong>Processing limits:</strong> Up to 10 trades per image. Rate limits: 15 images/minute, 150 images/hour. 
+              Large batches will be automatically queued and processed progressively.
+            </p>
+          </div>
+
           <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
             <div className="flex items-center gap-2">
               <Image className="h-5 w-5 text-muted-foreground" />

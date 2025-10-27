@@ -32,6 +32,8 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
   const [detectedTrades, setDetectedTrades] = useState<any[]>([]);
   const [selectedTrades, setSelectedTrades] = useState<Set<number>>(new Set());
   const [bypassCache, setBypassCache] = useState(false);
+  const [batchProgress, setBatchProgress] = useState<string>('');
+  const [queuedCount, setQueuedCount] = useState(0);
   const credits = useUploadCredits();
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,137 +69,194 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
   };
 
   const analyzeImages = async () => {
+    if (images.length === 0) return;
+
     setShowPreAnalysisDialog(false);
     setIsAnalyzing(true);
+    const results: UploadedImage[] = [];
+    const batchSize = 15; // Process 15 at a time (within minute limit)
+    const batchDelayMs = 65000; // Wait 65 seconds between batches
+    const totalBatches = Math.ceil(images.length / batchSize);
+    let processedCount = 0;
 
-    try {
-      const results: UploadedImage[] = [];
+    // Helper to wait with countdown
+    const waitWithCountdown = async (ms: number, reason: string) => {
+      const seconds = Math.ceil(ms / 1000);
+      for (let i = seconds; i > 0; i--) {
+        setBatchProgress(`${reason} - Resuming in ${i}s...`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    };
 
-      // Process sequentially to respect backend rate limits (5/minute)
-      for (let i = 0; i < images.length; i++) {
-        const image = images[i];
-        // Mark as analyzing for immediate visual feedback
-        setImages(prev => prev.map((img, idx) => (idx === i ? { ...img, status: 'analyzing' } : img)));
+    // Process images in batches
+    for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
+      const batchStart = batchIndex * batchSize;
+      const batchEnd = Math.min(batchStart + batchSize, images.length);
+      const currentBatch = images.slice(batchStart, batchEnd);
+      
+      setBatchProgress(`Batch ${batchIndex + 1}/${totalBatches} • Processing ${batchStart + 1}-${batchEnd}/${images.length}...`);
+      setQueuedCount(images.length - batchEnd);
 
-        try {
-          // Convert image to base64
-          const reader = new FileReader();
-          const base64Promise = new Promise<string>((resolve, reject) => {
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(image.file);
-          });
-          const imageBase64 = await base64Promise;
+      for (let i = 0; i < currentBatch.length; i++) {
+        const globalIndex = batchStart + i;
+        const image = currentBatch[i];
+        if (image.status !== 'pending') continue;
 
-          // Run OCR on the image
-          let ocrResult: any | undefined;
+        const analyzing: UploadedImage = { ...image, status: 'analyzing' };
+        setImages(prev => prev.map((img, idx) => (idx === globalIndex ? analyzing : img)));
+        processedCount++;
+
+        // Retry logic for 429 errors
+        let retryCount = 0;
+        const maxRetries = 2;
+        let success = false;
+
+        while (!success && retryCount <= maxRetries) {
           try {
-            ocrResult = await runOCR(image.file);
-            console.log(`OCR completed for ${image.file.name}:`, {
-              confidence: ocrResult.confidence,
-              qualityScore: ocrResult.qualityScore,
-              textLength: ocrResult.text.length
+            // Convert image to base64
+            const reader = new FileReader();
+            const base64Promise = new Promise<string>((resolve, reject) => {
+              reader.onloadend = () => resolve(reader.result as string);
+              reader.onerror = reject;
+              reader.readAsDataURL(image.file);
             });
-          } catch (ocrError) {
-            console.error('OCR failed for image:', ocrError);
-            // Continue without OCR data
-          }
+            const imageBase64 = await base64Promise;
 
-          const { data, error } = await supabase.functions.invoke('extract-trade-info', {
-            body: {
-              imageBase64: imageBase64,
-              ocrText: ocrResult?.text || null,
-              ocrConfidence: ocrResult?.confidence || null,
-              imageHash: ocrResult?.imageHash || null,
-              perceptualHash: ocrResult?.perceptualHash || null,
-              bypassCache: bypassCache,
-            },
-          });
-
-          // Handle specific error responses with status codes
-          if (error) {
-            let errorMessage = 'Failed to analyze image';
-
-            // Try to read status and JSON body from supabase functions error context
-            const resp = (error as any)?.context?.response as Response | undefined;
-            let status: number | undefined;
-            let serverErr: any = null;
+            // Run OCR on the image
+            let ocrResult: any | undefined;
             try {
-              status = resp?.status;
-              const text = await resp?.text?.();
-              if (text) {
-                try { serverErr = JSON.parse(text); } catch { serverErr = { error: text }; }
-              }
-            } catch {}
-
-            if (status) {
-              if (status === 400) errorMessage = serverErr?.error || 'Image validation failed';
-              else if (status === 402) {
-                errorMessage = serverErr?.error || 'Insufficient upload credits or AI budget';
-                toast.error('Insufficient Credits', {
-                  description: serverErr?.details || 'You need more upload credits. Please purchase additional credits.',
-                });
-              }
-              else if (status === 422) errorMessage = serverErr?.error || 'No trades detected in image';
-              else if (status === 429) errorMessage = serverErr?.error || 'Rate limit exceeded - please wait';
-              else if (status === 500) errorMessage = serverErr?.error || 'Server error - please try again';
+              ocrResult = await runOCR(image.file);
+              console.log(`OCR completed for ${image.file.name}:`, {
+                confidence: ocrResult.confidence,
+                qualityScore: ocrResult.qualityScore,
+                textLength: ocrResult.text.length
+              });
+            } catch (ocrError) {
+              console.error('OCR failed for image:', ocrError);
             }
 
-            console.error('Edge function error:', { status, serverErr, raw: error });
+            const { data, error } = await supabase.functions.invoke('extract-trade-info', {
+              body: {
+                imageBase64: imageBase64,
+                ocrText: ocrResult?.text || null,
+                ocrConfidence: ocrResult?.confidence || null,
+                imageHash: ocrResult?.imageHash || null,
+                perceptualHash: ocrResult?.perceptualHash || null,
+                bypassCache: bypassCache,
+              },
+            });
+
+            if (data?.trades && Array.isArray(data.trades)) {
+              console.log(`✅ Success: ${data.trades.length} trades detected`);
+              const successImg: UploadedImage = { ...image, status: 'success', trades: data.trades };
+              results.push(successImg);
+              setImages(prev => prev.map((img, idx) => (idx === globalIndex ? successImg : img)));
+              success = true;
+            } else {
+              // Handle specific error responses with status codes
+              if (error) {
+                const resp = (error as any)?.context?.response as Response | undefined;
+                let status: number | undefined;
+                let serverErr: any = null;
+                try {
+                  status = resp?.status;
+                  const text = await resp?.text?.();
+                  if (text) {
+                    try { serverErr = JSON.parse(text); } catch { serverErr = { error: text }; }
+                  }
+                } catch {}
+
+                let errorMessage = 'Failed to analyze image';
+                
+                if (status === 429 && retryCount < maxRetries) {
+                  // Rate limit - retry after delay
+                  const retryAfter = serverErr?.retryAfterSec || 60;
+                  retryCount++;
+                  console.log(`⏳ Rate limited. Retry ${retryCount}/${maxRetries} after ${retryAfter}s`);
+                  
+                  const queuedImg: UploadedImage = { ...image, status: 'pending' };
+                  setImages(prev => prev.map((img, idx) => (idx === globalIndex ? queuedImg : img)));
+                  
+                  await waitWithCountdown(retryAfter * 1000, `Rate limit - queued for retry ${retryCount}/${maxRetries}`);
+                  
+                  const retryingImg: UploadedImage = { ...image, status: 'analyzing' };
+                  setImages(prev => prev.map((img, idx) => (idx === globalIndex ? retryingImg : img)));
+                  continue; // Retry the loop
+                }
+
+                // Final error handling
+                if (status === 400) errorMessage = serverErr?.error || 'Image validation failed';
+                else if (status === 402) {
+                  errorMessage = serverErr?.error || 'Insufficient upload credits or AI budget';
+                  toast.error('Insufficient Credits', {
+                    description: serverErr?.details || 'You need more upload credits. Please purchase additional credits.',
+                  });
+                }
+                else if (status === 422) errorMessage = serverErr?.error || 'No trades detected in image';
+                else if (status === 429) errorMessage = 'Rate limit exceeded after retries';
+                else if (status === 500) errorMessage = serverErr?.error || 'Server error - please try again';
+
+                console.error('Edge function error:', { status, serverErr, raw: error });
+                const failed: UploadedImage = { ...image, status: 'error', trades: [] };
+                results.push(failed);
+                setImages(prev => prev.map((img, idx) => (idx === globalIndex ? failed : img)));
+                toast.error('Analysis Failed', { description: errorMessage });
+                success = true; // Exit retry loop
+              } else {
+                console.warn('⚠️ No trades found');
+                const noTrades: UploadedImage = { ...image, status: 'error', trades: [] };
+                results.push(noTrades);
+                setImages(prev => prev.map((img, idx) => (idx === globalIndex ? noTrades : img)));
+                success = true; // Exit retry loop
+              }
+            }
+          } catch (err) {
+            console.error('Network error:', err);
             const failed: UploadedImage = { ...image, status: 'error', trades: [] };
             results.push(failed);
-            setImages(prev => prev.map((img, idx) => (idx === i ? failed : img)));
-            continue;
+            setImages(prev => prev.map((img, idx) => (idx === globalIndex ? failed : img)));
+            toast.error('Network Error', { description: 'Failed to connect to the server' });
+            success = true; // Exit retry loop
           }
-
-          const success: UploadedImage = {
-            ...image,
-            status: 'success',
-            trades: (data as any)?.trades || [],
-          };
-          results.push(success);
-          // Update single image result for progress
-          setImages(prev => prev.map((img, idx) => (idx === i ? success : img)));
-        } catch (err) {
-          console.error('Error analyzing image:', err);
-          const failed: UploadedImage = { ...image, status: 'error', trades: [] };
-          results.push(failed);
-          setImages(prev => prev.map((img, idx) => (idx === i ? failed : img)));
         }
 
-        // Small delay between images to reduce chance of 429s
+        // Small delay between images within a batch
         await new Promise(res => setTimeout(res, 250));
       }
 
-      // Aggregate
-      const allTrades = results
-        .filter(img => img.status === 'success')
-        .flatMap(img => img.trades || []);
-
-      const successCount = results.filter(img => img.status === 'success').length;
-
-      if (allTrades.length > 0) {
-        setDetectedTrades(allTrades);
-        // Select all trades by default
-        setSelectedTrades(new Set(allTrades.map((_, idx) => idx)));
-        setShowConfirmDialog(true);
-      } else {
-        // Provide specific guidance based on the failure scenario
-        if (successCount === 0) {
-          toast.error('Analysis Failed', {
-            description: `Failed to analyze all ${images.length} image(s). Try re-analyzing with "Bypass Cache" enabled or upload clearer screenshots.`,
-          });
-        } else {
-          toast.error('No Trades Detected', {
-            description: 'No trades were detected in any of the images. Try re-analyzing with "Bypass Cache" enabled, ensure the screenshot is clear and contains visible trade information, or enter trades manually.',
-          });
-        }
+      // Wait between batches (except after the last batch)
+      if (batchIndex < totalBatches - 1) {
+        await waitWithCountdown(batchDelayMs, `Batch ${batchIndex + 1}/${totalBatches} complete`);
       }
-    } catch (error) {
-      console.error('Error analyzing images:', error);
-      toast.error('Failed to analyze images. Please try again.');
-    } finally {
-      setIsAnalyzing(false);
+    }
+
+    setIsAnalyzing(false);
+    setBatchProgress('');
+    setQueuedCount(0);
+
+    // Show summary
+    const successCount = results.filter(r => r.status === 'success').length;
+    const totalTrades = results.reduce((sum, r) => sum + (r.trades?.length || 0), 0);
+
+    console.log(`📊 Analysis complete: ${successCount}/${images.length} images, ${totalTrades} trades detected`);
+
+    if (successCount === 0) {
+      toast.error('Analysis Failed', {
+        description: 'No trades were detected. Try using "Bypass Cache" or ensure screenshots are clear.',
+      });
+    } else if (totalTrades === 0) {
+      toast.warning('No Trades Detected', {
+        description: 'Images analyzed but no trades found. Try clearer screenshots or use "Bypass Cache".',
+      });
+    } else {
+      const allTrades = results.flatMap(r => r.trades || []);
+      setDetectedTrades(allTrades);
+      setSelectedTrades(new Set(allTrades.map((_, idx) => idx)));
+      setShowConfirmDialog(true);
+      
+      toast.success('Trades Detected', {
+        description: `Found ${totalTrades} trade${totalTrades !== 1 ? 's' : ''} from ${successCount} image${successCount !== 1 ? 's' : ''}${processedCount > successCount ? ` (${processedCount} processed)` : ''}`,
+      });
     }
   };
 
@@ -350,24 +409,32 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
 
       {/* Analyze Button */}
       {images.length > 0 && (
-        <Button
-          onClick={startAnalysis}
-          disabled={images.length === 0 || isAnalyzing || credits.isLoading}
-          className="w-full"
-          size="lg"
-        >
-          {isAnalyzing ? (
-            <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-              Analyzing Images...
-            </>
-          ) : (
-            <>
-              <CheckCircle className="mr-2 h-4 w-4" />
-              Analyze & Detect Trades ({images.length} credit{images.length !== 1 ? 's' : ''})
-            </>
+        <div className="space-y-2">
+          {batchProgress && (
+            <div className="text-sm text-center text-muted-foreground font-medium">
+              {batchProgress}
+              {queuedCount > 0 && <span className="ml-2">• {queuedCount} queued</span>}
+            </div>
           )}
-        </Button>
+          <Button
+            onClick={startAnalysis}
+            disabled={images.length === 0 || isAnalyzing || credits.isLoading}
+            className="w-full"
+            size="lg"
+          >
+            {isAnalyzing ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                Analyzing Images...
+              </>
+            ) : (
+              <>
+                <CheckCircle className="mr-2 h-4 w-4" />
+                Analyze & Detect Trades ({images.length} credit{images.length !== 1 ? 's' : ''})
+              </>
+            )}
+          </Button>
+        </div>
       )}
 
       {/* Pre-Analysis Dialog */}
@@ -447,16 +514,23 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
                     <div className="flex-1">
                       <div className="flex justify-between items-start">
                         <div>
-                          <div className="font-medium">{trade.symbol}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {trade.side} • ${trade.entry_price}
-                          </div>
+                          <span className="font-medium">{trade.symbol}</span>
+                          <span className={`ml-2 text-xs px-2 py-0.5 rounded ${
+                            trade.side === 'long' 
+                              ? 'bg-green-100 text-green-700' 
+                              : 'bg-red-100 text-red-700'
+                          }`}>
+                            {trade.side?.toUpperCase()}
+                          </span>
                         </div>
-                        <div className={`px-2 py-1 rounded text-xs font-medium ${
-                          trade.side === 'long' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'
+                        <span className={`text-sm font-medium ${
+                          trade.profit_loss >= 0 ? 'text-green-600' : 'text-red-600'
                         }`}>
-                          {trade.side}
-                        </div>
+                          {trade.profit_loss >= 0 ? '+' : ''}{trade.profit_loss?.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        Entry: {trade.entry_price} • Exit: {trade.exit_price}
                       </div>
                     </div>
                   </div>
@@ -464,14 +538,12 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
               ))}
             </div>
           </div>
-          
+
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
-              Cancel
-            </Button>
-            <Button 
+            <Button
               onClick={handleConfirmImport}
               disabled={selectedTrades.size === 0}
+              className="w-full"
             >
               Import {selectedTrades.size} Trade{selectedTrades.size !== 1 ? 's' : ''}
             </Button>

@@ -37,7 +37,13 @@ export const MobileHeader = () => {
       <div className="container mx-auto h-full px-4 flex items-center justify-between">
         {/* Logo - Left */}
         <div className="flex items-center">
-          <Logo variant="horizontal" size="sm" showText={true} />
+          <Logo 
+            variant="horizontal" 
+            size="sm" 
+            showText={true} 
+            clickable={isPublicRoute}
+            to="/"
+          />
         </div>
 
         {/* Desktop Navigation - Hidden on Mobile */}

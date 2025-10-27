@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg" | "xl";
@@ -7,6 +8,8 @@ interface LogoProps {
   showText?: boolean;
   className?: string;
   colorVariant?: "default" | "vietnam" | "auto";
+  clickable?: boolean;
+  to?: string;
 }
 
 const sizeMap = {
@@ -21,7 +24,9 @@ export const Logo = ({
   variant = "full", 
   showText = true,
   className,
-  colorVariant = "auto"
+  colorVariant = "auto",
+  clickable = false,
+  to = "/"
 }: LogoProps) => {
   const { icon, text } = sizeMap[size];
   const iconOnly = variant === "icon" || !showText;
@@ -49,11 +54,12 @@ export const Logo = ({
   const gradientColor1 = isVietnam ? "#DA251D" : "hsl(var(--primary))";
   const gradientColor2 = isVietnam ? "#B01F18" : "hsl(var(--primary))";
 
-  return (
+  const logoContent = (
     <div className={cn(
       "flex items-center gap-3",
       variant === "full" && "flex-col",
       variant === "horizontal" && "flex-row",
+      clickable && "cursor-pointer hover:opacity-80 transition-opacity duration-200",
       className
     )}>
       {/* TD Monogram - Financial Times inspired */}
@@ -147,4 +153,14 @@ export const Logo = ({
       )}
     </div>
   );
+
+  if (clickable) {
+    return (
+      <Link to={to} className="inline-flex" aria-label="Go to homepage">
+        {logoContent}
+      </Link>
+    );
+  }
+
+  return logoContent;
 };

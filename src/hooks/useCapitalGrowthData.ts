@@ -69,10 +69,20 @@ export const useCapitalGrowthData = (): CapitalGrowthData => {
 
   const { deposits, withdrawals, trades } = data;
 
+  // Deduplicate trades based on closed_at + profit_loss combination
+  const uniqueTrades = trades.reduce((acc, trade) => {
+    const key = `${trade.closed_at}_${trade.profit_loss}`;
+    if (!acc.has(key)) {
+      acc.set(key, trade);
+    }
+    return acc;
+  }, new Map());
+  const deduplicatedTrades = Array.from(uniqueTrades.values());
+
   // Calculate totals
   const totalDeposits = deposits.reduce((sum, d) => sum + Number(d.amount_added || 0), 0);
   const totalWithdrawals = withdrawals.reduce((sum, w) => sum + Number(w.amount_withdrawn || 0), 0);
-  const tradingPnL = trades.reduce((sum, t) => sum + Number(t.profit_loss || 0), 0);
+  const tradingPnL = deduplicatedTrades.reduce((sum, t) => sum + Number(t.profit_loss || 0), 0);
 
   const initialInvestment = deposits.length > 0 ? Number(deposits[0].amount_added || 0) : 0;
   const currentBalance = totalDeposits + tradingPnL - totalWithdrawals;
@@ -93,8 +103,8 @@ export const useCapitalGrowthData = (): CapitalGrowthData => {
     eventMap.set(date, (eventMap.get(date) || 0) - Number(w.amount_withdrawn || 0));
   });
 
-  // Add trading P&L
-  trades.forEach(t => {
+  // Add trading P&L (using deduplicated trades)
+  deduplicatedTrades.forEach(t => {
     if (t.closed_at) {
       const date = format(new Date(t.closed_at), 'yyyy-MM-dd');
       eventMap.set(date, (eventMap.get(date) || 0) + Number(t.profit_loss || 0));

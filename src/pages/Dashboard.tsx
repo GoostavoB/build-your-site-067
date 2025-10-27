@@ -453,23 +453,33 @@ const Dashboard = () => {
       .not('closed_at', 'is', null); // Only count closed trades for accurate P&L
 
     if (trades) {
-      setTrades(trades.map(trade => ({
+      // Deduplicate trades based on closed_at + profit_loss combination
+      const uniqueTradesMap = trades.reduce((acc, trade) => {
+        const key = `${trade.closed_at}_${trade.profit_loss}`;
+        if (!acc.has(key)) {
+          acc.set(key, trade);
+        }
+        return acc;
+      }, new Map());
+      const deduplicatedTrades = Array.from(uniqueTradesMap.values());
+      
+      setTrades(deduplicatedTrades.map(trade => ({
         ...trade,
         side: trade.side as 'long' | 'short' | null
       })));
       
-      // Calculate total P&L using profit_loss
-      const totalPnL = trades.reduce((sum, t) => sum + (t.profit_loss || 0), 0);
+      // Calculate total P&L using profit_loss from deduplicated trades
+      const totalPnL = deduplicatedTrades.reduce((sum, t) => sum + (t.profit_loss || 0), 0);
       
-      const winningTrades = trades.filter(t => (t.profit_loss || 0) > 0).length;
-      const avgDuration = trades.reduce((sum, t) => sum + (t.duration_minutes || 0), 0) / (trades.length || 1);
+      const winningTrades = deduplicatedTrades.filter(t => (t.profit_loss || 0) > 0).length;
+      const avgDuration = deduplicatedTrades.reduce((sum, t) => sum + (t.duration_minutes || 0), 0) / (deduplicatedTrades.length || 1);
 
       // Calculate unique trading days
-      const uniqueDays = new Set(trades.map(t => new Date(t.trade_date).toDateString())).size;
+      const uniqueDays = new Set(deduplicatedTrades.map(t => new Date(t.trade_date).toDateString())).size;
       
       // Calculate average P&L per trade
-      const avgPnLPerTrade = trades.length > 0 
-        ? totalPnL / trades.length
+      const avgPnLPerTrade = deduplicatedTrades.length > 0
+        ? totalPnL / deduplicatedTrades.length
         : 0;
       
       // Calculate average P&L per day
@@ -497,14 +507,14 @@ const Dashboard = () => {
       }
       
       // Calculate average ROI per trade
-      const avgROIPerTrade = trades.length > 0 
-        ? trades.reduce((sum, t) => sum + (t.roi || 0), 0) / trades.length 
+      const avgROIPerTrade = deduplicatedTrades.length > 0 
+        ? deduplicatedTrades.reduce((sum, t) => sum + (t.roi || 0), 0) / deduplicatedTrades.length 
         : 0;
 
       setStats({
         total_pnl: totalPnL,
-        win_rate: trades.length > 0 ? (winningTrades / trades.length) * 100 : 0,
-        total_trades: trades.length,
+        win_rate: deduplicatedTrades.length > 0 ? (winningTrades / deduplicatedTrades.length) * 100 : 0,
+        total_trades: deduplicatedTrades.length,
         avg_duration: avgDuration,
         avg_pnl_per_trade: avgPnLPerTrade,
         avg_pnl_per_day: avgPnLPerDay,

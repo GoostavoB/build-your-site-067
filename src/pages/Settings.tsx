@@ -289,7 +289,7 @@ const Settings = () => {
         </header>
 
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="profile">
               <User className="w-4 h-4 mr-2" aria-hidden="true" />
               Profile
@@ -309,10 +309,6 @@ const Settings = () => {
             <TabsTrigger value="notifications">
               <Bell className="w-4 h-4 mr-2" />
               Notifications
-            </TabsTrigger>
-            <TabsTrigger value="rewards">
-              <Gift className="w-4 h-4 mr-2" />
-              Rewards
             </TabsTrigger>
             <TabsTrigger value="data">
               <Download className="w-4 h-4 mr-2" />
@@ -582,12 +578,6 @@ const Settings = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="rewards" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            <SocialShareRewards />
-            <ReferralProgram />
-          </div>
-        </TabsContent>
 
         <TabsContent value="data" className="space-y-6">
         <Card className="p-6 glass">

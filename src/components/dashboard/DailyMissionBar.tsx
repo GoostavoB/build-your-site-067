@@ -14,7 +14,7 @@ export function DailyMissionBar() {
 
   const progress = dailyXPCap > 0 ? (dailyXPEarned / dailyXPCap) * 100 : 0;
   const isCapped = dailyXPEarned >= dailyXPCap;
-  const isUnlimited = dailyXPCap === Infinity || tier === 'elite';
+  const isUnlimited = dailyXPCap === Infinity || dailyXPCap >= 999999;
 
   // Color gradient based on progress
   const getProgressColor = () => {

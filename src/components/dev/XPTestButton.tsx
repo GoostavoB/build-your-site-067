@@ -41,8 +41,13 @@ export function XPTestButton() {
         .update({ daily_xp_earned: 0 })
         .eq('user_id', user.id);
       if (error) throw error;
-      refreshXP?.();
-      refreshTier?.();
+      
+      // Force immediate refetch of both queries
+      await Promise.all([
+        refreshXP?.(),
+        refreshTier?.()
+      ]);
+      
       toast.success("Today's XP reset to 0");
     } catch (error) {
       toast.error('Failed to reset daily XP', {

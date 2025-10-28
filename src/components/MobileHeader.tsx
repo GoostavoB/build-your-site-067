@@ -1,153 +1,160 @@
-import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Logo } from "@/components/Logo";
-import { LanguageToggle } from "@/components/LanguageToggle";
-import { ThemeStudio } from "@/components/theme-studio/ThemeStudio";
-import { useTranslation } from "@/hooks/useTranslation";
+// src/components/MobileHeader.tsx
+// REVISED VERSION - All navigation is localized
 
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
+import { useTranslation } from '../hooks/useTranslation';
+import { LanguageToggle } from './LanguageToggle';
+import { getLocalizedPath, isPublicRoute } from '../utils/languageRouting';
 
 export const MobileHeader = () => {
-  const { t } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  
-  // Define public routes where Theme Studio should be hidden
-  const publicRoutes = [
-    '/', '/pt', '/es', '/ar', '/vi',
-    '/pricing', '/contact', '/legal', '/terms', '/privacy',
-    '/blog', '/about', '/testimonials', '/how-it-works', '/features',
-    '/changelog', '/cookie-policy', '/sitemap', '/logo-download', 
-    '/logo-generator', '/crypto-trading-faq', '/seo-dashboard', '/author'
-  ];
-  
-  const isPublicRoute = publicRoutes.some(route => 
-    location.pathname === route || 
-    location.pathname.startsWith('/blog/') ||
-    location.pathname.startsWith('/author/') ||
-    location.pathname.match(/^\/(pt|es|ar|vi)\/(pricing|contact|legal|terms|privacy|blog|about|cookie-policy)/)
-  );
+  const { t, language } = useTranslation();
+
+  // Check if we're on a public route
+  const isPublic = isPublicRoute(location.pathname);
+
+  // ===================================================================
+  // FIX: Localized navigation helper
+  // ===================================================================
+  const handleNavigate = (path: string) => {
+    const localizedPath = isPublic ? getLocalizedPath(path, language) : path;
+    console.log(`[MobileHeader] Navigating to: ${localizedPath} (language: ${language})`);
+    navigate(localizedPath);
+    setIsOpen(false);
+  };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-14 border-b border-border/40 bg-background/80 backdrop-blur-xl">
-      <div className="container mx-auto h-full px-4 flex items-center justify-between">
-        {/* Logo - Left */}
-        <div className="flex items-center">
-          <Logo 
-            variant="horizontal" 
-            size="sm" 
-            showText={true} 
-            clickable={isPublicRoute}
-            to="/"
-          />
-        </div>
+    <div className="lg:hidden">
+      {/* Header Bar */}
+      <div className="flex items-center justify-between p-4 bg-gray-900 border-b border-gray-800">
+        <Link 
+          to={isPublic ? getLocalizedPath('/', language) : '/'}
+          className="text-xl font-bold text-white"
+        >
+          The Trading Diary
+        </Link>
 
-        {/* Desktop Navigation - Hidden on Mobile */}
-        <nav className="hidden md:flex items-center gap-2">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/blog')}
-            className="h-11 px-4"
-          >
-            {t('navigation.blog', 'Blog')}
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/pricing')}
-            className="h-11 px-4"
-          >
-            {t('navigation.pricing')}
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/contact')}
-            className="h-11 px-4"
-          >
-            {t('navigation.contact')}
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => navigate('/auth')}
-            className="h-11 px-4"
-          >
-            {t('navigation.signIn')}
-          </Button>
+        <div className="flex items-center gap-3">
           <LanguageToggle />
-          {!isPublicRoute && <ThemeStudio />}
-        </nav>
-
-        {/* Mobile Menu - Hamburger */}
-        <div className="flex md:hidden items-center gap-2">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="h-11 w-11"
-                aria-label="Open menu"
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent 
-              side="right" 
-              className="w-[280px] sm:w-[320px] glass-strong"
-            >
-              <nav className="flex flex-col gap-6 mt-8">
-                <Button
-                  variant="default"
-                  onClick={() => navigate('/auth')}
-                  className="h-12 w-full justify-start text-base"
-                >
-                  {t('navigation.signIn')}
-                </Button>
-                
-                <div className="flex flex-col gap-1">
-                  <Button
-                    variant="ghost"
-                    onClick={() => navigate('/blog')}
-                    className="h-12 w-full justify-start text-base"
-                  >
-                    {t('navigation.blog', 'Blog')}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => navigate('/pricing')}
-                    className="h-12 w-full justify-start text-base"
-                  >
-                    {t('navigation.pricing')}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => navigate('/contact')}
-                    className="h-12 w-full justify-start text-base"
-                  >
-                    {t('navigation.contact')}
-                  </Button>
-                </div>
-
-                <div className="pt-6 border-t border-border/50 flex flex-col gap-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">{t('navigation.language', 'Language')}</span>
-                    <LanguageToggle />
-                  </div>
-                  {!isPublicRoute && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">{t('navigation.theme', 'Theme')}</span>
-                      <ThemeStudio />
-                    </div>
-                  )}
-                </div>
-              </nav>
-            </SheetContent>
-          </Sheet>
+          
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-2 text-white hover:bg-gray-800 rounded-lg transition-colors"
+            aria-label={isOpen ? 'Close menu' : 'Open menu'}
+          >
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
       </div>
-    </header>
+
+      {/* Mobile Menu Overlay */}
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50 z-40"
+            onClick={() => setIsOpen(false)}
+          />
+
+          {/* Menu Panel */}
+          <div className="fixed inset-y-0 right-0 w-80 bg-gray-900 z-50 overflow-y-auto shadow-xl">
+            <div className="p-6 space-y-6">
+              {/* Navigation Links */}
+              <nav className="space-y-2">
+                <button
+                  onClick={() => handleNavigate('/pricing')}
+                  className="w-full text-left px-4 py-3 text-white hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  {t('navigation.pricing', 'Pricing')}
+                </button>
+
+                <button
+                  onClick={() => handleNavigate('/features')}
+                  className="w-full text-left px-4 py-3 text-white hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  {t('navigation.features', 'Features')}
+                </button>
+
+                <button
+                  onClick={() => handleNavigate('/how-it-works')}
+                  className="w-full text-left px-4 py-3 text-white hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  {t('navigation.howItWorks', 'How it Works')}
+                </button>
+
+                <button
+                  onClick={() => handleNavigate('/blog')}
+                  className="w-full text-left px-4 py-3 text-white hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  {t('navigation.blog', 'Blog')}
+                </button>
+
+                <button
+                  onClick={() => handleNavigate('/contact')}
+                  className="w-full text-left px-4 py-3 text-white hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  {t('navigation.contact', 'Contact')}
+                </button>
+
+                <button
+                  onClick={() => handleNavigate('/testimonials')}
+                  className="w-full text-left px-4 py-3 text-white hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  {t('navigation.testimonials', 'Testimonials')}
+                </button>
+              </nav>
+
+              {/* Divider */}
+              <div className="border-t border-gray-800" />
+
+              {/* Auth Buttons */}
+              <div className="space-y-3">
+                <button
+                  onClick={() => handleNavigate('/auth')}
+                  className="w-full px-4 py-3 text-white hover:bg-gray-800 rounded-lg transition-colors text-center"
+                >
+                  {t('navigation.signIn', 'Sign In')}
+                </button>
+
+                <button
+                  onClick={() => handleNavigate('/auth')}
+                  className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-center font-medium"
+                >
+                  {t('navigation.getStarted', 'Get Started')}
+                </button>
+              </div>
+
+              {/* Additional Links */}
+              <div className="pt-4 border-t border-gray-800 space-y-2">
+                <button
+                  onClick={() => handleNavigate('/about')}
+                  className="w-full text-left px-4 py-2 text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('navigation.about', 'About')}
+                </button>
+
+                <button
+                  onClick={() => handleNavigate('/privacy')}
+                  className="w-full text-left px-4 py-2 text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('navigation.privacy', 'Privacy Policy')}
+                </button>
+
+                <button
+                  onClick={() => handleNavigate('/terms')}
+                  className="w-full text-left px-4 py-2 text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {t('navigation.terms', 'Terms of Service')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
   );
 };

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Check, HelpCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { MobileHeader } from "@/components/MobileHeader";
 import Footer from "@/components/Footer";
@@ -386,9 +386,9 @@ const PricingPage = () => {
                 <span className="text-sm">Access control by account</span>
               </div>
               <div className="flex justify-center gap-4 text-sm text-muted-foreground">
-                <a href="/privacy" className="hover:underline">Privacy Policy</a>
+                <Link to="/privacy" className="hover:underline">Privacy Policy</Link>
                 <span>•</span>
-                <a href="/terms" className="hover:underline">Terms</a>
+                <Link to="/terms" className="hover:underline">Terms</Link>
               </div>
             </div>
           </div>

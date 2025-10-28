@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import AppLayout from '@/components/layout/AppLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -130,10 +131,10 @@ export default function HowItWorks() {
           </p>
           <div className="flex gap-4 justify-center">
             <Button size="lg" asChild>
-              <a href="/auth">Start Free Trial</a>
+              <Link to="/auth">Start Free Trial</Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <a href="/pricing">View Pricing</a>
+              <Link to="/pricing">View Pricing</Link>
             </Button>
           </div>
         </Card>

@@ -1,123 +1,76 @@
+// src/i18n.ts
+// REVISED VERSION - Initialize from URL, not localStorage
+
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-
 import enTranslations from './locales/en/translation.json';
 import esTranslations from './locales/es/translation.json';
 import ptTranslations from './locales/pt/translation.json';
 import arTranslations from './locales/ar/translation.json';
 import viTranslations from './locales/vi/translation.json';
+import { getLanguageFromPath, isPublicRoute, type SupportedLanguage } from './utils/languageRouting';
 
-// Normalize language to base code (e.g., 'en-US' -> 'en')
-const supportedLanguages = ['en', 'es', 'pt', 'ar', 'vi'] as const;
-const rawLanguage = localStorage.getItem('app-language') || navigator.language || 'en';
-const baseLanguage = rawLanguage.split('-')[0];
-const savedLanguage = supportedLanguages.includes(baseLanguage as any) ? baseLanguage : 'en';
+const supportedLanguages: SupportedLanguage[] = ['en', 'es', 'pt', 'ar', 'vi'];
+
+// ===================================================================
+// FIX #1: Initialize from URL for public routes
+// ===================================================================
+function getInitialLanguage(): SupportedLanguage {
+  const currentPath = window.location.pathname;
+  
+  // For public routes: URL is source of truth
+  if (isPublicRoute(currentPath)) {
+    const urlLang = getLanguageFromPath(currentPath);
+    console.log(`[i18n] Public route detected, using URL language: ${urlLang}`);
+    return urlLang;
+  }
+  
+  // For protected routes: Use localStorage or browser preference
+  const savedLang = localStorage.getItem('app-language');
+  if (savedLang && supportedLanguages.includes(savedLang as SupportedLanguage)) {
+    console.log(`[i18n] Protected route, using saved language: ${savedLang}`);
+    return savedLang as SupportedLanguage;
+  }
+  
+  const browserLang = navigator.language.split('-')[0] as SupportedLanguage;
+  if (supportedLanguages.includes(browserLang)) {
+    console.log(`[i18n] Using browser language: ${browserLang}`);
+    return browserLang;
+  }
+  
+  console.log('[i18n] Fallback to English');
+  return 'en';
+}
+
+const initialLanguage = getInitialLanguage();
 
 i18n
   .use(initReactI18next)
   .init({
     resources: {
-      en: {
-        translation: enTranslations
-      },
-      es: {
-        translation: esTranslations
-      },
-      pt: {
-        translation: ptTranslations
-      },
-      ar: {
-        translation: arTranslations
-      },
-      vi: {
-        translation: viTranslations
-      }
+      en: { translation: enTranslations },
+      es: { translation: esTranslations },
+      pt: { translation: ptTranslations },
+      ar: { translation: arTranslations },
+      vi: { translation: viTranslations },
     },
-    lng: savedLanguage,
+    lng: initialLanguage, // ✅ Now uses URL for public routes
     fallbackLng: 'en',
-    supportedLngs: ['en', 'es', 'pt', 'ar', 'vi'],
+    supportedLngs: supportedLanguages,
     load: 'languageOnly',
-    defaultNS: 'translation',
-    ns: ['translation'],
-    debug: process.env.NODE_ENV !== 'production',
     interpolation: {
-      escapeValue: false, // React already escapes values
+      escapeValue: false,
     },
     react: {
-      useSuspense: false, // Prevent suspense-related loading issues
-    }
+      useSuspense: false,
+    },
   });
 
-// Debug check and validation in development
-if (process.env.NODE_ENV !== 'production') {
-  console.debug('i18n initialized', {
-    language: i18n.language,
-    hasTranslations: i18n.exists('landing.benefits.fasterUploads.title')
+// Development helper: Log missing keys
+if (import.meta.env.DEV) {
+  i18n.on('missingKey', (lngs, namespace, key, res) => {
+    console.warn(`[i18n] Missing translation key: "${key}" for languages: ${lngs.join(', ')}`);
   });
-  
-  // Critical keys validation
-  const criticalKeys = [
-    // Landing page - Hero
-    'landing.hero.titleShort',
-    'landing.hero.subtitle',
-    'landing.hero.benefits',
-    'landing.hero.ctaPrimary',
-    
-    // Landing page - Benefits (with fallbacks)
-    'landing.benefits.mainTitle',
-    'landing.benefits.ctaButton',
-    'landing.benefits.fasterUploads.title',
-    'landing.benefits.fasterUploads.description',
-    'landing.benefits.uploadGo.title',
-    'landing.benefits.uploadGo.description',
-    
-    // Landing page - Proof & Testimonials
-    'landing.proofBar.activeTraders',
-    'landing.proofBar.tradesAnalyzed',
-    'landing.proofBar.averageRating',
-    'landing.testimonials.sectionTitle',
-    'landing.footer.securityBadge',
-    
-    // Navigation
-    'navigation.home',
-    'navigation.dashboard',
-    'navigation.contact',
-    'navigation.signIn',
-    
-    // Blog
-    'blog.title',
-    'blog.subtitle',
-    'blog.searchPlaceholder',
-    
-    // Pricing
-    'pricing.hero.title',
-    'pricing.title',
-    
-    // Contact
-    'contact.title',
-    'contact.subtitle',
-    
-    // Common
-    'common.save',
-    'common.cancel',
-    'common.loading'
-  ];
-  
-  const missingKeys: string[] = [];
-  
-  criticalKeys.forEach(key => {
-    if (!i18n.exists(key)) {
-      missingKeys.push(key);
-      console.error(`❌ MISSING CRITICAL TRANSLATION KEY: ${key}`);
-    }
-  });
-  
-  if (missingKeys.length > 0) {
-    console.warn(`⚠️  ${missingKeys.length} critical translation keys are missing!`);
-    console.warn('Missing keys:', missingKeys);
-  } else {
-    console.log('✅ All critical translation keys validated successfully');
-  }
 }
 
 export default i18n;

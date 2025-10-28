@@ -457,6 +457,10 @@
     "savingsAmount": "Tiết kiệm ${{amount}}/năm",
     "guaranteeNote": "Đảm bảo hoàn tiền trong 7 ngày • Hủy bất cứ lúc nào • Không có phí ẩn",
     "uploadNote": "Tối đa 10 giao dịch mỗi lần tải lên",
+    "speedBanner": "🚀 Bắt Đầu Cải Thiện Kết Quả Giao Dịch Ngay Hôm Nay — Nhận 3 Thông Tin Chi Tiết AI Ngay Lập Tức",
+    "saveBadge": "Tiết kiệm 2 tháng",
+    "trialTerms": "Dùng thử 7 ngày • Hủy bất cứ lúc nào • Hoàn tiền theo tỷ lệ trong 14 ngày đầu khi đăng ký hàng năm",
+    "noCardRequired": "Không cần thẻ tín dụng",
     "hero": {
       "title": "Giao dịch với sự rõ ràng.",
       "subtitle": "Nhật ký giao dịch được hỗ trợ bởi AI cho nhà đầu tư tiền điện tử. Ghi lại mọi giao dịch, tìm kiếm mẫu và theo dõi lợi thế của bạn.",
@@ -466,6 +470,19 @@
     "solutions": {
       "title": "Kết Quả Quan Trọng",
       "subtitle": "Khả năng cao cấp được xây dựng cho các trader chuyên nghiệp",
+      "headline1": "Quy tắc của bạn.",
+      "headline2": "Kết quả của bạn.",
+      "tagline": "Nếu bạn không thể đo lường nó, bạn không thể cải thiện nó.",
+      "outcome1": {
+        "headline": "Tải Lên Nhanh Hơn 40 Lần",
+        "subhead": "Tải lên hàng loạt giao dịch từ ảnh chụp màn hình thay vì nhập thủ công",
+        "proof": "Tải lên hàng loạt từ ảnh chụp màn hình luôn thắng so với nhập thủ công"
+      },
+      "outcome2": {
+        "headline": "Tiết Kiệm 75-97% Thời Gian",
+        "subhead": "Dành ít thời gian hơn cho việc ghi nhật ký, nhiều thời gian hơn cho phân tích và giao dịch",
+        "proof": "Dành ít thời gian hơn cho việc ghi nhật ký, nhiều thời gian hơn để chiến thắng"
+      },
       "seePatterns": {
         "headline": "Nhìn thấy mẫu ngay lập tức",
         "subhead": "AI đọc toàn bộ lịch sử của bạn. Làm nổi bật những gì thực sự tạo ra tiền.",
@@ -514,21 +531,7 @@
         "metricValue": 10000,
         "proofPoint": "Phản hồi của trader được tích hợp"
       }
-    }
-  },
-  "pricing": {
-    "title": "Giá cả đơn giản, minh bạch",
-    "subtitle": "Chọn gói phù hợp với hành trình giao dịch của bạn",
-    "mostPopular": "Phổ Biến Nhất",
-    "perMonth": "tháng",
-    "perMonthBilledAnnually": "tháng, thanh toán hàng năm",
-    "savingsAmount": "Tiết kiệm ${{amount}}/năm",
-    "guaranteeNote": "Đảm bảo hoàn tiền trong 7 ngày • Hủy bất cứ lúc nào • Không có phí ẩn",
-    "uploadNote": "Tối đa 10 giao dịch mỗi lần tải lên",
-    "speedBanner": "Nhận thông tin chi tiết được hỗ trợ bởi AI ngay sau lần tải lên đầu tiên",
-    "saveBadge": "Tiết kiệm 2 tháng",
-    "trialTerms": "Dùng thử 7 ngày • Hủy bất cứ lúc nào • Hoàn tiền theo tỷ lệ trong 14 ngày đầu khi đăng ký hàng năm",
-    "noCardRequired": "Không cần thẻ tín dụng",
+    },
     "billing": {
       "monthly": "Hàng Tháng",
       "annual": "Hàng Năm",

@@ -33,6 +33,9 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { pageMeta } from '@/utils/seoHelpers';
 import { CSVUpload } from '@/components/upload/CSVUpload';
 import { TradeEditCard } from '@/components/upload/TradeEditCard';
+import { useQuery } from '@tanstack/react-query';
+import { useTradeXPRewards } from '@/hooks/useTradeXPRewards';
+import type { Trade } from '@/types/trade';
 
 interface ExtractedTrade {
   symbol: string;
@@ -67,6 +70,34 @@ const Upload = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const editId = searchParams.get('edit');
+
+  // Query for recent trades to process XP rewards
+  const { data: recentTrades = [] } = useQuery({
+    queryKey: ['recent-trades-for-xp', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('trades')
+        .select('*')
+        .eq('user_id', user.id)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      
+      if (error) {
+        console.error('Error fetching trades for XP:', error);
+        return [];
+      }
+      
+      return data as Trade[];
+    },
+    enabled: !!user?.id,
+    staleTime: 5000, // 5 seconds
+  });
+
+  // Process XP rewards for unrewarded trades
+  useTradeXPRewards(recentTrades);
   const [loading, setLoading] = useState(false);
   const [extracting, setExtracting] = useState(false);
   const [uploadStep, setUploadStep] = useState<1 | 2 | 3 | 4>(1);

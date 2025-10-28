@@ -25,7 +25,7 @@ const Pricing = () => {
       monthlyPrice: 10,
       annualPrice: 8,
       annualTotal: 96,
-      tradeLimit: "20 uploads/month",
+      tradeLimitKey: "pricing.plans.basic.tradeLimit",
       featuresKeys: [
         "pricing.plans.basic.features.uploads",
         "pricing.plans.basic.features.accounts",
@@ -41,7 +41,7 @@ const Pricing = () => {
         "pricing.plans.basic.features.emailSupport",
         "pricing.plans.basic.features.noFeeAnalysis",
       ],
-      ctaText: "Start free trial",
+      ctaKey: "pricing.plans.basic.cta",
       popular: false,
       priceCurrency: "USD",
     },
@@ -52,7 +52,7 @@ const Pricing = () => {
       monthlyPrice: 15,
       annualPrice: 12,
       annualTotal: 144,
-      tradeLimit: "50 uploads/month",
+      tradeLimitKey: "pricing.plans.pro.tradeLimit",
       featuresKeys: [
         "pricing.plans.pro.features.uploads",
         "pricing.plans.pro.features.unlimitedAccounts",
@@ -65,7 +65,7 @@ const Pricing = () => {
         "pricing.plans.pro.features.customMetrics",
         "pricing.plans.pro.features.everythingBasic",
       ],
-      ctaText: "Start 7-day trial",
+      ctaKey: "pricing.plans.pro.cta",
       popular: true,
       priceCurrency: "USD",
     },
@@ -76,7 +76,7 @@ const Pricing = () => {
       monthlyPrice: 25,
       annualPrice: 20,
       annualTotal: 240,
-      tradeLimit: "120 uploads/month",
+      tradeLimitKey: "pricing.plans.elite.tradeLimit",
       featuresKeys: [
         "pricing.plans.elite.features.uploads",
         "pricing.plans.elite.features.unlimitedAccounts",
@@ -86,7 +86,7 @@ const Pricing = () => {
         "pricing.plans.elite.features.extraCreditsDiscount",
         "pricing.plans.elite.features.everythingPro",
       ],
-      ctaText: "Start 7-day trial",
+      ctaKey: "pricing.plans.elite.cta",
       popular: false,
       priceCurrency: "USD",
     },
@@ -220,7 +220,7 @@ const Pricing = () => {
                     </div>
                   )}
                   <div className="text-xs text-muted-foreground mt-2">
-                    {plan.tradeLimit} • {t('pricing.uploadNote', 'Up to 10 trades per upload')}
+                    {t(plan.tradeLimitKey)} • {t('pricing.uploadNote', 'Up to 10 trades per upload')}
                   </div>
                 </div>
 
@@ -233,7 +233,7 @@ const Pricing = () => {
                   }`}
                   variant={plan.popular ? "default" : "outline"}
                 >
-                  {plan.ctaText}
+                  {t(plan.ctaKey)}
                 </Button>
 
                 {plan.monthlyPrice > 0 ? (

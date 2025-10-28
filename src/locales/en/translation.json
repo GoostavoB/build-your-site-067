@@ -433,6 +433,8 @@
       "basic": {
         "name": "Starter",
         "description": "Perfect for beginners",
+        "tradeLimit": "20 uploads/month",
+        "cta": "Start free trial",
         "features": {
           "uploads": "20 uploads/month • Up to 10 trades per upload",
           "accounts": "1 connected account",
@@ -453,6 +455,8 @@
       "pro": {
         "name": "Pro",
         "description": "For serious traders",
+        "tradeLimit": "50 uploads/month",
+        "cta": "Start 7-day trial",
         "features": {
           "uploads": "50 uploads/month • Up to 10 trades per upload",
           "unlimitedAccounts": "Unlimited accounts",
@@ -470,6 +474,8 @@
       "elite": {
         "name": "Elite",
         "description": "For professional traders",
+        "tradeLimit": "120 uploads/month",
+        "cta": "Start 7-day trial",
         "features": {
           "uploads": "120 uploads/month • Up to 10 trades per upload",
           "unlimitedAccounts": "Unlimited accounts",

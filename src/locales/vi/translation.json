@@ -440,6 +440,8 @@
       "basic": {
         "name": "Basic",
         "description": "Hoàn hảo cho các trader đang xây dựng cấu trúc",
+        "tradeLimit": "20 lần tải lên/tháng",
+        "cta": "Bắt đầu dùng thử miễn phí",
         "features": {
           "uploads": "50 lần tải lên giao dịch AI/tháng",
           "manualUploads": "Tải lên thủ công không giới hạn",
@@ -454,6 +456,8 @@
       "pro": {
         "name": "Pro",
         "description": "Dành cho các trader nghiêm túc cải thiện kỷ luật",
+        "tradeLimit": "50 lần tải lên/tháng",
+        "cta": "Bắt đầu dùng thử 7 ngày",
         "features": {
           "uploads": "100 lần tải lên giao dịch AI/tháng",
           "aiAnalysis": "1 Phân tích Hiệu suất AI mỗi tuần",
@@ -468,6 +472,8 @@
       "elite": {
         "name": "Elite",
         "description": "Trader chuyên nghiệp & nhà phân tích",
+        "tradeLimit": "120 lần tải lên/tháng",
+        "cta": "Bắt đầu dùng thử 7 ngày",
         "features": {
           "uploads": "300 lần tải lên giao dịch AI/tháng",
           "aiAnalysis": "5 Phân tích Hiệu suất AI mỗi tuần",

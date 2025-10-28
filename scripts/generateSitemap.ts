@@ -185,6 +185,46 @@ const blogArticles = [
   {
     slug: 'strategy-tracker/scalping-ethereum',
     lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-excel/binance',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-notion/binance',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-google-sheets/binance',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-excel/okx',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-notion/okx',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-google-sheets/okx',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-excel/kraken',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-notion/kraken',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-google-sheets/kraken',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-excel/kucoin',
+    lastmod: '2025-10-28',
   }
 ];
 

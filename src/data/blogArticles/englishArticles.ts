@@ -7466,7 +7466,7 @@ Related reading:
 - [OKX Bitcoin Trading Journal](https://www.thetradingdiary.com/blog/trading-journal/okx-bitcoin)
 - [Altcoin Position Sizing](https://www.thetradingdiary.com/blog/position-sizing-altcoins)
 - [Volatility Trading Strategies](https://www.thetradingdiary.com/blog/volatility-trading-crypto)
-\`
+`
   },
   {
     title: "Coinbase Ethereum Trading Journal",

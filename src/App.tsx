@@ -12,6 +12,7 @@ import { BlurProvider } from "@/contexts/BlurContext";
 import { CalmModeProvider } from "@/contexts/CalmModeContext";
 import { DateRangeProvider } from "@/contexts/DateRangeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { WidgetStyleProvider } from "@/contexts/WidgetStyleContext";
 import { ThemeProvider } from "next-themes";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -286,20 +287,22 @@ const App = () => {
                   <SubscriptionProvider>
                   <AccountProvider>
                   <CalmModeProvider>
-                    <CurrencyProvider>
-                      <BlurProvider>
-                        <AIAssistantProvider>
-                          <DateRangeProvider>
-                            <AppRoutes />
-                            <ConversionTracking />
-                            <PerformanceMonitor />
-                            <GlobalSearch />
-                            <OfflineIndicator />
-                            <InstallPrompt />
-                          </DateRangeProvider>
-                        </AIAssistantProvider>
-                      </BlurProvider>
-                    </CurrencyProvider>
+                    <WidgetStyleProvider>
+                      <CurrencyProvider>
+                        <BlurProvider>
+                          <AIAssistantProvider>
+                            <DateRangeProvider>
+                              <AppRoutes />
+                              <ConversionTracking />
+                              <PerformanceMonitor />
+                              <GlobalSearch />
+                              <OfflineIndicator />
+                              <InstallPrompt />
+                            </DateRangeProvider>
+                          </AIAssistantProvider>
+                        </BlurProvider>
+                      </CurrencyProvider>
+                    </WidgetStyleProvider>
                   </CalmModeProvider>
                   </AccountProvider>
                   </SubscriptionProvider>

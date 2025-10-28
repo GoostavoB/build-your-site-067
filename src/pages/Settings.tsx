@@ -9,7 +9,7 @@ import AppLayout from '@/components/layout/AppLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { X, Plus, Edit2, Check, Upload, Download, User, Bell, TrendingUp, Gift } from 'lucide-react';
+import { X, Plus, Edit2, Check, Upload, Download, User, Bell, TrendingUp, Gift, Sparkles } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { NotificationPreferences } from '@/components/NotificationPreferences';
@@ -22,6 +22,9 @@ import { SocialShareRewards } from '@/components/SocialShareRewards';
 import { ReferralProgram } from '@/components/ReferralProgram';
 import { useCalmMode } from '@/contexts/CalmModeContext';
 import { SkipToContent } from '@/components/SkipToContent';
+import { ProfileFrameSelector } from '@/components/settings/ProfileFrameSelector';
+import { WidgetStyleCustomizer } from '@/components/settings/WidgetStyleCustomizer';
+import { posthog } from '@/lib/posthog';
 
 const Settings = () => {
   const { user } = useAuth();
@@ -331,7 +334,7 @@ const Settings = () => {
         </header>
 
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
             <TabsTrigger value="profile">
               <User className="w-4 h-4 mr-2" aria-hidden="true" />
               Profile
@@ -343,6 +346,10 @@ const Settings = () => {
             <TabsTrigger value="setups">
               <Edit2 className="w-4 h-4 mr-2" aria-hidden="true" />
               Setups
+            </TabsTrigger>
+            <TabsTrigger value="rewards" onClick={() => posthog.capture('customization_tab_viewed')}>
+              <Sparkles className="w-4 h-4 mr-2" aria-hidden="true" />
+              Rewards
             </TabsTrigger>
             <TabsTrigger value="notifications">
               <Bell className="w-4 h-4 mr-2" />
@@ -625,6 +632,30 @@ const Settings = () => {
           </Card>
         </TabsContent>
 
+
+        <TabsContent value="rewards" className="space-y-6">
+          <Card className="p-6 glass">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-semibold">Profile Frames</h2>
+            </div>
+            <p className="text-sm text-muted-foreground mb-6">
+              Unlock and customize your profile frame by leveling up and earning badges
+            </p>
+            <ProfileFrameSelector />
+          </Card>
+
+          <Card className="p-6 glass">
+            <div className="flex items-center gap-2 mb-2">
+              <Gift className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-semibold">Widget Styles</h2>
+            </div>
+            <p className="text-sm text-muted-foreground mb-6">
+              Customize the appearance of your dashboard widgets
+            </p>
+            <WidgetStyleCustomizer />
+          </Card>
+        </TabsContent>
 
         <TabsContent value="data" className="space-y-6">
         <Card className="p-6 glass">

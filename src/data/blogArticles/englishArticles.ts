@@ -4217,9 +4217,9 @@ Lower is acceptable IF:
 
 ### Profit Factor
 
-```
+\`\`\`
 Profit Factor = Gross Profit / Gross Loss
-```
+\`\`\`
 
 **Scalping target:** 1.5-2.0+
 
@@ -4518,9 +4518,9 @@ Visit [TheTradingDiary.com](https://www.thetradingdiary.com) to track your ETH d
 
 ### Profit Factor
 
-```
+\`\`\`
 Profit Factor = Gross Profit / Gross Loss
-```
+\`\`\`
 
 **Day trading target:** 1.6-2.5+
 
@@ -4531,9 +4531,9 @@ Profit Factor = Gross Profit / Gross Loss
 **Target:** Minimum 1.5:1, ideally 2:1+
 
 **Calculate:**
-```
+\`\`\`
 Average Win Size / Average Loss Size
-```
+\`\`\`
 
 **Key question:** Are your winners bigger than your losers?
 
@@ -4886,9 +4886,9 @@ Visit [TheTradingDiary.com](https://www.thetradingdiary.com) to track your BTC s
 
 ### Profit Factor
 
-```
+\`\`\`
 Profit Factor = Gross Profit / Gross Loss
-```
+\`\`\`
 
 **Swing trading target:** 1.8-3.0+
 

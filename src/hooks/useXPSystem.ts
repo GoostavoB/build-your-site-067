@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getStreakMultiplier, calculateTier, getTierName } from '@/utils/xpEngine';
+import { getStreakMultiplier, calculateTier, getTierName, getDailyXPCap } from '@/utils/xpEngine';
 import { trackStreakEvents } from '@/utils/analyticsEvents';
 import { analytics } from '@/utils/analytics';
 
@@ -114,8 +114,12 @@ export const useXPSystem = () => {
       const dailyXPCap = tierData?.daily_xp_cap || 750;
       const currentTier = tierData?.current_tier || 0;
 
+      // Enforce cap based on calculated tier level (not DB sentinel)
+      const tierLevel = calculateTier(xpData.totalXPEarned);
+      const resolvedCap = getDailyXPCap(tierLevel);
+
       // Check if user has hit daily cap
-      if (dailyXPEarned >= dailyXPCap) {
+      if (dailyXPEarned >= resolvedCap) {
         toast.error('Daily XP limit reached!', {
           description: 'Upgrade to Pro/Elite to keep earning XP',
           duration: 5000
@@ -123,7 +127,7 @@ export const useXPSystem = () => {
         
         analytics.trackDailyXPCapReached({
           dailyXP: dailyXPEarned,
-          capLimit: dailyXPCap,
+          capLimit: resolvedCap,
           planType: currentTier === 0 ? 'free' : currentTier === 1 ? 'bronze' : currentTier === 2 ? 'silver' : 'gold'
         });
         
@@ -149,7 +153,7 @@ export const useXPSystem = () => {
       let finalAmount = Math.floor(amount * multiplier);
       
       // Cap the XP amount if it would exceed daily cap
-      const remainingDailyXP = dailyXPCap - dailyXPEarned;
+      const remainingDailyXP = resolvedCap - dailyXPEarned;
       if (finalAmount > remainingDailyXP) {
         finalAmount = remainingDailyXP;
         toast.warning('XP capped', {

@@ -71,11 +71,8 @@ export const useUserTier = () => {
       const xpToNextTier = getXPToNextTier(totalXP);
       const tierProgress = getTierProgress(totalXP);
 
-      // Prefer DB cap; clamp unrealistic "unlimited" caps unless at max tier
-      let dailyXPCapRaw = tierInfo?.daily_xp_cap ?? getDailyXPCap(tierLevel);
-      const dailyXPCap = (dailyXPCapRaw === Infinity || dailyXPCapRaw >= 999999) && tierLevel < 4
-        ? getDailyXPCap(tierLevel)
-        : dailyXPCapRaw;
+      // Derive daily XP cap strictly from tier level for consistency
+      const dailyXPCap = getDailyXPCap(tierLevel);
       const dailyXPEarned = tierInfo?.daily_xp_earned ?? 0;
       const dailyUploadLimit = tierInfo?.daily_upload_limit ?? getDailyUploadLimit(tierLevel);
 

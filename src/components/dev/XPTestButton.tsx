@@ -38,8 +38,14 @@ export function XPTestButton() {
       if (!confirm("Reset today's XP to 0?")) return;
       const { error } = await supabase
         .from('user_xp_tiers')
-        .update({ daily_xp_earned: 0 })
-        .eq('user_id', user.id);
+        .upsert(
+          {
+            user_id: user.id,
+            daily_xp_earned: 0,
+            last_reset_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id' }
+        );
       if (error) throw error;
       
       // Force immediate refetch of both queries

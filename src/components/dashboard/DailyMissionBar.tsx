@@ -7,14 +7,14 @@ import { UpgradePrompt } from '@/components/UpgradePrompt';
 import { cn } from '@/lib/utils';
 
 export function DailyMissionBar() {
-  const { dailyXPEarned, dailyXPCap, tierName, tier, isLoading } = useUserTier();
+  const { dailyXPEarned, dailyXPCap, tierName, tier, tierLevel, isLoading } = useUserTier();
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
 
   if (isLoading) return null;
 
   const progress = dailyXPCap > 0 ? (dailyXPEarned / dailyXPCap) * 100 : 0;
   const isCapped = dailyXPEarned >= dailyXPCap;
-  const isUnlimited = dailyXPCap === Infinity || dailyXPCap >= 999999;
+  const isUnlimited = tierLevel === 4;
 
   // Color gradient based on progress
   const getProgressColor = () => {

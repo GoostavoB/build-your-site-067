@@ -6298,7 +6298,7 @@ Related reading:
     metaDescription: "Track ETH trades from KuCoin in a crypto trading journal with clean metrics, win rate, profit factor, and drawdown analysis.",
     description: "Track ETH trades from KuCoin with comprehensive metrics and analysis.",
     focusKeyword: "KuCoin Ethereum trading journal",
-    readTime: "3 min read",
+    readTime: "8 min read",
     author: "Gustavo",
     date: "2025-10-28",
     category: "Trading Journal",
@@ -6308,36 +6308,314 @@ Related reading:
     heroImage: undefined,
     heroImageAlt: undefined,
     content: `
-You can improve trade tracking and analysis with a dedicated journal. It imports data, calculates metrics, and saves time.
+Trading Ethereum on KuCoin without proper trade tracking is like navigating without a map. You might reach your destination occasionally, but you won't understand why—or how to repeat your success.
 
-Visit [TheTradingDiary.com](https://www.thetradingdiary.com)
+A dedicated Ethereum trading journal transforms random KuCoin trades into a systematic learning process that compounds over time.
 
-Related: [KuCoin Integration](https://www.thetradingdiary.com/blog/integrations/kucoin-trading-journal) | [Ethereum Day Trading](https://www.thetradingdiary.com/blog/strategy-tracker/day-trading-ethereum)
+## Why KuCoin Ethereum Traders Need a Dedicated Journal
 
-## Why this matters
-- Less manual work, fewer errors.
-- Clear metrics like win rate, profit factor, drawdown, and expectancy.
-- One place for all exchanges and strategies.
+### The KuCoin Advantage—And Challenge
 
-## Quick steps
-1. Create your account on [TheTradingDiary.com](https://www.thetradingdiary.com).
-2. Connect your exchange or upload CSV.
-3. Review metrics and tag strategies.
-4. Export reports when needed.
+KuCoin offers excellent Ethereum trading pairs, competitive fees, and diverse trading options (spot, futures, margin). However, this flexibility creates a tracking problem:
 
-## FAQs
-### Is this free to try
-Yes. You can start a free trial and import recent trades.
+**Without a centralized journal:**
+- ETH spot trades live in one history
+- ETH perpetual futures trades live in another
+- Margin trades are recorded separately
+- You can't see your unified Ethereum performance
 
-### Do you support multiple exchanges
-Yes. You can connect major exchanges and keep one unified journal.
+**With [TheTradingDiary.com](https://www.thetradingdiary.com):**
+- All KuCoin ETH trades consolidated automatically
+- Unified metrics across spot, futures, and margin
+- Clear visibility into your actual Ethereum edge
+- Cross-exchange comparison if you trade ETH elsewhere
 
-### Can I export my data
-Yes. You can export clean CSVs and reports any time.
+### What You Gain from Systematic ETH Tracking
 
-## Next step
-Start your free trial and import your last 90 days: [TheTradingDiary.com](https://www.thetradingdiary.com)
-`
+Tracking isn't just about numbers—it's about pattern recognition:
+
+1. **Identify Your ETH Edge**: Discover which Ethereum setups actually work for you (not what works in theory)
+2. **Stop Repeating Mistakes**: See patterns in losing trades and eliminate them systematically
+3. **Optimize Position Sizing**: Understand your actual risk tolerance with Ethereum's volatility
+4. **Improve Entry/Exit Timing**: Analyze which timeframes and indicators work best for your style
+5. **Track Strategy Evolution**: See how your ETH trading improves month-over-month
+
+Related: [KuCoin Integration Guide](https://www.thetradingdiary.com/blog/integrations/kucoin-trading-journal)
+
+## How to Export Your KuCoin Ethereum Trade History
+
+### Method 1: CSV Export (Manual)
+
+1. Log into KuCoin
+2. Navigate to **Orders** → **Spot Order History** (or **Futures Order History**)
+3. Filter by **ETH** trading pairs
+4. Click **Export** → Select date range → Download CSV
+5. Upload to [TheTradingDiary.com](https://www.thetradingdiary.com)
+
+**Pro tip:** Export monthly to maintain complete history. KuCoin limits historical data access.
+
+### Method 2: API Connection (Automated)
+
+1. Generate read-only API keys in KuCoin security settings
+2. Connect API to TheTradingDiary.com
+3. Automatic sync of all ETH trades (spot + futures)
+4. Real-time updates as you trade
+
+**Security note:** Always use read-only API keys. Never grant trading permissions to journal platforms.
+
+## Essential Metrics for Ethereum Trading on KuCoin
+
+### Win Rate
+
+\`\`\`
+Win Rate = (Winning ETH Trades / Total ETH Trades) × 100
+\`\`\`
+
+Ethereum's volatility means your win rate might be lower than with BTC, but average winners should be larger.
+
+**Typical ranges:**
+- Scalping ETH: 55-65% win rate needed
+- Day trading ETH: 45-55% sufficient if R:R is good
+- Swing trading ETH: 40-50% acceptable with 2:1+ R:R
+
+### Profit Factor
+
+\`\`\`
+Profit Factor = Gross ETH Profit / Gross ETH Loss
+\`\`\`
+
+A profit factor above 1.5 indicates a solid Ethereum strategy. Above 2.0 is excellent.
+
+### Average Risk/Reward
+
+\`\`\`
+R:R = Average ETH Win / Average ETH Loss
+\`\`\`
+
+Ethereum's volatility supports higher R:R ratios than many alts. Aim for 2:1 minimum on swing trades.
+
+### Maximum Drawdown
+
+Your largest peak-to-trough decline trading ETH. Critical for position sizing and risk management.
+
+**ETH-specific consideration:** Ethereum has higher beta than Bitcoin. Expect larger drawdowns, plan accordingly.
+
+Related: [Ethereum Day Trading Strategies](https://www.thetradingdiary.com/blog/strategy-tracker/day-trading-ethereum)
+
+## Real Trader Scenario: Marcus's KuCoin ETH Journey
+
+**Background:** Marcus traded Ethereum on KuCoin for 8 months without tracking. He felt like he was "breaking even" but had no data.
+
+**The Problem:**
+- Couldn't identify which ETH strategies worked
+- Repeated the same mistakes weekly
+- No idea if spot or futures performed better
+- Emotional trading based on recent results
+
+**The Solution:** Marcus started using TheTradingDiary.com in January 2025.
+
+**Results after 90 days:**
+
+| Metric | Before Tracking | After 90 Days |
+|--------|----------------|---------------|
+| Win Rate | Unknown (~50%?) | 48% (measured) |
+| Profit Factor | Unknown | 2.1 |
+| Avg R:R | Unknown | 2.4:1 |
+| Monthly ROI | ~2% (estimated) | 8.3% (verified) |
+| Biggest Insight | None | Long trades 3x better than shorts |
+
+**Key discoveries:**
+1. His ETH long trades had 61% win rate; shorts only 32%
+2. Trading ETH during Asian market hours (his timezone) had 15% better performance
+3. His "feeling" of breaking even masked a profitable spot strategy and unprofitable futures strategy
+4. He was overtrading—cutting trade frequency by 40% improved results
+
+**Marcus's advice:** "I wasted 8 months trading blind. The journal showed me I'm a long-only ETH trader. That one insight doubled my profit factor."
+
+## KuCoin-Specific Tracking Tips
+
+### Tag Your Trading Pairs
+
+KuCoin offers multiple ETH pairs (ETH/USDT, ETH/BTC, ETH/USDC). Tag each to identify which pair gives you the best performance.
+
+**Common findings:**
+- ETH/USDT: Most liquid, best for scalping
+- ETH/BTC: Different correlation pattern, useful for crypto-native traders
+- ETH/USDC: Similar to USDT but occasionally better rates
+
+### Separate Spot vs Futures Performance
+
+Don't assume your spot trading skills translate to futures. Track separately and you might discover:
+
+- You're profitable in spot but losing in futures (or vice versa)
+- Optimal leverage differs from what you think
+- Funding rates significantly impact your futures P&L
+
+### Track Fee Impact
+
+KuCoin's maker/taker fee structure affects strategy profitability:
+
+- **Market orders (taker)**: 0.10% fee
+- **Limit orders (maker)**: 0.10% fee (0.08% with KCS)
+- **Futures fees**: 0.02% maker / 0.06% taker
+
+High-frequency ETH strategies pay significantly more in fees. Your journal calculates true net profit after all costs.
+
+## Comparison: Tracking vs Not Tracking
+
+| Aspect | Without Journal | With Journal |
+|--------|----------------|--------------|
+| **Performance visibility** | Vague sense of P&L | Precise metrics, trends |
+| **Strategy optimization** | Guesswork | Data-driven decisions |
+| **Mistake identification** | Repeat same errors | See patterns, fix them |
+| **Time spent on analysis** | Hours with Excel | Minutes with auto-calc |
+| **Emotional control** | React to recent trades | Trust the process |
+| **Multi-exchange coordination** | Impossible | Automatic consolidation |
+| **Tax preparation** | Nightmare | Export ready-to-use reports |
+| **Learning curve** | Slow, random | Fast, systematic |
+
+## Advanced Ethereum Tracking Strategies
+
+### Strategy Tagging
+
+Create tags for different ETH approaches:
+- "ETH Breakout"
+- "ETH Mean Reversion"
+- "ETH News Trading"
+- "ETH Trend Following"
+
+After 30+ trades per strategy, compare performance. Double down on what works.
+
+### Market Condition Tagging
+
+Ethereum performs differently in various market regimes:
+- "ETH Bull Market"
+- "ETH Bear Market"
+- "ETH Sideways/Accumulation"
+- "ETH High Volatility"
+- "ETH Low Volatility"
+
+Understanding your edge in each regime transforms your trading.
+
+### Timeframe Analysis
+
+Track which timeframes work best for your ETH trading:
+- Scalping (1-15 min charts)
+- Day trading (15min-4hr charts)
+- Swing trading (4hr-Daily charts)
+
+You might discover you're a profitable daily timeframe trader but unprofitable on 15-minute charts—even though 15-minute feels more exciting.
+
+## Getting Started: 4-Week ETH Tracking Plan
+
+### Week 1: Setup & Data Import
+
+1. Create account at [TheTradingDiary.com](https://www.thetradingdiary.com)
+2. Export your last 90 days of KuCoin ETH trades
+3. Upload CSV or connect API
+4. Review imported data for accuracy
+
+### Week 2: Start Tracking New Trades
+
+1. Log every new ETH trade within 1 hour
+2. Add basic tags (long/short, timeframe, strategy)
+3. Note your emotional state before and after each trade
+4. Don't change anything yet—just observe
+
+### Week 3: First Analysis
+
+1. Review win rate, profit factor, and average R:R
+2. Identify your top 3 performing setups
+3. Identify your top 3 costly mistakes
+4. Look for patterns in time of day, market conditions
+
+### Week 4: Make One Improvement
+
+Don't try to fix everything. Pick ONE insight from your data:
+- Stop trading a specific losing setup
+- Increase position size on your best setup
+- Avoid trading during your worst-performing hours
+- Switch from futures to spot (or vice versa)
+
+Track the impact for another month.
+
+Related: [Data-Driven Crypto Trading](https://www.thetradingdiary.com/blog/data-driven-trading)
+
+## Common Questions About KuCoin ETH Tracking
+
+### Do I need to track every small trade?
+
+**Yes.** Small trades compound into significant data. Plus, your "small" trades often reveal behavioral patterns your "serious" trades don't.
+
+### Can I combine KuCoin with other exchange data?
+
+**Absolutely.** TheTradingDiary.com consolidates all exchanges into one unified view. Compare your KuCoin ETH performance against Binance ETH or Bybit ETH.
+
+### How long until I see patterns?
+
+**30-50 trades minimum.** Less than that, you're looking at noise, not signal. Ethereum volatility requires adequate sample size for meaningful analysis.
+
+### What if I trade ETH futures with leverage?
+
+Track leverage separately. You'll likely discover optimal leverage is lower than you think. Most traders over-leverage Ethereum and suffer unnecessary liquidations.
+
+### Should I track paper trading?
+
+**Yes**, if you're learning. But don't mix paper and live trade data. Paper trading eliminates emotional variables that affect real performance.
+
+## FAQ
+
+### Is this free to try?
+
+Yes. Start a free trial at [TheTradingDiary.com](https://www.thetradingdiary.com) and import your recent KuCoin ETH trades. No credit card required for trial.
+
+### Do you support multiple exchanges?
+
+Yes. Connect KuCoin, Binance, Bybit, OKX, Coinbase, and more. See unified performance across all platforms.
+
+### Can I export my data?
+
+Yes. Export clean CSVs and reports any time. Your data always belongs to you.
+
+### How secure is API connection?
+
+Use read-only API keys only. No withdrawals, no trading permissions. TheTradingDiary.com never stores your API keys in plain text.
+
+### Does tracking work for ETH staking or DeFi?
+
+The journal focuses on trading activity. For DeFi yield tracking, consider specialized portfolio tools, then use TheTradingDiary for active ETH trading.
+
+## Take Action: Start Tracking Today
+
+**This week:**
+1. Export your last 90 days of KuCoin ETH trades
+2. Create free account: [TheTradingDiary.com](https://www.thetradingdiary.com)
+3. Upload your data
+4. Review your first performance dashboard
+
+**This month:**
+1. Log every ETH trade for 30 days
+2. Identify your single best setup
+3. Identify your single worst pattern
+4. Make one data-driven improvement
+
+**This quarter:**
+1. Accumulate 100+ tracked trades
+2. Calculate true win rate, profit factor, expectancy
+3. Eliminate losing strategies
+4. Double position size on proven winning setups
+
+The difference between guessing and knowing is just 90 days of consistent tracking.
+
+**Start tracking your KuCoin Ethereum trades today:** [TheTradingDiary.com](https://www.thetradingdiary.com)
+
+Your future self will thank you for the data.
+
+Related reading:
+- [KuCoin Bitcoin Trading Journal](https://www.thetradingdiary.com/blog/trading-journal/kucoin-bitcoin)
+- [Ethereum Trading Psychology](https://www.thetradingdiary.com/blog/trading-psychology-control-emotions)
+- [Crypto Risk Management](https://www.thetradingdiary.com/blog/crypto-risk-management)
+\`
   },
   {
     title: "Bybit Ethereum Trading Journal",
@@ -6346,7 +6624,7 @@ Start your free trial and import your last 90 days: [TheTradingDiary.com](https:
     metaDescription: "Track ETH trades from Bybit in a crypto trading journal with clean metrics, win rate, profit factor, and drawdown analysis.",
     description: "Track ETH trades from Bybit with comprehensive metrics and analysis.",
     focusKeyword: "Bybit Ethereum trading journal",
-    readTime: "3 min read",
+    readTime: "9 min read",
     author: "Gustavo",
     date: "2025-10-28",
     category: "Trading Journal",
@@ -6355,36 +6633,376 @@ Start your free trial and import your last 90 days: [TheTradingDiary.com](https:
     language: "en",
     heroImage: undefined,
     heroImageAlt: undefined,
-    content: `
-You can improve trade tracking and analysis with a dedicated journal. It imports data, calculates metrics, and saves time.
+    content: \`
+Bybit offers some of the best Ethereum derivatives trading in crypto—high leverage, deep liquidity, and advanced order types. But here's the problem: all that power is worthless if you can't track what's actually working.
 
-Visit [TheTradingDiary.com](https://www.thetradingdiary.com)
+Most Bybit Ethereum traders have a vague sense of their performance. Winners remember their best trades. Losers remember their worst. Neither has data that actually matters.
 
-Related: [Bybit Bitcoin Journal](https://www.thetradingdiary.com/blog/trading-journal/bybit-bitcoin) | [Bybit Integration](https://www.thetradingdiary.com/blog/integrations/bybit-trading-journal)
+A systematic trading journal changes everything.
 
-## Why this matters
-- Less manual work, fewer errors.
-- Clear metrics like win rate, profit factor, drawdown, and expectancy.
-- One place for all exchanges and strategies.
+## Why Bybit Ethereum Traders Lose Without Tracking
 
-## Quick steps
-1. Create your account on [TheTradingDiary.com](https://www.thetradingdiary.com).
-2. Connect your exchange or upload CSV.
-3. Review metrics and tag strategies.
-4. Export reports when needed.
+### The Bybit ETH Complexity Problem
 
-## FAQs
-### Is this free to try
-Yes. You can start a free trial and import recent trades.
+Bybit's Ethereum product suite is sophisticated:
+- **ETH/USDT Perpetual**: 100x leverage, funding rates every 8 hours
+- **ETH/USD Inverse Perpetual**: Settled in ETH, different risk profile
+- **ETH Options**: Calls, puts, complex strategies
+- **ETH Spot**: Lower leverage, different fee structure
 
-### Do you support multiple exchanges
-Yes. You can connect major exchanges and keep one unified journal.
+Trading across these products without centralized tracking creates blind spots:
 
-### Can I export my data
-Yes. You can export clean CSVs and reports any time.
+**What you think you know:**
+- "I'm profitable trading ETH on Bybit"
+- "I'm good at catching ETH moves"
+- "I understand ETH leverage"
 
-## Next step
-Start your free trial and import your last 90 days: [TheTradingDiary.com](https://www.thetradingdiary.com)
+**What your data might reveal:**
+- Profitable in perpetual, losing money in options
+- Good at long setups, terrible at shorts
+- Optimal leverage is 3x, not 20x
+- Funding rates erase 15% of gross profit
+
+You can't fix problems you can't see. A journal makes them visible.
+
+### The High-Leverage Tracking Imperative
+
+Bybit allows 100x leverage on ETH perpetuals. That level of leverage amplifies both gains and losses—but also amplifies the importance of tracking.
+
+**At 10x leverage:**
+- A 5% tracking error is a 50% capital error
+- Ignoring funding rates costs real money
+- One untracked mistake can wipe out a week of profits
+
+**At 50x+ leverage:**
+- Sub-1% moves liquidate positions
+- Emotional decisions compound catastrophically
+- Without tracking, you're gambling, not trading
+
+Related: [Bybit Integration Guide](https://www.thetradingdiary.com/blog/integrations/bybit-trading-journal)
+
+## How to Export Bybit Ethereum Trade History
+
+### Method 1: Manual CSV Export
+
+1. Log into Bybit
+2. Go to **Orders** → **Order History**
+3. Select **Derivatives** or **Spot** (depending on what you trade)
+4. Filter by **ETH** pairs
+5. Set date range (Bybit allows up to 2 years)
+6. Click **Export** → Download CSV
+7. Upload to [TheTradingDiary.com](https://www.thetradingdiary.com)
+
+**Important:** Export separately for spot vs derivatives if you trade both.
+
+### Method 2: API Connection (Recommended)
+
+1. Navigate to **Account & Security** → **API Management**
+2. Create new API key with **Read-Only** permissions
+3. Copy API key and secret
+4. Connect to TheTradingDiary.com
+5. Automatic import of all ETH trade history
+6. Real-time sync of new trades
+
+**Security best practice:** Never enable trading or withdrawal permissions on journal API keys.
+
+### Bybit-Specific Export Tips
+
+- **Funding history**: Export separately from trades. Funding rates significantly affect perpetual P&L.
+- **Liquidation history**: If you've been liquidated, export this data separately. It's critical for risk management analysis.
+- **Options trades**: Export options separately—they have different metrics than perpetual contracts.
+
+## Key Metrics for Bybit Ethereum Trading
+
+### Win Rate (Adjusted for Leverage)
+
+\`\`\`
+Win Rate = (Winning ETH Trades / Total ETH Trades) × 100
+\`\`\`
+
+High leverage changes acceptable win rates:
+- **10x leverage**: 52%+ win rate needed for profitability
+- **20x leverage**: 55%+ win rate typically required
+- **50x leverage**: 60%+ win rate necessary (unless massive R:R)
+
+Why? Because losses at high leverage wipe out multiple wins. Tracking reveals your actual breakeven win rate.
+
+### Profit Factor (Post-Fees, Post-Funding)
+
+\`\`\`
+Profit Factor = Gross Profit / Gross Loss
+\`\`\`
+
+Bybit's fee structure:
+- Maker: -0.025% (rebate)
+- Taker: 0.075%
+- Funding: Varies, typically ±0.01% every 8 hours
+
+Your profit factor MUST be calculated after all costs. Many traders are "profitable" before fees but unprofitable after.
+
+**Target profit factors on Bybit:**
+- Above 1.5: Sustainable
+- Above 2.0: Strong
+- Above 3.0: Exceptional (or small sample size)
+
+### Maximum Drawdown (Critical for High Leverage)
+
+Your largest peak-to-trough decline. On Bybit with high leverage, this metric determines survival.
+
+**ETH volatility × Bybit leverage = liquidation risk**
+
+If your max drawdown equals your margin, you'll eventually get liquidated. Simple math.
+
+**Safe leverage rule:**
+- Max drawdown 10% → Use max 8x leverage
+- Max drawdown 20% → Use max 4x leverage  
+- Max drawdown 30% → Use max 2-3x leverage
+
+Your journal calculates this automatically. Most traders use 3-5x too much leverage.
+
+### Average Holding Time
+
+Bybit charges funding every 8 hours. Your holding time directly affects net profitability:
+
+- **Hold 1 hour**: Minimal funding impact
+- **Hold 24 hours**: 3 funding payments
+- **Hold 1 week**: 21 funding payments (can erase 2-3% of profit)
+
+Track average hold time by strategy. You might discover your "swing trades" are actually day trades being forced into overnight positions.
+
+Related: [Ethereum Day Trading Strategies](https://www.thetradingdiary.com/blog/strategy-tracker/day-trading-ethereum)
+
+## Real Trader Scenario: Lisa's Bybit ETH Transformation
+
+**Background:** Lisa traded ETH perpetuals on Bybit for 6 months. She felt profitable but never calculated exact numbers. Used 25-50x leverage "because it was available."
+
+**The Wake-Up Call:**
+
+After a particularly bad week in March 2025, Lisa finally set up proper tracking. Here's what she discovered:
+
+| Actual Metric | Lisa's Belief | Reality |
+|---------------|---------------|---------|
+| Overall P&L | +$3,000 profit | -$1,200 loss |
+| Win Rate | ~60% | 47% |
+| Avg Leverage | "Mostly 20-30x" | 38x average |
+| Profitable Strategy | "Everything works" | Only long setups profitable |
+| Cost of Funding | "Not much" | -$2,400 over 6 months |
+| Liquidation Rate | "Rarely" | 23% of trades ended in liquidation |
+
+**The shocking truth:**
+- She WAS profitable on gross—$4,800 gross profit over 6 months
+- Funding rates cost $2,400
+- Liquidations cost $3,600
+- Net result: -$1,200
+
+**Changes Lisa Made:**
+
+1. **Reduced leverage to 8x maximum**: Liquidations dropped from 23% to 3%
+2. **Eliminated short trades**: They had 31% win rate (unprofitable at any leverage)
+3. **Set max hold time of 16 hours**: Avoided excessive funding
+4. **Added 2% stop-loss to EVERY trade**: Previously traded without stops
+
+**Results after 90 days of tracked, adjusted trading:**
+
+- Win rate: 51% (up from 47%)
+- Net profit: +$6,200 (vs -$1,200 previous quarter)
+- Liquidation rate: 3% (vs 23%)
+- Max drawdown: 12% (vs 34%)
+- Avg leverage: 6x (vs 38x)
+
+**Lisa's reflection:** "I was destroying my account with leverage and funding rates. I thought I was profitable because I remembered my wins. The journal showed me the truth. Best $800 loss I ever took—it saved me from losing tens of thousands more."
+
+## Bybit-Specific Tracking Strategies
+
+### Tag Leverage Levels
+
+Create separate tags for different leverage:
+- "ETH 5x"
+- "ETH 10x"
+- "ETH 20x"
+- "ETH 50x+"
+
+After 30+ trades at each level, compare:
+- Which leverage has highest win rate?
+- Which has best profit factor?
+- Which has acceptable drawdown?
+
+Most traders discover their optimal leverage is 1/3 of what they currently use.
+
+### Track Funding Rate Impact
+
+Bybit displays funding rates, but traders rarely calculate cumulative impact. Your journal does this automatically.
+
+**Common finding:** Profitable gross, unprofitable net because funding erodes gains.
+
+**Solution:** Either close before funding or trade inverse perpetuals when funding is consistently negative.
+
+### Separate Long vs Short Performance
+
+Ethereum has different characteristics than Bitcoin:
+- Higher volatility
+- More retail participation
+- Different support/resistance patterns
+
+Many traders are profitable long ETH but unprofitable shorting ETH. Your journal reveals this in 20-30 trades.
+
+### Track Time of Day Performance
+
+Bybit is global, but Ethereum still shows patterns:
+- **UTC 00:00-08:00**: Asian session, often lower volatility
+- **UTC 08:00-16:00**: European session, moderate volatility
+- **UTC 16:00-24:00**: US session, highest volatility
+
+Your optimal trading windows might differ from when you currently trade. Data reveals the truth.
+
+## Bybit vs Other Exchanges: Tracking Comparison
+
+| Feature | Bybit | Binance | OKX | KuCoin |
+|---------|-------|---------|-----|--------|
+| **Max ETH Leverage** | 100x | 125x | 100x | 100x |
+| **Funding Frequency** | Every 8hr | Every 8hr | Every 8hr | Every 8hr |
+| **Maker Fee** | -0.025% | 0.02% | -0.02% | 0.02% |
+| **Taker Fee** | 0.075% | 0.04% | 0.05% | 0.06% |
+| **API Tracking** | Excellent | Excellent | Good | Good |
+| **CSV Export** | Easy | Easy | Moderate | Moderate |
+| **Optimal For** | High leverage | Spot+futures | Derivatives | Spot |
+
+A unified journal lets you compare YOUR performance across exchanges, not theoretical features.
+
+Related: [Bybit Bitcoin Trading Journal](https://www.thetradingdiary.com/blog/trading-journal/bybit-bitcoin)
+
+## Advanced Bybit ETH Tracking Techniques
+
+### Strategy Tagging System
+
+Create granular tags:
+- "ETH Breakout Long"
+- "ETH Support Bounce"
+- "ETH News Spike"
+- "ETH Funding Arbitrage"
+- "ETH Liquidation Hunt"
+
+After 20+ trades per strategy, rank by profit factor. Double down on top 2, eliminate bottom 2.
+
+### Market Regime Classification
+
+Tag each trade by market condition:
+- "ETH Uptrend"
+- "ETH Downtrend"
+- "ETH Range"
+- "ETH High Vol"
+- "ETH Low Vol"
+
+You'll discover you're profitable in certain regimes and unprofitable in others. Stop trading your losing regimes.
+
+### Liquidation Near-Miss Tracking
+
+Note trades where ETH came within 5% of your liquidation price. These are "statistical liquidations"—you got lucky.
+
+If >20% of your trades are near-misses, you're using too much leverage even if you haven't been liquidated yet.
+
+## Getting Started: Your 30-Day Bybit ETH Tracking Plan
+
+### Days 1-3: Setup
+
+1. Create account: [TheTradingDiary.com](https://www.thetradingdiary.com)
+2. Export 90 days of Bybit ETH history
+3. Import via CSV or API
+4. Review initial dashboards
+
+### Days 4-14: Baseline Data Collection
+
+1. Trade normally (don't change anything yet)
+2. Log every trade within 1 hour
+3. Tag each trade with leverage, direction, strategy
+4. Note emotions and setup quality
+
+**Goal:** Collect 20-30 trades of baseline data
+
+### Days 15-21: First Analysis
+
+1. Calculate win rate by leverage level
+2. Compare long vs short performance
+3. Identify top 3 profitable setups
+4. Identify top 3 costly mistakes
+5. Calculate funding rate impact
+
+### Days 22-30: Implement ONE Change
+
+Choose your biggest problem:
+- **Too many liquidations?** → Reduce max leverage by 50%
+- **Negative funding eating profits?** → Close positions before funding
+- **Shorts underperforming?** → Only trade long setups for 30 days
+- **Low win rate?** → Wait for higher-quality setups (reduce trade frequency)
+
+Track the impact. Did it help? By how much? Data tells you.
+
+Related: [Data-Driven Crypto Trading](https://www.thetradingdiary.com/blog/data-driven-trading)
+
+## FAQ
+
+### Do I need to track demo/testnet trades?
+
+Only if you're learning. Don't mix demo and live data—they have different emotional profiles.
+
+### Can I track ETH options on Bybit?
+
+Yes, but tag separately from perpetuals. Options have different risk/reward profiles and shouldn't be mixed in analysis.
+
+### What about Bybit trading bots?
+
+Track bot performance separately from manual trades. Bots eliminate emotional variables, so comparison isn't apples-to-apples.
+
+### How do I account for funding rates?
+
+TheTradingDiary.com automatically includes funding in P&L calculations when you use API connection. Manual CSV requires separate funding export.
+
+### Should I track paper trading?
+
+Yes, if you're testing strategies. But mark it clearly and never mix with live trading data.
+
+## Take Action This Week
+
+**Monday:**
+1. Export your last 90 days of Bybit ETH trades
+2. Create free account: [TheTradingDiary.com](https://www.thetradingdiary.com)
+3. Import your data
+
+**Tuesday-Friday:**
+1. Log every new ETH trade
+2. Note leverage, direction, setup quality
+3. Track emotions before and after each trade
+
+**Sunday:**
+1. Review your first week of data
+2. Calculate win rate, profit factor, avg leverage
+3. Identify ONE insight (best setup or worst mistake)
+4. Write down ONE specific improvement for next week
+
+**This month:**
+1. Accumulate 30+ tracked trades
+2. Compare long vs short performance
+3. Test optimal leverage level
+4. Calculate funding rate impact
+
+**This quarter:**
+1. Collect 100+ trades of data
+2. Eliminate losing strategies completely
+3. Double position size on proven winners
+4. Reduce leverage to statistically safe levels
+
+The difference between profitable and unprofitable Bybit ETH trading isn't more knowledge—it's more data.
+
+**Start tracking your Bybit Ethereum trades today:**
+
+[TheTradingDiary.com](https://www.thetradingdiary.com)
+
+Your account will thank you in 90 days.
+
+Related reading:
+- [Bybit Integration Details](https://www.thetradingdiary.com/blog/integrations/bybit-trading-journal)
+- [Ethereum Trading Psychology](https://www.thetradingdiary.com/blog/trading-psychology-control-emotions)
+- [Crypto Leverage Management](https://www.thetradingdiary.com/blog/crypto-risk-management)
 `
   },
   {

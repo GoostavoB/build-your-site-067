@@ -7092,5 +7092,465 @@ Yes. You can export clean CSVs and reports any time.
 ## Next step
 Start your free trial and import your last 90 days: [TheTradingDiary.com](https://www.thetradingdiary.com)
 `
+  },
+  {
+    title: "Trading Journal vs Notion for MetaTrader 5 Users",
+    slug: "journal-vs-notion/metatrader5",
+    metaTitle: "Trading Journal vs Notion for MetaTrader 5 | Speed & Reliability",
+    metaDescription: "Notion templates vs a crypto trading journal for MT5 users.",
+    description: "Compare Notion templates vs dedicated trading journals for MetaTrader 5 users.",
+    focusKeyword: "MetaTrader 5 trading journal Notion",
+    readTime: "3 min read",
+    author: "Gustavo",
+    date: "2025-10-28",
+    category: "Comparisons",
+    tags: ["MetaTrader 5", "MT5", "Notion", "comparison", "trading journal"],
+    canonical: "https://www.thetradingdiary.com/blog/journal-vs-notion/metatrader5",
+    language: "en",
+    heroImage: undefined,
+    heroImageAlt: undefined,
+    content: `
+You want clean tracking and faster reviews. A dedicated trading journal imports data, calculates metrics, and keeps one source of truth.
+
+Visit [TheTradingDiary.com](https://www.thetradingdiary.com)
+
+## Why this matters
+- Less manual work, fewer errors.
+- Clear metrics like win rate, profit factor, drawdown, and expectancy.
+- One place for all exchanges and strategies.
+
+## Quick steps
+1. Create your account on [TheTradingDiary.com](https://www.thetradingdiary.com).
+2. Connect your exchange or upload CSV.
+3. Tag strategies and timeframes.
+4. Review metrics and export reports.
+
+## FAQs
+### Is this free to try
+Yes. You can start a free trial and import recent trades.
+
+### Do you support multiple exchanges
+Yes. You can connect major exchanges and keep one unified journal.
+
+### Can I export my data
+Yes. You can export clean CSVs and reports any time.
+
+## Next step
+Start your free trial and import your last 90 days: [TheTradingDiary.com](https://www.thetradingdiary.com)
+`
+  },
+  {
+    title: "DCA Bitcoin Strategy Tracker",
+    slug: "strategy-tracker/dca-bitcoin",
+    metaTitle: "DCA Bitcoin Strategy Tracker | Track BTC Dollar-Cost Averaging",
+    metaDescription: "Track a BTC DCA strategy with clear rules and reviews.",
+    description: "Track and optimize your Bitcoin dollar-cost averaging strategy.",
+    focusKeyword: "DCA Bitcoin strategy",
+    readTime: "3 min read",
+    author: "Gustavo",
+    date: "2025-10-28",
+    category: "Strategy Tracking",
+    tags: ["DCA", "Bitcoin", "BTC", "strategy", "dollar-cost averaging"],
+    canonical: "https://www.thetradingdiary.com/blog/strategy-tracker/dca-bitcoin",
+    language: "en",
+    heroImage: undefined,
+    heroImageAlt: undefined,
+    content: `
+You want clean tracking and faster reviews. A dedicated trading journal imports data, calculates metrics, and keeps one source of truth.
+
+Visit [TheTradingDiary.com](https://www.thetradingdiary.com)
+
+## Why this matters
+- Less manual work, fewer errors.
+- Clear metrics like win rate, profit factor, drawdown, and expectancy.
+- One place for all exchanges and strategies.
+
+## Quick steps
+1. Create your account on [TheTradingDiary.com](https://www.thetradingdiary.com).
+2. Connect your exchange or upload CSV.
+3. Tag strategies and timeframes.
+4. Review metrics and export reports.
+
+## FAQs
+### Is this free to try
+Yes. You can start a free trial and import recent trades.
+
+### Do you support multiple exchanges
+Yes. You can connect major exchanges and keep one unified journal.
+
+### Can I export my data
+Yes. You can export clean CSVs and reports any time.
+
+## Next step
+Start your free trial and import your last 90 days: [TheTradingDiary.com](https://www.thetradingdiary.com)
+`
+  },
+  {
+    title: "Copy Trading Bitcoin Strategy Tracker",
+    slug: "strategy-tracker/copy-trading-bitcoin",
+    metaTitle: "Copy Trading Bitcoin Strategy Tracker | Track BTC Copy Trading Results",
+    metaDescription: "Track BTC copy trading results with clean metrics and tags.",
+    description: "Track and analyze your Bitcoin copy trading performance.",
+    focusKeyword: "Bitcoin copy trading strategy",
+    readTime: "3 min read",
+    author: "Gustavo",
+    date: "2025-10-28",
+    category: "Strategy Tracking",
+    tags: ["copy trading", "Bitcoin", "BTC", "strategy", "automated"],
+    canonical: "https://www.thetradingdiary.com/blog/strategy-tracker/copy-trading-bitcoin",
+    language: "en",
+    heroImage: undefined,
+    heroImageAlt: undefined,
+    content: `
+You want clean tracking and faster reviews. A dedicated trading journal imports data, calculates metrics, and keeps one source of truth.
+
+Visit [TheTradingDiary.com](https://www.thetradingdiary.com)
+
+## Why this matters
+- Less manual work, fewer errors.
+- Clear metrics like win rate, profit factor, drawdown, and expectancy.
+- One place for all exchanges and strategies.
+
+## Quick steps
+1. Create your account on [TheTradingDiary.com](https://www.thetradingdiary.com).
+2. Connect your exchange or upload CSV.
+3. Tag strategies and timeframes.
+4. Review metrics and export reports.
+
+## FAQs
+### Is this free to try
+Yes. You can start a free trial and import recent trades.
+
+### Do you support multiple exchanges
+Yes. You can connect major exchanges and keep one unified journal.
+
+### Can I export my data
+Yes. You can export clean CSVs and reports any time.
+
+## Next step
+Start your free trial and import your last 90 days: [TheTradingDiary.com](https://www.thetradingdiary.com)
+`
+  },
+  {
+    title: "Grid Bots Ethereum Strategy Tracker",
+    slug: "strategy-tracker/grid-bots-ethereum",
+    metaTitle: "Grid Bots Ethereum Strategy Tracker | Track ETH Grid Trading",
+    metaDescription: "Track ETH grid bot performance across exchanges.",
+    description: "Track and optimize Ethereum grid bot strategies.",
+    focusKeyword: "Ethereum grid bot strategy",
+    readTime: "3 min read",
+    author: "Gustavo",
+    date: "2025-10-28",
+    category: "Strategy Tracking",
+    tags: ["grid bots", "Ethereum", "ETH", "strategy", "automated"],
+    canonical: "https://www.thetradingdiary.com/blog/strategy-tracker/grid-bots-ethereum",
+    language: "en",
+    heroImage: undefined,
+    heroImageAlt: undefined,
+    content: `
+You want clean tracking and faster reviews. A dedicated trading journal imports data, calculates metrics, and keeps one source of truth.
+
+Visit [TheTradingDiary.com](https://www.thetradingdiary.com)
+
+## Why this matters
+- Less manual work, fewer errors.
+- Clear metrics like win rate, profit factor, drawdown, and expectancy.
+- One place for all exchanges and strategies.
+
+## Quick steps
+1. Create your account on [TheTradingDiary.com](https://www.thetradingdiary.com).
+2. Connect your exchange or upload CSV.
+3. Tag strategies and timeframes.
+4. Review metrics and export reports.
+
+## FAQs
+### Is this free to try
+Yes. You can start a free trial and import recent trades.
+
+### Do you support multiple exchanges
+Yes. You can connect major exchanges and keep one unified journal.
+
+### Can I export my data
+Yes. You can export clean CSVs and reports any time.
+
+## Next step
+Start your free trial and import your last 90 days: [TheTradingDiary.com](https://www.thetradingdiary.com)
+`
+  },
+  {
+    title: "Breakout Ethereum Strategy Tracker",
+    slug: "strategy-tracker/breakout-ethereum",
+    metaTitle: "Breakout Ethereum Strategy Tracker | Track ETH Breakout Trades",
+    metaDescription: "Track an ETH breakout strategy with standard metrics.",
+    description: "Track and optimize Ethereum breakout trading strategies.",
+    focusKeyword: "Ethereum breakout strategy",
+    readTime: "3 min read",
+    author: "Gustavo",
+    date: "2025-10-28",
+    category: "Strategy Tracking",
+    tags: ["breakout", "Ethereum", "ETH", "strategy", "technical analysis"],
+    canonical: "https://www.thetradingdiary.com/blog/strategy-tracker/breakout-ethereum",
+    language: "en",
+    heroImage: undefined,
+    heroImageAlt: undefined,
+    content: `
+You want clean tracking and faster reviews. A dedicated trading journal imports data, calculates metrics, and keeps one source of truth.
+
+Visit [TheTradingDiary.com](https://www.thetradingdiary.com)
+
+## Why this matters
+- Less manual work, fewer errors.
+- Clear metrics like win rate, profit factor, drawdown, and expectancy.
+- One place for all exchanges and strategies.
+
+## Quick steps
+1. Create your account on [TheTradingDiary.com](https://www.thetradingdiary.com).
+2. Connect your exchange or upload CSV.
+3. Tag strategies and timeframes.
+4. Review metrics and export reports.
+
+## FAQs
+### Is this free to try
+Yes. You can start a free trial and import recent trades.
+
+### Do you support multiple exchanges
+Yes. You can connect major exchanges and keep one unified journal.
+
+### Can I export my data
+Yes. You can export clean CSVs and reports any time.
+
+## Next step
+Start your free trial and import your last 90 days: [TheTradingDiary.com](https://www.thetradingdiary.com)
+`
+  },
+  {
+    title: "Swing Trading Ethereum Strategy Tracker",
+    slug: "strategy-tracker/swing-trading-ethereum",
+    metaTitle: "Swing Trading Ethereum Strategy Tracker | Track ETH Swing Trades",
+    metaDescription: "Track an ETH swing strategy across markets.",
+    description: "Track and optimize Ethereum swing trading strategies.",
+    focusKeyword: "Ethereum swing trading strategy",
+    readTime: "3 min read",
+    author: "Gustavo",
+    date: "2025-10-28",
+    category: "Strategy Tracking",
+    tags: ["swing trading", "Ethereum", "ETH", "strategy", "medium-term"],
+    canonical: "https://www.thetradingdiary.com/blog/strategy-tracker/swing-trading-ethereum",
+    language: "en",
+    heroImage: undefined,
+    heroImageAlt: undefined,
+    content: `
+You want clean tracking and faster reviews. A dedicated trading journal imports data, calculates metrics, and keeps one source of truth.
+
+Visit [TheTradingDiary.com](https://www.thetradingdiary.com)
+
+## Why this matters
+- Less manual work, fewer errors.
+- Clear metrics like win rate, profit factor, drawdown, and expectancy.
+- One place for all exchanges and strategies.
+
+## Quick steps
+1. Create your account on [TheTradingDiary.com](https://www.thetradingdiary.com).
+2. Connect your exchange or upload CSV.
+3. Tag strategies and timeframes.
+4. Review metrics and export reports.
+
+## FAQs
+### Is this free to try
+Yes. You can start a free trial and import recent trades.
+
+### Do you support multiple exchanges
+Yes. You can connect major exchanges and keep one unified journal.
+
+### Can I export my data
+Yes. You can export clean CSVs and reports any time.
+
+## Next step
+Start your free trial and import your last 90 days: [TheTradingDiary.com](https://www.thetradingdiary.com)
+`
+  },
+  {
+    title: "Day Trading Avalanche Strategy Tracker",
+    slug: "strategy-tracker/day-trading-avalanche",
+    metaTitle: "Day Trading Avalanche Strategy Tracker | Track AVAX Day Trading",
+    metaDescription: "Track AVAX day trading performance.",
+    description: "Track and optimize Avalanche day trading strategies.",
+    focusKeyword: "Avalanche day trading strategy",
+    readTime: "3 min read",
+    author: "Gustavo",
+    date: "2025-10-28",
+    category: "Strategy Tracking",
+    tags: ["day trading", "Avalanche", "AVAX", "strategy", "intraday"],
+    canonical: "https://www.thetradingdiary.com/blog/strategy-tracker/day-trading-avalanche",
+    language: "en",
+    heroImage: undefined,
+    heroImageAlt: undefined,
+    content: `
+You want clean tracking and faster reviews. A dedicated trading journal imports data, calculates metrics, and keeps one source of truth.
+
+Visit [TheTradingDiary.com](https://www.thetradingdiary.com)
+
+## Why this matters
+- Less manual work, fewer errors.
+- Clear metrics like win rate, profit factor, drawdown, and expectancy.
+- One place for all exchanges and strategies.
+
+## Quick steps
+1. Create your account on [TheTradingDiary.com](https://www.thetradingdiary.com).
+2. Connect your exchange or upload CSV.
+3. Tag strategies and timeframes.
+4. Review metrics and export reports.
+
+## FAQs
+### Is this free to try
+Yes. You can start a free trial and import recent trades.
+
+### Do you support multiple exchanges
+Yes. You can connect major exchanges and keep one unified journal.
+
+### Can I export my data
+Yes. You can export clean CSVs and reports any time.
+
+## Next step
+Start your free trial and import your last 90 days: [TheTradingDiary.com](https://www.thetradingdiary.com)
+`
+  },
+  {
+    title: "Scalping Avalanche Strategy Tracker",
+    slug: "strategy-tracker/scalping-avalanche",
+    metaTitle: "Scalping Avalanche Strategy Tracker | Track AVAX Scalping",
+    metaDescription: "Track AVAX scalping with consistent metrics.",
+    description: "Track and optimize Avalanche scalping strategies.",
+    focusKeyword: "Avalanche scalping strategy",
+    readTime: "3 min read",
+    author: "Gustavo",
+    date: "2025-10-28",
+    category: "Strategy Tracking",
+    tags: ["scalping", "Avalanche", "AVAX", "strategy", "high-frequency"],
+    canonical: "https://www.thetradingdiary.com/blog/strategy-tracker/scalping-avalanche",
+    language: "en",
+    heroImage: undefined,
+    heroImageAlt: undefined,
+    content: `
+You want clean tracking and faster reviews. A dedicated trading journal imports data, calculates metrics, and keeps one source of truth.
+
+Visit [TheTradingDiary.com](https://www.thetradingdiary.com)
+
+## Why this matters
+- Less manual work, fewer errors.
+- Clear metrics like win rate, profit factor, drawdown, and expectancy.
+- One place for all exchanges and strategies.
+
+## Quick steps
+1. Create your account on [TheTradingDiary.com](https://www.thetradingdiary.com).
+2. Connect your exchange or upload CSV.
+3. Tag strategies and timeframes.
+4. Review metrics and export reports.
+
+## FAQs
+### Is this free to try
+Yes. You can start a free trial and import recent trades.
+
+### Do you support multiple exchanges
+Yes. You can connect major exchanges and keep one unified journal.
+
+### Can I export my data
+Yes. You can export clean CSVs and reports any time.
+
+## Next step
+Start your free trial and import your last 90 days: [TheTradingDiary.com](https://www.thetradingdiary.com)
+`
+  },
+  {
+    title: "Breakout Avalanche Strategy Tracker",
+    slug: "strategy-tracker/breakout-avalanche",
+    metaTitle: "Breakout Avalanche Strategy Tracker | Track AVAX Breakout Trades",
+    metaDescription: "Track AVAX breakout rules and results.",
+    description: "Track and optimize Avalanche breakout trading strategies.",
+    focusKeyword: "Avalanche breakout strategy",
+    readTime: "3 min read",
+    author: "Gustavo",
+    date: "2025-10-28",
+    category: "Strategy Tracking",
+    tags: ["breakout", "Avalanche", "AVAX", "strategy", "technical analysis"],
+    canonical: "https://www.thetradingdiary.com/blog/strategy-tracker/breakout-avalanche",
+    language: "en",
+    heroImage: undefined,
+    heroImageAlt: undefined,
+    content: `
+You want clean tracking and faster reviews. A dedicated trading journal imports data, calculates metrics, and keeps one source of truth.
+
+Visit [TheTradingDiary.com](https://www.thetradingdiary.com)
+
+## Why this matters
+- Less manual work, fewer errors.
+- Clear metrics like win rate, profit factor, drawdown, and expectancy.
+- One place for all exchanges and strategies.
+
+## Quick steps
+1. Create your account on [TheTradingDiary.com](https://www.thetradingdiary.com).
+2. Connect your exchange or upload CSV.
+3. Tag strategies and timeframes.
+4. Review metrics and export reports.
+
+## FAQs
+### Is this free to try
+Yes. You can start a free trial and import recent trades.
+
+### Do you support multiple exchanges
+Yes. You can connect major exchanges and keep one unified journal.
+
+### Can I export my data
+Yes. You can export clean CSVs and reports any time.
+
+## Next step
+Start your free trial and import your last 90 days: [TheTradingDiary.com](https://www.thetradingdiary.com)
+`
+  },
+  {
+    title: "Copy Trading Avalanche Strategy Tracker",
+    slug: "strategy-tracker/copy-trading-avalanche",
+    metaTitle: "Copy Trading Avalanche Strategy Tracker | Track AVAX Copy Trading",
+    metaDescription: "Track AVAX copy trading with tags and filters.",
+    description: "Track and analyze Avalanche copy trading performance.",
+    focusKeyword: "Avalanche copy trading strategy",
+    readTime: "3 min read",
+    author: "Gustavo",
+    date: "2025-10-28",
+    category: "Strategy Tracking",
+    tags: ["copy trading", "Avalanche", "AVAX", "strategy", "automated"],
+    canonical: "https://www.thetradingdiary.com/blog/strategy-tracker/copy-trading-avalanche",
+    language: "en",
+    heroImage: undefined,
+    heroImageAlt: undefined,
+    content: `
+You want clean tracking and faster reviews. A dedicated trading journal imports data, calculates metrics, and keeps one source of truth.
+
+Visit [TheTradingDiary.com](https://www.thetradingdiary.com)
+
+## Why this matters
+- Less manual work, fewer errors.
+- Clear metrics like win rate, profit factor, drawdown, and expectancy.
+- One place for all exchanges and strategies.
+
+## Quick steps
+1. Create your account on [TheTradingDiary.com](https://www.thetradingdiary.com).
+2. Connect your exchange or upload CSV.
+3. Tag strategies and timeframes.
+4. Review metrics and export reports.
+
+## FAQs
+### Is this free to try
+Yes. You can start a free trial and import recent trades.
+
+### Do you support multiple exchanges
+Yes. You can connect major exchanges and keep one unified journal.
+
+### Can I export my data
+Yes. You can export clean CSVs and reports any time.
+
+## Next step
+Start your free trial and import your last 90 days: [TheTradingDiary.com](https://www.thetradingdiary.com)
+`
   }
 ];

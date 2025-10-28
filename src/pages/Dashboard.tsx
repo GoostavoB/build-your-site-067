@@ -53,6 +53,7 @@ import { useOnboarding } from '@/hooks/useOnboarding';
 import { useUserTier } from '@/hooks/useUserTier';
 import { UpgradePrompt } from '@/components/UpgradePrompt';
 import { DailyMissionBar } from '@/components/dashboard/DailyMissionBar';
+import { XPTestButton } from '@/components/dev/XPTestButton';
 import { Tier3PreviewModal } from '@/components/tier/Tier3PreviewModal';
 
 // Lazy load heavy components
@@ -1171,6 +1172,9 @@ const Dashboard = () => {
         />
       </div>
     </AppLayout>
+    
+    {/* Dev-only XP Test Button */}
+    <XPTestButton />
     
     {/* Glassmorphic Overlay Sidebar - Gamification temporarily disabled */}
     {/* <AnimatePresence>

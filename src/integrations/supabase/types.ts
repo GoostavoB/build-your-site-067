@@ -3611,6 +3611,54 @@ export type Database = {
         }
         Relationships: []
       }
+      user_daily_activity: {
+        Row: {
+          activity_date: string
+          challenges_completed: number | null
+          created_at: string | null
+          emotional_logs_created: number | null
+          id: string
+          journal_entries_created: number | null
+          last_reminder_shown_at: string | null
+          last_updated_at: string | null
+          reminder_clicked_count: number | null
+          trades_uploaded: number | null
+          user_id: string
+          widget_interaction_count: number | null
+          xp_earned_today: number | null
+        }
+        Insert: {
+          activity_date?: string
+          challenges_completed?: number | null
+          created_at?: string | null
+          emotional_logs_created?: number | null
+          id?: string
+          journal_entries_created?: number | null
+          last_reminder_shown_at?: string | null
+          last_updated_at?: string | null
+          reminder_clicked_count?: number | null
+          trades_uploaded?: number | null
+          user_id: string
+          widget_interaction_count?: number | null
+          xp_earned_today?: number | null
+        }
+        Update: {
+          activity_date?: string
+          challenges_completed?: number | null
+          created_at?: string | null
+          emotional_logs_created?: number | null
+          id?: string
+          journal_entries_created?: number | null
+          last_reminder_shown_at?: string | null
+          last_updated_at?: string | null
+          reminder_clicked_count?: number | null
+          trades_uploaded?: number | null
+          user_id?: string
+          widget_interaction_count?: number | null
+          xp_earned_today?: number | null
+        }
+        Relationships: []
+      }
       user_events: {
         Row: {
           created_at: string
@@ -4083,8 +4131,11 @@ export type Database = {
           daily_xp_earned: number
           id: string
           journal_entries_today: number | null
+          last_login_date: string | null
+          last_login_timezone: string | null
           last_reset_at: string | null
           psychology_logs_today: number | null
+          reminder_intensity: string | null
           updated_at: string | null
           user_id: string
         }
@@ -4097,8 +4148,11 @@ export type Database = {
           daily_xp_earned?: number
           id?: string
           journal_entries_today?: number | null
+          last_login_date?: string | null
+          last_login_timezone?: string | null
           last_reset_at?: string | null
           psychology_logs_today?: number | null
+          reminder_intensity?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -4111,8 +4165,11 @@ export type Database = {
           daily_xp_earned?: number
           id?: string
           journal_entries_today?: number | null
+          last_login_date?: string | null
+          last_login_timezone?: string | null
           last_reset_at?: string | null
           psychology_logs_today?: number | null
+          reminder_intensity?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -4412,6 +4469,14 @@ export type Database = {
           p_ratio_value: number
           p_short_account: number
           p_symbol: string
+        }
+        Returns: undefined
+      }
+      upsert_daily_activity: {
+        Args: {
+          p_activity_type: string
+          p_increment?: number
+          p_user_id: string
         }
         Returns: undefined
       }

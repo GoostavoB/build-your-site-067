@@ -28,6 +28,7 @@ const Settings = () => {
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({ full_name: '', email: '' });
   const [settings, setSettings] = useState({ blur_enabled: false, sidebar_style: 'matte' });
+  const [reminderIntensity, setReminderIntensity] = useState('normal');
   const [setups, setSetups] = useState<{ id: string; name: string; color?: string }[]>([]);
   const [newSetupName, setNewSetupName] = useState('');
   const [newSetupColor, setNewSetupColor] = useState('#A18CFF');
@@ -77,6 +78,17 @@ const Settings = () => {
         blur_enabled: data.blur_enabled, 
         sidebar_style: data.sidebar_style
       });
+    }
+
+    // Fetch reminder preferences
+    const { data: xpData } = await supabase
+      .from('user_xp_tiers')
+      .select('reminder_intensity')
+      .eq('user_id', user.id)
+      .single();
+    
+    if (xpData) {
+      setReminderIntensity(xpData.reminder_intensity || 'normal');
     }
   };
 

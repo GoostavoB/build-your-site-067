@@ -225,6 +225,46 @@ const blogArticles = [
   {
     slug: 'journal-vs-excel/kucoin',
     lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-notion/kucoin',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-google-sheets/kucoin',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-excel/coinbase',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-notion/coinbase',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-google-sheets/coinbase',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-excel/tradingview',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-notion/tradingview',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-google-sheets/tradingview',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-excel/metatrader5',
+    lastmod: '2025-10-28',
+  },
+  {
+    slug: 'journal-vs-google-sheets/metatrader5',
+    lastmod: '2025-10-28',
   }
 ];
 

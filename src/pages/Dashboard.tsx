@@ -116,6 +116,7 @@ const Dashboard = () => {
   const [stats, setStats] = useState<TradeStats | null>(null);
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
   const { hasProfile, loading: profileLoading, refetch: refetchProfile } = useAITrainingProfile();
   const [initialInvestment, setInitialInvestment] = useState(0);
   const [capitalLog, setCapitalLog] = useState<any[]>([]);
@@ -239,6 +240,14 @@ const Dashboard = () => {
     });
   }, [savedColumnCount]);
 
+
+  // Safety: ensure the dashboard never gets stuck in loading (3s guard)
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+    return () => clearTimeout(id);
+  }, []);
 
   // Save column count to backend when user changes it
   const handleColumnCountChange = useCallback((newCount: number) => {
@@ -474,6 +483,8 @@ const Dashboard = () => {
       setLoading(false);
       return;
     }
+
+    setHasAttemptedFetch(true);
 
     try {
       const { data: trades, error } = await supabase
@@ -1046,7 +1057,7 @@ const Dashboard = () => {
           </div>
         )}
 
-        {loading ? (
+        {(loading && !hasAttemptedFetch) ? (
           <DashboardSkeleton />
         ) : stats && stats.total_trades === 0 ? (
           <Card className="p-8 text-center glass">

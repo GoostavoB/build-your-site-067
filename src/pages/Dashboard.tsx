@@ -76,8 +76,10 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { pageMeta } from '@/utils/seoHelpers';
 import { DailyStreakFlame } from '@/components/DailyStreakFlame';
 import { QuickShareButtons } from '@/components/social/QuickShareButtons';
-import { TierPreviewButton } from '@/components/tier/TierPreviewButton';
-import { PremiumFeaturesButton } from '@/components/premium/PremiumFeaturesButton';
+import { GamificationHub } from '@/components/gamification/GamificationHub';
+import { XPBoostIndicator } from '@/components/gamification/XPBoostIndicator';
+import { ComebackModal } from '@/components/gamification/ComebackModal';
+import { useComebackRewards } from '@/hooks/useComebackRewards';
 
 interface TradeStats {
   total_pnl: number;
@@ -212,6 +214,7 @@ const Dashboard = () => {
   // Gamification system
   const { xpData, showLevelUp, setShowLevelUp, showTier3Preview, setShowTier3Preview } = useXPSystem();
   const { updateChallengeProgress } = useDailyChallenges();
+  const { showComebackModal, setShowComebackModal, comebackReward } = useComebackRewards();
   
   // Award XP for trades
   useTradeXPRewards(trades);
@@ -1055,10 +1058,9 @@ const Dashboard = () => {
               />
             </Card>
 
-            {/* Tier & Premium Preview Section */}
-            <div className="mb-6 animate-fade-in flex gap-3" style={{animationDelay: '0.475s'}}>
-              <TierPreviewButton />
-              <PremiumFeaturesButton />
+            {/* Gamification Hub */}
+            <div className="mb-6 animate-fade-in" style={{animationDelay: '0.475s'}}>
+              <GamificationHub />
             </div>
 
             {/* Main Content Tabs */}
@@ -1192,6 +1194,19 @@ const Dashboard = () => {
     
     {/* Dev-only XP Test Button */}
     <XPTestButton />
+    
+    {/* XP Boost Indicator */}
+    <XPBoostIndicator />
+    
+    {/* Comeback Modal */}
+    {comebackReward && (
+      <ComebackModal
+        open={showComebackModal}
+        onClose={() => setShowComebackModal(false)}
+        xpReward={comebackReward.xp}
+        daysAway={comebackReward.daysAway}
+      />
+    )}
     
     {/* Glassmorphic Overlay Sidebar - Gamification temporarily disabled */}
     {/* <AnimatePresence>

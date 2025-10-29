@@ -4454,6 +4454,39 @@ export type Database = {
         }
         Relationships: []
       }
+      xp_boosts: {
+        Row: {
+          activated_at: string
+          created_at: string | null
+          duration_minutes: number
+          expires_at: string
+          id: string
+          is_active: boolean | null
+          multiplier: number
+          user_id: string
+        }
+        Insert: {
+          activated_at?: string
+          created_at?: string | null
+          duration_minutes: number
+          expires_at: string
+          id?: string
+          is_active?: boolean | null
+          multiplier?: number
+          user_id: string
+        }
+        Update: {
+          activated_at?: string
+          created_at?: string | null
+          duration_minutes?: number
+          expires_at?: string
+          id?: string
+          is_active?: boolean | null
+          multiplier?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       public_profiles: {
@@ -4497,6 +4530,10 @@ export type Database = {
       add_extra_credits: {
         Args: { p_amount: number; p_credits: number; p_user_id: string }
         Returns: boolean
+      }
+      add_xp: {
+        Args: { user_uuid: string; xp_amount: number }
+        Returns: undefined
       }
       calculate_daily_reward: {
         Args: { p_consecutive_days: number; p_user_tier: number }

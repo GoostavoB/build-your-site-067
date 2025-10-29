@@ -69,8 +69,7 @@ const FeeAnalysis = lazy(() => import("./pages/FeeAnalysis"));
 const LogoDownload = lazy(() => import("./pages/LogoDownload"));
 const LogoGenerator = lazy(() => import("./pages/LogoGenerator"));
 const Calculators = lazy(() => import("./pages/Calculators"));
-// Phase 2: Leaderboard feature - temporarily disabled for backlog #34
-// const Leaderboard = lazy(() => import("./pages/Leaderboard"));
+const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const FriendLeaderboard = lazy(() => import("./pages/FriendLeaderboard"));
 const LongShortRatio = lazy(() => import("./pages/LongShortRatio"));
 const EconomicCalendar = lazy(() => import("./pages/EconomicCalendar"));
@@ -224,8 +223,7 @@ const AppRoutes = () => {
         <Route path="/track-capital" element={<ProtectedRoute><TrackCapital /></ProtectedRoute>} />
         <Route path="/fee-analysis" element={<ProtectedRoute><FeeAnalysis /></ProtectedRoute>} />
         <Route path="/faq" element={<ProtectedRoute><FAQ /></ProtectedRoute>} />
-        {/* Phase 2: Leaderboard - temporarily disabled for backlog #34 */}
-        {/* <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} /> */}
+        <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
         <Route path="/friend-leaderboard" element={<ProtectedRoute><FriendLeaderboard /></ProtectedRoute>} />
         <Route path="/long-short-ratio" element={<ProtectedRoute><LongShortRatio /></ProtectedRoute>} />
         {/* Phase 2: Economic Calendar and Performance Alerts - temporarily disabled for backlog #30 */}

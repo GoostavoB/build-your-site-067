@@ -353,15 +353,27 @@ const Upload = () => {
     }
 
     try {
-      toast.info('Processing image...', { duration: 1000 });
+      toast.info('Loading image...', { duration: 500 });
       
-      // Compress and resize the image (using OCR-optimized settings)
-      const compressedBase64 = await compressAndResizeImage(file, true);
+      // Add timeout wrapper for compression (2 second max)
+      const compressionTimeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Image compression timeout')), 2000)
+      );
+      
+      toast.info('Compressing image...', { duration: 500 });
+      
+      // Compress and resize the image with timeout protection
+      const compressedBase64 = await Promise.race([
+        compressAndResizeImage(file, true),
+        compressionTimeout
+      ]);
       
       setExtractionImage(file);
       setExtractionPreview(compressedBase64);
       
-      // Run OCR in background for cost optimization
+      toast.info('Running OCR...', { duration: 500 });
+      
+      // Run OCR in background with timeout (5 seconds via runOCR)
       setOcrRunning(true);
       try {
         const ocr = await runOCR(file);
@@ -377,7 +389,7 @@ const Upload = () => {
           toast.success('Image ready for extraction!');
         }
       } catch (ocrError) {
-        console.warn('⚠️ OCR failed, will use vision fallback:', ocrError);
+        console.warn('⚠️ OCR failed or timeout, will use vision fallback:', ocrError);
         toast.success('Image ready for extraction!');
       } finally {
         setOcrRunning(false);

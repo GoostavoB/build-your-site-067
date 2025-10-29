@@ -14,6 +14,7 @@ export interface OCRResult {
  */
 export const runOCR = async (imageFile: File): Promise<OCRResult> => {
   const startTime = Date.now();
+  let worker: Tesseract.Worker | null = null;
   
   try {
     // Generate image hashes for caching
@@ -21,20 +22,34 @@ export const runOCR = async (imageFile: File): Promise<OCRResult> => {
     const imageHash = await generateImageHash(imageBuffer);
     const perceptualHash = await generatePerceptualHash(imageFile);
     
-    // Run Tesseract OCR with 3 second timeout
-    const timeoutPromise = new Promise<never>((_, reject) => 
-      setTimeout(() => reject(new Error('OCR timeout')), 3000)
+    // Hard timeout wrapper - force rejection after 5 seconds
+    const hardTimeout = new Promise<never>((_, reject) => 
+      setTimeout(() => {
+        if (worker) {
+          worker.terminate().catch(() => {});
+        }
+        reject(new Error('OCR timeout after 5 seconds'));
+      }, 5000)
     );
     
-    const ocrPromise = Tesseract.recognize(imageFile, 'eng', {
-      logger: (m) => {
-        if (m.status === 'recognizing text') {
-          console.log(`OCR progress: ${Math.round(m.progress * 100)}%`);
+    // Run Tesseract OCR with worker management
+    const ocrPromise = (async () => {
+      worker = await Tesseract.createWorker('eng', 1, {
+        logger: (m) => {
+          if (m.status === 'recognizing text') {
+            console.log(`OCR progress: ${Math.round(m.progress * 100)}%`);
+          }
         }
-      }
-    });
+      });
+      
+      const { data } = await worker.recognize(imageFile);
+      await worker.terminate();
+      worker = null;
+      
+      return data;
+    })();
     
-    const { data } = await Promise.race([ocrPromise, timeoutPromise]) as any;
+    const data = await Promise.race([ocrPromise, hardTimeout]);
     
     const text = data.text;
     const confidence = data.confidence / 100; // Normalize to 0-1
@@ -53,6 +68,15 @@ export const runOCR = async (imageFile: File): Promise<OCRResult> => {
       perceptualHash
     };
   } catch (error) {
+    // Cleanup worker on error
+    if (worker) {
+      try {
+        await worker.terminate();
+      } catch (terminateError) {
+        console.warn('Failed to terminate OCR worker:', terminateError);
+      }
+    }
+    
     console.error('OCR failed:', error);
     throw error;
   }

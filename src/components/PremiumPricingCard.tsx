@@ -87,10 +87,10 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
         )}
 
         <div className="mb-6">
-          <h3 className="text-2xl font-bold mb-2 tracking-tight" style={{ letterSpacing: '-0.01em' }}>
+          <h3 className="text-[22px] font-bold mb-2 tracking-tight" style={{ letterSpacing: '-0.01em' }}>
             {plan.comingSoon ? plan.nameKey : t(plan.nameKey)}
           </h3>
-          <p className="text-sm text-muted-foreground dark:text-muted-foreground/70 leading-relaxed">
+          <p className="text-[14px] text-muted-foreground dark:text-muted-foreground/70 leading-relaxed">
             {plan.comingSoon ? plan.descriptionKey : t(plan.descriptionKey)}
           </p>
         </div>
@@ -104,7 +104,7 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="text-5xl font-bold tracking-tight tabular-nums"
+                  className="text-[38px] font-bold tracking-tight tabular-nums"
                   style={{ 
                     fontVariantNumeric: 'tabular-nums',
                     letterSpacing: '-0.02em'
@@ -112,7 +112,7 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
                 >
                   ${getDisplayPrice()}
                 </motion.span>
-                <span className="text-sm text-muted-foreground dark:text-muted-foreground/70">
+                <span className="text-[14px] text-muted-foreground dark:text-muted-foreground/70">
                   /{billingCycle === 'monthly' ? t('pricing.perMonth') : t('pricing.perMonthBilledAnnually')}
                 </span>
               </div>
@@ -130,7 +130,7 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
               )}
             </>
           ) : (
-            <div className="text-3xl font-bold tracking-tight mb-2">
+            <div className="text-[32px] font-bold tracking-tight mb-2">
               Custom Pricing
             </div>
           )}
@@ -139,7 +139,7 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
         <MagneticButton
           onClick={handleCTA}
           variant={plan.popular ? 'default' : 'outline'}
-          className={`w-full mb-8 py-6 text-base font-medium ${plan.comingSoon ? 'opacity-60 cursor-not-allowed pointer-events-none' : ''}`}
+          className={`w-full mb-8 py-6 text-[15px] font-semibold ${plan.comingSoon ? 'opacity-60 cursor-not-allowed pointer-events-none' : ''}`}
         >
           {plan.comingSoon ? plan.ctaKey : t(plan.ctaKey)}
         </MagneticButton>
@@ -160,7 +160,7 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
               <div className="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center group-hover:bg-accent/30 transition-all duration-280 ease-premium">
                 <Check size={14} className="text-accent" />
               </div>
-              <span className="text-sm text-muted-foreground dark:text-muted-foreground/70 leading-relaxed group-hover:text-foreground transition-colors duration-280 ease-premium">
+              <span className="text-[14px] text-muted-foreground dark:text-muted-foreground/70 leading-relaxed group-hover:text-foreground transition-colors duration-280 ease-premium">
                 {plan.comingSoon ? featureKey : t(featureKey)}
               </span>
             </motion.li>

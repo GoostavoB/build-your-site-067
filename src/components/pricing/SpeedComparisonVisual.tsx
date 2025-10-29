@@ -244,10 +244,10 @@ export const SpeedComparisonVisual = () => {
         className="glass-card p-6 text-center border border-primary/30"
       >
         <p className="text-[28px] md:text-[36px] font-bold bg-gradient-to-r from-blue-500 to-primary bg-clip-text text-transparent mb-2">
-          40x faster
+          Up to 300x faster
         </p>
-        <p className="text-[15px] text-foreground font-semibold mb-1">Save 19.5 minutes per session</p>
-        <p className="text-[13px] text-muted-foreground">That&apos;s over 10 hours per month</p>
+        <p className="text-[15px] text-foreground font-semibold mb-1">10 trades in 10-15 seconds with Batch Analyzer</p>
+        <p className="text-[13px] text-muted-foreground">Save 2h30 to 4h10 on 50 trades</p>
       </motion.div>
     </div>
   );

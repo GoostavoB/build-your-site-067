@@ -279,11 +279,13 @@ const PricingPage = () => {
             <>
               <p>
                 Most traders skip journaling because it's slow. Our AI-based uploader lets you upload 
-                up to 10 trades at once from a single image. That's 40 times faster than manual entry.
+                up to 10 trades at once from a single image. That's <strong>12x to 30x faster</strong> per trade 
+                (3-5 min manual → 10-15 sec upload).
               </p>
               <p>
-                Scalpers who make 30+ trades a day can now journal everything in minutes instead of hours. 
-                No more excuses. No more missed insights.
+                With our <strong>Batch Analyzer</strong>, you're <strong>up to 300x faster</strong>: 
+                10 trades in 10-15 seconds vs. 30-50 minutes manually. 
+                With 50 trades (5 images), you save <strong>2h30 to 4h10</strong> of work time.
               </p>
             </>
           }

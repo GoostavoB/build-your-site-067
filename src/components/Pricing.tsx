@@ -57,6 +57,7 @@ const Pricing = () => {
       annualPrice: 10,
       annualTotal: 120,
       uploads: "30 uploads/month",
+      uploadSubtext: "",
       xp: "Unlimited XP",
       widgets: "Tiers 1–4",
       customization: "Primary, Secondary, Accent color control",
@@ -72,7 +73,7 @@ const Pricing = () => {
         "pricing.plans.pro.features.extraUploads",
         "pricing.plans.pro.features.everythingFree",
       ],
-      cta: "Go Pro – Save 40%",
+      cta: "Go Pro Now",
       popular: true,
       priceCurrency: "USD",
     },
@@ -84,6 +85,7 @@ const Pricing = () => {
       annualPrice: 20,
       annualTotal: 240,
       uploads: "150 uploads/month",
+      uploadSubtext: "",
       xp: "Unlimited XP",
       widgets: "All Widgets",
       customization: "Full color + background customization",
@@ -151,10 +153,10 @@ const Pricing = () => {
 
           <div className="text-center mb-8 md:mb-12 animate-fade-in">
             <h2 id="pricing-heading" className="text-3xl md:text-4xl font-bold mb-3">
-              Choose your plan. Train like a pro.
+              Choose your plan. Trade like a pro.
             </h2>
             <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
-              No credit card required • Upgrade anytime • Offer ending soon
+              No credit card required • Upgrade anytime
             </p>
 
             {/* Billing Toggle */}
@@ -184,8 +186,9 @@ const Pricing = () => {
                 </button>
               </div>
 
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-green-500/15 text-green-500 text-xs font-semibold">
-                {t('pricing.saveBadge', 'Save 2 months')}
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-500/15 text-green-500 text-xs font-semibold">
+                <span className="animate-pulse">⚡</span>
+                {t('pricing.saveBadge', 'Save up to $60/year')}
               </span>
             </div>
           </div>
@@ -195,8 +198,14 @@ const Pricing = () => {
               <article
                 role="listitem"
                 key={plan.id}
-                className={`glass backdrop-blur-[12px] rounded-2xl p-6 md:p-7 relative hover-lift transition-all shadow-sm animate-fade-in ${
-                  plan.popular ? "ring-2 ring-primary shadow-lg shadow-primary/20" : ""
+                className={`glass backdrop-blur-[12px] rounded-2xl p-6 md:p-7 relative transition-all shadow-sm animate-fade-in ${
+                  plan.popular 
+                    ? "ring-2 ring-primary shadow-lg shadow-primary/30 md:scale-105 hover:shadow-xl hover:shadow-primary/40" 
+                    : plan.id === 'free' 
+                    ? "opacity-90 hover:opacity-100" 
+                    : plan.id === 'elite'
+                    ? "ring-1 ring-amber-500/30 hover:ring-amber-500/50"
+                    : ""
                 }`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
@@ -209,7 +218,9 @@ const Pricing = () => {
                 
 
                 <div className="mb-5">
-                  <h3 className="text-xl md:text-2xl font-bold mb-1.5">{plan.name}</h3>
+                  <h3 className={`text-xl md:text-2xl font-bold mb-1.5 ${plan.id === 'elite' ? 'text-amber-500' : ''}`}>
+                    {plan.name}
+                  </h3>
                   <p className="text-muted-foreground text-xs md:text-sm mb-3">
                     {plan.description}
                   </p>
@@ -268,25 +279,22 @@ const Pricing = () => {
 
                 <Button
                   onClick={handleAuthNavigate}
-                  className={`w-full h-12 mb-3 rounded-xl font-medium transition-all ${
+                  className={`w-full h-12 mb-3 rounded-xl font-medium transition-all group ${
                     plan.popular
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md"
-                      : "glass border border-primary/30 hover:bg-primary/10 hover:border-primary/50"
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl hover:scale-[1.02]"
+                      : plan.id === 'elite'
+                      ? "bg-amber-500/10 border border-amber-500/30 text-amber-500 hover:bg-amber-500/20 hover:border-amber-500/50"
+                      : "glass border border-border/50 hover:bg-accent/50"
                   }`}
                   variant={plan.popular ? "default" : "outline"}
                 >
                   {plan.cta}
+                  {plan.popular && <span className="ml-2 group-hover:translate-x-1 transition-transform inline-block">→</span>}
                 </Button>
 
-                {plan.monthlyPrice > 0 ? (
-                  <p className="text-xs text-muted-foreground text-center mb-5 leading-relaxed">
-                    No credit card required • Upgrade anytime • Offer ending soon
-                  </p>
-                ) : (
-                  <p className="text-xs text-muted-foreground text-center mb-5 leading-relaxed">
-                    No credit card required • Upgrade anytime
-                  </p>
-                )}
+                <p className="text-xs text-muted-foreground text-center mb-5 leading-relaxed">
+                  No credit card required • Upgrade anytime
+                </p>
 
                 <ul className="space-y-2.5">
                   {plan.featuresKeys.map((featureKey, i) => (
@@ -306,7 +314,7 @@ const Pricing = () => {
           </div>
 
           <p className="text-center text-muted-foreground text-xs md:text-sm mt-10 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            No credit card required • Upgrade anytime • Offer ending soon
+            No credit card required • Upgrade anytime
           </p>
         </div>
       </section>

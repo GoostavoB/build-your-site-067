@@ -119,7 +119,7 @@ export const PublicHeader = () => {
               </DropdownMenu>
               
               <button
-                onClick={() => scrollToSection('pricing')}
+                onClick={() => scrollToSection('pricing-section')}
                 className="text-gray-300 hover:text-white transition-colors"
               >
                 {t('navigation.pricing', 'Pricing')}
@@ -231,7 +231,7 @@ export const PublicHeader = () => {
                 </div>
 
                 <button
-                  onClick={() => scrollToSection('pricing')}
+                  onClick={() => scrollToSection('pricing-section')}
                   className="w-full text-left px-4 py-3 text-white hover:bg-gray-800 rounded-lg transition-colors"
                 >
                   {t('navigation.pricing', 'Pricing')}

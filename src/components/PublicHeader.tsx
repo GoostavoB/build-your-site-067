@@ -68,44 +68,50 @@ export const PublicHeader = () => {
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-6">
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors">
+                <DropdownMenuTrigger className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors focus:outline-none">
                   {t('navigation.features', 'Features')}
                   <ChevronDown className="w-4 h-4" />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="bg-gray-900 border-gray-800">
+                <DropdownMenuContent align="start" className="bg-gray-900/95 backdrop-blur-sm border-gray-800 z-[100]">
                   <DropdownMenuItem 
                     onClick={() => scrollToSection('benefits')}
-                    className="text-gray-300 hover:text-white cursor-pointer"
+                    className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer focus:bg-gray-800 focus:text-white"
                   >
                     Benefits
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={() => scrollToSection('features')}
-                    className="text-gray-300 hover:text-white cursor-pointer"
+                    className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer focus:bg-gray-800 focus:text-white"
                   >
                     Features
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={() => scrollToSection('dashboard')}
-                    className="text-gray-300 hover:text-white cursor-pointer"
+                    className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer focus:bg-gray-800 focus:text-white"
                   >
                     Dashboard
                   </DropdownMenuItem>
                   <DropdownMenuItem 
+                    onClick={() => scrollToSection('gamification')}
+                    className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer focus:bg-gray-800 focus:text-white"
+                  >
+                    Gamification
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
                     onClick={() => scrollToSection('upload-speed')}
-                    className="text-gray-300 hover:text-white cursor-pointer"
+                    className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer focus:bg-gray-800 focus:text-white"
                   >
                     Upload Speed
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={() => scrollToSection('customization')}
-                    className="text-gray-300 hover:text-white cursor-pointer"
+                    className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer focus:bg-gray-800 focus:text-white"
                   >
                     Customization
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={() => scrollToSection('comparison')}
-                    className="text-gray-300 hover:text-white cursor-pointer"
+                    className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer focus:bg-gray-800 focus:text-white"
                   >
                     Feature Comparison
                   </DropdownMenuItem>
@@ -197,6 +203,12 @@ export const PublicHeader = () => {
                     className="w-full text-left px-6 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors text-sm"
                   >
                     Dashboard
+                  </button>
+                  <button
+                    onClick={() => scrollToSection('gamification')}
+                    className="w-full text-left px-6 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors text-sm"
+                  >
+                    Gamification
                   </button>
                   <button
                     onClick={() => scrollToSection('upload-speed')}

@@ -148,7 +148,9 @@ const Index = () => {
         </section>
         
         {/* Mobile Feature Blocks */}
-        <FeatureBlocks />
+        <section id="features">
+          <FeatureBlocks />
+        </section>
         
         {/* Mobile Video Section */}
         <VideoSection />
@@ -180,7 +182,9 @@ const Index = () => {
         </section>
         
         {/* Product Showcase */}
-        <ProductShowcase />
+        <section id="dashboard">
+          <ProductShowcase />
+        </section>
 
         {/* Upload Speed Calculator - NEW */}
         <UploadSpeedCalculator />
@@ -189,7 +193,7 @@ const Index = () => {
         <CustomizationOptions />
 
         {/* XP System Explainer */}
-        <section className="px-6 py-20">
+        <section id="gamification" className="px-6 py-20">
           <div className="container mx-auto max-w-6xl">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <XPProgressAnimation />

@@ -255,6 +255,12 @@
     "benefits": {
       "mainTitle": "Built for Every Trader",
       "mainSubtitle": "Security, privacy, and compatibility with every exchange.",
+      "sectionTitle": "Built for Every Trader",
+      "sectionSubtitle": "Every plan includes our core features to help you track, analyze, and improve your trading.",
+      "performanceGain": "more performance gain",
+      "drawdownReduction": "less drawdown",
+      "fasterLogin": "faster login",
+      "caption": "Every plan includes our core features to help you track, analyze, and improve your trading.",
       "fasterUploads": {
         "title": "40× Faster Uploads",
         "description": "Batch upload from screenshots. No more manual entry."
@@ -289,6 +295,55 @@
       },
       "trustedBy": "Trusted by 45,000+ traders worldwide",
       "ctaButton": "Try it free now"
+    },
+    "uploadSpeed": {
+      "title": "Trade upload speed. Reward results.",
+      "subtitle": "Upload your trades and instantly measure how much faster your workflow becomes.",
+      "minutes": "minutes",
+      "result": "You save {{minutes}} minutes compared to manual entry.",
+      "cta": "Calculate your time savings"
+    },
+    "customization": {
+      "title": "Color Themes & Customization",
+      "subtitle": "Choose your plan and unlock customization options that match your trading style.",
+      "starter": "Starter",
+      "starterFeature1": "Default theme",
+      "starterFeature2": "Light mode",
+      "starterFeature3": "Dark mode",
+      "pro": "Pro",
+      "proFeature1": "Light & Dark mode",
+      "proFeature2": "Primary color",
+      "proFeature3": "Secondary color",
+      "proFeature4": "Accent color",
+      "elite": "Elite",
+      "eliteFeature1": "Full customization",
+      "eliteFeature2": "Background colors",
+      "eliteFeature3": "All color options",
+      "eliteFeature4": "Custom gradients"
+    },
+    "comparison": {
+      "title": "Complete Feature Comparison",
+      "subtitle": "Compare all features across our plans to find the perfect fit for your trading needs.",
+      "feature": "Feature",
+      "free": "Free",
+      "pro": "Pro",
+      "elite": "Elite",
+      "xpSystem": "XP Discipline System",
+      "uploadSpeed": "Trade Upload Speed",
+      "analytics": "Analytics (metrics count)",
+      "customization": "Customization level",
+      "support": "Support type",
+      "privacy": "Privacy & Security",
+      "extraUploads": "Extra upload costs",
+      "basic": "Basic",
+      "full": "Full",
+      "standard": "Standard",
+      "fast": "Fast",
+      "fastest": "Fastest",
+      "advanced": "Advanced",
+      "community": "Community",
+      "email": "Email",
+      "priority": "Priority"
     },
     "cta": {
       "title": "Ready to Level Up Your Trading?",

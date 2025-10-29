@@ -1,8 +1,14 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { getLocalizedPath, isPublicRoute } from '@/utils/languageRouting';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export const PublicHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,6 +21,26 @@ export const PublicHeader = () => {
   const handleNavigate = (path: string) => {
     const localizedPath = isPublic ? getLocalizedPath(path, language) : path;
     navigate(localizedPath);
+    setIsOpen(false);
+  };
+
+  const scrollToSection = (sectionId: string) => {
+    // Navigate to homepage first if not already there
+    if (location.pathname !== '/' && location.pathname !== getLocalizedPath('/', language)) {
+      navigate(isPublic ? getLocalizedPath('/', language) : '/');
+      // Wait for navigation then scroll
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
     setIsOpen(false);
   };
 
@@ -41,17 +67,56 @@ export const PublicHeader = () => {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-6">
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors">
+                  {t('navigation.features', 'Features')}
+                  <ChevronDown className="w-4 h-4" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="bg-gray-900 border-gray-800">
+                  <DropdownMenuItem 
+                    onClick={() => scrollToSection('benefits')}
+                    className="text-gray-300 hover:text-white cursor-pointer"
+                  >
+                    Benefits
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => scrollToSection('features')}
+                    className="text-gray-300 hover:text-white cursor-pointer"
+                  >
+                    Features
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => scrollToSection('dashboard')}
+                    className="text-gray-300 hover:text-white cursor-pointer"
+                  >
+                    Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => scrollToSection('upload-speed')}
+                    className="text-gray-300 hover:text-white cursor-pointer"
+                  >
+                    Upload Speed
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => scrollToSection('customization')}
+                    className="text-gray-300 hover:text-white cursor-pointer"
+                  >
+                    Customization
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => scrollToSection('comparison')}
+                    className="text-gray-300 hover:text-white cursor-pointer"
+                  >
+                    Feature Comparison
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
               <button
                 onClick={() => handleNavigate('/pricing')}
                 className="text-gray-300 hover:text-white transition-colors"
               >
                 {t('navigation.pricing', 'Pricing')}
-              </button>
-              <button
-                onClick={() => handleNavigate('/features')}
-                className="text-gray-300 hover:text-white transition-colors"
-              >
-                {t('navigation.features', 'Features')}
               </button>
               <button
                 onClick={() => handleNavigate('/how-it-works')}
@@ -111,18 +176,53 @@ export const PublicHeader = () => {
           <div className="fixed inset-y-0 right-0 w-80 bg-gray-900 z-50 overflow-y-auto shadow-xl lg:hidden">
             <div className="p-6 space-y-6">
               <nav className="space-y-2">
+                <div className="space-y-1">
+                  <div className="px-4 py-2 text-sm font-semibold text-gray-400">
+                    {t('navigation.features', 'Features')}
+                  </div>
+                  <button
+                    onClick={() => scrollToSection('benefits')}
+                    className="w-full text-left px-6 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors text-sm"
+                  >
+                    Benefits
+                  </button>
+                  <button
+                    onClick={() => scrollToSection('features')}
+                    className="w-full text-left px-6 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors text-sm"
+                  >
+                    Features
+                  </button>
+                  <button
+                    onClick={() => scrollToSection('dashboard')}
+                    className="w-full text-left px-6 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors text-sm"
+                  >
+                    Dashboard
+                  </button>
+                  <button
+                    onClick={() => scrollToSection('upload-speed')}
+                    className="w-full text-left px-6 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors text-sm"
+                  >
+                    Upload Speed
+                  </button>
+                  <button
+                    onClick={() => scrollToSection('customization')}
+                    className="w-full text-left px-6 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors text-sm"
+                  >
+                    Customization
+                  </button>
+                  <button
+                    onClick={() => scrollToSection('comparison')}
+                    className="w-full text-left px-6 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors text-sm"
+                  >
+                    Feature Comparison
+                  </button>
+                </div>
+
                 <button
                   onClick={() => handleNavigate('/pricing')}
                   className="w-full text-left px-4 py-3 text-white hover:bg-gray-800 rounded-lg transition-colors"
                 >
                   {t('navigation.pricing', 'Pricing')}
-                </button>
-
-                <button
-                  onClick={() => handleNavigate('/features')}
-                  className="w-full text-left px-4 py-3 text-white hover:bg-gray-800 rounded-lg transition-colors"
-                >
-                  {t('navigation.features', 'Features')}
                 </button>
 
                 <button

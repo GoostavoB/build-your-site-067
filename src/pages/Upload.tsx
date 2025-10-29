@@ -728,7 +728,9 @@ const Upload = () => {
           pnl: finalTrade.profit_loss,
           trade_date: finalTrade.opened_at,
           notes: finalTrade.notes || null,
-          trade_hash: tradeHash
+          trade_hash: tradeHash,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         };
       });
 

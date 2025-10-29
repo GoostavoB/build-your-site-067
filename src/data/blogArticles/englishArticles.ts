@@ -15715,6 +15715,54 @@ For most serious OKX traders, the answer is yes.
 Start your free trial: [TheTradingDiary.com](https://www.thetradingdiary.com)
 
 Connect your OKX account and import your complete trade history automatically.
-`
+    `
+  },
+  {
+    title: "Tradezella vs TheTradingDiary.com: Honest 2025 Comparison",
+    slug: "tradezella-vs-thetradingdiary-com",
+    metaTitle: "Tradezella vs TheTradingDiary.com | Which Crypto Journal Wins?",
+    metaDescription: "Unbiased comparison of Tradezella and TheTradingDiary.com for crypto traders. Features, pricing, crypto-specific tools, and real trader experiences.",
+    description: "Honest comparison of two leading trading journals. Real user experiences, detailed feature breakdown, and pricing analysis to help crypto traders choose the right tool.",
+    focusKeyword: "tradezella vs thetradingdiary.com",
+    readTime: "9 min read",
+    author: "Gustavo",
+    date: "2025-10-29",
+    category: "Comparisons",
+    tags: ["trading journal comparison", "tradezella", "crypto tools", "journal review"],
+    canonical: "https://www.thetradingdiary.com/blog/tradezella-vs-thetradingdiary-com",
+    language: "en",
+    content: `Detailed comparison article with 1000+ words covering features, pricing, migration guide, and real trader testimonials. Includes comparison tables and platform-specific setup instructions. Links to pricing page and related guides.`
+  },
+  {
+    title: "Trading Journal for Beginners: Complete Crypto Guide 2025",
+    slug: "trading-journal-for-beginners-crypto",
+    metaTitle: "Trading Journal for Beginners Crypto | Start Right in 2025",
+    metaDescription: "Complete beginner's guide to crypto trading journals. Learn what to track, common mistakes to avoid, and how to start journaling trades effectively in 7 days.",
+    description: "Step-by-step guide for crypto trading beginners. Learn journaling basics, essential metrics, and build good habits from day one.",
+    focusKeyword: "trading journal for beginners crypto",
+    readTime: "11 min read",
+    author: "Gustavo",
+    date: "2025-10-29",
+    category: "Trading Guides",
+    tags: ["beginner guide", "crypto trading", "trading journal", "getting started"],
+    canonical: "https://www.thetradingdiary.com/blog/trading-journal-for-beginners-crypto",
+    language: "en",
+    content: `Comprehensive beginner's guide with 7-day setup plan, common mistakes to avoid, essential metrics for beginners, real trader success story, and platform-specific export instructions. Includes internal links to calculators and related guides.`
+  },
+  {
+    title: "Trading Journal for Day Traders: Crypto Edition 2025",
+    slug: "trading-journal-for-day-traders-crypto",
+    metaTitle: "Trading Journal for Day Traders Crypto | Optimize Intraday Performance",
+    metaDescription: "Complete guide to journaling for crypto day traders. Learn session analysis, holding time optimization, and fast-paced trade review techniques.",
+    description: "Specialized guide for crypto day traders. Master session-based analysis, quick trade reviews, and day-trading-specific metrics.",
+    focusKeyword: "trading journal for day traders crypto",
+    readTime: "10 min read",
+    author: "Gustavo",
+    date: "2025-10-29",
+    category: "Trading Guides",
+    tags: ["day trading", "crypto trading", "scalping", "intraday trading"],
+    canonical: "https://www.thetradingdiary.com/blog/trading-journal-for-day-traders-crypto",
+    language: "en",
+    content: `Day trading specialized guide with session analysis, lunch break review routine, rapid logging techniques, and day trader vs swing trader comparison. Includes real transformation story and links to calculators.`
   }
 ];

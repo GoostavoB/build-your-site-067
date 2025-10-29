@@ -23,6 +23,26 @@ const blogArticles = [
     lastmod: '2025-10-17',
   },
   {
+    slug: 'best-way-to-log-crypto-trades',
+    lastmod: '2025-10-29',
+  },
+  {
+    slug: 'how-professional-traders-journal',
+    lastmod: '2025-10-29',
+  },
+  {
+    slug: 'tradezella-vs-thetradingdiary-com',
+    lastmod: '2025-10-29',
+  },
+  {
+    slug: 'trading-journal-for-beginners-crypto',
+    lastmod: '2025-10-29',
+  },
+  {
+    slug: 'trading-journal-for-day-traders-crypto',
+    lastmod: '2025-10-29',
+  },
+  {
     slug: 'data-driven-trading',
     lastmod: '2025-10-15',
   },

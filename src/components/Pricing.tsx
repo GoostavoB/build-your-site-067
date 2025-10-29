@@ -27,7 +27,7 @@ const Pricing = () => {
   const plans = [
     {
       id: 'free',
-      name: "Free",
+      name: "Starter",
       description: "Perfect for getting started",
       monthlyPrice: 0,
       annualPrice: 0,

@@ -24,11 +24,11 @@ const CTA = () => {
                 letterSpacing: '-0.01em'
               }}
           >
-            {t('landing.cta.mainTitle', 'Start today')}
+            {t('landing.cta.finalTitle', 'Start today and upload your last 30 days of trades.')}
           </h2>
           
           <p className="text-[17px] text-muted-foreground/70 font-light max-w-xl mx-auto leading-relaxed">
-            {t('landing.cta.mainSubtitle', 'Upload your last 30 days and get AI-powered insights to raise your average R')}
+            {t('landing.cta.finalSubtitle', 'Get AI-powered insights to improve your performance.')}
           </p>
           
           <div>
@@ -36,13 +36,13 @@ const CTA = () => {
               onClick={() => navigate('/auth')}
               size="lg"
               className="px-10 py-7 text-[15px] font-semibold rounded-xl"
-              aria-label="Start free trial"
+              aria-label="Start for free"
             >
-              {t('landing.cta.buttonText', 'Start free trial')}
+              {t('landing.cta.finalButton', 'Start for free')}
             </Button>
             
             <p className="mt-4 text-[13px] text-muted-foreground/70">
-              {t('landing.cta.disclaimer', 'No credit card required • 7-day free trial')}
+              {t('landing.cta.finalNote', 'No credit card required.')}
             </p>
           </div>
         </motion.div>

@@ -1,14 +1,16 @@
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { AnimatedMetric } from "@/components/premium/AnimatedMetric";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export const AnimatedStats = () => {
   const { ref, inView } = useInView({ threshold: 0.2, triggerOnce: true });
+  const { t } = useTranslation();
 
   const stats = [
-    { value: 23, suffix: "%", label: "Performance gain" },
-    { value: 18, suffix: "%", label: "Drawdown reduction", prefix: "–" },
-    { value: 40, suffix: "x", label: "Faster logging" },
+    { value: 23, suffix: "%", label: t('landing.stats.morePerformance.title', 'Performance gain') },
+    { value: 18, suffix: "%", label: t('landing.stats.lessDrawdown.title', 'Drawdown reduction'), prefix: "–" },
+    { value: 40, suffix: "x", label: t('landing.stats.fasterUploads.title', 'Faster logging') },
   ];
 
   return (

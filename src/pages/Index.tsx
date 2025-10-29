@@ -34,6 +34,10 @@ import InteractiveSpeedChart from "@/components/pricing/InteractiveSpeedChart";
 import { SecurityVisual } from "@/components/pricing/SecurityVisual";
 import { SocialProofSection } from "@/components/pricing/SocialProofSection";
 import PricingComparison from "@/components/pricing/PricingComparison";
+import { BenefitsSection } from "@/components/landing/BenefitsSection";
+import { UploadSpeedCalculator } from "@/components/landing/UploadSpeedCalculator";
+import { CustomizationOptions } from "@/components/landing/CustomizationOptions";
+import { FeatureComparison } from "@/components/landing/FeatureComparison";
 import { motion } from "framer-motion";
 const Index = () => {
   const navigate = useNavigate();
@@ -86,12 +90,8 @@ const Index = () => {
         {/* SEO Feature Banner - Keywords below hero */}
         <HeroFeatureBanner />
         
-        {/* Animated Stats - Show proof immediately */}
-        <section className="px-6 mb-20">
-          <div className="container mx-auto max-w-4xl">
-            <AnimatedStats />
-          </div>
-        </section>
+        {/* Benefits Section - NEW */}
+        <BenefitsSection />
 
         {/* Included in All Plans */}
         <section className="px-6 mb-20">
@@ -181,6 +181,12 @@ const Index = () => {
         
         {/* Product Showcase */}
         <ProductShowcase />
+
+        {/* Upload Speed Calculator - NEW */}
+        <UploadSpeedCalculator />
+
+        {/* Customization Options - NEW */}
+        <CustomizationOptions />
 
         {/* XP System Explainer */}
         <section className="px-6 py-20">
@@ -336,12 +342,8 @@ const Index = () => {
         {/* Pricing */}
         <Pricing />
 
-        {/* Feature Comparison Table */}
-        <section className="px-6 pb-20">
-          <div className="container mx-auto max-w-6xl">
-            <PricingComparison />
-          </div>
-        </section>
+        {/* Feature Comparison - NEW */}
+        <FeatureComparison />
 
         {/* Built from Real Data */}
         <SocialProofSection />

@@ -37,7 +37,7 @@ const Hero = () => {
         }} transition={{
           duration: 0.6
         }} className="space-y-10 text-center lg:text-left flex flex-col items-center lg:items-start w-full max-w-[560px] lg:max-w-none">
-            {/* Hero Title - Discipline-First Messaging */}
+            {/* Hero Title */}
             <h1 
               id="hero-title"
               className="font-bold leading-tight tracking-tight max-w-md lg:max-w-3xl"
@@ -46,23 +46,23 @@ const Hero = () => {
                 letterSpacing: '-0.01em'
               }}
             >
-              Train your discipline. Master your trading performance.
+              {t('landing.hero.newTitle', 'Consolidate trades from all your exchanges in one single place')}
             </h1>
 
-            {/* Subtitle - Performance Claim */}
+            {/* Subtitle */}
             <div className="space-y-3 max-w-md lg:max-w-2xl">
               <p className="text-[17px] text-muted-foreground/70 font-light leading-relaxed">
-                Develop the mindset of top traders through our XP discipline system, proven to increase trading performance by 23% within 4 weeks.
+                {t('landing.hero.newSubtitle', 'Professional crypto trading journal with multi-exchange analytics, risk management tools, and AI-powered insights.')}
               </p>
               <p className="text-[15px] text-foreground/90 font-semibold">
-                Free entry plan • No credit card • Cancel anytime
+                {t('landing.hero.note', 'All exchanges accepted. No API required.')}
               </p>
             </div>
 
             {/* CTA Buttons */}
             <div className="pt-2 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-stretch sm:items-center w-full sm:w-auto">
-              <Button onClick={() => navigate('/auth')} size="lg" className="h-12 px-8 text-[15px] font-medium rounded-full bg-primary hover:bg-primary/90 transition-all duration-300 shadow-lg shadow-primary/10 hover:shadow-xl hover:shadow-primary/20" aria-label="Start free trial">
-                Start Free Trial
+              <Button onClick={() => navigate('/auth')} size="lg" className="h-12 px-8 text-[15px] font-medium rounded-full bg-primary hover:bg-primary/90 transition-all duration-300 shadow-lg shadow-primary/10 hover:shadow-xl hover:shadow-primary/20" aria-label="Start for free">
+                {t('landing.hero.ctaButton', 'Start for free')}
               </Button>
             </div>
 

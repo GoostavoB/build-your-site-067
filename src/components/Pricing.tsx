@@ -28,27 +28,28 @@ const Pricing = () => {
     {
       id: 'free',
       name: "Starter",
-      description: "Perfect for getting started",
+      description: "For new traders – Get started free",
       monthlyPrice: 0,
       annualPrice: 0,
       annualTotal: 0,
       uploads: "5 uploads total",
-      uploadSubtext: "(starter gift)",
+      uploadSubtext: "(gift 🎁)",
       features: [
-        { icon: Upload, text: "5 uploads total" },
+        { icon: Upload, text: "5 uploads total (gift 🎁)" },
         { icon: Palette, text: "Essential widgets (Tiers 1-2)" },
         { icon: Trophy, text: "Basic XP system" },
         { icon: BarChart3, text: "Starter analytics" },
         { text: "One account only" },
       ],
       cta: "Start Free",
+      tagline: "No credit card required",
       popular: false,
       priceCurrency: "USD",
     },
     {
       id: 'pro',
       name: "Pro",
-      description: "For serious traders",
+      description: "For serious traders ⚡ Progress faster",
       monthlyPrice: 12,
       annualPrice: 10,
       annualTotal: 120,
@@ -62,15 +63,17 @@ const Pricing = () => {
         { text: "Unlimited trading accounts" },
         { text: "Fee tracking & reporting" },
         { text: "Add 10 uploads for $2" },
+        { text: "Renew every 30 days" },
       ],
       cta: "Go Pro Now • Offer Ends Soon",
+      tagline: "Credit card required",
       popular: true,
       priceCurrency: "USD",
     },
     {
       id: 'elite',
       name: "Elite",
-      description: "Maximum power and flexibility",
+      description: "For power traders ⚡ Full control and flexibility",
       monthlyPrice: 25,
       annualPrice: 20,
       annualTotal: 240,
@@ -84,8 +87,10 @@ const Pricing = () => {
         { text: "Custom branding options" },
         { text: "Add 10 uploads for $1 (50% off)" },
         { text: "Everything in Pro" },
+        { text: "Renew every 30 days" },
       ],
       cta: "Join Elite • Save $60/Year",
+      tagline: "Credit card required",
       popular: false,
       priceCurrency: "USD",
     },
@@ -354,10 +359,8 @@ const Pricing = () => {
 
                 <p className="text-xs text-muted-foreground/50 text-center mb-6 leading-relaxed relative z-10 font-light">
                   {isFree 
-                    ? "Get started with the essentials" 
-                    : plan.popular 
-                    ? "Unlock your full trading potential" 
-                    : "Experience total control and customization"}
+                    ? plan.tagline
+                    : plan.tagline}
                 </p>
 
                 <ul className="space-y-3 relative z-10">
@@ -401,7 +404,7 @@ const Pricing = () => {
           </div>
 
           <p className="text-center text-muted-foreground text-xs md:text-sm mt-10 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            No credit card required • Upgrade anytime
+            Extra uploads: $2 per 10 (Pro) • $1 per 10 (Elite, 50% off)
           </p>
 
           {/* Social Proof */}

@@ -92,10 +92,10 @@ const ProductShowcase = () => {
             className="text-center space-y-4"
           >
             <h2 className="text-3xl md:text-4xl font-bold">
-              Your Trading Style. Your Dashboard Layout.
+              Your trading style, your dashboard layout
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Customize every aspect of your trading journal. No two traders are the same — neither are their dashboards.
+              Customize every aspect of your trading journal. No two traders are the same, neither are the dashboards.
             </p>
           </motion.div>
 
@@ -106,15 +106,10 @@ const ProductShowcase = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
-            className="text-center space-y-6"
+            className="text-center"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-subtle">
-              <span className="text-sm font-medium">✨ 14-Day Free Trial</span>
-              <span className="text-sm text-muted-foreground">• No Credit Card Required</span>
-            </div>
-            
             <Button size="lg" className="gap-2 rounded-full">
-              Unlock Full Customization
+              Try the free plan
               <ArrowRight className="h-4 w-4" />
             </Button>
           </motion.div>

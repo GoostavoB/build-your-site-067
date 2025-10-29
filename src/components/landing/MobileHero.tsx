@@ -11,14 +11,14 @@ const MobileHero = () => {
     <section className="relative flex flex-col px-4 pt-8 pb-4 overflow-hidden lg:hidden">
       {/* Hero Content */}
       <div className="flex flex-col items-center text-center space-y-8 pb-4">
-        {/* Headline - Discipline-First Messaging */}
+        {/* Headline */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="text-[36px] leading-[1.15] font-bold tracking-tight max-w-[320px]"
         >
-          Train your discipline. Master your trading performance.
+          Consolidate trades from all your exchanges in one single place
         </motion.h1>
 
         {/* Subheadline */}
@@ -29,10 +29,10 @@ const MobileHero = () => {
           className="space-y-3 max-w-[320px]"
         >
           <p className="text-base text-muted-foreground/80 font-light leading-relaxed">
-            Develop the mindset of top traders through our XP discipline system, proven to increase trading performance by 23% within 4 weeks.
+            Professional crypto trading journal with multi-exchange analytics, risk management tools, and AI-powered insights.
           </p>
           <p className="text-xs text-foreground/90 font-semibold">
-            Free entry plan • No credit card • Cancel anytime
+            All exchanges accepted. No API required.
           </p>
         </motion.div>
 
@@ -48,7 +48,7 @@ const MobileHero = () => {
             size="lg"
             className="h-12 text-[15px] font-medium rounded-full bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30"
           >
-            Start Free Trial
+            Start for free
           </Button>
         </motion.div>
 

@@ -10,43 +10,35 @@
         "name": "Free",
         "description": "Perfect for getting started",
         "features": {
-          "uploads": "5 uploads total (starter gift) • Up to 10 trades per upload",
-          "accounts": "1 connected account",
-          "aiInsights": "AI Insights on the homepage",
-          "tradingHistory": "Trading history",
-          "manualEntry": "Manual trade entry",
-          "spotWallet": "Spot wallet",
-          "journal": "Trading journal",
-          "drawdown": "Drawdown analysis",
-          "leverageCalculator": "Leverage stop calculator",
-          "marketData": "Market data",
-          "equityForecast": "Smart equity forecast projections",
-          "emailSupport": "Email support",
-          "noFeeAnalysis": "Fee analysis: not included"
+          "essentialWidgets": "All essential widgets",
+          "colorTheme": "Default light/dark brand color",
+          "emotionTagging": "Emotion tagging & basic analytics",
+          "xpSystem": "XP system access",
+          "oneAccount": "One account only",
+          "extraUploads": "Add 10 extra uploads for $5"
         }
       },
       "pro": {
         "features": {
-          "uploads": "30 uploads/month • Up to 10 trades per upload",
+          "uploads": "30 uploads per month",
           "unlimitedAccounts": "Unlimited accounts",
-          "feeAnalysis": "Fee analysis",
-          "tradingPlan": "Trading plan",
-          "goals": "Goals",
-          "psychology": "Trading psychology",
-          "reports": "Reports",
-          "taxReports": "Tax reports",
-          "customMetrics": "Custom AI metrics: 3 per month",
-          "everythingBasic": "Everything in Starter"
+          "fullAnalytics": "Full analytics & performance dashboard",
+          "feeTracking": "Fee tracking & decision quality metrics",
+          "colorCustomization": "Color customization (primary, secondary, accent)",
+          "proWidgets": "Access to Pro-only widgets",
+          "extraUploads": "$2 per 10 extra uploads",
+          "everythingFree": "Everything in Free"
         }
       },
       "elite": {
         "features": {
-          "uploads": "150 uploads/month • Up to 10 trades per upload",
+          "uploads": "150 uploads per month",
+          "allWidgets": "All widgets unlocked",
           "unlimitedAccounts": "Unlimited accounts",
-          "customMetrics": "Custom AI metrics: 10 per month",
-          "earlyAccess": "Early access to new features",
-          "prioritySupport": "Premium priority support",
-          "extraCreditsDiscount": "50% off extra credits",
+          "fullCustomization": "Full color + background customization",
+          "prioritySupport": "Priority support & early feature access",
+          "systemCustomization": "Total system customization",
+          "extraUploads": "$1 per 10 extra uploads (50% off)",
           "everythingPro": "Everything in Pro"
         }
       }

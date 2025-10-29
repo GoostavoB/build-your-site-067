@@ -66,15 +66,7 @@ export const AccountProvider = ({ children }: { children: ReactNode }) => {
 
   const switchAccount = async (accountId: string) => {
     try {
-      const { error } = await supabase.functions.invoke('accounts', {
-        method: 'POST',
-        body: {},
-        // Using the path parameter approach
-      });
-
-      if (error) throw error;
-
-      // Direct API call for activation
+      // Direct API call for activation only
       const { error: activateError } = await supabase.functions.invoke(
         `accounts/${accountId}/activate`,
         { method: 'POST' }
@@ -83,7 +75,6 @@ export const AccountProvider = ({ children }: { children: ReactNode }) => {
       if (activateError) throw activateError;
 
       setActiveAccountId(accountId);
-      
       // Reload the page to refresh all data with new account context
       window.location.reload();
     } catch (error) {

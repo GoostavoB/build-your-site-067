@@ -33,7 +33,8 @@ export const useCryptoPrice = (symbols: string[] = [
                   priceChangePercent: 0 // CoinGecko doesn't provide 24h change for dominance
                 };
               } catch (err) {
-                console.error('BTC.D fetch error:', err);
+                // Downgrade to warn and continue without blocking UI
+                console.warn('BTC.D fetch error:', err);
                 return null;
               }
             }

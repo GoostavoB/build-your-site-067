@@ -52,10 +52,14 @@ Deno.serve(async (req) => {
     const pathParts = url.pathname.split('/').filter(Boolean);
     const method = req.method;
 
-    console.log('Request:', method, url.pathname, 'pathParts:', pathParts);
+    // Normalize route parts to start at function name
+    const fnIndex = pathParts.findIndex((p) => p === 'accounts');
+    const routeParts = fnIndex >= 0 ? pathParts.slice(fnIndex) : [];
+
+    console.log('Request:', method, url.pathname, 'pathParts:', pathParts, 'routeParts:', routeParts);
 
     // GET /accounts - List all accounts
-    if (method === 'GET' && pathParts.length === 1 && pathParts[0] === 'accounts') {
+    if (method === 'GET' && routeParts.length === 1 && routeParts[0] === 'accounts') {
       const { data: accounts, error } = await supabase
         .from('accounts')
         .select('*')
@@ -83,7 +87,7 @@ Deno.serve(async (req) => {
     }
 
     // POST /accounts - Create new account
-    if (method === 'POST' && pathParts.length === 1 && pathParts[0] === 'accounts') {
+    if (method === 'POST' && routeParts.length === 1 && routeParts[0] === 'accounts') {
       const body: CreateAccountRequest = await req.json();
 
       // Check plan limits
@@ -165,8 +169,8 @@ Deno.serve(async (req) => {
     }
 
     // PATCH /accounts/:id - Update account
-    if (method === 'PATCH' && pathParts.length === 2 && pathParts[0] === 'accounts') {
-      const accountId = pathParts[1];
+    if (method === 'PATCH' && routeParts.length === 2 && routeParts[0] === 'accounts') {
+      const accountId = routeParts[1];
       const body = await req.json();
 
       const slug = body.name
@@ -197,8 +201,8 @@ Deno.serve(async (req) => {
     }
 
     // POST /accounts/:id/activate - Set as active account
-    if (method === 'POST' && pathParts.length === 3 && pathParts[0] === 'accounts' && pathParts[2] === 'activate') {
-      const accountId = pathParts[1];
+    if (method === 'POST' && routeParts.length === 3 && routeParts[0] === 'accounts' && routeParts[2] === 'activate') {
+      const accountId = routeParts[1];
 
       // Verify ownership
       const { data: account } = await supabase
@@ -229,8 +233,8 @@ Deno.serve(async (req) => {
     }
 
     // POST /accounts/:id/duplicate - Duplicate account
-    if (method === 'POST' && pathParts.length === 3 && pathParts[0] === 'accounts' && pathParts[2] === 'duplicate') {
-      const accountId = pathParts[1];
+    if (method === 'POST' && routeParts.length === 3 && routeParts[0] === 'accounts' && routeParts[2] === 'duplicate') {
+      const accountId = routeParts[1];
       const body: DuplicateAccountRequest = await req.json();
 
       // Verify ownership of source account
@@ -368,8 +372,8 @@ Deno.serve(async (req) => {
     }
 
     // DELETE /accounts/:id - Soft delete account
-    if (method === 'DELETE' && pathParts.length === 2 && pathParts[0] === 'accounts') {
-      const accountId = pathParts[1];
+    if (method === 'DELETE' && routeParts.length === 2 && routeParts[0] === 'accounts') {
+      const accountId = routeParts[1];
 
       // Check if it's the active account
       const { data: profile } = await supabase

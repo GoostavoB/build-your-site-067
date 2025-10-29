@@ -70,7 +70,7 @@ const Index = () => {
         <MobileHero />
         
         {/* Desktop Hero */}
-        <Hero className="py-0 my-0" />
+        <Hero />
         
         {/* Mobile Feature Blocks */}
         <FeatureBlocks />

@@ -47,7 +47,7 @@ const FEATURES = [
   {
     id: 'tax',
     title: 'Tax Reports',
-    description: 'Automated tax-compliant reports for Binance, Bybit, Coinbase, and Gate.io',
+    description: 'Automated tax-compliant reports for Binance, Bybit, Coinbase and all other exchanges',
     icon: FileText,
     screenshot: taxImg,
     details: [

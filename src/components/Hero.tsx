@@ -41,15 +41,16 @@ const Hero = () => {
             <h1 id="hero-title" className="text-[clamp(40px,6vw,68px)] font-bold leading-[1.1] tracking-tight max-w-md lg:max-w-3xl" style={{
             textWrap: 'balance' as any
           }}>
-              Your Trading Edge,
-              <span className="block text-primary">Automated</span>
+              Train Your Mind.
+              <span className="block text-primary">Track Your Trades.</span>
+              <span className="block">Transform Your Results.</span>
             </h1>
 
             {/* Subtitle - Centered on mobile, left-aligned on desktop */}
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-md lg:max-w-xl" style={{
             textWrap: 'balance' as any
           }}>
-              Multi-exchange tracking. AI-powered insights. One platform.
+              Multi-exchange sync • AI insights • Psychology tracking • One platform.
               <span className="block mt-3 text-sm font-semibold text-primary">
                 Free 14-day trial • No credit card • Cancel anytime
               </span>

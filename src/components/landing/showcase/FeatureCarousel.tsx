@@ -79,7 +79,6 @@ const FEATURES = [
     details: [
       'Screenshot OCR extraction',
       'Automatic trade parsing',
-      'Multi-exchange recognition',
       'Instant journal entries'
     ]
   },

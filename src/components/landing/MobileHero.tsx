@@ -67,7 +67,7 @@ const MobileHero = () => {
             Multi-exchange sync • AI insights • Psychology tracking
           </p>
           <p className="text-xs text-primary/80 font-medium">
-            Free 14-day trial • No credit card • Cancel anytime
+            Free entry plan • No credit card • Cancel anytime
           </p>
         </motion.div>
 

@@ -91,7 +91,7 @@ const Hero = () => {
                 Multi-exchange sync • AI insights • Psychology tracking
               </p>
               <p className="text-[15px] text-foreground/90 font-semibold">
-                Free 14-day trial • No credit card • Cancel anytime
+                Free entry plan • No credit card • Cancel anytime
               </p>
             </div>
 

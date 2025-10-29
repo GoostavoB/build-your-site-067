@@ -374,7 +374,9 @@ const Pricing = () => {
                         {Icon ? (
                           <Icon
                             size={20}
-                            className="mt-0.5 flex-shrink-0 text-primary"
+                            className={`mt-0.5 flex-shrink-0 ${
+                              plan.popular ? "text-primary" : isElite ? "text-amber-400" : "text-foreground/60"
+                            }`}
                             strokeWidth={2.5}
                           />
                         ) : (

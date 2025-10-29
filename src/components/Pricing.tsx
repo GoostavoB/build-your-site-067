@@ -198,41 +198,49 @@ const Pricing = () => {
               <article
                 role="listitem"
                 key={plan.id}
-                className={`glass backdrop-blur-[12px] rounded-2xl p-6 md:p-7 relative transition-all shadow-sm animate-fade-in ${
-                  plan.popular 
-                    ? "ring-2 ring-primary shadow-2xl shadow-primary/30 md:scale-110 hover:shadow-2xl hover:shadow-primary/50" 
+                className={`relative rounded-2xl p-6 md:p-7 transition-all shadow-sm animate-fade-in overflow-hidden
+                  ${plan.popular 
+                    ? "bg-white/[0.08] backdrop-blur-xl border-2 border-primary/50 shadow-2xl shadow-primary/20 md:scale-110 hover:shadow-2xl hover:shadow-primary/30 before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/[0.12] before:to-transparent before:rounded-2xl before:pointer-events-none" 
                     : isFree 
-                    ? "opacity-75 md:scale-95 hover:opacity-90" 
+                    ? "bg-white/[0.03] backdrop-blur-lg border border-white/[0.08] opacity-80 md:scale-95 hover:opacity-90" 
                     : isElite
-                    ? "ring-2 ring-amber-500/40 shadow-lg shadow-amber-500/20 hover:ring-amber-500/60"
+                    ? "bg-gradient-to-br from-amber-500/[0.08] to-white/[0.06] backdrop-blur-xl border-2 border-amber-500/40 shadow-xl shadow-amber-500/15 hover:shadow-amber-500/25 before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/[0.1] before:to-transparent before:rounded-2xl before:pointer-events-none"
                     : ""
                 }`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                {/* Animated glow for Pro plan */}
+                {/* Animated inner glow for Pro plan */}
                 {plan.popular && (
-                  <motion.div
-                    className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/10 to-primary/5 -z-10"
-                    animate={{
-                      opacity: [0.5, 0.8, 0.5],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
+                  <>
+                    <motion.div
+                      className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-transparent opacity-60"
+                      animate={{
+                        opacity: [0.4, 0.7, 0.4],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent" />
+                  </>
+                )}
+
+                {/* Elite card inner glow */}
+                {isElite && (
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-400/10 via-transparent to-transparent opacity-50" />
                 )}
 
                 {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full flex items-center gap-1 shadow-md">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full flex items-center gap-1 shadow-md z-10">
                     <Sparkles size={12} />
                     {t('pricing.mostPopular')}
                   </div>
                 )}
                 
 
-                <div className="mb-5">
+                <div className="mb-5 relative z-10">
                   <h3 className={`text-xl md:text-2xl font-bold mb-1.5 ${
                     isElite ? 'bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent' : ''
                   }`}>
@@ -271,12 +279,12 @@ const Pricing = () => {
 
                 <Button
                   onClick={handleAuthNavigate}
-                  className={`w-full h-12 mb-3 rounded-xl font-medium transition-all group ${
+                  className={`w-full h-12 mb-3 rounded-xl font-medium transition-all group relative z-10 ${
                     plan.popular
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl hover:scale-105"
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-xl hover:shadow-2xl hover:scale-105"
                       : isElite
-                      ? "bg-amber-500/10 border border-amber-500/30 text-amber-500 hover:bg-amber-500/20 hover:border-amber-500/50"
-                      : "glass border border-border/50 hover:bg-accent/50"
+                      ? "bg-amber-500/20 border-2 border-amber-500/40 text-amber-400 hover:bg-amber-500/30 hover:border-amber-500/60 backdrop-blur-sm"
+                      : "bg-white/[0.05] border border-white/[0.12] hover:bg-white/[0.08] backdrop-blur-sm"
                   }`}
                   variant={plan.popular ? "default" : "outline"}
                 >
@@ -284,11 +292,11 @@ const Pricing = () => {
                   {plan.popular && <span className="ml-2 group-hover:translate-x-1 transition-transform inline-block">→</span>}
                 </Button>
 
-                <p className="text-xs text-muted-foreground text-center mb-5 leading-relaxed">
+                <p className="text-xs text-muted-foreground text-center mb-5 leading-relaxed relative z-10">
                   No credit card required • Upgrade anytime
                 </p>
 
-                <ul className="space-y-2.5">
+                <ul className="space-y-2.5 relative z-10">
                   {plan.features.map((feature, i) => {
                     const Icon = feature.icon;
                     return (

@@ -3651,12 +3651,17 @@ export type Database = {
         Row: {
           active_theme: string
           animation_speed: string
+          background_gradient: Json | null
           calm_mode_enabled: boolean
           created_at: string
+          custom_background: string | null
           haptic_feedback_enabled: boolean
           id: string
+          last_theme_notification_date: string | null
           profile_frame: string | null
           sound_enabled: boolean
+          theme_studio_opened_count: number | null
+          theme_unlock_dates: Json | null
           unlocked_themes: string[]
           updated_at: string
           user_id: string
@@ -3664,12 +3669,17 @@ export type Database = {
         Insert: {
           active_theme?: string
           animation_speed?: string
+          background_gradient?: Json | null
           calm_mode_enabled?: boolean
           created_at?: string
+          custom_background?: string | null
           haptic_feedback_enabled?: boolean
           id?: string
+          last_theme_notification_date?: string | null
           profile_frame?: string | null
           sound_enabled?: boolean
+          theme_studio_opened_count?: number | null
+          theme_unlock_dates?: Json | null
           unlocked_themes?: string[]
           updated_at?: string
           user_id: string
@@ -3677,12 +3687,17 @@ export type Database = {
         Update: {
           active_theme?: string
           animation_speed?: string
+          background_gradient?: Json | null
           calm_mode_enabled?: boolean
           created_at?: string
+          custom_background?: string | null
           haptic_feedback_enabled?: boolean
           id?: string
+          last_theme_notification_date?: string | null
           profile_frame?: string | null
           sound_enabled?: boolean
+          theme_studio_opened_count?: number | null
+          theme_unlock_dates?: Json | null
           unlocked_themes?: string[]
           updated_at?: string
           user_id?: string

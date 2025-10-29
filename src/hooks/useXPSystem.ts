@@ -346,6 +346,9 @@ export const useXPSystem = () => {
           icon: '⚡'
         });
       }
+
+      // Invalidate theme unlock queries to check for new unlocks
+      queryClient.invalidateQueries({ queryKey: ['theme-unlocks'] });
     } catch (error) {
       console.error('Error adding XP:', error);
       toast.error('Failed to award XP');

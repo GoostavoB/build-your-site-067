@@ -11,10 +11,32 @@ import { CustomThemeManager } from './CustomThemeManager';
 import { SeasonalThemeBanner } from './SeasonalThemeBanner';
 import { AIThemeSuggestion } from './AIThemeSuggestion';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { ThemeUnlockBadge } from './ThemeUnlockBadge';
+import { useThemeUnlocks } from '@/hooks/useThemeUnlocks';
+import { useEffect, useState } from 'react';
 
 export const ThemeStudio = () => {
+  const { pendingUnlocks, clearUnlockBadge } = useThemeUnlocks();
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const handleOpenStudio = () => {
+      setOpen(true);
+    };
+    
+    window.addEventListener('open-theme-studio', handleOpenStudio);
+    return () => window.removeEventListener('open-theme-studio', handleOpenStudio);
+  }, []);
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (newOpen && pendingUnlocks > 0) {
+      clearUnlockBadge();
+    }
+  };
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <Button 
           variant="ghost" 
@@ -23,6 +45,7 @@ export const ThemeStudio = () => {
           aria-label="Theme Studio"
         >
           <Palette className="h-5 w-5" />
+          <ThemeUnlockBadge count={pendingUnlocks} />
         </Button>
       </PopoverTrigger>
       <PopoverContent 

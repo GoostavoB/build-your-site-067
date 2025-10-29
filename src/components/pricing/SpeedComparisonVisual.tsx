@@ -8,28 +8,28 @@ export const SpeedComparisonVisual = () => {
   const [manualTimer, setManualTimer] = useState(0);
   const [aiTimer, setAiTimer] = useState(0);
 
-  // Manual entry timer (counts to 20 minutes = 1200 seconds, but we'll show in accelerated time)
+  // Manual entry timer (counts to 40 minutes = 2400 seconds, showing average of 30-50 min range)
   useEffect(() => {
     if (!inView) return;
     
     const interval = setInterval(() => {
       setManualTimer((prev) => {
-        if (prev >= 1200) return 1200;
-        return prev + 60; // Jump by 60 seconds for demo
+        if (prev >= 2400) return 2400;
+        return prev + 120; // Jump by 120 seconds for demo
       });
     }, 150);
 
     return () => clearInterval(interval);
   }, [inView]);
 
-  // AI timer (counts to 30 seconds)
+  // AI timer (counts to 12 seconds, showing midpoint of 10-15 sec range)
   useEffect(() => {
     if (!inView) return;
     
     const timeout = setTimeout(() => {
       const interval = setInterval(() => {
         setAiTimer((prev) => {
-          if (prev >= 30) return 30;
+          if (prev >= 12) return 12;
           return prev + 1;
         });
       }, 50);
@@ -110,12 +110,12 @@ export const SpeedComparisonVisual = () => {
           >
             <div className="flex justify-between text-[10px] text-muted-foreground/60 mb-1">
               <span>Trade 1 of 10</span>
-              <span>{Math.min(Math.round((manualTimer / 1200) * 100), 100)}%</span>
+              <span>{Math.min(Math.round((manualTimer / 2400) * 100), 100)}%</span>
             </div>
             <div className="h-2 bg-muted/20 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
-                animate={inView ? { width: `${Math.min((manualTimer / 1200) * 100, 100)}%` } : {}}
+                animate={inView ? { width: `${Math.min((manualTimer / 2400) * 100, 100)}%` } : {}}
                 transition={{ duration: 0.3 }}
                 className="h-full bg-destructive/60 rounded-full"
               />
@@ -135,7 +135,7 @@ export const SpeedComparisonVisual = () => {
               </p>
             </div>
             <p className="text-[11px] text-muted-foreground/70 text-center mt-1">
-              Tedious. Time-consuming. Often skipped.
+              30-50 minutes for 10 trades manually
             </p>
           </motion.div>
         </div>
@@ -230,7 +230,7 @@ export const SpeedComparisonVisual = () => {
               </p>
             </div>
             <p className="text-[11px] text-primary/90 font-medium text-center mt-1">
-              10 trades processed instantly
+              10 trades in 10-15 seconds
             </p>
           </motion.div>
         </div>

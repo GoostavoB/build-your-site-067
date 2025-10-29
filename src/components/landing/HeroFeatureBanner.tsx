@@ -10,7 +10,7 @@ export const HeroFeatureBanner = () => {
     "Binance",
     "Bybit", 
     "Coinbase",
-    "API Integration",
+    "All Exchanges Accepted",
     "Real-time Analytics",
     "Risk Management"
   ];
@@ -25,12 +25,12 @@ export const HeroFeatureBanner = () => {
       <div className="container mx-auto max-w-7xl">
         {/* Main Heading - H2 for SEO hierarchy */}
         <h2 className="text-2xl md:text-3xl font-bold text-center mb-3">
-          Automated Multi-Exchange Crypto Trading Journal
+          AI Powered Multi-Exchange Crypto Trading Journal
         </h2>
         
         {/* SEO-rich description */}
         <p className="text-center text-muted-foreground max-w-4xl mx-auto mb-6 text-sm md:text-base">
-          Sync trades from Binance, Bybit, Coinbase & more automatically via API. 
+          Consolidates all your trades from Binance, Bybit, Coinbase & ALL other exchanges via our AI system. 
           Professional crypto trading journal with multi-exchange analytics, risk management tools, 
           and AI-powered insights in one place.
         </p>

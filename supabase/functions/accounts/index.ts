@@ -64,7 +64,6 @@ Deno.serve(async (req) => {
         .from('trading_accounts')
         .select('*')
         .eq('user_id', user.id)
-        .eq('is_deleted', false)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
@@ -103,8 +102,7 @@ Deno.serve(async (req) => {
       const { count } = await supabase
         .from('trading_accounts')
         .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('is_deleted', false);
+        .eq('user_id', user.id);
 
       // Starter/free plan: limit to 1 account
       if ((tier === 'free' || tier === 'basic') && (count || 0) >= 1) {
@@ -210,7 +208,6 @@ Deno.serve(async (req) => {
         .select('id')
         .eq('id', accountId)
         .eq('user_id', user.id)
-        .eq('is_deleted', false)
         .single();
 
       if (!account) {
@@ -243,7 +240,6 @@ Deno.serve(async (req) => {
         .select('*')
         .eq('id', accountId)
         .eq('user_id', user.id)
-        .eq('is_deleted', false)
         .single();
 
       if (!sourceAccount) {
@@ -265,8 +261,7 @@ Deno.serve(async (req) => {
       const { count } = await supabase
         .from('trading_accounts')
         .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('is_deleted', false);
+        .eq('user_id', user.id);
 
       if ((tier === 'free' || tier === 'basic') && (count || 0) >= 1) {
         return new Response(
@@ -371,7 +366,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // DELETE /accounts/:id - Soft delete account
+    // DELETE /accounts/:id - Delete account
     if (method === 'DELETE' && routeParts.length === 2 && routeParts[0] === 'accounts') {
       const accountId = routeParts[1];
 
@@ -395,9 +390,10 @@ Deno.serve(async (req) => {
         );
       }
 
+      // Delete the account (hard delete since no is_deleted column exists)
       const { error } = await supabase
         .from('trading_accounts')
-        .update({ is_deleted: true })
+        .delete()
         .eq('id', accountId)
         .eq('user_id', user.id);
 

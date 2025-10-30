@@ -111,13 +111,20 @@ export const useDailyRewards = () => {
     try {
       const today = new Date().toISOString().split('T')[0];
 
+      console.log('📝 Step 1: Fetching current tier data...');
       // Fetch current tier data for total_rewards_claimed
-      const { data: currentTierData } = await supabase
+      const { data: currentTierData, error: tierFetchError } = await supabase
         .from('user_xp_tiers')
         .select('total_rewards_claimed')
         .eq('user_id', user.id)
         .single();
 
+      if (tierFetchError) {
+        console.error('❌ Failed to fetch tier data:', tierFetchError);
+        throw new Error('Failed to fetch user tier data');
+      }
+
+      console.log('📝 Step 2: Inserting reward log...');
       // Insert reward log
       const { error: logError } = await supabase
         .from('daily_rewards_log')
@@ -130,8 +137,12 @@ export const useDailyRewards = () => {
           reward_tier: reward.rewardTier
         });
 
-      if (logError) throw logError;
+      if (logError) {
+        console.error('❌ Failed to insert reward log:', logError);
+        throw logError;
+      }
 
+      console.log('📝 Step 3: Updating user_xp_tiers...');
       // Update user_xp_tiers with new consecutive days and claim date
       const { error: updateError } = await supabase
         .from('user_xp_tiers')
@@ -142,8 +153,12 @@ export const useDailyRewards = () => {
         })
         .eq('user_id', user.id);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('❌ Failed to update tier:', updateError);
+        throw updateError;
+      }
 
+      console.log('📝 Step 4: Fetching current XP...');
       // Award XP to user - fetch current XP first
       const { data: xpData, error: xpFetchError } = await supabase
         .from('user_xp_levels')
@@ -151,8 +166,12 @@ export const useDailyRewards = () => {
         .eq('user_id', user.id)
         .single();
 
-      if (xpFetchError) throw xpFetchError;
+      if (xpFetchError) {
+        console.error('❌ Failed to fetch XP data:', xpFetchError);
+        throw xpFetchError;
+      }
 
+      console.log('📝 Step 5: Updating XP...');
       const { error: xpError } = await supabase
         .from('user_xp_levels')
         .update({
@@ -160,7 +179,12 @@ export const useDailyRewards = () => {
         })
         .eq('user_id', user.id);
 
-      if (xpError) throw xpError;
+      if (xpError) {
+        console.error('❌ Failed to update XP:', xpError);
+        throw xpError;
+      }
+
+      console.log('✅ Reward claimed successfully!');
 
       // Track analytics
       analytics.track('daily_reward_claimed', {
@@ -187,8 +211,13 @@ export const useDailyRewards = () => {
       // Refresh data
       await checkDailyReward();
     } catch (error) {
-      console.error('Error claiming reward:', error);
-      toast.error('Failed to claim reward. Please try again.');
+      console.error('❌ Error claiming reward:', error);
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast.error('Failed to claim reward', {
+        description: errorMessage + '. Please try again.'
+      });
+      // Re-throw so modal can handle it
+      throw error;
     }
   };
 

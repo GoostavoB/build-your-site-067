@@ -24,21 +24,29 @@ export const DailyRewardModal = ({ open, onClose, reward, onClaim }: DailyReward
   if (!reward) return null;
 
   const handleClaim = async () => {
-    setIsClaiming(true);
-    success();
-    
-    // Trigger confetti with more particles for longer streaks
-    const particleCount = Math.min(150, 50 + reward.consecutiveDays * 10);
-    confetti({
-      particleCount,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b']
-    });
-    
-    await onClaim();
-    success();
-    setIsClaiming(false);
+    try {
+      setIsClaiming(true);
+      success();
+      
+      // Trigger confetti with more particles for longer streaks
+      const particleCount = Math.min(150, 50 + reward.consecutiveDays * 10);
+      confetti({
+        particleCount,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b']
+      });
+      
+      await onClaim();
+      success();
+    } catch (error) {
+      console.error('Error in handleClaim:', error);
+      warning();
+      // Error toast is already shown by useDailyRewards
+    } finally {
+      // Always reset claiming state, even on error
+      setIsClaiming(false);
+    }
   };
 
   const getTierInfo = (tier: number) => {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,7 @@ export default function SpotWallet() {
   const [viewType, setViewType] = useState<'value' | 'percent'>('value');
   const [activeView, setActiveView] = useState<'tokens' | 'categories'>('tokens');
   const [syncing, setSyncing] = useState(false);
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
   const { toast } = useToast();
 
   const {
@@ -45,6 +46,18 @@ export default function SpotWallet() {
   } = usePortfolio(selectedRange);
   
   const { addHolding, deleteHolding } = useSpotWallet();
+
+  // Add loading timeout
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (isLoading) {
+        console.warn('SpotWallet: Loading timeout reached');
+        setLoadingTimeout(true);
+      }
+    }, 8000);
+    
+    return () => clearTimeout(timeoutId);
+  }, [isLoading]);
 
   const handleSyncCategories = async () => {
     setSyncing(true);
@@ -101,12 +114,51 @@ export default function SpotWallet() {
     settings?.category_split_mode || false
   );
 
-  if (isLoading) {
+  if (isLoading && !loadingTimeout) {
     return (
       <AppLayout>
         <div className="flex items-center justify-center h-96">
-          <div className="animate-pulse text-muted-foreground">Loading portfolio...</div>
+          <div className="inline-flex items-center gap-3">
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <p className="text-muted-foreground">Loading portfolio...</p>
+          </div>
         </div>
+      </AppLayout>
+    );
+  }
+
+  // Show empty state if timeout or no holdings
+  if (loadingTimeout || (!isLoading && (!holdings || holdings.length === 0))) {
+    return (
+      <AppLayout>
+        <SkipToContent />
+        <main id="main-content" className="space-y-6 p-6">
+          <header className="flex flex-col gap-2">
+            <h1 className="text-3xl font-bold tracking-tight">Spot Wallet</h1>
+            <p className="text-muted-foreground">Track your portfolio with real-time P&L</p>
+          </header>
+          
+          <Card className="p-8 text-center glass-subtle">
+            <Wallet className="w-16 h-16 mx-auto mb-4 text-muted-foreground/50" />
+            <h3 className="text-xl font-semibold mb-2">No Assets Yet</h3>
+            <p className="text-muted-foreground mb-4">
+              Start tracking your crypto portfolio by adding your first asset
+            </p>
+            <Button onClick={() => setShowAddModal(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Asset
+            </Button>
+          </Card>
+          
+          <AddTokenModal 
+            open={showAddModal} 
+            onClose={() => setShowAddModal(false)}
+            onAdd={(token) => {
+              addHolding.mutate(token);
+              setShowAddModal(false);
+            }}
+          />
+        </main>
       </AppLayout>
     );
   }

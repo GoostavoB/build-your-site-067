@@ -28,6 +28,7 @@ const Forecast = () => {
   const [avgDailyPnl, setAvgDailyPnl] = useState(0);
   const [projectedEquity, setProjectedEquity] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
   const [advancedStats, setAdvancedStats] = useState<AdvancedStats | null>(null);
   const [currentBalance, setCurrentBalance] = useState(0);
   const [showCalculationModal, setShowCalculationModal] = useState(false);
@@ -38,6 +39,15 @@ const Forecast = () => {
   useEffect(() => {
     fetchAvgPnl();
     fetchAdvancedStats();
+    
+    // Set up loading timeout (8 seconds)
+    const timeoutId = setTimeout(() => {
+      if (loading) {
+        console.warn('Forecast: Loading timeout reached');
+        setLoadingTimeout(true);
+        setLoading(false);
+      }
+    }, 8000);
     
     // Set up realtime subscription for trades changes
     const channel = supabase
@@ -52,6 +62,7 @@ const Forecast = () => {
       .subscribe();
     
     return () => {
+      clearTimeout(timeoutId);
       supabase.removeChannel(channel);
     };
   }, [user]);
@@ -155,6 +166,17 @@ const Forecast = () => {
               <p className="text-muted-foreground">Calculating projections...</p>
             </div>
           </div>
+        ) : loadingTimeout || avgDailyPnl === 0 ? (
+          <Card className="p-8 text-center glass-subtle">
+            <TrendingDown className="w-16 h-16 mx-auto mb-4 text-muted-foreground/50" />
+            <h3 className="text-xl font-semibold mb-2">No Trading Data Yet</h3>
+            <p className="text-muted-foreground mb-4">
+              Upload your trades to see personalized equity forecasts and projections
+            </p>
+            <Button onClick={() => window.location.href = '/upload'}>
+              Upload Trades
+            </Button>
+          </Card>
         ) : (
           <>
             <Card className="p-6 glass-card border-border/50">

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -13,8 +13,19 @@ import { layout, spacing } from '@/utils/designTokens';
 export const AchievementsGrid = () => {
   const { progress, categories, loading, getProgressByCategory, getCompletionRate } = useAchievementProgress();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
 
-  if (loading) {
+  // Add loading timeout
+  useEffect(() => {
+    if (loading) {
+      const timeoutId = setTimeout(() => {
+        setLoadingTimeout(true);
+      }, 8000);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [loading]);
+
+  if (loading && !loadingTimeout) {
     return (
       <div className="space-y-4">
         <Skeleton className="h-12 w-full" />

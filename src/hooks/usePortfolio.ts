@@ -73,7 +73,7 @@ export const usePortfolio = (range: TimeRange = '1M') => {
   });
 
   // Fetch portfolio settings
-  const { data: settings } = useQuery({
+  const { data: settings, isLoading: settingsLoading } = useQuery({
     queryKey: ['portfolio_settings'],
     queryFn: async () => {
       try {
@@ -118,6 +118,8 @@ export const usePortfolio = (range: TimeRange = '1M') => {
         return null;
       }
     },
+    retry: 1,
+    staleTime: 60000,
   });
 
   // Fetch realized P&L
@@ -204,7 +206,7 @@ export const usePortfolio = (range: TimeRange = '1M') => {
     amount: tx.total_value
   })) || [];
 
-  const isLoading = holdingsLoading || transactionsLoading || pricesLoading;
+  const isLoading = holdingsLoading || transactionsLoading || settingsLoading || pricesLoading;
 
   return {
     holdings,

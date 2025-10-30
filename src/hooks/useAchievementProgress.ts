@@ -81,7 +81,10 @@ export const useAchievementProgress = () => {
   };
 
   const loadProgress = async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     try {
       setLoading(true);
@@ -91,7 +94,10 @@ export const useAchievementProgress = () => {
         .from('achievements' as any)
         .select('*');
 
-      if (achievementsError) throw achievementsError;
+      if (achievementsError) {
+        console.error('Error fetching achievements:', achievementsError);
+        throw achievementsError;
+      }
 
       // Get user's progress
       const { data: progressData, error: progressError } = await supabase
@@ -130,6 +136,8 @@ export const useAchievementProgress = () => {
       setProgress(progressMap);
     } catch (error) {
       console.error('Error loading achievement progress:', error);
+      // Set empty progress on error to show empty state
+      setProgress({});
     } finally {
       setLoading(false);
     }

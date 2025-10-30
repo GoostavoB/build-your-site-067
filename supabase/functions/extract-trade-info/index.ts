@@ -463,7 +463,7 @@ NEVER return empty array. If uncertain, return best-effort rows. Max 10 trades p
       console.log(`🎯 Allocating ${maxTokens} tokens for ${estimatedTradeCount} estimated trade(s)`);
 
       // Add retry logic for vision model (2 attempts)
-      let response;
+      let response: Response | undefined;
       let retryCount = 0;
       const MAX_RETRIES = 1;
       
@@ -529,6 +529,10 @@ NEVER return empty array. If uncertain, return best-effort rows. Max 10 trades p
             throw fetchError;
           }
         }
+      }
+
+      if (!response) {
+        throw new Error('Vision model request failed after all retries');
       }
 
       if (!response.ok) {

@@ -296,12 +296,40 @@ const Dashboard = () => {
     const result: { [col: number]: { [row: number]: string } } = {};
     
     console.log('Building grid from positions:', positions);
+    console.log('Currently pinned widgets:', pinnedWidgets);
     
-    // Filter out pinned widgets
-    const filteredPositions = positions.filter(pos => {
-      const pinnedId = CATALOG_TO_PINNED_MAP[pos.id];
-      return !(pinnedId && pinnedWidgets.includes(pinnedId));
+    // Ensure all unpinned widgets have positions
+    const positionIds = new Set(positions.map(p => p.id));
+    const missingPositions: WidgetPosition[] = [];
+    
+    // Find widgets that should be in grid but don't have positions
+    Object.keys(CATALOG_TO_PINNED_MAP).forEach(widgetId => {
+      const pinnedId = CATALOG_TO_PINNED_MAP[widgetId];
+      const isCurrentlyPinned = pinnedWidgets.includes(pinnedId);
+      const hasPosition = positionIds.has(widgetId);
+      
+      if (!isCurrentlyPinned && !hasPosition) {
+        // Widget is unpinned but has no position - add it to the bottom
+        const maxRow = Math.max(0, ...positions.map(p => p.row));
+        missingPositions.push({
+          id: widgetId,
+          column: 0,
+          row: maxRow + 1 + missingPositions.length,
+        });
+      }
     });
+    
+    // Combine existing positions with missing ones
+    const allPositions = [...positions, ...missingPositions];
+    
+    // Filter to show only unpinned widgets
+    const filteredPositions = allPositions.filter(pos => {
+      const pinnedId = CATALOG_TO_PINNED_MAP[pos.id];
+      const isPinned = pinnedId && pinnedWidgets.includes(pinnedId);
+      return !isPinned;
+    });
+    
+    console.log('Filtered positions for grid:', filteredPositions);
     
     filteredPositions.forEach(pos => {
       if (!result[pos.column]) result[pos.column] = {};

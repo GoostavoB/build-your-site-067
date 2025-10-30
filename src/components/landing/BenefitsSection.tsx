@@ -8,9 +8,9 @@ export const BenefitsSection = () => {
   const { t } = useTranslation();
 
   const stats = [
-    { value: 23, suffix: "%", label: t('landing.benefits.performanceGain', '23% more performance gain') },
-    { value: 18, suffix: "%", label: t('landing.benefits.drawdownReduction', '18% less drawdown'), prefix: "–" },
-    { value: 10, suffix: "x", label: t('landing.benefits.fasterUploads', '10x faster uploads') },
+    { value: 40, suffix: "x", label: t('landing.stats.fasterUploads.title', '40× Faster Uploads') },
+    { value: 100, suffix: "%", label: t('landing.stats.knowEveryFee.title', 'Know Every Fee') },
+    { value: 100, suffix: "%", label: t('landing.stats.yourRules.title', 'Your Dashboard, Your Rules') },
   ];
 
   return (
@@ -44,7 +44,6 @@ export const BenefitsSection = () => {
                 <AnimatedMetric
                   value={stat.value}
                   suffix={stat.suffix}
-                  prefix={stat.prefix}
                   decimals={0}
                   inView={inView}
                 />

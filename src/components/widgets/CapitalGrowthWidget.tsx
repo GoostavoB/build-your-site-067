@@ -6,6 +6,8 @@ import { TrendingUp, TrendingDown, ArrowDownCircle, ArrowUpCircle, DollarSign } 
 import { useTranslation } from '@/hooks/useTranslation';
 import { BlurredCurrency } from '@/components/ui/BlurredValue';
 import { useCapitalGrowthData } from '@/hooks/useCapitalGrowthData';
+import { PinButton } from '@/components/widgets/PinButton';
+import { usePinnedWidgets } from '@/contexts/PinnedWidgetsContext';
 
 interface CapitalGrowthWidgetProps {
   id: string;
@@ -19,6 +21,8 @@ export const CapitalGrowthWidget = memo(({
   onRemove,
 }: CapitalGrowthWidgetProps) => {
   const { t } = useTranslation();
+  const { isPinned, togglePin } = usePinnedWidgets();
+  const pinnedId = 'capitalGrowth' as const;
   const {
     chartData,
     initialInvestment,
@@ -38,6 +42,14 @@ export const CapitalGrowthWidget = memo(({
       title={t('widgets.capitalGrowth.title')}
       isEditMode={isEditMode}
       onRemove={onRemove}
+      headerActions={
+        !isEditMode && (
+          <PinButton
+            isPinned={isPinned(pinnedId)}
+            onToggle={() => togglePin(pinnedId)}
+          />
+        )
+      }
     >
       <div className="space-y-4">
         {/* Summary Stats */}

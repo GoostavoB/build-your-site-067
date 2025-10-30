@@ -1,23 +1,51 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export type WidgetId = 
-  | 'win-rate'
-  | 'total-profit'
-  | 'current-roi'
-  | 'total-trades'
+  | 'totalBalance'
+  | 'winRate'
+  | 'totalTrades'
+  | 'spotWallet'
+  | 'absoluteProfit'
+  | 'topMovers'
+  | 'aiInsights'
+  | 'recentTransactions'
+  | 'quickActions'
+  | 'avgPnLPerTrade'
+  | 'avgPnLPerDay'
+  | 'currentROI'
+  | 'capitalGrowth'
+  | 'behaviorAnalytics'
+  | 'costEfficiency'
+  | 'performanceHighlights'
+  | 'tradingQuality'
+  | 'heatmap'
+  | 'goals'
   | 'lsrMarketData'
-  | 'openInterestChart'
-  | 'goals';
+  | 'openInterestChart';
 
-// Map catalog widget IDs to pinned widget IDs
+// Map catalog widget IDs to pinned widget IDs (they're the same now)
 export const CATALOG_TO_PINNED_MAP: Record<string, WidgetId> = {
-  'winRate': 'win-rate',
-  'absoluteProfit': 'total-profit',
-  'currentROI': 'current-roi',
-  'totalTrades': 'total-trades',
+  'totalBalance': 'totalBalance',
+  'winRate': 'winRate',
+  'totalTrades': 'totalTrades',
+  'spotWallet': 'spotWallet',
+  'absoluteProfit': 'absoluteProfit',
+  'topMovers': 'topMovers',
+  'aiInsights': 'aiInsights',
+  'recentTransactions': 'recentTransactions',
+  'quickActions': 'quickActions',
+  'avgPnLPerTrade': 'avgPnLPerTrade',
+  'avgPnLPerDay': 'avgPnLPerDay',
+  'currentROI': 'currentROI',
+  'capitalGrowth': 'capitalGrowth',
+  'behaviorAnalytics': 'behaviorAnalytics',
+  'costEfficiency': 'costEfficiency',
+  'performanceHighlights': 'performanceHighlights',
+  'tradingQuality': 'tradingQuality',
+  'heatmap': 'heatmap',
+  'goals': 'goals',
   'lsrMarketData': 'lsrMarketData',
   'openInterestChart': 'openInterestChart',
-  'goals': 'goals',
 };
 
 interface PinnedWidgetsContextType {
@@ -31,10 +59,10 @@ interface PinnedWidgetsContextType {
 const PinnedWidgetsContext = createContext<PinnedWidgetsContextType | undefined>(undefined);
 
 const DEFAULT_PINNED_WIDGETS: WidgetId[] = [
-  'win-rate',
-  'total-profit',
-  'current-roi',
-  'total-trades'
+  'winRate',
+  'absoluteProfit',
+  'currentROI',
+  'totalTrades'
 ];
 
 const STORAGE_KEY = 'pinned-widgets';

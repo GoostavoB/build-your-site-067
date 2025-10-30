@@ -7,6 +7,8 @@ import { WidgetProps } from '@/types/widget';
 import { WidgetWrapper } from './WidgetWrapper';
 import { useTranslation } from '@/hooks/useTranslation';
 import { BlurredCurrency } from '@/components/ui/BlurredValue';
+import { PinButton } from '@/components/widgets/PinButton';
+import { usePinnedWidgets } from '@/contexts/PinnedWidgetsContext';
 
 interface SpotWalletWidgetProps extends WidgetProps {
   totalValue: number;
@@ -27,6 +29,8 @@ export const SpotWalletWidget = memo(({
 }: SpotWalletWidgetProps) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isPinned, togglePin } = usePinnedWidgets();
+  const pinnedId = 'spotWallet' as const;
   const isPositive = change24h >= 0;
 
   return (
@@ -38,14 +42,20 @@ export const SpotWalletWidget = memo(({
       onExpand={onExpand}
       headerActions={
         !isEditMode && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/spot-wallet')}
-            className="h-7"
-          >
-            {t('widgets.viewAll')} <ArrowRight className="ml-1 h-3 w-3" />
-          </Button>
+          <>
+            <PinButton
+              isPinned={isPinned(pinnedId)}
+              onToggle={() => togglePin(pinnedId)}
+            />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/spot-wallet')}
+              className="h-7"
+            >
+              {t('widgets.viewAll')} <ArrowRight className="ml-1 h-3 w-3" />
+            </Button>
+          </>
         )
       }
     >

@@ -6,6 +6,8 @@ import { WidgetProps } from '@/types/widget';
 import { WidgetWrapper } from './WidgetWrapper';
 import { useTranslation } from '@/hooks/useTranslation';
 import { BlurredCurrency } from '@/components/ui/BlurredValue';
+import { PinButton } from '@/components/widgets/PinButton';
+import { usePinnedWidgets } from '@/contexts/PinnedWidgetsContext';
 
 interface TotalBalanceWidgetProps extends WidgetProps {
   totalBalance: number;
@@ -23,6 +25,8 @@ export const TotalBalanceWidget = memo(({
   changePercent24h = 0,
 }: TotalBalanceWidgetProps) => {
   const { t } = useTranslation();
+  const { isPinned, togglePin } = usePinnedWidgets();
+  const pinnedId = 'totalBalance' as const;
   const isPositive = change24h >= 0;
 
   return (
@@ -31,6 +35,14 @@ export const TotalBalanceWidget = memo(({
       isEditMode={isEditMode}
       onRemove={onRemove}
       onExpand={onExpand}
+      headerActions={
+        !isEditMode && (
+          <PinButton
+            isPinned={isPinned(pinnedId)}
+            onToggle={() => togglePin(pinnedId)}
+          />
+        )
+      }
     >
       <div className="space-y-3">
         <div className="flex items-center justify-between">

@@ -27,9 +27,7 @@ export const AbsoluteProfitWidget = memo(({
 }: AbsoluteProfitWidgetProps) => {
   const { t } = useTranslation();
   const { isPinned, togglePin } = usePinnedWidgets();
-  // Map catalog widget ID to pinned widget ID
-  const catalogId = id;
-  const pinnedId = catalogId === 'absoluteProfit' ? 'total-profit' as const : undefined;
+  const pinnedId = 'absoluteProfit' as const;
   const isPositive = totalPnL >= 0;
 
   return (
@@ -39,7 +37,7 @@ export const AbsoluteProfitWidget = memo(({
       isEditMode={isEditMode}
       onRemove={onRemove}
       headerActions={
-        !isEditMode && pinnedId && (
+        !isEditMode && (
           <PinButton
             isPinned={isPinned(pinnedId)}
             onToggle={() => togglePin(pinnedId)}

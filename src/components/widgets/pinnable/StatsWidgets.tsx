@@ -15,7 +15,7 @@ interface StatsWidgetProps {
 
 export function WinRateWidget({ winRate = 0, winCount = 0, lossCount = 0 }: StatsWidgetProps) {
   const { isPinned, togglePin } = usePinnedWidgets();
-  const widgetId = 'win-rate';
+  const widgetId = 'winRate';
 
   return (
     <Card className="relative p-4 hover:shadow-lg transition-all">
@@ -44,7 +44,7 @@ export function WinRateWidget({ winRate = 0, winCount = 0, lossCount = 0 }: Stat
 
 export function TotalProfitWidget({ totalProfit = 0 }: StatsWidgetProps) {
   const { isPinned, togglePin } = usePinnedWidgets();
-  const widgetId = 'total-profit';
+  const widgetId = 'absoluteProfit';
   const isPositive = totalProfit >= 0;
 
   return (
@@ -73,7 +73,7 @@ export function TotalProfitWidget({ totalProfit = 0 }: StatsWidgetProps) {
 
 export function CurrentROIWidget({ currentROI = 0 }: StatsWidgetProps) {
   const { isPinned, togglePin } = usePinnedWidgets();
-  const widgetId = 'current-roi';
+  const widgetId = 'currentROI';
   const isPositive = currentROI >= 0;
 
   return (
@@ -102,7 +102,7 @@ export function CurrentROIWidget({ currentROI = 0 }: StatsWidgetProps) {
 
 export function TotalTradesWidget({ totalTrades = 0 }: StatsWidgetProps) {
   const { isPinned, togglePin } = usePinnedWidgets();
-  const widgetId = 'total-trades';
+  const widgetId = 'totalTrades';
 
   return (
     <Card className="relative p-4 hover:shadow-lg transition-all">

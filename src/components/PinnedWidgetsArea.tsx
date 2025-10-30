@@ -23,13 +23,13 @@ interface PinnedWidgetsAreaProps {
 
 const renderWidget = (widgetId: WidgetId, props: PinnedWidgetsAreaProps) => {
   switch (widgetId) {
-    case 'win-rate':
+    case 'winRate':
       return <WinRateWidget winRate={props.winRate} winCount={props.winCount} lossCount={props.lossCount} />;
-    case 'total-profit':
+    case 'absoluteProfit':
       return <TotalProfitWidget totalProfit={props.totalProfit} />;
-    case 'current-roi':
+    case 'currentROI':
       return <CurrentROIWidget currentROI={props.currentROI} />;
-    case 'total-trades':
+    case 'totalTrades':
       return <TotalTradesWidget totalTrades={props.totalTrades} />;
     case 'lsrMarketData':
       return <LongShortRatioWidget />;

@@ -38,9 +38,7 @@ export const CurrentROIWidget = memo(({
   const { user } = useAuth();
   const { t } = useTranslation();
   const { isPinned, togglePin } = usePinnedWidgets();
-  // Map catalog widget ID to pinned widget ID
-  const catalogId = id;
-  const pinnedId = catalogId === 'currentROI' ? 'current-roi' as const : undefined;
+  const pinnedId = 'currentROI' as const;
   const isPositive = currentROI >= 0;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [capitalValue, setCapitalValue] = useState(initialInvestment.toString());
@@ -89,7 +87,7 @@ export const CurrentROIWidget = memo(({
       isEditMode={isEditMode}
       onRemove={onRemove}
       headerActions={
-        !isEditMode && pinnedId && (
+        !isEditMode && (
           <PinButton
             isPinned={isPinned(pinnedId)}
             onToggle={() => togglePin(pinnedId)}

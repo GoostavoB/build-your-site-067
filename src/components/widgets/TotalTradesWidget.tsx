@@ -22,9 +22,7 @@ export const TotalTradesWidget = memo(({
 }: TotalTradesWidgetProps) => {
   const { t } = useTranslation();
   const { isPinned, togglePin } = usePinnedWidgets();
-  // Map catalog widget ID to pinned widget ID
-  const catalogId = id;
-  const pinnedId = catalogId === 'totalTrades' ? 'total-trades' as const : undefined;
+  const pinnedId = 'totalTrades' as const;
   
   return (
     <WidgetWrapper
@@ -33,7 +31,7 @@ export const TotalTradesWidget = memo(({
       onRemove={onRemove}
       onExpand={onExpand}
       headerActions={
-        !isEditMode && pinnedId && (
+        !isEditMode && (
           <PinButton
             isPinned={isPinned(pinnedId)}
             onToggle={() => togglePin(pinnedId)}

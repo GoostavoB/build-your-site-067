@@ -24,9 +24,7 @@ export const WinRateWidget = memo(({
 }: WinRateWidgetProps) => {
   const { t } = useTranslation();
   const { isPinned, togglePin } = usePinnedWidgets();
-  // Map catalog widget ID to pinned widget ID
-  const catalogId = id;
-  const pinnedId = catalogId === 'winRate' ? 'win-rate' as const : undefined;
+  const pinnedId = 'winRate' as const;
   
   return (
     <WidgetWrapper
@@ -35,7 +33,7 @@ export const WinRateWidget = memo(({
       onRemove={onRemove}
       onExpand={onExpand}
       headerActions={
-        !isEditMode && pinnedId && (
+        !isEditMode && (
           <PinButton
             isPinned={isPinned(pinnedId)}
             onToggle={() => togglePin(pinnedId)}

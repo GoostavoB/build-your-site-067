@@ -1,14 +1,19 @@
 import { Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useDailyRewards } from '@/hooks/useDailyRewards';
+import { DailyReward } from '@/hooks/useDailyRewards';
 import { motion, AnimatePresence } from 'framer-motion';
+
+interface DailyRewardIndicatorProps {
+  reward: DailyReward | null;
+  loading: boolean;
+  setShowRewardModal: (show: boolean) => void;
+}
 
 /**
  * Floating indicator button that shows when daily reward is available
  */
-export const DailyRewardIndicator = () => {
-  const { reward, loading, setShowRewardModal } = useDailyRewards();
+export const DailyRewardIndicator = ({ reward, loading, setShowRewardModal }: DailyRewardIndicatorProps) => {
 
   // Don't show if loading, no reward, or already claimed
   if (loading || !reward || reward.alreadyClaimed) {

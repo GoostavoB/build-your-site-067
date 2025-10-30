@@ -144,7 +144,13 @@ const AppRoutes = () => {
       <LanguageSync />
       {user && <WelcomeBackToast />}
       {user && <OnboardingWrapper />}
-      {user && <DailyRewardIndicator />}
+      {user && (
+        <DailyRewardIndicator 
+          reward={reward}
+          loading={false}
+          setShowRewardModal={setShowRewardModal}
+        />
+      )}
       {user && (
         <DailyRewardModal
           open={showRewardModal}

@@ -1,6 +1,7 @@
 import { memo, useState, useEffect } from 'react';
 import { AIInsightCard } from './AIInsightCard';
 import { LSRInsightCard } from './LSRInsightCard';
+import { GoalInsightCard } from './GoalInsightCard';
 import { useHomeInsights } from '@/hooks/useHomeInsights';
 import { useInsightsRotation } from '@/hooks/useInsightsRotation';
 import { Card } from '@/components/ui/card';
@@ -42,7 +43,14 @@ export const AIInsightsBox = memo(({
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
   };
-  const allInsights = data ? [...data.user_insights, ...data.market_insights] : [];
+  
+  // Filter out unwanted insights
+  const filteredMarketInsights = data?.market_insights.filter(insight => {
+    // Remove duplicate "Long-short ratio" and "Market overview"
+    return insight.title !== 'Long-short ratio' && insight.title !== 'Market overview';
+  }) || [];
+  
+  const allInsights = data ? [...data.user_insights, ...filteredMarketInsights] : [];
 
   const {
     visibleInsights,
@@ -131,6 +139,7 @@ export const AIInsightsBox = memo(({
             onMouseLeave={handleMouseLeave}
           >
             <LSRInsightCard />
+            <GoalInsightCard />
             {visibleInsights.map((insight, index) => (
               <AIInsightCard
                 key={`${insight.id}-${index}`}

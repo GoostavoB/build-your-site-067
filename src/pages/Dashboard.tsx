@@ -53,8 +53,8 @@ import { UpgradePrompt } from '@/components/UpgradePrompt';
 import { DailyMissionBar } from '@/components/dashboard/DailyMissionBar';
 import { XPTestButton } from '@/components/dev/XPTestButton';
 import { Tier3PreviewModal } from '@/components/tier/Tier3PreviewModal';
-import { DailyGoalsWidget } from '@/components/gamification/DailyGoalsWidget';
 import { useSearchParams } from 'react-router-dom';
+import { ProgressTrigger } from '@/components/progress/ProgressTrigger';
 
 // Lazy load heavy components
 const TradeHistory = lazy(() => import('@/components/TradeHistory').then(m => ({ default: m.TradeHistory })));
@@ -1075,14 +1075,12 @@ const Dashboard = () => {
           </Card>
         ) : (
           <>
+            {/* Progress Trigger */}
+            <ProgressTrigger />
+
             {/* Daily Mission Bar */}
             <div className="mb-6 animate-fade-in" style={{animationDelay: '0.3s'}}>
               <DailyMissionBar />
-            </div>
-
-            {/* Daily Goals Widget */}
-            <div className="mb-6 animate-fade-in" style={{animationDelay: '0.35s'}}>
-              <DailyGoalsWidget />
             </div>
 
             {/* AI Insights Box */}

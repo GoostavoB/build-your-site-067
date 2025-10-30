@@ -16,7 +16,13 @@ interface Goal {
   deadline: string;
 }
 
-export function PersonalGoalsWidget() {
+interface PersonalGoalsWidgetProps {
+  id?: string;
+  isEditMode?: boolean;
+  onRemove?: () => void;
+}
+
+export function PersonalGoalsWidget({ id, isEditMode, onRemove }: PersonalGoalsWidgetProps = {}) {
   const [activeGoal, setActiveGoal] = useState<Goal | null>(null);
   const { user } = useAuth();
   const { isPinned, togglePin } = usePinnedWidgets();
@@ -57,9 +63,11 @@ export function PersonalGoalsWidget() {
   return (
     <>
       <Card className="relative p-4 hover:shadow-lg transition-all">
-        <div className="absolute top-2 right-2">
-          <PinButton isPinned={isPinned(widgetId)} onToggle={() => togglePin(widgetId)} />
-        </div>
+        {!isEditMode && (
+          <div className="absolute top-2 right-2 z-10">
+            <PinButton isPinned={isPinned(widgetId)} onToggle={() => togglePin(widgetId)} />
+          </div>
+        )}
 
         <div className="space-y-3">
           <div className="flex items-center gap-2">

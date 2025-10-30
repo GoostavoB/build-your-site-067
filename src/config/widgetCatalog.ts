@@ -37,6 +37,8 @@ import { TradingHeatmap } from '@/components/TradingHeatmap';
 import { GoalWidget } from '@/components/goals/GoalWidget';
 import { LSRWidget } from '@/components/widgets/LSRWidget';
 import { OpenInterestWidget } from '@/components/widgets/OpenInterestWidget';
+import { PersonalGoalsWidget } from '@/components/widgets/PersonalGoalsWidget';
+import { LeverageCalculatorWidget } from '@/components/widgets/LeverageCalculatorWidget';
 
 /**
  * Widget Catalog - Registry of all available dashboard widgets
@@ -242,12 +244,12 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
 
   goals: {
     id: 'goals',
-    title: 'Active Goals',
-    description: 'Track progress on your trading goals with projections',
+    title: 'Personal Goals',
+    description: 'Track your active trading goal with progress',
     category: 'trading',
     icon: Target,
-    defaultSize: 'large',
-    component: GoalWidget as any,
+    defaultSize: 'small',
+    component: PersonalGoalsWidget as any,
     requiresData: [],
   },
   lsrMarketData: {
@@ -268,6 +270,16 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
     icon: TrendingUp,
     defaultSize: 'large',
     component: OpenInterestWidget as any,
+    requiresData: [],
+  },
+  leverageCalculator: {
+    id: 'leverageCalculator',
+    title: 'Leverage & Stop Calculator',
+    description: 'Calculate safe leverage from stop distance - quick access',
+    category: 'trading',
+    icon: Activity,
+    defaultSize: 'large',
+    component: LeverageCalculatorWidget as any,
     requiresData: [],
   },
 };

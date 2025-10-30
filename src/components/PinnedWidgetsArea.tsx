@@ -12,6 +12,7 @@ import { QuickActionsWidget } from '@/components/widgets/QuickActionsWidget';
 import { AIInsightsWidget } from '@/components/widgets/AIInsightsWidget';
 import { AvgPnLPerTradeWidget } from '@/components/widgets/AvgPnLPerTradeWidget';
 import { AvgPnLPerDayWidget } from '@/components/widgets/AvgPnLPerDayWidget';
+import { LeverageCalculatorWidget } from '@/components/widgets/LeverageCalculatorWidget';
 import { Trade } from '@/types/trade';
 
 // Import pinnable stats widgets
@@ -75,7 +76,9 @@ const renderWidget = (widgetId: WidgetId, props: PinnedWidgetsAreaProps) => {
     case 'openInterestChart':
       return <OpenInterestWidget />;
     case 'goals':
-      return <PersonalGoalsWidget />;
+      return <PersonalGoalsWidget id={widgetId} />;
+    case 'leverageCalculator':
+      return <LeverageCalculatorWidget id={widgetId} />;
     default:
       return null;
   }

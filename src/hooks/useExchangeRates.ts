@@ -31,28 +31,37 @@ export function useExchangeRates() {
         .eq('id', 'latest')
         .maybeSingle();
 
-      // If cache exists and is less than 10 minutes old, use it
+      // If cache exists and is less than 15 minutes old, use it
       if (cached && !error) {
         const cacheAge = Date.now() - new Date(cached.updated_at).getTime();
-        const tenMinutes = 10 * 60 * 1000;
+        const fifteenMinutes = 15 * 60 * 1000;
         
-        if (cacheAge < tenMinutes) {
+        if (cacheAge < fifteenMinutes) {
           console.log('Using cached exchange rates');
           return cached.rates as unknown as ExchangeRates;
         }
       }
 
-      // Cache is stale or doesn't exist, fetch fresh data
+      // Cache is stale or doesn't exist, try to fetch fresh data
+      // But if we have stale cache and get rate limited, use stale cache
       console.log('Fetching fresh exchange rates...');
       const { data, error: fetchError } = await supabase.functions.invoke<{ success: boolean; data: ExchangeRates }>('fetch-exchange-rates');
 
       if (fetchError) {
         console.error('Error fetching exchange rates:', fetchError);
-        // Return cached data if available, even if stale
+        
+        // If we have cached data (even if stale), use it instead of throwing
         if (cached) {
-          console.log('Using stale cache due to fetch error');
-          return cached.rates as unknown as ExchangeRates;
+          const cacheAge = Date.now() - new Date(cached.updated_at).getTime();
+          const oneHour = 60 * 60 * 1000;
+          
+          // Use cache if it's less than 1 hour old, even if stale
+          if (cacheAge < oneHour) {
+            console.log('Using stale cache due to fetch error (cache age:', Math.round(cacheAge / 60000), 'minutes)');
+            return cached.rates as unknown as ExchangeRates;
+          }
         }
+        
         throw fetchError;
       }
 
@@ -62,9 +71,10 @@ export function useExchangeRates() {
 
       return data.data;
     },
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
-    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
-    refetchOnWindowFocus: true,
+    staleTime: 10 * 60 * 1000, // Consider data fresh for 10 minutes
+    gcTime: 60 * 60 * 1000, // Keep in cache for 1 hour
+    refetchInterval: 15 * 60 * 1000, // Refetch every 15 minutes
+    refetchOnWindowFocus: false, // Reduce API calls on window focus
+    retry: 1, // Only retry once on failure
   });
 }

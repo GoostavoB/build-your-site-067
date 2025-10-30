@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
     // GET /accounts - List all accounts
     if (method === 'GET' && routeParts.length === 1 && routeParts[0] === 'accounts') {
       const { data: accounts, error } = await supabase
-        .from('accounts')
+        .from('trading_accounts')
         .select('*')
         .eq('user_id', user.id)
         .eq('is_deleted', false)
@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
 
       // Count existing accounts
       const { count } = await supabase
-        .from('accounts')
+        .from('trading_accounts')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', user.id)
         .eq('is_deleted', false);
@@ -139,7 +139,7 @@ Deno.serve(async (req) => {
         .replace(/^-|-$/g, '');
 
       const { data: newAccount, error } = await supabase
-        .from('accounts')
+        .from('trading_accounts')
         .insert({
           user_id: user.id,
           name: body.name,
@@ -181,7 +181,7 @@ Deno.serve(async (req) => {
         : undefined;
 
       const { data: updatedAccount, error } = await supabase
-        .from('accounts')
+        .from('trading_accounts')
         .update({
           name: body.name,
           slug,
@@ -206,7 +206,7 @@ Deno.serve(async (req) => {
 
       // Verify ownership
       const { data: account } = await supabase
-        .from('accounts')
+        .from('trading_accounts')
         .select('id')
         .eq('id', accountId)
         .eq('user_id', user.id)
@@ -239,7 +239,7 @@ Deno.serve(async (req) => {
 
       // Verify ownership of source account
       const { data: sourceAccount } = await supabase
-        .from('accounts')
+        .from('trading_accounts')
         .select('*')
         .eq('id', accountId)
         .eq('user_id', user.id)
@@ -263,7 +263,7 @@ Deno.serve(async (req) => {
       const tier = profile?.subscription_tier || 'free';
 
       const { count } = await supabase
-        .from('accounts')
+        .from('trading_accounts')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', user.id)
         .eq('is_deleted', false);
@@ -289,7 +289,7 @@ Deno.serve(async (req) => {
         .replace(/^-|-$/g, '');
 
       const { data: newAccount, error: createError } = await supabase
-        .from('accounts')
+        .from('trading_accounts')
         .insert({
           user_id: user.id,
           name: newName,
@@ -396,7 +396,7 @@ Deno.serve(async (req) => {
       }
 
       const { error } = await supabase
-        .from('accounts')
+        .from('trading_accounts')
         .update({ is_deleted: true })
         .eq('id', accountId)
         .eq('user_id', user.id);

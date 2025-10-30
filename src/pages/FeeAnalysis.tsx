@@ -82,11 +82,11 @@ const FeeAnalysis = () => {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 animate-fade-in">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">{t('feeAnalysis.title')}</h1>
-            <p className="text-muted-foreground">{t('feeAnalysis.subtitle')}</p>
+            <h1 className="text-3xl font-bold tracking-tight">{t('feeAnalysis.title')}</h1>
+            <p className="text-muted-foreground mt-1">{t('feeAnalysis.subtitle')}</p>
           </div>
           <BlurToggleButton />
         </div>
@@ -94,16 +94,20 @@ const FeeAnalysis = () => {
         <FeeOverviewCards {...overviewData} />
 
         <Tabs defaultValue="comparison" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="comparison">{t('feeAnalysis.exchangeComparison')}</TabsTrigger>
-            <TabsTrigger value="details">{t('feeAnalysis.tradeDetails')}</TabsTrigger>
+          <TabsList className="glass rounded-xl">
+            <TabsTrigger value="comparison" className="data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10">
+              {t('feeAnalysis.exchangeComparison')}
+            </TabsTrigger>
+            <TabsTrigger value="details" className="data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10">
+              {t('feeAnalysis.tradeDetails')}
+            </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="comparison" className="space-y-4">
+          <TabsContent value="comparison" className="space-y-4 animate-fade-in">
             <ExchangeComparisonTable exchangeStats={exchangeStats} />
           </TabsContent>
           
-          <TabsContent value="details" className="space-y-4">
+          <TabsContent value="details" className="space-y-4 animate-fade-in">
             <TradeDetailsTable trades={enhancedTrades} />
           </TabsContent>
         </Tabs>

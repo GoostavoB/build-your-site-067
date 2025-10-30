@@ -32,8 +32,8 @@ export const LSRInsightCard = memo(() => {
           const previous = parseFloat(lsrJson[1].longShortRatio);
           const change = ((current - previous) / previous) * 100;
 
-          const currentOI = parseFloat(oiJson[0].sumOpenInterest);
-          const previousOI = parseFloat(oiJson[1].sumOpenInterest);
+          const currentOI = parseFloat(oiJson[0].sumOpenInterestValue);
+          const previousOI = parseFloat(oiJson[1].sumOpenInterestValue);
           const oiChange = ((currentOI - previousOI) / previousOI) * 100;
 
           setLsrData({

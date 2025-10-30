@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export const GoalInsightCard = memo(() => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  const [timedOut, setTimedOut] = useState(false);
 
   const { data: goal, isLoading } = useQuery({
     queryKey: ['active-goal', user?.id],
@@ -32,11 +33,19 @@ export const GoalInsightCard = memo(() => {
     enabled: !!user,
   });
 
+  useEffect(() => {
+    if (authLoading || (isLoading && user)) {
+      const id = setTimeout(() => setTimedOut(true), 1200);
+      return () => clearTimeout(id);
+    }
+    setTimedOut(false);
+  }, [authLoading, isLoading, user]);
+
   const handleClick = () => {
     navigate('/goals');
   };
 
-  if (authLoading || (isLoading && user)) {
+  if ((authLoading || (isLoading && user)) && !timedOut) {
     return (
       <Card className="p-4 animate-pulse">
         <div className="space-y-3">
@@ -78,7 +87,7 @@ export const GoalInsightCard = memo(() => {
             size="sm" 
             className="w-full h-8 text-xs gap-1 group-hover:gap-2 transition-all"
           >
-            Create Your First Goal
+            Add a goal and start working on it
             <ArrowRight className="h-3 w-3" />
           </Button>
         </div>

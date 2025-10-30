@@ -46,33 +46,37 @@ export function ProgressPanel({ isOpen, onClose }: ProgressPanelProps) {
   const navigate = useNavigate();
   const { activityData, trackWidgetInteraction } = useEngagementReminders();
 
-  if (!activityData) return null;
-
-  const activities = [
+  // Show empty state if no data
+  const activities = activityData ? [
     {
-      type: 'trades',
+      type: 'trades' as const,
       current: activityData.trades_uploaded,
       target: 5,
       xpPerAction: 40,
     },
     {
-      type: 'emotional_logs',
+      type: 'emotional_logs' as const,
       current: activityData.emotional_logs_created,
       target: 3,
       xpPerAction: 18,
     },
     {
-      type: 'journal',
+      type: 'journal' as const,
       current: activityData.journal_entries_created,
       target: 2,
       xpPerAction: 55,
     },
     {
-      type: 'challenges',
+      type: 'challenges' as const,
       current: activityData.challenges_completed,
       target: 3,
       xpPerAction: 100,
     },
+  ] : [
+    { type: 'trades' as const, current: 0, target: 5, xpPerAction: 40 },
+    { type: 'emotional_logs' as const, current: 0, target: 3, xpPerAction: 18 },
+    { type: 'journal' as const, current: 0, target: 2, xpPerAction: 55 },
+    { type: 'challenges' as const, current: 0, target: 3, xpPerAction: 100 },
   ];
 
   const totalEarned = activities.reduce((sum, a) => {

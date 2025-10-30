@@ -1,11 +1,12 @@
 import { memo, useState, useMemo } from 'react';
 import { WidgetWrapper } from './WidgetWrapper';
-import { TrendingUp, TrendingDown, Shield, AlertTriangle } from 'lucide-react';
+import { TrendingUp, TrendingDown, Shield, AlertTriangle, Zap } from 'lucide-react';
 import { PinButton } from '@/components/widgets/PinButton';
 import { usePinnedWidgets } from '@/contexts/PinnedWidgetsContext';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface LeverageCalculatorWidgetProps {
   id: string;
@@ -33,26 +34,20 @@ export const LeverageCalculatorWidget = memo(({
       return { maxLeverage: 0, riskLevel: 'Low', liquidationPrice: 0 };
     }
 
-    // Safety buffer (0.5% for fees/slippage)
     const bufferB = 0.5;
-    
-    // Calculate max safe leverage: L* = (100 - B) / Δ%
     const maxLeverage = Math.floor((100 - bufferB) / stopPct);
     const cappedLeverage = Math.min(maxLeverage, 100);
     
-    // Calculate liquidation price
     const liquidationPrice = side === 'long' 
       ? entry * (1 - 100 / cappedLeverage / 100)
       : entry * (1 + 100 / cappedLeverage / 100);
 
-    // Calculate margin to stop
     const stopPrice = side === 'long'
       ? entry * (1 - stopPct / 100)
       : entry * (1 + stopPct / 100);
     
     const marginPct = Math.abs(((stopPrice - liquidationPrice) / entry) * 100);
     
-    // Determine risk level
     let riskLevel: 'Low' | 'Medium' | 'High';
     if (marginPct > 1.0) riskLevel = 'Low';
     else if (marginPct > 0.5) riskLevel = 'Medium';
@@ -68,24 +63,24 @@ export const LeverageCalculatorWidget = memo(({
 
   const getRiskColor = () => {
     switch (result.riskLevel) {
+      case 'Low': return 'from-profit/20 to-profit/5 border-profit/30';
+      case 'Medium': return 'from-warning/20 to-warning/5 border-warning/30';
+      case 'High': return 'from-loss/20 to-loss/5 border-loss/30';
+    }
+  };
+
+  const getRiskTextColor = () => {
+    switch (result.riskLevel) {
       case 'Low': return 'text-profit';
       case 'Medium': return 'text-warning';
       case 'High': return 'text-loss';
     }
   };
 
-  const getRiskIcon = () => {
-    switch (result.riskLevel) {
-      case 'Low': return <Shield className="h-5 w-5 text-profit" />;
-      case 'Medium': return <AlertTriangle className="h-5 w-5 text-warning" />;
-      case 'High': return <AlertTriangle className="h-5 w-5 text-loss" />;
-    }
-  };
-
   return (
     <WidgetWrapper
       id={id}
-      title="Leverage Calculator"
+      title="Quick Leverage"
       isEditMode={isEditMode}
       onRemove={onRemove}
       headerActions={
@@ -97,45 +92,51 @@ export const LeverageCalculatorWidget = memo(({
         )
       }
     >
-      <div className="space-y-6">
-        {/* Position Side Toggle */}
-        <div className="flex gap-2">
-          <Button
-            variant={side === 'long' ? 'default' : 'outline'}
-            className="flex-1"
+      <div className="space-y-4">
+        {/* Compact Side Toggle */}
+        <div className="flex gap-1.5 p-1 bg-muted/50 rounded-lg">
+          <button
             onClick={() => setSide('long')}
-            size="sm"
+            className={cn(
+              "flex-1 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200",
+              side === 'long' 
+                ? "bg-background shadow-sm text-profit" 
+                : "text-muted-foreground hover:text-foreground"
+            )}
           >
-            <TrendingUp className="mr-2 h-4 w-4" />
+            <TrendingUp className="inline h-3 w-3 mr-1" />
             Long
-          </Button>
-          <Button
-            variant={side === 'short' ? 'default' : 'outline'}
-            className="flex-1"
+          </button>
+          <button
             onClick={() => setSide('short')}
-            size="sm"
+            className={cn(
+              "flex-1 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200",
+              side === 'short' 
+                ? "bg-background shadow-sm text-loss" 
+                : "text-muted-foreground hover:text-foreground"
+            )}
           >
-            <TrendingDown className="mr-2 h-4 w-4" />
+            <TrendingDown className="inline h-3 w-3 mr-1" />
             Short
-          </Button>
+          </button>
         </div>
 
-        {/* Input Fields */}
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="entry">Entry Price</Label>
+        {/* Compact Inputs - Side by Side */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label htmlFor="entry" className="text-xs text-muted-foreground">Entry Price</Label>
             <Input
               id="entry"
               type="number"
               value={entryPrice}
               onChange={(e) => setEntryPrice(e.target.value)}
               placeholder="50000"
-              className="text-lg"
+              className="h-9 text-sm"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="stop">Stop Loss % from Entry</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="stop" className="text-xs text-muted-foreground">Stop Loss %</Label>
             <Input
               id="stop"
               type="number"
@@ -143,45 +144,52 @@ export const LeverageCalculatorWidget = memo(({
               onChange={(e) => setStopPercent(e.target.value)}
               placeholder="1.0"
               step="0.1"
-              className="text-lg"
+              className="h-9 text-sm"
             />
           </div>
         </div>
 
-        {/* Result Display */}
+        {/* Compact Result Display */}
         {result.maxLeverage > 0 && (
-          <div className="space-y-4 pt-4 border-t">
-            {/* Max Leverage - Hero Display */}
-            <div className="text-center space-y-2 p-6 rounded-lg bg-primary/5 border border-primary/20">
-              <p className="text-sm text-muted-foreground font-medium">Max Safe Leverage</p>
-              <p className="text-5xl font-bold text-primary">
-                {result.maxLeverage}x
-              </p>
-            </div>
-
-            {/* Risk Indicator */}
-            <div className={`flex items-center justify-between p-4 rounded-lg bg-muted/50`}>
-              <div className="flex items-center gap-2">
-                {getRiskIcon()}
-                <div>
-                  <p className="text-sm font-medium">Risk Level</p>
-                  <p className={`text-lg font-bold ${getRiskColor()}`}>
-                    {result.riskLevel}
-                  </p>
+          <div className={cn(
+            "relative overflow-hidden rounded-lg border bg-gradient-to-br p-4 transition-all duration-300 hover:scale-[1.02] animate-fade-in",
+            getRiskColor()
+          )}>
+            {/* Decorative Glow Effect */}
+            <div className="absolute -top-12 -right-12 w-24 h-24 bg-primary/10 rounded-full blur-2xl" />
+            
+            <div className="relative space-y-3">
+              {/* Max Leverage - Compact Display */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Zap className={cn("h-4 w-4", getRiskTextColor())} />
+                  <span className="text-xs font-medium text-muted-foreground">Max Safe Leverage</span>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className={cn("text-3xl font-bold", getRiskTextColor())}>
+                    {result.maxLeverage}
+                  </span>
+                  <span className={cn("text-sm font-semibold", getRiskTextColor())}>x</span>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-xs text-muted-foreground">Safety Margin</p>
-                <p className={`text-sm font-semibold ${getRiskColor()}`}>
-                  {result.marginPct}%
-                </p>
-              </div>
-            </div>
 
-            {/* Liquidation Price */}
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Liquidation Price</span>
-              <span className="font-semibold">${result.liquidationPrice}</span>
+              {/* Risk & Details - Inline */}
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1.5">
+                  {result.riskLevel === 'Low' && <Shield className="h-3 w-3 text-profit" />}
+                  {result.riskLevel !== 'Low' && <AlertTriangle className="h-3 w-3" />}
+                  <span className={cn("font-medium", getRiskTextColor())}>
+                    {result.riskLevel} Risk
+                  </span>
+                  <span className="text-muted-foreground">•</span>
+                  <span className="text-muted-foreground">
+                    {result.marginPct}% margin
+                  </span>
+                </div>
+                <div className="text-muted-foreground">
+                  Liq: ${Number(result.liquidationPrice).toLocaleString()}
+                </div>
+              </div>
             </div>
           </div>
         )}

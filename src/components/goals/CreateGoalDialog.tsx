@@ -110,7 +110,7 @@ export function CreateGoalDialog({ onGoalCreated, editingGoal, onClose }: Create
         title: values.title.trim(),
         description: values.description?.trim() || '',
         goal_type: values.goal_type,
-        target_value: normalizedValue.toString(), // Send as string for Postgres numeric
+        target_value: normalizedValue, // Send as number
         deadline: deadlineISO,
         current_value: editingGoal?.current_value || 0,
         period: editingGoal?.period || 'monthly',

@@ -76,11 +76,11 @@ export const GlowingLogo = () => {
         </div>
 
         {/* TD Logo Image */}
-        <div className="relative z-10">
+        <div className="relative z-10 -mb-2">
           <motion.img
             src={tdLogo}
             alt="Trading Diary Logo"
-            className="w-32 h-32 object-contain"
+            className="w-28 h-28 object-contain"
             style={{
               filter: 'drop-shadow(0 0 20px rgba(59, 130, 246, 0.5))',
             }}
@@ -100,8 +100,8 @@ export const GlowingLogo = () => {
         </div>
 
         {/* The Trading Diary text */}
-        <div className="relative z-10 -mt-4">
-          <p className="text-white text-lg font-semibold tracking-wide">
+        <div className="relative z-10">
+          <p className="text-white text-base font-semibold tracking-wide">
             The Trading Diary
           </p>
         </div>

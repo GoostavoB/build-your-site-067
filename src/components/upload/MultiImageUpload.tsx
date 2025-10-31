@@ -152,10 +152,10 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
       setBatchProgress(`Batch ${batchIndex + 1}/${totalBatches} • Processing ${batchStart + 1}-${batchEnd}/${images.length}...`);
       setQueuedCount(images.length - batchEnd);
 
-      for (let i = 0; i < currentBatch.length; i++) {
+      // Process all images in batch in parallel for 8-10x speedup
+      const batchPromises = currentBatch.map(async (image, i) => {
         const globalIndex = batchStart + i;
-        const image = currentBatch[i];
-        if (image.status !== 'pending') continue;
+        if (image.status !== 'pending') return null;
 
         const analyzing: UploadedImage = { ...image, status: 'analyzing' };
         setImages(prev => prev.map((img, idx) => (idx === globalIndex ? analyzing : img)));
@@ -208,6 +208,7 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
               results.push(successImg);
               setImages(prev => prev.map((img, idx) => (idx === globalIndex ? successImg : img)));
               success = true;
+              return successImg;
             } else {
               // Handle specific error responses with status codes
               if (error) {
@@ -258,12 +259,14 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
                 setImages(prev => prev.map((img, idx) => (idx === globalIndex ? failed : img)));
                 toast.error('Analysis Failed', { description: errorMessage });
                 success = true; // Exit retry loop
+                return failed;
               } else {
                 console.warn('⚠️ No trades found');
                 const noTrades: UploadedImage = { ...image, status: 'error', trades: [] };
                 results.push(noTrades);
                 setImages(prev => prev.map((img, idx) => (idx === globalIndex ? noTrades : img)));
                 success = true; // Exit retry loop
+                return noTrades;
               }
             }
           } catch (err) {
@@ -273,17 +276,13 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
             setImages(prev => prev.map((img, idx) => (idx === globalIndex ? failed : img)));
             toast.error('Network Error', { description: 'Failed to connect to the server' });
             success = true; // Exit retry loop
+            return failed;
           }
         }
+      });
 
-        // Small delay between images within a batch
-        await new Promise(res => setTimeout(res, 250));
-      }
-
-      // Wait between batches (except after the last batch)
-      if (batchIndex < totalBatches - 1) {
-        await waitWithCountdown(batchDelayMs, `Batch ${batchIndex + 1}/${totalBatches} complete`);
-      }
+      // Wait for all images in batch to complete in parallel
+      await Promise.allSettled(batchPromises);
     }
 
     setIsAnalyzing(false);

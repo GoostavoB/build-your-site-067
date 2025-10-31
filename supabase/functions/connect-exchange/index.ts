@@ -70,9 +70,9 @@ Deno.serve(async (req) => {
     // We store the credentials now and test them when syncing trades
 
     // Encrypt credentials
-    const encryptedKey = encrypt(apiKey);
-    const encryptedSecret = encrypt(apiSecret);
-    const encryptedPassphrase = apiPassphrase ? encrypt(apiPassphrase) : null;
+    const encryptedKey = await encrypt(apiKey);
+    const encryptedSecret = await encrypt(apiSecret);
+    const encryptedPassphrase = apiPassphrase ? await encrypt(apiPassphrase) : null;
 
     // Store connection in database (upsert to handle reconnections)
     const { data: connection, error: dbError } = await supabaseClient

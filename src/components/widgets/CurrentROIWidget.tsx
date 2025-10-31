@@ -61,8 +61,10 @@ export const CurrentROIWidget = memo(({
     try {
       const { error } = await supabase
         .from('user_settings')
-        .update({ initial_investment: newValue })
-        .eq('user_id', user.id);
+        .upsert(
+          { user_id: user.id, initial_investment: newValue },
+          { onConflict: 'user_id' }
+        );
 
       if (error) throw error;
 

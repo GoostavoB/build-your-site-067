@@ -121,7 +121,7 @@ const Index = () => {
         </section>
 
         {/* Pain Points Section */}
-        <section className="px-6 py-20 bg-secondary/20">
+        <section className="px-6 py-20">
           <div className="container mx-auto max-w-4xl">
             <motion.div
               initial={{ opacity: 0, y: 20 }}

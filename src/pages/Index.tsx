@@ -243,9 +243,9 @@ const Index = () => {
 
               <div className="grid md:grid-cols-3 gap-6 mb-12">
                 {[
-                  { label: "Every trade", title: "XP" },
-                  { label: "Every streak", title: "Reward" },
-                  { label: "Every tier", title: "New tools" }
+                  { icon: "⚡", label: "Every trade", title: "XP" },
+                  { icon: "🔥", label: "Every streak", title: "Reward" },
+                  { icon: "🏆", label: "Every tier", title: "New tools" }
                 ].map((item, index) => (
                   <motion.div
                     key={index}
@@ -255,6 +255,9 @@ const Index = () => {
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                     className="glass-card p-8 border border-primary/20 hover:border-primary/40 transition-colors"
                   >
+                    <div className="mb-4 text-5xl flex items-center justify-center">
+                      {item.icon}
+                    </div>
                     <p className="text-[13px] text-muted-foreground mb-2">{item.label}</p>
                     <h3 className="text-[24px] font-bold text-foreground">{item.title}</h3>
                   </motion.div>

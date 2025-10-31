@@ -182,8 +182,14 @@ export const FeatureCarousel = () => {
               );
             })}
           </CarouselContent>
-          <CarouselPrevious className="glass bg-primary/20 border-primary/40 hover:bg-primary/30 hover:border-primary/60 text-primary" />
-          <CarouselNext className="glass bg-primary/20 border-primary/40 hover:bg-primary/30 hover:border-primary/60 text-primary" />
+          <CarouselPrevious 
+            variant="ghost"
+            className="bottom-auto top-1/2 -translate-y-1/2 -left-6 md:-left-10 z-20 bg-primary/30 text-primary border border-primary/40 backdrop-blur-md hover:bg-primary/40 hover:border-primary/60 shadow-[0_0_0_1px_hsl(var(--primary)/.2),0_8px_20px_hsl(var(--primary)/.15)] [&_svg]:h-5 [&_svg]:w-5" 
+          />
+          <CarouselNext 
+            variant="ghost"
+            className="bottom-auto top-1/2 -translate-y-1/2 -right-6 md:-right-10 z-20 bg-primary/30 text-primary border border-primary/40 backdrop-blur-md hover:bg-primary/40 hover:border-primary/60 shadow-[0_0_0_1px_hsl(var(--primary)/.2),0_8px_20px_hsl(var(--primary)/.15)] [&_svg]:h-5 [&_svg]:w-5" 
+          />
         </Carousel>
       </div>
 

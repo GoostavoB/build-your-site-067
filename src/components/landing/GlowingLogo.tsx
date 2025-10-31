@@ -124,6 +124,28 @@ export const GlowingLogo = () => {
           }}
         />
       </motion.div>
+
+      {/* "The Trading Diary" text below logo */}
+      <motion.div
+        className="absolute top-60 left-1/2 -translate-x-1/2 text-center whitespace-nowrap"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.5 }}
+      >
+        <h2
+          className="text-3xl md:text-4xl font-bold tracking-wide"
+          style={{
+            background: 'linear-gradient(180deg, #ffffff 0%, #c0c0c0 50%, #ffffff 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            textShadow: '0 0 30px rgba(255, 255, 255, 0.3), 0 2px 4px rgba(0, 0, 0, 0.5)',
+            filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.2))',
+          }}
+        >
+          The Trading Diary
+        </h2>
+      </motion.div>
     </motion.div>
   );
 };

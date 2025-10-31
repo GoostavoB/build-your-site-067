@@ -149,9 +149,9 @@ const Index = () => {
 
               <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
                 {[
-                  { text: "You trade impulsively when emotional.", icon: "💔" },
-                  { text: "You repeat the same mistakes.", icon: "🔄" },
-                  { text: "You don't know what's really costing you money.", icon: "💸" }
+                  { text: "You trade impulsively when emotional." },
+                  { text: "You repeat the same mistakes." },
+                  { text: "You don't know what's really costing you money." }
                 ].map((pain, index) => (
                   <motion.div
                     key={index}
@@ -165,10 +165,6 @@ const Index = () => {
                     <div className="absolute inset-0 bg-gradient-to-br from-destructive/20 to-destructive/5 rounded-xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-50 group-hover:opacity-100" />
                     
                     <div className="relative glass-card p-6 border border-destructive/30 bg-destructive/10 backdrop-blur-xl rounded-xl hover:border-destructive/50 transition-all duration-300 h-full">
-                      <div className="absolute top-4 right-4 text-3xl opacity-20 group-hover:opacity-40 transition-opacity">
-                        {pain.icon}
-                      </div>
-                      
                       <div className="flex items-start gap-3">
                         <div className="flex-shrink-0 mt-1">
                           <div className="relative">
@@ -249,9 +245,9 @@ const Index = () => {
 
               <div className="grid md:grid-cols-3 gap-6 mb-12">
                 {[
-                  { icon: "⚡", label: "Every trade", title: "XP" },
-                  { icon: "🔥", label: "Every streak", title: "Reward" },
-                  { icon: "🏆", label: "Every tier", title: "New tools" }
+                  { label: "Every trade", title: "XP" },
+                  { label: "Every streak", title: "Reward" },
+                  { label: "Every tier", title: "New tools" }
                 ].map((item, index) => (
                   <motion.div
                     key={index}
@@ -261,11 +257,6 @@ const Index = () => {
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                     className="glass-card p-8 border border-primary/20 hover:border-primary/40 transition-colors"
                   >
-                    <div className="mb-4 text-5xl flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                        <span>{item.icon}</span>
-                      </div>
-                    </div>
                     <p className="text-[13px] text-muted-foreground mb-2">{item.label}</p>
                     <h3 className="text-[24px] font-bold text-foreground">{item.title}</h3>
                   </motion.div>

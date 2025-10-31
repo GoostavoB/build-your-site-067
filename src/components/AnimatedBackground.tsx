@@ -2,10 +2,10 @@ import { motion } from "framer-motion";
 
 export const AnimatedBackground = () => {
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
       {/* Animated gradient orbs */}
       <motion.div
-        className="absolute w-[500px] h-[500px] rounded-full opacity-20 blur-3xl"
+        className="absolute w-[600px] h-[600px] rounded-full opacity-20 blur-3xl"
         style={{
           background: "radial-gradient(circle, hsl(var(--primary)) 0%, transparent 70%)",
           top: "10%",
@@ -24,7 +24,7 @@ export const AnimatedBackground = () => {
       />
       
       <motion.div
-        className="absolute w-[600px] h-[600px] rounded-full opacity-15 blur-3xl"
+        className="absolute w-[700px] h-[700px] rounded-full opacity-15 blur-3xl"
         style={{
           background: "radial-gradient(circle, hsl(var(--primary)) 0%, transparent 70%)",
           bottom: "10%",
@@ -43,7 +43,7 @@ export const AnimatedBackground = () => {
       />
       
       <motion.div
-        className="absolute w-[400px] h-[400px] rounded-full opacity-10 blur-3xl"
+        className="absolute w-[500px] h-[500px] rounded-full opacity-10 blur-3xl"
         style={{
           background: "radial-gradient(circle, hsl(var(--accent)) 0%, transparent 70%)",
           top: "50%",
@@ -62,7 +62,7 @@ export const AnimatedBackground = () => {
       />
 
       {/* Floating particles */}
-      {[...Array(20)].map((_, i) => (
+      {[...Array(30)].map((_, i) => (
         <motion.div
           key={i}
           className="absolute w-1 h-1 bg-primary/30 rounded-full"

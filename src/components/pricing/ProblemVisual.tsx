@@ -65,7 +65,7 @@ export const ProblemVisual = () => {
       >
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="w-5 h-5 text-primary" />
-          <span className="text-[14px] font-semibold text-foreground">With Discipline System</span>
+          <span className="text-[16px] font-semibold text-foreground">With Discipline System</span>
         </div>
         
         <div className="space-y-3">
@@ -91,10 +91,10 @@ export const ProblemVisual = () => {
                     boxShadow: '0 0 15px rgba(59, 130, 246, 0.4)'
                   }}
                 >
-                  <span className="text-[11px] text-white font-medium">{item.label}</span>
+                  <span className="text-[13px] text-white font-medium">{item.label}</span>
                   <CheckCircle2 className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-[11px] text-primary font-semibold">{item.percent}</span>
+                <span className="text-[13px] text-primary font-semibold">{item.percent}</span>
               </div>
             </motion.div>
           ))}
@@ -104,7 +104,7 @@ export const ProblemVisual = () => {
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.5, delay: 2 }}
-          className="flex items-center gap-2 text-[13px] text-primary font-semibold pt-2 border-t border-primary/20 mt-2"
+          className="flex items-center gap-2 text-[15px] text-primary font-semibold pt-2 border-t border-primary/20 mt-2"
         >
           <BarChart3 className="w-4 h-4" />
           <span>+23% performance improvement</span>

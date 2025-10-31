@@ -87,6 +87,7 @@ import { XPRewardAnimation } from '@/components/onboarding/XPRewardAnimation';
 import { NextMissionCard } from '@/components/dashboard/NextMissionCard';
 import { WelcomeBackToast } from '@/components/onboarding/WelcomeBackToast';
 import { useOnboardingState } from '@/hooks/useOnboardingState';
+import { WidgetUnlockCelebration } from '@/components/gamification/WidgetUnlockCelebration';
 
 interface TradeStats {
   total_pnl: number;
@@ -224,9 +225,13 @@ const Dashboard = () => {
   }, [isCustomizing, positions, originalPositions]);
 
   // Gamification system
-  const { xpData, showLevelUp, setShowLevelUp, showTier3Preview, setShowTier3Preview } = useXPSystem();
+  const { xpData, showLevelUp, setShowLevelUp, showTier3Preview, setShowTier3Preview, pendingWidgetUnlocks, setPendingWidgetUnlocks } = useXPSystem();
   const { updateChallengeProgress } = useDailyChallenges();
   const { showComebackModal, setShowComebackModal, comebackReward } = useComebackRewards();
+  
+  // Widget unlock celebration state
+  const [showWidgetUnlock, setShowWidgetUnlock] = useState(false);
+  const [currentUnlockedWidget, setCurrentUnlockedWidget] = useState<string | null>(null);
   
   // Onboarding state
   const { 
@@ -269,6 +274,15 @@ const Dashboard = () => {
     }, 3000);
     return () => clearTimeout(id);
   }, []);
+
+  // Handle widget unlock celebrations
+  useEffect(() => {
+    if (pendingWidgetUnlocks.length > 0 && !showWidgetUnlock) {
+      const nextWidget = pendingWidgetUnlocks[0];
+      setCurrentUnlockedWidget(nextWidget);
+      setShowWidgetUnlock(true);
+    }
+  }, [pendingWidgetUnlocks, showWidgetUnlock]);
 
   // Save column count to backend when user changes it
   const handleColumnCountChange = useCallback((newCount: number) => {
@@ -1042,6 +1056,34 @@ const Dashboard = () => {
         show={showLevelUp} 
         level={xpData.currentLevel} 
         onClose={() => setShowLevelUp(false)} 
+      />
+      <WidgetUnlockCelebration
+        widgetId={currentUnlockedWidget || ''}
+        xpAwarded={currentUnlockedWidget ? (WIDGET_CATALOG[currentUnlockedWidget]?.xpToUnlock || 0) : 0}
+        isVisible={showWidgetUnlock}
+        onComplete={() => {
+          setShowWidgetUnlock(false);
+          // Remove the widget from queue after showing celebration
+          setPendingWidgetUnlocks(prev => prev.slice(1));
+          // Clear current widget after a short delay
+          setTimeout(() => setCurrentUnlockedWidget(null), 500);
+        }}
+        onTryWidget={() => {
+          // Close celebration and scroll to widget
+          setShowWidgetUnlock(false);
+          setPendingWidgetUnlocks(prev => prev.slice(1));
+          setTimeout(() => {
+            const widgetElement = document.getElementById(`widget-${currentUnlockedWidget}`);
+            if (widgetElement) {
+              widgetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              widgetElement.classList.add('ring-2', 'ring-primary', 'animate-pulse');
+              setTimeout(() => {
+                widgetElement.classList.remove('ring-2', 'ring-primary', 'animate-pulse');
+              }, 3000);
+            }
+            setCurrentUnlockedWidget(null);
+          }, 300);
+        }}
       />
       <Tier3PreviewModal
         open={showTier3Preview}

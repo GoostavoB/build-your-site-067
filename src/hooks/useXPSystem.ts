@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getStreakMultiplier, calculateTier, getTierName, getDailyXPCap } from '@/utils/xpEngine';
 import { trackStreakEvents } from '@/utils/analyticsEvents';
 import { analytics } from '@/utils/analytics';
+import { WIDGET_CATALOG } from '@/config/widgetCatalog';
 
 interface XPData {
   currentXP: number;
@@ -41,6 +42,7 @@ export const useXPSystem = () => {
   const queryClient = useQueryClient();
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [showTier3Preview, setShowTier3Preview] = useState(false);
+  const [pendingWidgetUnlocks, setPendingWidgetUnlocks] = useState<string[]>([]);
   const newLevelRef = useRef<number | null>(null);
 
   const { data: xpData = {
@@ -192,6 +194,22 @@ export const useXPSystem = () => {
       const newTotalXP = xpData.totalXPEarned + finalAmount;
       const { level: newLevel, currentXP: newCurrentXP } = calculateLevelFromXP(newTotalXP);
       const didLevelUp = newLevel > xpData.currentLevel;
+
+      // Check for newly unlocked widgets
+      const oldTotalXP = xpData.totalXPEarned;
+      const newlyUnlockedWidgets = Object.values(WIDGET_CATALOG)
+        .filter(widget => 
+          widget.xpToUnlock && 
+          widget.xpToUnlock > oldTotalXP && 
+          widget.xpToUnlock <= newTotalXP
+        )
+        .sort((a, b) => (a.xpToUnlock || 0) - (b.xpToUnlock || 0))
+        .map(widget => widget.id);
+
+      if (newlyUnlockedWidgets.length > 0) {
+        console.log('[XPSystem] Widgets unlocked:', newlyUnlockedWidgets);
+        setPendingWidgetUnlocks(prev => [...prev, ...newlyUnlockedWidgets]);
+      }
 
       // Update XP data
       const { error: updateError } = await supabase
@@ -374,5 +392,7 @@ export const useXPSystem = () => {
     refresh,
     showTier3Preview,
     setShowTier3Preview,
+    pendingWidgetUnlocks,
+    setPendingWidgetUnlocks,
   };
 };

@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-
 interface Candle {
   x: number;
   y: number;
@@ -11,17 +10,17 @@ interface Candle {
   speed: number;
   opacity: number;
 }
-
 export const AnimatedCandlestickBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const candlesRef = useRef<Candle[]>([]);
-  const mouseRef = useRef({ x: 0, y: 0 });
+  const mouseRef = useRef({
+    x: 0,
+    y: 0
+  });
   const animationFrameRef = useRef<number>();
-
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -37,17 +36,17 @@ export const AnimatedCandlestickBackground = () => {
     const initCandles = () => {
       candlesRef.current = [];
       const numCandles = Math.floor(window.innerWidth / 60); // One candle every 60px
-      
+
       for (let i = 0; i < numCandles; i++) {
         candlesRef.current.push({
-          x: (i * canvas.width) / numCandles,
+          x: i * canvas.width / numCandles,
           y: Math.random() * canvas.height,
           width: 3 + Math.random() * 4,
           height: 20 + Math.random() * 60,
           wickHeight: 10 + Math.random() * 30,
           isGreen: Math.random() > 0.5,
           speed: 0.2 + Math.random() * 0.4,
-          opacity: 0.1 + Math.random() * 0.2,
+          opacity: 0.1 + Math.random() * 0.2
         });
       }
     };
@@ -57,7 +56,7 @@ export const AnimatedCandlestickBackground = () => {
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current = {
         x: e.clientX,
-        y: e.clientY,
+        y: e.clientY
       };
     };
     window.addEventListener('mousemove', handleMouseMove);
@@ -65,19 +64,18 @@ export const AnimatedCandlestickBackground = () => {
     // Animation loop
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      candlesRef.current.forEach((candle) => {
+      candlesRef.current.forEach(candle => {
         // Calculate distance from mouse
         const dx = mouseRef.current.x - candle.x;
         const dy = mouseRef.current.y - candle.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         const maxDistance = 200;
-        
+
         // Mouse interaction - push away from cursor
         if (distance < maxDistance) {
           const force = (maxDistance - distance) / maxDistance;
-          candle.x -= (dx / distance) * force * 2;
-          candle.y -= (dy / distance) * force * 2;
+          candle.x -= dx / distance * force * 2;
+          candle.y -= dy / distance * force * 2;
         }
 
         // Slow drift upward
@@ -100,9 +98,8 @@ export const AnimatedCandlestickBackground = () => {
         }
 
         // Draw candlestick with glow
-        const color = candle.isGreen 
-          ? `rgba(34, 197, 94, ${finalOpacity})` // green
-          : `rgba(239, 68, 68, ${finalOpacity})`; // red
+        const color = candle.isGreen ? `rgba(34, 197, 94, ${finalOpacity})` // green
+        : `rgba(239, 68, 68, ${finalOpacity})`; // red
 
         // Glow effect
         ctx.shadowBlur = 15;
@@ -123,11 +120,9 @@ export const AnimatedCandlestickBackground = () => {
         // Reset shadow
         ctx.shadowBlur = 0;
       });
-
       animationFrameRef.current = requestAnimationFrame(animate);
     };
     animate();
-
     return () => {
       window.removeEventListener('resize', updateSize);
       window.removeEventListener('mousemove', handleMouseMove);
@@ -136,14 +131,11 @@ export const AnimatedCandlestickBackground = () => {
       }
     };
   }, []);
-
-  return (
-    <motion.canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1 }}
-    />
-  );
+  return <motion.canvas ref={canvasRef} initial={{
+    opacity: 0
+  }} animate={{
+    opacity: 1
+  }} transition={{
+    duration: 1
+  }} className="absolute inset-0 w-full h-full mx-0 my-0 py-0" />;
 };

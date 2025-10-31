@@ -80,7 +80,7 @@ const Index = () => {
       <PublicHeader />
       <StickyMobileCTA />
       
-      <main id="main-content" className="pt-28 overflow-x-hidden my-0 py-px">
+      <main id="main-content" className="pt-28 overflow-x-hidden my-0 py-0">
         {/* Mobile Hero with Dashboard Preview */}
         <MobileHero />
         
@@ -98,13 +98,17 @@ const Index = () => {
         {/* Included in All Plans */}
         <section className="px-6 mb-20">
           <div className="container mx-auto max-w-5xl">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="glass-card p-8 md:p-10 border border-primary/30 relative overflow-hidden"
-            >
+            <motion.div initial={{
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.6
+          }} className="glass-card p-8 md:p-10 border border-primary/30 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 pointer-events-none" />
               
               <div className="relative z-10">
@@ -116,22 +120,18 @@ const Index = () => {
                 </p>
                 
                 <div className="grid md:grid-cols-2 gap-x-8 gap-y-5">
-                  {[
-                    "AI uploads from image screenshots",
-                    "Weekly heatmap and best assets",
-                    "Fees dashboard. Compare how much fee you are paying in each exchange",
-                    "Leverage and position size calculator",
-                    "Pre-trade checklist",
-                    "Encrypted data and CSV export"
-                  ].map((feature, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, x: -10 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: index * 0.05 }}
-                      className="flex items-start gap-3 group"
-                    >
+                  {["AI uploads from image screenshots", "Weekly heatmap and best assets", "Fees dashboard. Compare how much fee you are paying in each exchange", "Leverage and position size calculator", "Pre-trade checklist", "Encrypted data and CSV export"].map((feature, index) => <motion.div key={index} initial={{
+                  opacity: 0,
+                  x: -10
+                }} whileInView={{
+                  opacity: 1,
+                  x: 0
+                }} viewport={{
+                  once: true
+                }} transition={{
+                  duration: 0.4,
+                  delay: index * 0.05
+                }} className="flex items-start gap-3 group">
                       <div className="mt-0.5 flex-shrink-0">
                         <div className="relative">
                           <div className="absolute inset-0 bg-primary/20 rounded-full blur-md group-hover:bg-primary/30 transition-colors" />
@@ -141,8 +141,7 @@ const Index = () => {
                       <span className="text-[15px] leading-relaxed text-foreground/90 font-medium">
                         {feature}
                       </span>
-                    </motion.div>
-                  ))}
+                    </motion.div>)}
                 </div>
               </div>
             </motion.div>
@@ -164,12 +163,17 @@ const Index = () => {
         <section className="px-6 py-20">
           <div className="container mx-auto max-w-6xl">
             <div className="grid md:grid-cols-2 gap-12 items-center">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-              >
+              <motion.div initial={{
+              opacity: 0,
+              x: -20
+            }} whileInView={{
+              opacity: 1,
+              x: 0
+            }} viewport={{
+              once: true
+            }} transition={{
+              duration: 0.6
+            }}>
                 <h2 className="text-3xl md:text-4xl font-bold mb-6">
                   Most traders fail because they lack consistency.
                 </h2>
@@ -199,12 +203,17 @@ const Index = () => {
           <div className="container mx-auto max-w-6xl">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <XPProgressAnimation />
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-              >
+              <motion.div initial={{
+              opacity: 0,
+              x: 20
+            }} whileInView={{
+              opacity: 1,
+              x: 0
+            }} viewport={{
+              once: true
+            }} transition={{
+              duration: 0.6
+            }}>
                 <h2 className="text-3xl md:text-4xl font-bold mb-6">
                   Discipline, gamified.
                 </h2>
@@ -242,10 +251,7 @@ const Index = () => {
             
             <div className="grid md:grid-cols-3 gap-6">
               {/* Card 1 */}
-              <a 
-                href="/blog/how-to-track-crypto-trades" 
-                className="group block p-6 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg"
-              >
+              <a href="/blog/how-to-track-crypto-trades" className="group block p-6 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="p-2 rounded-lg bg-primary/10">
                     <BookOpen className="h-6 w-6 text-primary" />
@@ -260,10 +266,7 @@ const Index = () => {
               </a>
 
               {/* Card 2 */}
-              <a 
-                href="/blog/trading-journal-vs-spreadsheet" 
-                className="group block p-6 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg"
-              >
+              <a href="/blog/trading-journal-vs-spreadsheet" className="group block p-6 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="p-2 rounded-lg bg-primary/10">
                     <FileSpreadsheet className="h-6 w-6 text-primary" />
@@ -278,10 +281,7 @@ const Index = () => {
               </a>
 
               {/* Card 3 */}
-              <a 
-                href="/blog/exchange-sync-guide" 
-                className="group block p-6 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg"
-              >
+              <a href="/blog/exchange-sync-guide" className="group block p-6 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="p-2 rounded-lg bg-primary/10">
                     <Zap className="h-6 w-6 text-primary" />
@@ -298,12 +298,7 @@ const Index = () => {
 
             {/* CTA Row */}
             <div className="mt-10 text-center">
-              <Button 
-                onClick={() => navigate('/blog')} 
-                variant="outline" 
-                size="lg"
-                className="group"
-              >
+              <Button onClick={() => navigate('/blog')} variant="outline" size="lg" className="group">
                 View All Trading Guides
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -322,12 +317,17 @@ const Index = () => {
         <section className="px-6 py-20">
           <div className="container mx-auto max-w-6xl">
             <div className="grid md:grid-cols-2 gap-12 items-center">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-              >
+              <motion.div initial={{
+              opacity: 0,
+              x: -20
+            }} whileInView={{
+              opacity: 1,
+              x: 0
+            }} viewport={{
+              once: true
+            }} transition={{
+              duration: 0.6
+            }}>
                 <h2 className="text-3xl md:text-4xl font-bold mb-6">
                   Safe by design. Your data, your trades.
                 </h2>

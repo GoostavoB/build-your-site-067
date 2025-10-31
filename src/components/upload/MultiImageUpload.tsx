@@ -104,10 +104,26 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
   };
 
   const startAnalysis = async () => {
-    if (credits.isLoading) {
-      await credits.refetch();
+    console.log('🔵 Analyze button clicked', {
+      imagesLength: images.length,
+      creditsLoading: credits.isLoading,
+      currentBalance: credits.balance,
+      isAnalyzing
+    });
+    
+    try {
+      if (credits.isLoading) {
+        console.log('⏳ Credits loading, refetching...');
+        await credits.refetch();
+        console.log('✅ Credits refetched:', credits.balance);
+      }
+      
+      console.log('🎬 Opening pre-analysis dialog');
+      setShowPreAnalysisDialog(true);
+    } catch (error) {
+      console.error('❌ Error in startAnalysis:', error);
+      toast.error('Failed to open analysis dialog');
     }
-    setShowPreAnalysisDialog(true);
   };
 
   const analyzeImages = async () => {

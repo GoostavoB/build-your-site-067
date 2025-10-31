@@ -8,82 +8,52 @@ const FeatureBlocks = () => {
   
   const features = [
     {
-      icon: Camera,
-      title: t('landing.features.aiUpload', 'AI upload from screenshots'),
-      description: t('landing.features.aiUploadDesc', 'Upload trade screenshots and let AI extract all data automatically.'),
-      gradient: "from-primary/20 to-primary/5"
-    },
-    {
-      icon: DollarSign,
-      title: t('landing.features.feesDashboard', 'Fees dashboard'),
-      description: t('landing.features.feesDashboardDesc', 'Track broker and exchange costs to optimize your trading.'),
-      gradient: "from-accent/20 to-accent/5"
-    },
-    {
-      icon: CheckSquare,
-      title: t('landing.features.preTradeChecklist', 'Pre-trade checklist'),
-      description: t('landing.features.preTradeChecklistDesc', 'Ensure discipline with systematic pre-trade validation.'),
-      gradient: "from-green-500/20 to-green-500/5"
-    },
-    {
-      icon: TrendingUp,
-      title: t('landing.features.weeklyHeatmap', 'Weekly heat map'),
-      description: t('landing.features.weeklyHeatmapDesc', 'Identify your best trading times and assets.'),
-      gradient: "from-purple-500/20 to-purple-500/5"
-    },
-    {
-      icon: Calculator,
-      title: t('landing.features.leverageCalculator', 'Leverage calculator'),
-      description: t('landing.features.leverageCalculatorDesc', 'Calculate position size based on risk and stop loss.'),
-      gradient: "from-orange-500/20 to-orange-500/5"
-    },
-    {
-      icon: FileText,
-      title: t('landing.features.csvExport', 'CSV export'),
-      description: t('landing.features.csvExportDesc', 'Export your trading data for external analysis.'),
-      gradient: "from-blue-500/20 to-blue-500/5"
-    },
-    {
-      icon: Receipt,
-      title: t('landing.features.taxReport', 'Tax report'),
-      description: t('landing.features.taxReportDesc', 'Generate comprehensive tax reports for all trades.'),
+      icon: BarChart3,
+      title: 'Risk Management',
+      description: 'Monitor and control your trading risk exposure with advanced analytics and alerts.',
       gradient: "from-red-500/20 to-red-500/5"
     },
     {
-      icon: Globe,
-      title: t('landing.features.consolidatedResults', 'Consolidated results'),
-      description: t('landing.features.consolidatedResultsDesc', 'See all exchange performance in one place.'),
-      gradient: "from-cyan-500/20 to-cyan-500/5"
+      icon: Calculator,
+      title: 'Leverage Calculator',
+      description: 'Calculate position size based on risk and stop loss to optimize your trades.',
+      gradient: "from-orange-500/20 to-orange-500/5"
     },
     {
-      icon: Target,
-      title: t('landing.features.goalPlanner', 'Goal planner'),
-      description: t('landing.features.goalPlannerDesc', 'Set and track your trading objectives.'),
-      gradient: "from-pink-500/20 to-pink-500/5"
+      icon: Receipt,
+      title: 'Tax Report',
+      description: 'Generate comprehensive tax reports for all trades across multiple exchanges.',
+      gradient: "from-blue-500/20 to-blue-500/5"
+    },
+    {
+      icon: Camera,
+      title: 'Upload Trades with AI',
+      description: 'Upload trade screenshots and let AI extract all data automatically.',
+      gradient: "from-primary/20 to-primary/5"
     },
     {
       icon: Brain,
-      title: t('landing.features.psychology', 'Psychology tools'),
-      description: t('landing.features.psychologyDesc', 'Track emotions and improve decision-making.'),
+      title: 'Psychology Tools',
+      description: 'Track emotions and improve decision-making with behavioral analytics.',
       gradient: "from-indigo-500/20 to-indigo-500/5"
     },
     {
-      icon: BarChart3,
-      title: t('landing.features.riskManagement', 'Risk management'),
-      description: t('landing.features.riskManagementDesc', 'Monitor and control your trading risk exposure.'),
-      gradient: "from-yellow-500/20 to-yellow-500/5"
+      icon: DollarSign,
+      title: 'Exchange Fees Dashboard',
+      description: 'Compare and track broker and exchange costs to optimize your trading.',
+      gradient: "from-accent/20 to-accent/5"
     },
     {
-      icon: BookOpen,
-      title: t('landing.features.tradingJournal', 'Trading journal'),
-      description: t('landing.features.tradingJournalDesc', 'Document and review every trading decision.'),
-      gradient: "from-teal-500/20 to-teal-500/5"
+      icon: Target,
+      title: 'Personal Goal Planner',
+      description: 'Set and track your trading objectives with progress monitoring.',
+      gradient: "from-pink-500/20 to-pink-500/5"
     },
     {
-      icon: Wallet,
-      title: t('landing.features.spotWallet', 'Spot wallet tracking'),
-      description: t('landing.features.spotWalletDesc', 'Track your spot holdings across exchanges.'),
-      gradient: "from-emerald-500/20 to-emerald-500/5"
+      icon: TrendingUp,
+      title: '+45 More Features',
+      description: 'Advanced metrics, custom widgets, reports, heatmaps, and professional trading tools.',
+      gradient: "from-green-500/20 to-green-500/5"
     }
   ];
 
@@ -142,9 +112,14 @@ const FeatureBlocks = () => {
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.3 }}
           viewport={{ once: true }}
-          className="text-center text-xl font-semibold mt-12"
+          className="text-center mt-12 space-y-3"
         >
-          {t('landing.features.bottomLine', 'All in one platform for professional crypto traders.')}
+          <span className="block text-xl font-semibold">
+            All in one platform for professional crypto traders.
+          </span>
+          <span className="block text-sm text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
+            *Feature availability depends on your account progress and subscription plan. Unlock more tools as you level up through consistent trading.
+          </span>
         </motion.p>
       </div>
     </section>

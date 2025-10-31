@@ -119,6 +119,74 @@ const Index = () => {
             </div>
           </div>
         </section>
+
+        {/* Pain Points Section */}
+        <section className="px-6 py-20 bg-secondary/20">
+          <div className="container mx-auto max-w-4xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Stop trading blind. Stop leaking profits.
+              </h2>
+              <p className="text-[17px] text-muted-foreground/70 mb-12">
+                Most traders don't fail because of strategy — they fail because of emotion and lack of structure.
+              </p>
+
+              <div className="space-y-4 mb-8 max-w-2xl mx-auto">
+                {[
+                  "You trade impulsively when emotional.",
+                  "You repeat the same mistakes.",
+                  "You don't know what's really costing you money."
+                ].map((pain, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    className="flex items-center gap-4 p-4 border border-destructive/30 bg-destructive/5 rounded-lg"
+                  >
+                    <div className="flex-shrink-0 w-5 h-5 text-destructive">
+                      <svg className="w-full h-full" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span className="text-[15px] font-medium text-foreground">{pain}</span>
+                  </motion.div>
+                ))}
+              </div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="flex items-center justify-center gap-2 mb-6 text-[15px] font-semibold"
+                style={{ color: 'hsl(var(--warning))' }}
+              >
+                <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                <span>Thousands of traders are already mastering consistency with The Trading Diary.</span>
+              </motion.div>
+
+              <p className="text-muted-foreground mb-8">Don't fall behind.</p>
+
+              <Button
+                onClick={() => handleCTAClick('pain-section')}
+                size="lg"
+                className="text-[15px] font-semibold px-8"
+              >
+                Start Free Trial – Offer Ending Soon
+              </Button>
+            </motion.div>
+          </div>
+        </section>
         
         {/* Mobile Feature Blocks */}
         <section id="features">

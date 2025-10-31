@@ -37,10 +37,10 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
   const [batchProgress, setBatchProgress] = useState<string>('');
   const [queuedCount, setQueuedCount] = useState(0);
   const [broker, setBroker] = useState<string>('');
+  const [isDragging, setIsDragging] = useState(false);
   const credits = useUploadCredits();
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
+  const processFiles = (files: File[]) => {
     const filesToProcess = files.filter(file => {
       const isValid = file.type.startsWith('image/');
       if (!isValid) {
@@ -49,6 +49,10 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
       return isValid;
     });
 
+    if (filesToProcess.length === 0) {
+      return;
+    }
+
     const newImages: UploadedImage[] = filesToProcess.map(file => ({
       file,
       preview: URL.createObjectURL(file),
@@ -56,6 +60,38 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
     }));
 
     setImages(prev => [...prev, ...newImages]);
+    toast.success(`Added ${filesToProcess.length} image${filesToProcess.length !== 1 ? 's' : ''}`);
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    processFiles(files);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (isAnalyzing) {
+      toast.error('Cannot add images while analysis is in progress');
+      return;
+    }
+
+    const files = Array.from(e.dataTransfer.files);
+    processFiles(files);
   };
 
   const handleRemoveImage = (index: number) => {
@@ -325,7 +361,7 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
           </span>
         </div>
         <p className="text-sm text-muted-foreground mb-3">
-          Upload screenshots of your trades. Each image costs 1 credit and can detect up to 10 trades.
+          Drag & drop or click to upload screenshots. Each image costs 1 credit and can detect up to 10 trades.
         </p>
         
         <Collapsible className="bg-muted/50 rounded-lg p-3 mb-3">
@@ -358,61 +394,96 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
         </div>
       </div>
 
-      {/* Image Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {images.map((image, index) => (
-          <Card key={index} className="relative overflow-hidden aspect-square group">
-            <img
-              src={image.preview}
-              alt={`Trade screenshot ${index + 1}`}
-              className="w-full h-full object-cover"
-            />
-            
-            {/* Remove button */}
-            <button
-              onClick={() => handleRemoveImage(index)}
+      {/* Drag & Drop Zone */}
+      <div
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className={cn(
+          "relative border-2 border-dashed rounded-lg transition-all duration-200",
+          isDragging
+            ? "border-primary bg-primary/5 scale-[1.01]"
+            : "border-border hover:border-primary/50",
+          isAnalyzing && "pointer-events-none opacity-50"
+        )}
+      >
+        {/* Image Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-4">
+          {images.map((image, index) => (
+            <Card key={index} className="relative overflow-hidden aspect-square group">
+              <img
+                src={image.preview}
+                alt={`Trade screenshot ${index + 1}`}
+                className="w-full h-full object-cover"
+              />
+              
+              {/* Remove button */}
+              <button
+                onClick={() => handleRemoveImage(index)}
+                disabled={isAnalyzing}
+                className="absolute top-2 right-2 p-1.5 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
+              >
+                <X className="h-4 w-4" />
+              </button>
+
+              {/* Status indicators */}
+              {image.status === 'analyzing' && (
+                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
+                </div>
+              )}
+              {image.status === 'success' && (
+                <div className="absolute bottom-2 right-2 p-1 bg-green-600 rounded-full">
+                  <CheckCircle className="h-4 w-4 text-white" />
+                </div>
+              )}
+              {image.status === 'error' && (
+                <div className="absolute bottom-2 right-2 p-1 bg-destructive rounded-full">
+                  <AlertCircle className="h-4 w-4 text-white" />
+                </div>
+              )}
+            </Card>
+          ))}
+
+          {/* Upload button */}
+          <label className="cursor-pointer">
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleFileSelect}
+              className="hidden"
               disabled={isAnalyzing}
-              className="absolute top-2 right-2 p-1.5 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            />
+            <Card className={cn(
+              "aspect-square flex flex-col items-center justify-center transition-all duration-200",
+              isDragging
+                ? "bg-primary/10 border-primary"
+                : "hover:bg-accent/50"
+            )}>
+              <Upload className={cn(
+                "h-8 w-8 mb-2 transition-colors",
+                isDragging ? "text-primary" : "text-muted-foreground"
+              )} />
+              <p className={cn(
+                "text-sm text-center px-4 transition-colors",
+                isDragging ? "text-primary font-medium" : "text-muted-foreground"
+              )}>
+                {isDragging ? "Drop images here" : "Click or drag to upload"}
+              </p>
+            </Card>
+          </label>
+        </div>
 
-            {/* Status indicators */}
-            {image.status === 'analyzing' && (
-              <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
-              </div>
-            )}
-            {image.status === 'success' && (
-              <div className="absolute bottom-2 right-2 p-1 bg-green-600 rounded-full">
-                <CheckCircle className="h-4 w-4 text-white" />
-              </div>
-            )}
-            {image.status === 'error' && (
-              <div className="absolute bottom-2 right-2 p-1 bg-destructive rounded-full">
-                <AlertCircle className="h-4 w-4 text-white" />
-              </div>
-            )}
-          </Card>
-        ))}
-
-        {/* Upload button */}
-        <label className="cursor-pointer">
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleFileSelect}
-            className="hidden"
-            disabled={isAnalyzing}
-          />
-          <Card className="aspect-square flex flex-col items-center justify-center hover:bg-accent/50 transition-colors">
-            <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-            <p className="text-sm text-muted-foreground text-center px-4">
-              Click to upload images
-            </p>
-          </Card>
-        </label>
+        {/* Drag overlay */}
+        {isDragging && (
+          <div className="absolute inset-0 bg-primary/5 backdrop-blur-[2px] flex items-center justify-center pointer-events-none rounded-lg">
+            <div className="bg-background/90 rounded-lg p-6 border-2 border-primary shadow-lg">
+              <Upload className="h-12 w-12 text-primary mx-auto mb-2" />
+              <p className="text-lg font-semibold text-primary">Drop images to upload</p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Analyze Button */}

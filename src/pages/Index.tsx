@@ -121,6 +121,37 @@ const Index = () => {
           </div>
         </section>
 
+        {/* XP System Explainer */}
+        <section id="gamification" className="px-6 py-20">
+          <div className="container mx-auto max-w-6xl">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <XPProgressAnimation />
+              <motion.div initial={{
+              opacity: 0,
+              x: 20
+            }} whileInView={{
+              opacity: 1,
+              x: 0
+            }} viewport={{
+              once: true
+            }} transition={{
+              duration: 0.6
+            }}>
+                <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                  Discipline, gamified.
+                </h2>
+                <div className="space-y-4 text-[17px] text-muted-foreground/70">
+                  <p>Our XP system rewards consistency and discipline. Every time you follow your plan, journal your trades, and stick to your rules, you earn XP and level up your profile.</p>
+                  <p>The system trains your mind through repetition and small wins. It's not just tracking—it's behavioral transformation backed by real performance data.</p>
+                </div>
+                <div className="mt-6 p-4 bg-primary/10 border border-primary/30 rounded-lg text-sm">
+                  <p className="font-semibold">Traders who journal and review trades consistently show an average 23% performance improvement in 4 weeks (based on data from over 1,000 active users).</p>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
         {/* Pain Points Section */}
         <section className="px-6 py-20 relative">
           <div className="container mx-auto max-w-5xl relative z-10">
@@ -305,38 +336,7 @@ const Index = () => {
 
         {/* Customization Options - NEW */}
         <CustomizationOptions />
-
-        {/* XP System Explainer */}
-        <section id="gamification" className="px-6 py-20">
-          <div className="container mx-auto max-w-6xl">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <XPProgressAnimation />
-              <motion.div initial={{
-              opacity: 0,
-              x: 20
-            }} whileInView={{
-              opacity: 1,
-              x: 0
-            }} viewport={{
-              once: true
-            }} transition={{
-              duration: 0.6
-            }}>
-                <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                  Discipline, gamified.
-                </h2>
-                <div className="space-y-4 text-[17px] text-muted-foreground/70">
-                  <p>Our XP system rewards consistency and discipline. Every time you follow your plan, journal your trades, and stick to your rules, you earn XP and level up your profile.</p>
-                  <p>The system trains your mind through repetition and small wins. It's not just tracking—it's behavioral transformation backed by real performance data.</p>
-                </div>
-                <div className="mt-6 p-4 bg-primary/10 border border-primary/30 rounded-lg text-sm">
-                  <p className="font-semibold">Traders who journal and review trades consistently show an average 23% performance improvement in 4 weeks (based on data from over 1,000 active users).</p>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
+        
         {/* Speed Chart Section */}
         <section className="px-6 py-20">
           <InteractiveSpeedChart />

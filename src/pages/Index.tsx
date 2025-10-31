@@ -187,6 +187,72 @@ const Index = () => {
             </motion.div>
           </div>
         </section>
+
+        {/* Gamification Discipline Section */}
+        <section className="px-6 py-20">
+          <div className="container mx-auto max-w-5xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                The only trading tool that trains your discipline.
+              </h2>
+              <p className="text-[17px] text-muted-foreground/70 mb-2">
+                Trading requires discipline. Discipline requires habits.
+              </p>
+              <p className="text-[17px] text-muted-foreground/70 mb-12">
+                Habits require dopamine. Our XP system delivers it.
+              </p>
+
+              <div className="grid md:grid-cols-3 gap-6 mb-12">
+                {[
+                  { icon: "⚡", label: "Every trade", title: "XP" },
+                  { icon: "🔥", label: "Every streak", title: "Reward" },
+                  { icon: "🏆", label: "Every tier", title: "New tools" }
+                ].map((item, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="glass-card p-8 border border-primary/20 hover:border-primary/40 transition-colors"
+                  >
+                    <div className="mb-4 text-5xl flex items-center justify-center">
+                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span>{item.icon}</span>
+                      </div>
+                    </div>
+                    <p className="text-[13px] text-muted-foreground mb-2">{item.label}</p>
+                    <h3 className="text-[24px] font-bold text-foreground">{item.title}</h3>
+                  </motion.div>
+                ))}
+              </div>
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="text-[16px] font-semibold mb-8"
+              >
+                Gamification makes consistency addictive — not stressful.
+              </motion.p>
+
+              <Button
+                onClick={() => handleCTAClick('gamification-section')}
+                size="lg"
+                className="text-[15px] font-semibold px-8"
+              >
+                Earn Your First XP – Start Free
+              </Button>
+            </motion.div>
+          </div>
+        </section>
         
         {/* Mobile Feature Blocks */}
         <section id="features">

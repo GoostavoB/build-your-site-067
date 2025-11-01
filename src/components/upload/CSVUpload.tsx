@@ -3,7 +3,7 @@ import Papa from "papaparse";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Upload, FileText, CheckCircle2, AlertCircle, ArrowLeft } from "lucide-react";
+import { Upload, FileText, CheckCircle2, AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
 import { ExtractedTrade } from "@/types/trade";
 import { CSVColumnMapper } from "./CSVColumnMapper";
 import { BrokerTemplateManager } from "./BrokerTemplateManager";
@@ -15,6 +15,8 @@ import { toast } from "sonner";
 import { useBrokerTemplates } from "@/hooks/useBrokerTemplates";
 import { findBestTemplateMatch } from "@/utils/csvAutoMapper";
 import { detectFileType, parseSpreadsheet, parseFlexibleNumber } from "@/utils/parseSpreadsheet";
+import { uploadLogger } from "@/utils/uploadLogger";
+import { Progress } from "@/components/ui/progress";
 
 interface CSVUploadProps {
   onTradesExtracted: (trades: ExtractedTrade[]) => void;
@@ -32,14 +34,20 @@ export const CSVUpload = ({ onTradesExtracted }: CSVUploadProps) => {
   const [mappedTrades, setMappedTrades] = useState<ExtractedTrade[]>([]);
   const [detectedTemplate, setDetectedTemplate] = useState<{ id: string; name: string } | null>(null);
   const [selectedTrades, setSelectedTrades] = useState<Set<number>>(new Set());
+  const [processing, setProcessing] = useState(false);
+  const [processingProgress, setProcessingProgress] = useState({ stage: '', percentage: 0 });
   
   const { templates, incrementUsage, saveTemplate } = useBrokerTemplates();
 
   const handleFileSelect = useCallback(async (file: File) => {
     setFileName(file.name);
+    setProcessing(true);
+    setProcessingProgress({ stage: 'Parsing file...', percentage: 10 });
+    uploadLogger.fileSelection('CSV file selected', { fileName: file.name, fileSize: file.size });
     
     // Robust file type detection
     const fileType = await detectFileType(file);
+    uploadLogger.validation(`File type detected: ${fileType}`);
     
     if (fileType === 'excel') {
       // Show helpful message if file is mislabeled
@@ -50,13 +58,16 @@ export const CSVUpload = ({ onTradesExtracted }: CSVUploadProps) => {
       }
       
       try {
+        setProcessingProgress({ stage: 'Reading Excel file...', percentage: 25 });
         const result = await parseSpreadsheet(file);
         const { headers, rows } = result;
 
+        uploadLogger.log('info', 'CSVUpload', 'Excel file parsed', { headers: headers.length, rows: rows.length });
         setCsvHeaders(headers);
         setCsvData(rows);
 
         // Try to find matching template
+        setProcessingProgress({ stage: 'Detecting broker template...', percentage: 50 });
         const match = findBestTemplateMatch(headers, templates);
         
         if (match && match.similarity >= 80) {
@@ -64,6 +75,8 @@ export const CSVUpload = ({ onTradesExtracted }: CSVUploadProps) => {
           const template = templates.find(t => t.id === match.templateId);
           
           if (template) {
+            uploadLogger.success('CSVUpload', `Auto-detected ${match.brokerName}`, { similarity: match.similarity });
+            setProcessingProgress({ stage: 'Applying template...', percentage: 75 });
             toast.success(`Recognized as ${match.brokerName}! Auto-loading mapping...`);
             setColumnMappings(template.column_mappings);
             setSelectedBroker(match.brokerName);
@@ -71,20 +84,28 @@ export const CSVUpload = ({ onTradesExtracted }: CSVUploadProps) => {
             
             // Skip to preview
             const trades = applyMappingToData(rows, template.column_mappings);
+            uploadLogger.success('CSVUpload', `Transformed ${trades.length} trades from Excel`);
+            setProcessingProgress({ stage: 'Preview ready!', percentage: 100 });
             setMappedTrades(trades);
             setSelectedTrades(new Set(trades.map((_, idx) => idx)));
             setCurrentStep('preview');
           }
         } else {
+          uploadLogger.log('info', 'CSVUpload', 'No template match, manual mapping required');
           toast.info("New Excel format detected - let's map the columns");
           setCurrentStep('mapping');
         }
+        setProcessing(false);
       } catch (error) {
+        uploadLogger.extractionError('Failed to parse Excel file', error instanceof Error ? error : new Error(String(error)));
         toast.error("Failed to parse Excel file: " + (error instanceof Error ? error.message : 'Unknown error'));
         console.error(error);
+        setProcessing(false);
+        setProcessingProgress({ stage: '', percentage: 0 });
       }
     } else {
       // CSV file
+      setProcessingProgress({ stage: 'Parsing CSV...', percentage: 25 });
       toast.info("Parsing CSV file...");
 
       Papa.parse(file, {
@@ -141,10 +162,12 @@ export const CSVUpload = ({ onTradesExtracted }: CSVUploadProps) => {
           const headers = results.meta.fields || [];
           const data = results.data as Record<string, any>[];
 
+          uploadLogger.log('info', 'CSVUpload', 'CSV parsed', { headers: headers.length, rows: data.length });
           setCsvHeaders(headers);
           setCsvData(data);
 
           // Try to find matching template
+          setProcessingProgress({ stage: 'Detecting broker template...', percentage: 50 });
           const match = findBestTemplateMatch(headers, templates);
           
           if (match && match.similarity >= 80) {
@@ -152,6 +175,8 @@ export const CSVUpload = ({ onTradesExtracted }: CSVUploadProps) => {
             const template = templates.find(t => t.id === match.templateId);
             
             if (template) {
+              uploadLogger.success('CSVUpload', `Auto-detected ${match.brokerName}`, { similarity: match.similarity });
+              setProcessingProgress({ stage: 'Applying template...', percentage: 75 });
               toast.success(`Recognized as ${match.brokerName}! Auto-loading mapping...`);
               setColumnMappings(template.column_mappings);
               setSelectedBroker(match.brokerName);
@@ -159,17 +184,26 @@ export const CSVUpload = ({ onTradesExtracted }: CSVUploadProps) => {
               
               // Skip to preview
               const trades = applyMappingToData(data, template.column_mappings);
+              uploadLogger.success('CSVUpload', `Transformed ${trades.length} trades from CSV`);
+              setProcessingProgress({ stage: 'Preview ready!', percentage: 100 });
               setMappedTrades(trades);
               setSelectedTrades(new Set(trades.map((_, idx) => idx)));
               setCurrentStep('preview');
             }
           } else {
+            uploadLogger.log('info', 'CSVUpload', 'No template match, manual mapping required');
             toast.info("New CSV format detected - let's map the columns");
             setCurrentStep('mapping');
           }
+          setProcessing(false);
         },
-        error: () => {
-          toast.error("Failed to read file");
+        error: (err) => {
+          uploadLogger.extractionError('CSV parse error', err instanceof Error ? err : new Error(String(err)));
+          toast.error("Failed to read CSV file", {
+            description: 'The file may be corrupted or in an invalid format. Please check the file and try again.'
+          });
+          setProcessing(false);
+          setProcessingProgress({ stage: '', percentage: 0 });
         }
       });
     }
@@ -251,10 +285,16 @@ export const CSVUpload = ({ onTradesExtracted }: CSVUploadProps) => {
   };
 
   const handleMappingComplete = async (mappings: Record<string, string>) => {
+    setProcessing(true);
+    setProcessingProgress({ stage: 'Applying mappings...', percentage: 60 });
+    uploadLogger.log('info', 'CSVUpload', 'User completed manual mapping');
+    
     setColumnMappings(mappings);
     
     // Apply mappings and generate trades
     const trades = applyMappingToData(csvData, mappings);
+    uploadLogger.success('CSVUpload', `Transformed ${trades.length} trades with manual mappings`);
+    setProcessingProgress({ stage: 'Preview ready!', percentage: 100 });
     setMappedTrades(trades);
     setSelectedTrades(new Set(trades.map((_, idx) => idx)));
 
@@ -266,12 +306,16 @@ export const CSVUpload = ({ onTradesExtracted }: CSVUploadProps) => {
           columnMappings: mappings,
           sampleHeaders: csvHeaders
         });
+        uploadLogger.log('info', 'CSVUpload', 'Template saved for future use');
       } catch (error) {
+        uploadLogger.log('error', 'CSVUpload', 'Failed to save template', undefined, error instanceof Error ? error : new Error(String(error)));
         console.error("Failed to save template:", error);
       }
     }
 
     setCurrentStep('preview');
+    setProcessing(false);
+    setProcessingProgress({ stage: '', percentage: 0 });
   };
 
   const handleImportTrades = () => {
@@ -288,6 +332,7 @@ export const CSVUpload = ({ onTradesExtracted }: CSVUploadProps) => {
       return;
     }
 
+    uploadLogger.success('CSVUpload', `Importing ${tradesToImport.length} trades`, { fileName });
     onTradesExtracted(tradesToImport);
     toast.success(`${tradesToImport.length} trade${tradesToImport.length !== 1 ? 's' : ''} imported from ${fileName}`);
     handleReset();
@@ -329,7 +374,18 @@ export const CSVUpload = ({ onTradesExtracted }: CSVUploadProps) => {
           onFileSelected={handleFileSelect}
           acceptedTypes={['.csv', '.xlsx', '.xls']}
           maxSize={20 * 1024 * 1024}
+          uploading={processing}
         />
+        
+        {processing && processingProgress.stage && (
+          <div className="mt-4 space-y-2">
+            <Progress value={processingProgress.percentage} className="h-2" />
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              {processingProgress.stage}
+            </div>
+          </div>
+        )}
         
         <div className="mt-6">
           <BrokerTemplateManager onLoadTemplate={handleLoadTemplate} />

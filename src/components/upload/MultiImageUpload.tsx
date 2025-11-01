@@ -13,6 +13,8 @@ import { ChevronDown } from 'lucide-react';
 import { PreAnalysisConfirmDialog } from './PreAnalysisConfirmDialog';
 import { CreditPurchaseDialog } from './CreditPurchaseDialog';
 import { runOCR } from '@/utils/ocrPipeline';
+import { uploadLogger } from '@/utils/uploadLogger';
+import { Progress } from '@/components/ui/progress';
 
 interface UploadedImage {
   file: File;
@@ -42,18 +44,23 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
   const credits = useUploadCredits();
 
   const processFiles = (files: File[]) => {
+    uploadLogger.fileSelection(`Processing ${files.length} files`, { fileCount: files.length });
+    
     const filesToProcess = files.filter(file => {
       const isValid = file.type.startsWith('image/');
       if (!isValid) {
+        uploadLogger.validationError(`Invalid file type: ${file.name}`, `File type ${file.type} not supported`);
         toast.error(`${file.name} is not a valid image file`);
       }
       return isValid;
     });
 
     if (filesToProcess.length === 0) {
+      uploadLogger.validation('No valid files to process');
       return;
     }
 
+    uploadLogger.success('FileSelect', `${filesToProcess.length} valid images added`);
     const newImages: UploadedImage[] = filesToProcess.map(file => ({
       file,
       preview: URL.createObjectURL(file),
@@ -126,6 +133,11 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
   const analyzeImages = async () => {
     if (images.length === 0) return;
 
+    uploadLogger.log('info', 'MultiImage', 'Starting batch analysis', {
+      totalImages: images.length,
+      broker: batchBroker
+    });
+
     setShowPreAnalysisDialog(false);
     setIsAnalyzing(true);
     const results: UploadedImage[] = [];
@@ -149,8 +161,13 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
       const batchEnd = Math.min(batchStart + batchSize, images.length);
       const currentBatch = images.slice(batchStart, batchEnd);
       
-      setBatchProgress(`Batch ${batchIndex + 1}/${totalBatches} • Processing ${batchStart + 1}-${batchEnd}/${images.length}...`);
+      const progressMsg = `Batch ${batchIndex + 1}/${totalBatches} • Processing ${batchStart + 1}-${batchEnd}/${images.length}...`;
+      setBatchProgress(progressMsg);
       setQueuedCount(images.length - batchEnd);
+      uploadLogger.log('info', 'MultiImage', `Processing batch ${batchIndex + 1}/${totalBatches}`, {
+        batchSize: currentBatch.length,
+        remaining: images.length - batchEnd
+      });
 
       // Process all images in batch in parallel for 8-10x speedup
       const batchPromises = currentBatch.map(async (image, i) => {
@@ -204,6 +221,7 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
 
             if (data?.trades && Array.isArray(data.trades)) {
               console.log(`✅ Success: ${data.trades.length} trades detected`);
+              uploadLogger.success('MultiImage', `Image ${globalIndex + 1} extracted ${data.trades.length} trades`);
               const successImg: UploadedImage = { ...image, status: 'success', trades: data.trades };
               setImages(prev => prev.map((img, idx) => (idx === globalIndex ? successImg : img)));
               success = true;
@@ -253,6 +271,7 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
                 else if (status === 500) errorMessage = serverErr?.error || 'Server error - please try again';
 
                 console.error('Edge function error:', { status, serverErr, raw: error });
+                uploadLogger.extractionError(`Image ${globalIndex + 1} failed: ${errorMessage}`, new Error(errorMessage));
                 const failed: UploadedImage = { ...image, status: 'error', trades: [] };
                 setImages(prev => prev.map((img, idx) => (idx === globalIndex ? failed : img)));
                 toast.error('Analysis Failed', { description: errorMessage });
@@ -298,6 +317,11 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
     const successCount = results.filter(r => r.status === 'success').length;
     const totalTrades = results.reduce((sum, r) => sum + (r.trades?.length || 0), 0);
 
+    uploadLogger.success('MultiImage', 'Batch analysis complete', {
+      successCount,
+      totalImages: images.length,
+      totalTrades
+    });
     console.log(`📊 Analysis complete: ${successCount}/${images.length} images, ${totalTrades} trades detected`);
 
     if (successCount === 0) {

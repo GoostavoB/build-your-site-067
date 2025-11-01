@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { uploadLogger } from '@/utils/uploadLogger';
 
 interface EnhancedFileUploadProps {
   onFileSelected: (file: File) => void;
@@ -81,6 +82,7 @@ const fileInputRef = useRef<HTMLInputElement>(null);
   const handleFile = useCallback(async (file: File) => {
     setIsValidating(true);
     setValidationError(null);
+    uploadLogger.fileSelection('File selected', { fileName: file.name, fileSize: file.size });
 
     // Simulate validation delay for better UX
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -89,11 +91,13 @@ const fileInputRef = useRef<HTMLInputElement>(null);
     setIsValidating(false);
 
     if (error) {
+      uploadLogger.validationError(`Validation failed: ${error}`, error);
       setValidationError(error);
       toast.error(error);
       return;
     }
 
+    uploadLogger.success('Validation', 'File validation passed', { fileName: file.name });
     onFileSelected(file);
   }, [validateFileLocal, onFileSelected]);
 

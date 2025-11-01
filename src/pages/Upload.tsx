@@ -33,6 +33,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { pageMeta } from '@/utils/seoHelpers';
 import { CSVUpload } from '@/components/upload/CSVUpload';
 import { uploadLogger } from '@/utils/uploadLogger';
+import { UploadErrorBoundary } from '@/components/upload/UploadErrorBoundary';
 import { TradeEditCard } from '@/components/upload/TradeEditCard';
 import { useQuery } from '@tanstack/react-query';
 import { useTradeXPRewards } from '@/hooks/useTradeXPRewards';
@@ -111,6 +112,11 @@ const Upload = () => {
   const [extracting, setExtracting] = useState(false);
   const [uploadStep, setUploadStep] = useState<1 | 2 | 3 | 4>(1);
   const [processingMessage, setProcessingMessage] = useState('');
+  const [uploadProgress, setUploadProgress] = useState({
+    stage: 'idle' as 'idle' | 'uploading' | 'ocr' | 'extraction' | 'parsing' | 'duplicates' | 'complete',
+    percentage: 0,
+    message: ''
+  });
   const [duplicateDialog, setDuplicateDialog] = useState<{
     open: boolean;
     trade?: ExtractedTrade & { existingDate?: string; existingSymbol?: string; existingPnl?: number };
@@ -492,16 +498,18 @@ const Upload = () => {
     });
 
     try {
-      // Step 1: Uploading
+      // Step 1: Uploading (0-20%)
       setUploadStep(1);
-      setProcessingMessage('Preparing your image...');
-      uploadLogger.extraction('Step 1: Preparing image');
+      setUploadProgress({ stage: 'uploading', percentage: 10, message: 'Uploading image...' });
+      setProcessingMessage('Uploading your image...');
+      uploadLogger.extraction('Step 1: Uploading image');
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Step 2: Extracting data
+      // Step 2: OCR & AI Extraction (20-70%)
       setUploadStep(2);
-      setProcessingMessage(getRandomThinkingPhrase());
-      uploadLogger.extraction('Step 2: Extracting data from image');
+      setUploadProgress({ stage: 'ocr', percentage: 30, message: 'Reading text from image...' });
+      setProcessingMessage('Extracting trade data with AI...');
+      uploadLogger.extraction('Step 2: OCR & AI extraction');
       
       // Guard against oversized payloads - recompress if needed
       let imageToSend = extractionPreview;
@@ -519,6 +527,7 @@ const Upload = () => {
         });
       }
       
+      setUploadProgress({ stage: 'extraction', percentage: 50, message: 'AI analyzing your trades...' });
       uploadLogger.extraction('Sending image to AI', {
         payloadSizeBytes: Math.floor((imageToSend?.length || 0) * 0.75),
         broker: preSelectedBroker,
@@ -568,43 +577,61 @@ const Upload = () => {
 
       if (error) {
         uploadLogger.extractionError('Edge function returned error', error);
+        setUploadProgress({ stage: 'idle', percentage: 0, message: '' });
         const status = (error as any)?.status || (error as any)?.cause?.status;
         const errMsg = (data as any)?.error || (error as any)?.message || 'Failed to extract trade information';
         const errDetails = (data as any)?.details || '';
+        const retryAfter = (data as any)?.retryAfter || 60;
         
-        // Categorize errors
-        const isCredits = status === 402 || /credit/i.test(errMsg);
-        const isRateLimited = status === 429 || /rate limit/i.test(errMsg);
-        const isParseError = /parse/i.test(errMsg);
-        const isAuthError = status === 401 || /unauthorized/i.test(errMsg);
-        
-        // Provide context-specific error messages
-        let title = 'Extraction Failed';
-        let description = 'Please try again or enter manually';
-        
-        if (isCredits) {
-          title = 'Upload Credits Exhausted';
-          description = 'You have no upload credits remaining. Purchase more credits to continue.';
+        // Enhanced error messages with actions
+        if (status === 402 || /credit/i.test(errMsg)) {
           uploadLogger.extractionError('Credits exhausted', new Error(errMsg));
-        } else if (isRateLimited) {
-          title = 'Rate Limit Reached';
-          description = 'Too many uploads in a short time. Please wait 60 seconds and try again.';
+          toast.error('No Credits Remaining', {
+            description: 'You need at least 1 credit to extract trades. Purchase more credits or upgrade your plan.',
+            action: {
+              label: 'Get Credits',
+              onClick: () => navigate('/pricing')
+            }
+          });
+        } else if (status === 429 || /rate limit/i.test(errMsg)) {
           uploadLogger.extractionError('Rate limit hit', new Error(errMsg));
-        } else if (isParseError) {
-          title = 'Data Processing Error';
-          description = 'The AI returned invalid data. Try a clearer screenshot or enter manually.';
-          uploadLogger.extractionError('Parse error from AI', new Error(errMsg));
-        } else if (isAuthError) {
-          title = 'Authentication Required';
-          description = 'Please sign in again to continue.';
+          toast.error('Upload Limit Reached', {
+            description: `You've reached the rate limit. Wait ${retryAfter} seconds or upgrade to Pro for unlimited uploads.`,
+            duration: 6000,
+            action: {
+              label: 'Upgrade',
+              onClick: () => navigate('/pricing')
+            }
+          });
+        } else if (/timeout/i.test(errMsg)) {
+          uploadLogger.extractionError('Timeout', new Error(errMsg));
+          toast.error('Processing Timeout', {
+            description: 'The image took too long to process. Try with a smaller or clearer image.'
+          });
+        } else if (status === 401 || /unauthorized|authentication/i.test(errMsg)) {
           uploadLogger.extractionError('Auth error', new Error(errMsg));
-        } else if (errMsg && errMsg !== 'Failed to extract trade information') {
-          title = errMsg;
-          description = errDetails || 'Please try again or enter manually';
+          toast.error('Session Expired', {
+            description: 'Your login session has expired. Please log in again to continue.',
+            action: {
+              label: 'Log In',
+              onClick: () => navigate('/auth')
+            }
+          });
+        } else if (/parse/i.test(errMsg)) {
+          uploadLogger.extractionError('Parse error from AI', new Error(errMsg));
+          toast.error('Invalid Trade Data', {
+            description: 'The extracted data is incomplete or invalid. Please use manual entry instead.'
+          });
+        } else {
           uploadLogger.extractionError('Extraction failed', new Error(`${errMsg}: ${errDetails}`));
+          toast.error(errMsg || 'Extraction Failed', {
+            description: errDetails || error instanceof Error ? error.message : 'Could not extract trade data from this image. Please try a clearer screenshot.',
+            action: errDetails ? undefined : {
+              label: 'Tips',
+              onClick: () => window.open('/docs/upload-tips', '_blank')
+            }
+          });
         }
-        
-        toast.error(title, { description });
         return;
       }
 
@@ -614,16 +641,19 @@ const Upload = () => {
           cached: data.cached
         });
         
-        // Step 3: Checking duplicates
+        // Step 3: Parsing trades (70-85%)
         setUploadStep(3);
-        setProcessingMessage('Scanning for duplicate trades...');
-        uploadLogger.extraction('Step 3: Scanning for duplicates');
+        setUploadProgress({ stage: 'parsing', percentage: 80, message: `Parsing ${data.trades.length} trades...` });
+        setProcessingMessage('Parsing extracted trades...');
+        uploadLogger.extraction('Step 3: Parsing trades');
         await new Promise(resolve => setTimeout(resolve, 800));
 
-        // Step 4: Complete
+        // Step 4: Checking duplicates (85-95%)
         setUploadStep(4);
-        setProcessingMessage('Trade extraction complete!');
-        uploadLogger.success('Extraction', 'All steps complete');
+        setUploadProgress({ stage: 'duplicates', percentage: 90, message: 'Checking for duplicates...' });
+        setProcessingMessage('Checking for duplicates...');
+        uploadLogger.extraction('Step 4: Checking duplicates');
+        await new Promise(resolve => setTimeout(resolve, 500));
         
         // Normalize trades (defensive fallback for older edge function versions)
         const normalizedTrades = data.trades.map((t: any) => ({
@@ -652,46 +682,45 @@ const Upload = () => {
         
         setExtractedTrades(normalizedTrades);
         
+        // Complete! (100%)
+        setUploadProgress({ stage: 'complete', percentage: 100, message: 'Extraction complete!' });
+        uploadLogger.success('Extraction', 'All steps complete');
         await new Promise(resolve => setTimeout(resolve, 500));
         
         toast.success(`✅ Extracted ${data.trades.length} trade(s) from image!`, {
           description: 'Review and save your trades below'
         });
       } else {
-        toast.error('No trades found in the image', {
-          description: 'Please check if the image is clear and contains trade information'
+        setUploadProgress({ stage: 'idle', percentage: 0, message: '' });
+        uploadLogger.extraction('No trades found in response');
+        toast.error('No Trades Detected', {
+          description: 'Could not find any trade data in this image. Make sure the screenshot clearly shows entry/exit prices, position size, and P&L.',
+          action: {
+            label: 'Tips',
+            onClick: () => window.open('/docs/upload-tips', '_blank')
+          }
         });
       }
     } catch (error) {
       console.error('Error extracting trade info:', error);
+      setUploadProgress({ stage: 'idle', percentage: 0, message: '' });
+      uploadLogger.extractionError('Uncaught extraction error', error instanceof Error ? error : new Error(String(error)));
       
-      // More helpful error messages
-      let errorTitle = 'Extraction Failed';
-      let errorDescription = 'Please try again or use manual entry';
-      
-      if (error instanceof Error) {
-        if (error.message.includes('timed out')) {
-          errorTitle = 'Extraction Timed Out';
-          errorDescription = 'The image took too long to process. Try a clearer screenshot or use manual entry below.';
-        } else if (error.message.includes('credits')) {
-          errorTitle = 'No Credits Available';
-          errorDescription = error.message;
-        } else if (error.message.includes('Rate limit')) {
-          errorTitle = 'Too Many Requests';
-          errorDescription = 'Please wait a moment before trying again.';
-        } else {
-          errorDescription = error.message;
-        }
+      if (error instanceof Error && error.message.includes('timed out')) {
+        toast.error('Extraction Timed Out', {
+          description: 'The image took too long to process. Try a clearer screenshot or use manual entry below.'
+        });
+      } else {
+        toast.error('Extraction Failed', {
+          description: error instanceof Error ? error.message : 'Please try again or use manual entry',
+          duration: 6000
+        });
       }
-      
-      toast.error(errorTitle, {
-        description: errorDescription,
-        duration: 6000
-      });
     } finally {
       const duration = Date.now() - startedAt;
       console.log('⏱️ Extraction duration (ms):', duration);
       setExtracting(false);
+      setUploadProgress({ stage: 'idle', percentage: 0, message: '' });
     }
   };
   const removeScreenshot = () => {
@@ -1205,13 +1234,15 @@ const Upload = () => {
                   </p>
                 </div>
                 
-                <CSVUpload 
-                  onTradesExtracted={(trades) => {
-                    setExtractedTrades(trades);
-                    setTradeEdits({});
-                    toast.success(`Parsed ${trades.length} trades from CSV`);
-                  }} 
-                />
+                <UploadErrorBoundary>
+                  <CSVUpload 
+                    onTradesExtracted={(trades) => {
+                      setExtractedTrades(trades);
+                      setTradeEdits({});
+                      toast.success(`Parsed ${trades.length} trades from CSV`);
+                    }} 
+                  />
+                </UploadErrorBoundary>
               </div>
             </Card>
 
@@ -1286,17 +1317,19 @@ const Upload = () => {
           <TabsContent value="batch-upload" className="space-y-6">
             <Card className="p-6 glass">
               <div className="space-y-4">
-                <MultiImageUpload
-                  onTradesExtracted={(trades) => {
-                    setExtractedTrades(trades);
-                    // Clear any existing edits
-                    setTradeEdits({});
-                    // Show success message
-                    toast.success(`Extracted ${trades.length} trades from batch upload`, {
-                      description: 'Review and edit the trades below, then click "Save All Trades"'
-                    });
-                  }} 
-                />
+                <UploadErrorBoundary>
+                  <MultiImageUpload
+                    onTradesExtracted={(trades) => {
+                      setExtractedTrades(trades);
+                      // Clear any existing edits
+                      setTradeEdits({});
+                      // Show success message
+                      toast.success(`Extracted ${trades.length} trades from batch upload`, {
+                        description: 'Review and edit the trades below, then click "Save All Trades"'
+                      });
+                    }} 
+                  />
+                </UploadErrorBoundary>
               </div>
             </Card>
 
@@ -1411,17 +1444,19 @@ const Upload = () => {
                     </div>
                   )}
                   <div className="mt-2">
-                    <EnhancedFileUpload
-                      onFileSelected={async (file) => {
-                        await processImageFile(file);
-                      }}
-                      existingPreview={extractionPreview}
-                      onRemove={removeExtractionImage}
-                      uploading={extracting}
-                      uploadProgress={uploadStep * 25}
-                      maxSize={10}
-                      acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
-                    />
+                    <UploadErrorBoundary>
+                      <EnhancedFileUpload
+                        onFileSelected={async (file) => {
+                          await processImageFile(file);
+                        }}
+                        existingPreview={extractionPreview}
+                        onRemove={removeExtractionImage}
+                        uploading={extracting}
+                        uploadProgress={uploadProgress.percentage || uploadStep * 25}
+                        maxSize={10}
+                        acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
+                      />
+                    </UploadErrorBoundary>
                     
                     {extractionPreview && (
                       <div className="space-y-3 mt-4">

@@ -17,6 +17,10 @@ initPostHog();
 // Declare global BUILD_ID
 declare const __BUILD_ID__: string;
 
+// FORCE aggressive cache cleanup for subscription refactor
+console.log('[Cache] FORCING aggressive cleanup for subscription system refactor');
+swCleanup();
+
 // Force cache cleanup on new builds or manual trigger
 const currentBuildId = __BUILD_ID__;
 const storedBuildId = localStorage.getItem('build-id');
@@ -26,9 +30,11 @@ const forceCleanup =
 
 if (storedBuildId !== currentBuildId || forceCleanup) {
   console.log('[Cache] New build detected or cleanup forced, clearing caches...');
-  swCleanup();
   localStorage.setItem('build-id', currentBuildId);
 }
+
+// Update build ID
+localStorage.setItem('build-id', currentBuildId);
 
 createRoot(document.getElementById("root")!).render(<App />);
 

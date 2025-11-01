@@ -138,26 +138,28 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const AppRoutes = () => {
   usePageTracking(); // Automatically track page views
   const { user } = useAuth();
-  const { reward, showRewardModal, setShowRewardModal, claimReward } = useDailyRewards();
+  
+  // Only initialize daily rewards for authenticated users
+  const dailyRewards = user ? useDailyRewards() : null;
   
   return (
     <>
       <LanguageSync />
       {user && <WelcomeBackToast />}
       {user && <OnboardingWrapper />}
-      {user && (
+      {user && dailyRewards && (
         <DailyRewardIndicator 
-          reward={reward}
+          reward={dailyRewards.reward}
           loading={false}
-          setShowRewardModal={setShowRewardModal}
+          setShowRewardModal={dailyRewards.setShowRewardModal}
         />
       )}
-      {user && (
+      {user && dailyRewards && (
         <DailyRewardModal
-          open={showRewardModal}
-          onClose={() => setShowRewardModal(false)}
-          reward={reward}
-          onClaim={claimReward}
+          open={dailyRewards.showRewardModal}
+          onClose={() => dailyRewards.setShowRewardModal(false)}
+          reward={dailyRewards.reward}
+          onClaim={dailyRewards.claimReward}
         />
       )}
       <Suspense fallback={<PageLoader />}>

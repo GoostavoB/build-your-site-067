@@ -22,8 +22,7 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 const Forecast = () => {
   useKeyboardShortcuts();
   const { user } = useAuth();
-  const { isFeatureLocked } = useSubscription();
-  const isPremiumLocked = isFeatureLocked('pro');
+  const { isFeatureLocked, isLoading: subscriptionLoading } = useSubscription();
   const [days, setDays] = useState([30]);
   const [avgDailyPnl, setAvgDailyPnl] = useState(0);
   const [projectedEquity, setProjectedEquity] = useState(0);
@@ -35,6 +34,18 @@ const Forecast = () => {
   const [customDailyGrowth, setCustomDailyGrowth] = useState<number | null>(null);
   const [includeDrawdown, setIncludeDrawdown] = useState(false);
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+  
+  if (subscriptionLoading) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-pulse text-muted-foreground">Loading...</div>
+        </div>
+      </AppLayout>
+    );
+  }
+  
+  const isPremiumLocked = isFeatureLocked('pro');
 
   useEffect(() => {
     fetchAvgPnl();

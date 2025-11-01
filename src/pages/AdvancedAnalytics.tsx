@@ -24,7 +24,18 @@ const profitData = Array.from({ length: 30 }, (_, i) => ({
 }));
 
 export default function AdvancedAnalytics() {
-  const { isFeatureLocked } = useSubscription();
+  const { isFeatureLocked, isLoading } = useSubscription();
+  
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-pulse text-muted-foreground">Loading...</div>
+        </div>
+      </AppLayout>
+    );
+  }
+  
   const isPremiumLocked = isFeatureLocked('pro');
 
   return (

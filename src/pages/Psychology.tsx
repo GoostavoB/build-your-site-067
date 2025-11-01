@@ -10,11 +10,22 @@ import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useEmotionalLogXP } from "@/hooks/useEmotionalLogXP";
 
 export default function Psychology() {
-  const { isFeatureLocked } = useSubscription();
-  const isPremiumLocked = isFeatureLocked('pro');
+  const { isFeatureLocked, isLoading } = useSubscription();
   
   // Process XP rewards for emotional logging
   useEmotionalLogXP();
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-pulse text-muted-foreground">Loading...</div>
+        </div>
+      </AppLayout>
+    );
+  }
+  
+  const isPremiumLocked = isFeatureLocked('pro');
 
   return (
     <AppLayout>

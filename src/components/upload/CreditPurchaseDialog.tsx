@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Check, Zap, Plus, Minus, TrendingUp, Award } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUploadCredits } from '@/hooks/useUploadCredits';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 
 interface CreditPurchaseDialogProps {
   open: boolean;
@@ -39,14 +40,14 @@ export const CreditPurchaseDialog = ({
 }: CreditPurchaseDialogProps) => {
   const { toast } = useToast();
   const { purchaseExtraCredits, balance } = useUploadCredits();
+  const { isPro, isElite } = useSubscription();
   const [creditAmount, setCreditAmount] = useState(MIN_CREDITS);
   const [purchasing, setPurchasing] = useState(false);
   const [showProPromotion, setShowProPromotion] = useState(false);
   
-  // TODO: Check user subscription tier (Basic/Pro vs Elite)
-  const isPro = false; // Replace with actual subscription check
+  const isProOrElite = isPro || isElite;
   
-  const pricePerCredit = isPro ? CREDIT_PRICE * (1 - PRO_DISCOUNT) : CREDIT_PRICE;
+  const pricePerCredit = isProOrElite ? CREDIT_PRICE * (1 - PRO_DISCOUNT) : CREDIT_PRICE;
   const totalPrice = creditAmount * pricePerCredit;
   const proPrice = creditAmount * CREDIT_PRICE * (1 - PRO_DISCOUNT);
   const savings = totalPrice - proPrice;
@@ -60,7 +61,7 @@ export const CreditPurchaseDialog = ({
   };
 
   const handlePurchaseClick = () => {
-    if (!isPro) {
+    if (!isProOrElite) {
       setShowProPromotion(true);
     } else {
       handlePurchase();
@@ -147,7 +148,7 @@ export const CreditPurchaseDialog = ({
                 <div className="text-sm text-muted-foreground">
                   ${pricePerCredit.toFixed(2)} per credit
                 </div>
-                {!isPro && (
+                {!isProOrElite && (
                   <div className="mt-3 text-xs text-amber-600 dark:text-amber-400 font-medium">
                     💡 Save ${savings.toFixed(2)} with PRO (20% off)
                   </div>

@@ -12,12 +12,23 @@ import { PremiumFeatureLock } from "@/components/PremiumFeatureLock";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 
 export default function Social() {
-  const { isFeatureLocked } = useSubscription();
-  const isPremiumLocked = isFeatureLocked('pro');
+  const { isFeatureLocked, isLoading: subscriptionLoading } = useSubscription();
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [followingPosts, setFollowingPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
+  
+  if (subscriptionLoading) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-pulse text-muted-foreground">Loading...</div>
+        </div>
+      </AppLayout>
+    );
+  }
+  
+  const isPremiumLocked = isFeatureLocked('pro');
 
   useEffect(() => {
     fetchPosts();

@@ -17,10 +17,21 @@ import { PremiumFeatureLock } from "@/components/PremiumFeatureLock";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 
 const TaxReports = () => {
+  const { isFeatureLocked, isLoading: subscriptionLoading } = useSubscription();
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const { toast } = useToast();
-  const { isFeatureLocked } = useSubscription();
+  
+  if (subscriptionLoading) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-pulse text-muted-foreground">Loading...</div>
+        </div>
+      </AppLayout>
+    );
+  }
+  
   const isPremiumLocked = isFeatureLocked('pro');
 
   const { data: trades = [], isLoading } = useQuery({

@@ -38,6 +38,25 @@ export const useUploadCredits = () => {
     }
 
     try {
+      // Check if user has unlimited uploads
+      const { data: settings } = await supabase
+        .from('user_settings')
+        .select('unlimited_uploads')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (settings?.unlimited_uploads) {
+        setCredits({
+          balance: 999999,
+          used: 0,
+          limit: 999999,
+          extraPurchased: 0,
+          canUpload: true,
+          isLoading: false,
+        });
+        return;
+      }
+
       // First try to get subscription data
       const { data: subscriptionData, error: subscriptionError } = await supabase
         .from('subscriptions')
@@ -152,6 +171,11 @@ export const useUploadCredits = () => {
 
   const deductCredit = async (): Promise<boolean> => {
     if (!user) return false;
+
+    // Unlimited users bypass deduction
+    if (credits.limit >= 999999) {
+      return true;
+    }
 
     try {
       const { data, error } = await supabase.rpc('deduct_upload_credit', {

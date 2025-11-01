@@ -38,7 +38,7 @@ const Hero = () => {
 
       {/* Content */}
       <div className="container mx-auto max-w-6xl relative z-10">
-        <div className="flex flex-col items-center justify-center text-center space-y-16">
+        <div className="flex flex-col items-center justify-center text-center space-y-[33px]">
           
           {/* Text Above Logo */}
           <motion.div className="space-y-4" initial={{

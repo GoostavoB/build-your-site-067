@@ -82,17 +82,27 @@ export const initiateStripeCheckout = async (params: CheckoutParams): Promise<vo
 
   // Track checkout initiation (before redirect)
   const amount = parseFloat(priceId.includes('annual') ? '99' : priceId.includes('monthly') ? '29' : '0');
-  console.log('📊 Tracking checkout initiation');
+  console.info('📊 Tracking checkout initiation');
   trackCheckoutFunnel.initiateCheckout(productType, priceId, amount);
 
-  // Redirect to Stripe Checkout (try new tab first to avoid sandbox issues)
-  console.log('🔗 Redirecting to Stripe checkout:', data.url);
-  const opened = window.open(data.url, '_blank', 'noopener,noreferrer');
-  if (!opened) {
-    console.log('🔗 Popup blocked, using direct redirect');
-    window.location.href = data.url;
+  // Pre-open tab synchronously to avoid popup blockers
+  console.info('🔗 Pre-opening checkout tab...');
+  const checkoutWindow = window.open('', '_blank', 'noopener,noreferrer');
+  
+  if (checkoutWindow) {
+    // Show loading message while we wait for Stripe URL
+    checkoutWindow.document.write('<p style="padding:16px;font-family:system-ui;text-align:center">Opening secure checkout…</p>');
+    // Navigate the pre-opened tab to Stripe
+    checkoutWindow.location.assign(data.url);
+    console.info('✅ Redirecting to Stripe in new tab:', data.url);
   } else {
-    console.log('✅ Opened in new tab');
+    // Fallback: try to break out of iframe if embedded
+    console.info('⚠️ Popup blocked, attempting top-level redirect');
+    if (window.top && window.top !== window) {
+      window.top.location.assign(data.url);
+    } else {
+      window.location.assign(data.url);
+    }
   }
 };
 

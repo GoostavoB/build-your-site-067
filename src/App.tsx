@@ -226,8 +226,8 @@ const AppRoutes = () => {
         <Route path="/gamification" element={<ProtectedRoute><Gamification /></ProtectedRoute>} />
         <Route path="/tier-preview" element={<ProtectedRoute><TierPreview /></ProtectedRoute>} />
         <Route path="/premium-features" element={<ProtectedRoute><PremiumFeatures /></ProtectedRoute>} />
-        <Route path="/checkout-success" element={<ProtectedRoute><CheckoutSuccess /></ProtectedRoute>} />
-        <Route path="/checkout-cancel" element={<ProtectedRoute><CheckoutCancel /></ProtectedRoute>} />
+        <Route path="/checkout-success" element={<CheckoutSuccess />} />
+        <Route path="/checkout-cancel" element={<CheckoutCancel />} />
         <Route path="/market-data" element={<ProtectedRoute><MarketData /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         {/* Phase 2: Social features - temporarily disabled for backlog #34 */}

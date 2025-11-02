@@ -50,7 +50,7 @@ export const PostPurchaseUpsell = ({ onDismiss, subscriptionTier }: PostPurchase
         priceId: 'price_1SOxyYFqnRj6eB66CnowBEBN', // Pro credits - would need a discounted version
         productType: 'credits_pro',
         successUrl: `${window.location.origin}/dashboard?upsell=success`,
-        cancelUrl: `${window.location.origin}/checkout-success`,
+        cancelUrl: `${window.location.origin}/checkout-cancel`,
       });
     } catch (error) {
       console.error('Upsell purchase error:', error);

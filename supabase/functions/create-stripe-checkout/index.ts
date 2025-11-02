@@ -14,8 +14,8 @@
  */
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import Stripe from 'https://esm.sh/stripe@14.21.0'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0'
+import Stripe from 'https://esm.sh/stripe@14.5.0'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -130,7 +130,7 @@ serve(async (req) => {
     console.error('Error creating checkout session:', error)
     return new Response(
       JSON.stringify({
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Failed to create checkout session',
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

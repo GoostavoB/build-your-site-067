@@ -22,9 +22,9 @@ export interface CheckoutResponse {
 /**
  * Initiates a Stripe checkout session and redirects user to Stripe
  * @param params Checkout configuration
- * @returns Promise that resolves when redirect happens
+ * @returns Promise that resolves with the checkout URL
  */
-export const initiateStripeCheckout = async (params: CheckoutParams): Promise<void> => {
+export const initiateStripeCheckout = async (params: CheckoutParams): Promise<string> => {
   console.log('🚀 initiateStripeCheckout called with:', params);
   const { priceId, productType, successUrl, cancelUrl } = params;
 
@@ -85,15 +85,44 @@ export const initiateStripeCheckout = async (params: CheckoutParams): Promise<vo
   console.info('📊 Tracking checkout initiation');
   trackCheckoutFunnel.initiateCheckout(productType, priceId, amount);
 
-  // Redirect in same tab, breaking out of iframe if needed
-  console.info('🔗 Redirecting to Stripe checkout:', data.url);
-  if (window.top && window.top !== window) {
-    console.info('⚠️ Breaking out of iframe to top-level window');
-    window.top.location.assign(data.url);
-  } else {
-    window.location.assign(data.url);
+  // Redirect with multiple strategies for iframe compatibility
+  console.info('🔗 Received Stripe checkout URL:', data.url);
+  
+  // Try multiple redirect strategies with error handling
+  let redirected = false;
+  
+  try {
+    console.info('🔄 Attempting top-level window redirect...');
+    if (window.top && window.top !== window.self) {
+      window.top.location.href = data.url;
+      redirected = true;
+      console.info('✅ Top-level redirect initiated');
+    }
+  } catch (e) {
+    console.warn('⚠️ Top-level redirect blocked:', e);
   }
-  console.info('✅ Redirect initiated successfully');
+  
+  if (!redirected) {
+    try {
+      console.info('🔄 Attempting parent window redirect...');
+      if (window.parent && window.parent !== window.self) {
+        window.parent.location.href = data.url;
+        redirected = true;
+        console.info('✅ Parent redirect initiated');
+      }
+    } catch (e) {
+      console.warn('⚠️ Parent redirect blocked:', e);
+    }
+  }
+  
+  if (!redirected) {
+    console.info('🔄 Using same-window redirect as fallback...');
+    window.location.href = data.url;
+    console.info('✅ Same-window redirect initiated');
+  }
+  
+  // Return the URL in case the component needs to handle redirect failure
+  return data.url;
 };
 
 /**
@@ -106,7 +135,7 @@ export const checkoutSubscription = async (
 ): Promise<void> => {
   const productType = interval === 'monthly' ? 'subscription_monthly' : 'subscription_annual';
   
-  return initiateStripeCheckout({
+  await initiateStripeCheckout({
     priceId,
     productType,
   });
@@ -121,7 +150,7 @@ export const checkoutCredits = async (
 ): Promise<void> => {
   const productType = hasSubscription ? 'credits_pro' : 'credits_starter';
   
-  return initiateStripeCheckout({
+  await initiateStripeCheckout({
     priceId,
     productType,
   });

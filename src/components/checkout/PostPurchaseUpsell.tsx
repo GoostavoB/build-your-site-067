@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { initiateStripeCheckout } from '@/utils/stripeCheckout';
+import { trackCheckoutFunnel } from '@/utils/checkoutAnalytics';
 
 interface PostPurchaseUpsellProps {
   onDismiss: () => void;
@@ -40,6 +41,9 @@ export const PostPurchaseUpsell = ({ onDismiss, subscriptionTier }: PostPurchase
   const handlePurchase = async () => {
     setLoading(true);
     try {
+      // Track upsell acceptance
+      trackCheckoutFunnel.upsellAccepted(totalCredits, totalPrice);
+
       // For now, use the regular credit product but we'll handle the discount in the checkout
       // In production, you'd want to create specific discounted price IDs in Stripe
       await initiateStripeCheckout({

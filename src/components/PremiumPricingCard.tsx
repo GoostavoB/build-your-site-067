@@ -11,6 +11,7 @@ import { initiateStripeCheckout } from '@/utils/stripeCheckout';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { trackCheckoutFunnel } from '@/utils/checkoutAnalytics';
 
 interface PricingPlan {
   id: string;
@@ -57,6 +58,10 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
       // Determine tier and get the correct product
       const tier = plan.id.toLowerCase() as 'pro' | 'elite';
       const stripeProduct = getSubscriptionProduct(tier, billingCycle);
+      
+      // Track plan selection
+      const price = billingCycle === 'monthly' ? plan.monthlyPrice : plan.annualPrice;
+      trackCheckoutFunnel.selectPlan(plan.nameKey, billingCycle, price || 0);
       
       // Initiate checkout
       await initiateStripeCheckout({

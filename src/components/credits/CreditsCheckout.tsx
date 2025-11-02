@@ -21,6 +21,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useSubscriptionContext } from '@/contexts/SubscriptionContext';
 import { getCreditProduct } from '@/config/stripe-products';
 import { initiateStripeCheckout } from '@/utils/stripeCheckout';
+import { trackCheckoutFunnel } from '@/utils/checkoutAnalytics';
 
 export const CreditsCheckout = ({ onSuccess }) => {
   const navigate = useNavigate();
@@ -70,6 +71,9 @@ export const CreditsCheckout = ({ onSuccess }) => {
       // Determine which credit product to use based on subscription
       const hasSubscription = plan === 'pro' || plan === 'elite';
       const creditProduct = getCreditProduct(hasSubscription);
+
+      // Track checkout initiation
+      trackCheckoutFunnel.initiateCheckout(creditProduct.productType, creditProduct.priceId, totalPrice);
 
       // Initiate Stripe checkout
       await initiateStripeCheckout({

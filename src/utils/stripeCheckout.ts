@@ -5,6 +5,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+import { trackCheckoutFunnel } from '@/utils/checkoutAnalytics';
 
 export interface CheckoutParams {
   priceId: string;
@@ -56,6 +57,10 @@ export const initiateStripeCheckout = async (params: CheckoutParams): Promise<vo
   if (!data?.url) {
     throw new Error('No checkout URL received from server');
   }
+
+  // Track checkout initiation (before redirect)
+  const amount = parseFloat(priceId.includes('annual') ? '99' : priceId.includes('monthly') ? '29' : '0');
+  trackCheckoutFunnel.initiateCheckout(productType, priceId, amount);
 
   // Redirect to Stripe Checkout
   window.location.href = data.url;

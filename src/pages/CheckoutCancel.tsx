@@ -3,9 +3,16 @@ import { motion } from 'framer-motion';
 import { XCircle, ArrowLeft, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { trackCheckoutFunnel } from '@/utils/checkoutAnalytics';
+import { useEffect } from 'react';
 
 export default function CheckoutCancel() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Track checkout abandonment when user lands on cancel page
+    trackCheckoutFunnel.checkoutAbandoned('stripe_checkout_page');
+  }, []);
 
   return (
     <div className="container max-w-2xl mx-auto p-6 min-h-screen flex items-center justify-center">

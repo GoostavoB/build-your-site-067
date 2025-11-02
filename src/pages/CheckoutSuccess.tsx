@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { PostPurchaseUpsell } from '@/components/checkout/PostPurchaseUpsell';
+import { trackCheckoutFunnel } from '@/utils/checkoutAnalytics';
 
 export default function CheckoutSuccess() {
   const navigate = useNavigate();
@@ -34,6 +35,9 @@ export default function CheckoutSuccess() {
       setVerified(true);
       setVerifying(false);
 
+      // Track checkout completion
+      trackCheckoutFunnel.checkoutCompleted('subscription', 0, sessionId);
+
       // Check if this was an annual subscription purchase (not an upsell)
       // In production, you'd get this from the session metadata
       const isAnnualSubscription = !isUpsellSuccess; // Simplified check
@@ -44,6 +48,7 @@ export default function CheckoutSuccess() {
           // You'd determine tier from session metadata
           setSubscriptionTier('pro'); // or 'elite'
           setShowUpsell(true);
+          trackCheckoutFunnel.upsellShown('pro', 50);
         }, 1500);
       }
 
@@ -63,7 +68,10 @@ export default function CheckoutSuccess() {
       {/* Upsell Modal */}
       {showUpsell && subscriptionTier && (
         <PostPurchaseUpsell
-          onDismiss={() => setShowUpsell(false)}
+          onDismiss={() => {
+            trackCheckoutFunnel.upsellDismissed();
+            setShowUpsell(false);
+          }}
           subscriptionTier={subscriptionTier}
         />
       )}

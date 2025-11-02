@@ -2130,6 +2130,7 @@ export type Database = {
           full_name: string | null
           id: string
           marketing_consent: boolean | null
+          onboarding_completed: boolean | null
           profile_visibility: string | null
           promo_expires_at: string | null
           provider: string | null
@@ -2157,6 +2158,7 @@ export type Database = {
           full_name?: string | null
           id: string
           marketing_consent?: boolean | null
+          onboarding_completed?: boolean | null
           profile_visibility?: string | null
           promo_expires_at?: string | null
           provider?: string | null
@@ -2184,6 +2186,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           marketing_consent?: boolean | null
+          onboarding_completed?: boolean | null
           profile_visibility?: string | null
           promo_expires_at?: string | null
           provider?: string | null

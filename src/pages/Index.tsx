@@ -39,6 +39,7 @@ import { CustomizationOptions } from "@/components/landing/CustomizationOptions"
 import { FeatureComparison } from "@/components/landing/FeatureComparison";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { motion } from "framer-motion";
+import { SEO } from "@/components/SEO";
 const Index = () => {
   const navigate = useNavigate();
   const {
@@ -74,12 +75,19 @@ const Index = () => {
 
   // Loading is handled at App level - no need for page-level guard
 
-  return <div key={`landing-${language}`} className="min-h-screen bg-gray-950 overflow-x-hidden relative">
-      <AnimatedBackground />
-      <SkipToContent />
-      <ValueBar />
-      <PublicHeader />
-      <StickyMobileCTA />
+  return (
+    <>
+      <SEO
+        title="The Trading Diary - Gamified Crypto Trading Journal"
+        description="Track trades across Binance, Bybit, and all exchanges. Earn XP, level up, unlock widgets. The only trading journal with built-in gamification and psychology tools."
+        keywords="trading journal, crypto tracking, binance trades, bybit journal, trading XP, gamified trading, trade analytics, trading psychology, multi-exchange tracking"
+      />
+      <div key={`landing-${language}`} className="min-h-screen bg-gray-950 overflow-x-hidden relative">
+        <AnimatedBackground />
+        <SkipToContent />
+        <ValueBar />
+        <PublicHeader />
+        <StickyMobileCTA />
       
       <main id="main-content" className="overflow-x-hidden" style={{ paddingTop: '33px', paddingBottom: '33px' }}>
         {/* Mobile Hero with Dashboard Preview */}
@@ -501,6 +509,8 @@ const Index = () => {
       </main>
       
       <Footer />
-    </div>;
+    </div>
+    </>
+  );
 };
 export default Index;

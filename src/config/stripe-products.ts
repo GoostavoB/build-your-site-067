@@ -23,8 +23,8 @@ export interface StripeProduct {
 
 /**
  * Subscription Products
- * Pro: $9.99/mo or $99.99/year (save $19.89)
- * Elite: $24.99/mo or $249.99/year (save $49.89)
+ * Pro: $12/mo or $10/mo billed annually ($120/year - save $24)
+ * Elite: $25/mo or $20/mo billed annually ($240/year - save $60)
  */
 export const SUBSCRIPTION_PRODUCTS: Record<SubscriptionTier, Record<SubscriptionInterval, StripeProduct>> = {
   pro: {
@@ -33,7 +33,7 @@ export const SUBSCRIPTION_PRODUCTS: Record<SubscriptionTier, Record<Subscription
       productType: 'subscription_monthly',
       name: 'Pro Monthly',
       description: 'Premium features, billed monthly',
-      price: 9.99,
+      price: 12,
       interval: 'monthly',
       features: [
         'Unlimited AI extractions',
@@ -47,14 +47,14 @@ export const SUBSCRIPTION_PRODUCTS: Record<SubscriptionTier, Record<Subscription
       productType: 'subscription_annual',
       name: 'Pro Annual',
       description: 'Premium features, billed annually',
-      price: 8.33, // $99.99/year = $8.33/month
+      price: 10, // $120/year = $10/month
       interval: 'annual',
       features: [
         'Unlimited AI extractions',
         'Advanced analytics',
         'Priority support',
         '60% discount on credits',
-        'Save $19.89 per year'
+        'Save $24 per year'
       ]
     }
   },
@@ -64,7 +64,7 @@ export const SUBSCRIPTION_PRODUCTS: Record<SubscriptionTier, Record<Subscription
       productType: 'subscription_monthly',
       name: 'Elite Monthly',
       description: 'All premium features plus exclusive tools',
-      price: 24.99,
+      price: 25,
       interval: 'monthly',
       features: [
         'Everything in Pro',
@@ -79,7 +79,7 @@ export const SUBSCRIPTION_PRODUCTS: Record<SubscriptionTier, Record<Subscription
       productType: 'subscription_annual',
       name: 'Elite Annual',
       description: 'All premium features plus exclusive tools',
-      price: 20.83, // $249.99/year = $20.83/month
+      price: 20, // $240/year = $20/month
       interval: 'annual',
       features: [
         'Everything in Pro',
@@ -87,7 +87,7 @@ export const SUBSCRIPTION_PRODUCTS: Record<SubscriptionTier, Record<Subscription
         'Custom dashboards',
         'API access',
         'White-glove support',
-        'Save $49.89 per year'
+        'Save $60 per year'
       ]
     }
   }

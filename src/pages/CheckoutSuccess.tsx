@@ -1,171 +1,113 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { CheckCircle, Loader2, ArrowRight } from 'lucide-react';
+import { CheckCircle, Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
-import { PostPurchaseUpsell } from '@/components/checkout/PostPurchaseUpsell';
-import { trackCheckoutFunnel } from '@/utils/checkoutAnalytics';
+import { Card } from '@/components/ui/card';
+import confetti from 'canvas-confetti';
+import { motion } from 'framer-motion';
 
-export default function CheckoutSuccess() {
+const CheckoutSuccess = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { toast } = useToast();
-  const [verifying, setVerifying] = useState(true);
-  const [verified, setVerified] = useState(false);
-  const [showUpsell, setShowUpsell] = useState(false);
-  const [subscriptionTier, setSubscriptionTier] = useState<'pro' | 'elite' | null>(null);
-
   const sessionId = searchParams.get('session_id');
-  const isUpsellSuccess = searchParams.get('upsell') === 'success';
+  const [countdown, setCountdown] = useState(10);
 
   useEffect(() => {
-    // Simulate payment verification
-    // In a real app, you might want to verify the session with your backend
-    const verifyPayment = async () => {
-      if (!sessionId) {
-        setVerifying(false);
-        return;
-      }
+    const duration = 3000;
+    const end = Date.now() + duration;
 
-      // Simulate API call to verify payment
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setVerified(true);
-      setVerifying(false);
-
-      // Track checkout completion
-      trackCheckoutFunnel.checkoutCompleted('subscription', 0, sessionId);
-
-      // Check if this was an annual subscription purchase (not an upsell)
-      // In production, you'd get this from the session metadata
-      const isAnnualSubscription = !isUpsellSuccess; // Simplified check
-      
-      if (isAnnualSubscription) {
-        // Show upsell after a brief delay
-        setTimeout(() => {
-          // You'd determine tier from session metadata
-          setSubscriptionTier('pro'); // or 'elite'
-          setShowUpsell(true);
-          trackCheckoutFunnel.upsellShown('pro', 50);
-        }, 1500);
-      }
-
-      toast({
-        title: 'Payment Successful!',
-        description: isUpsellSuccess 
-          ? 'Your credits have been added to your account!' 
-          : 'Your purchase has been completed successfully.',
+    const frame = () => {
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#2D68FF', '#5A8CFF', '#8AB4FF']
       });
+
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#2D68FF', '#5A8CFF', '#8AB4FF']
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
     };
 
-    verifyPayment();
-  }, [sessionId, toast, isUpsellSuccess]);
+    frame();
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          navigate('/dashboard');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [navigate]);
 
   return (
-    <>
-      {/* Upsell Modal */}
-      {showUpsell && subscriptionTier && (
-        <PostPurchaseUpsell
-          onDismiss={() => {
-            trackCheckoutFunnel.upsellDismissed();
-            setShowUpsell(false);
-          }}
-          subscriptionTier={subscriptionTier}
-        />
-      )}
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-primary/5 to-background">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Card className="max-w-md w-full p-8 text-center glass-strong">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+            className="mx-auto w-20 h-20 mb-6 rounded-full bg-primary/10 flex items-center justify-center"
+          >
+            <CheckCircle className="w-12 h-12 text-primary" />
+          </motion.div>
 
-      <div className="container max-w-2xl mx-auto p-6 min-h-screen flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full"
-        >
-        <Card>
-          <CardHeader className="text-center">
-            {verifying ? (
-              <>
-                <div className="mx-auto mb-4 h-16 w-16 flex items-center justify-center">
-                  <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                </div>
-                <CardTitle>Verifying Payment...</CardTitle>
-                <CardDescription>
-                  Please wait while we confirm your purchase
-                </CardDescription>
-              </>
-            ) : verified ? (
-              <>
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                  className="mx-auto mb-4 h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center"
-                >
-                  <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
-                </motion.div>
-                <CardTitle>Payment Successful!</CardTitle>
-                <CardDescription>
-                  Thank you for your purchase. Your account has been updated.
-                </CardDescription>
-              </>
-            ) : (
-              <>
-                <CardTitle>Payment Confirmation</CardTitle>
-                <CardDescription>
-                  Unable to verify payment session
-                </CardDescription>
-              </>
-            )}
-          </CardHeader>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <h1 className="text-3xl font-bold mb-3 flex items-center justify-center gap-2">
+              Welcome to Pro! <Sparkles className="w-6 h-6 text-primary" />
+            </h1>
+            <p className="text-muted-foreground mb-6">
+              Your subscription is now active. Get ready to supercharge your trading journey!
+            </p>
 
-          <CardContent className="space-y-4">
-            {verified && (
-              <>
-                <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-                  <p className="text-sm text-muted-foreground">
-                    Your subscription or credits have been added to your account.
-                    You can start using them immediately!
-                  </p>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Button
-                    onClick={() => navigate('/dashboard')}
-                    className="flex-1"
-                  >
-                    Go to Dashboard
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                  <Button
-                    onClick={() => navigate('/settings')}
-                    variant="outline"
-                    className="flex-1"
-                  >
-                    View Settings
-                  </Button>
-                </div>
-              </>
+            {sessionId && (
+              <p className="text-xs text-muted-foreground mb-4">
+                Session ID: {sessionId.slice(0, 20)}...
+              </p>
             )}
 
-            {!verifying && !verified && (
-              <div className="flex flex-col gap-3">
-                <p className="text-sm text-muted-foreground text-center">
-                  If you completed a payment, please check your email for confirmation.
-                  Your account will be updated shortly.
-                </p>
-                <Button
-                  onClick={() => navigate('/dashboard')}
-                  variant="outline"
-                >
-                  Return to Dashboard
-                </Button>
-              </div>
-            )}
-          </CardContent>
+            <div className="space-y-3">
+              <Button
+                onClick={() => navigate('/dashboard')}
+                size="lg"
+                className="w-full"
+              >
+                Go to Dashboard
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+
+              <p className="text-sm text-muted-foreground">
+                Redirecting in {countdown} seconds...
+              </p>
+            </div>
+          </motion.div>
         </Card>
-        </motion.div>
-      </div>
-    </>
+      </motion.div>
+    </div>
   );
-}
+};
+
+export default CheckoutSuccess;

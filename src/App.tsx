@@ -111,6 +111,13 @@ const CheckoutRedirect = lazy(() => import("./pages/CheckoutRedirect"));
 const CheckoutSuccess = lazy(() => import("./pages/CheckoutSuccess"));
 const CheckoutCancel = lazy(() => import("./pages/CheckoutCancel"));
 
+// SEO Landing Pages
+const BestCryptoTradingJournal = lazy(() => import("./pages/BestCryptoTradingJournal"));
+const FreeCryptoTradingJournal = lazy(() => import("./pages/FreeCryptoTradingJournal"));
+const MultiExchangeTradingJournal = lazy(() => import("./pages/MultiExchangeTradingJournal"));
+const TradingJournalVsSpreadsheet = lazy(() => import("./pages/TradingJournalVsSpreadsheet"));
+const HowToTrackCryptoTrades = lazy(() => import("./pages/HowToTrackCryptoTrades"));
+
 // Loading fallback
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -209,6 +216,13 @@ const AppRoutes = () => {
         <Route path="/blog" element={<PublicPageThemeWrapper><Blog /></PublicPageThemeWrapper>} />
         <Route path="/blog/:slug" element={<PublicPageThemeWrapper><BlogPost /></PublicPageThemeWrapper>} />
         <Route path="/author/:authorSlug" element={<PublicPageThemeWrapper><Author /></PublicPageThemeWrapper>} />
+        
+        {/* SEO Landing Pages - wrapped with default theme */}
+        <Route path="/best-crypto-trading-journal" element={<PublicPageThemeWrapper><BestCryptoTradingJournal /></PublicPageThemeWrapper>} />
+        <Route path="/free-crypto-trading-journal" element={<PublicPageThemeWrapper><FreeCryptoTradingJournal /></PublicPageThemeWrapper>} />
+        <Route path="/multi-exchange-trading-journal" element={<PublicPageThemeWrapper><MultiExchangeTradingJournal /></PublicPageThemeWrapper>} />
+        <Route path="/trading-journal-vs-spreadsheet" element={<PublicPageThemeWrapper><TradingJournalVsSpreadsheet /></PublicPageThemeWrapper>} />
+        <Route path="/how-to-track-crypto-trades" element={<PublicPageThemeWrapper><HowToTrackCryptoTrades /></PublicPageThemeWrapper>} />
         
         {/* Other public pages - wrapped with default theme */}
         <Route path="/logo-download" element={<PublicPageThemeWrapper><LogoDownload /></PublicPageThemeWrapper>} />

@@ -15,6 +15,8 @@ import { preloadImages } from '@/utils/preloadStrategies';
 import { useHreflang } from '@/hooks/useHreflang';
 import { SUPPORTED_LANGUAGES, getLocalizedPath, getLanguageFromPath, type SupportedLanguage } from '@/utils/languageRouting';
 import { useLocation } from 'react-router-dom';
+import MetaTags from "@/components/SEO/MetaTags";
+import SchemaMarkup, { createArticleSchema } from "@/components/SEO/SchemaMarkup";
 
 const Blog = () => {
   const { lang } = useParams();
@@ -88,7 +90,14 @@ const Blog = () => {
   }, [filteredArticles]);
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black">
+    <>
+      <MetaTags
+        title="Crypto Trading Blog | AI Tools, Strategies & Tips"
+        description="Expert insights on crypto trading, AI-powered tools, trading psychology, risk management, and data-driven strategies. Learn from proven trading techniques."
+        keywords="crypto trading blog, AI trading tools, trading journal, trading psychology, risk management"
+      />
+      <SchemaMarkup type="product" />
+      <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black">
       <SkipToContent />
       <PublicHeader />
       
@@ -179,6 +188,7 @@ const Blog = () => {
       
       <Footer />
     </div>
+    </>
   );
 };
 

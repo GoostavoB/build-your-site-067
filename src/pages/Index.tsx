@@ -39,7 +39,8 @@ import { CustomizationOptions } from "@/components/landing/CustomizationOptions"
 import { FeatureComparison } from "@/components/landing/FeatureComparison";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { motion } from "framer-motion";
-import { SEO } from "@/components/SEO";
+import MetaTags from "@/components/SEO/MetaTags";
+import SchemaMarkup from "@/components/SEO/SchemaMarkup";
 const Index = () => {
   const navigate = useNavigate();
   const {
@@ -77,11 +78,12 @@ const Index = () => {
 
   return (
     <>
-      <SEO
+      <MetaTags
         title="The Trading Diary - Gamified Crypto Trading Journal"
         description="Track trades across Binance, Bybit, and all exchanges. Earn XP, level up, unlock widgets. The only trading journal with built-in gamification and psychology tools."
         keywords="trading journal, crypto tracking, binance trades, bybit journal, trading XP, gamified trading, trade analytics, trading psychology, multi-exchange tracking"
       />
+      <SchemaMarkup type="product" />
       <div key={`landing-${language}`} className="min-h-screen bg-gray-950 overflow-x-hidden relative">
         <AnimatedBackground />
         <SkipToContent />

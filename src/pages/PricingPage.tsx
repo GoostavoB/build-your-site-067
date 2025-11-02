@@ -21,6 +21,8 @@ import { ProblemVisual } from "@/components/pricing/ProblemVisual";
 import InteractiveSpeedChart from "@/components/pricing/InteractiveSpeedChart";
 import { SecurityVisual } from "@/components/pricing/SecurityVisual";
 import { SocialProofSection } from "@/components/pricing/SocialProofSection";
+import MetaTags from "@/components/SEO/MetaTags";
+import SchemaMarkup from "@/components/SEO/SchemaMarkup";
 
 const PricingPage = () => {
   const navigate = useNavigate();
@@ -118,7 +120,14 @@ const PricingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black overflow-x-hidden">
+    <>
+      <MetaTags
+        title="Pricing | The Trading Diary - Trading Journal Plans"
+        description="Choose the perfect trading journal plan. Free plan available. Premium plans with unlimited trades, AI insights, and advanced analytics. Start your 14-day free trial today."
+        keywords="trading journal pricing, trading journal plans, crypto trading journal cost, trading diary pricing"
+      />
+      <SchemaMarkup type="product" />
+      <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black overflow-x-hidden">
       {/* Sticky Offer Bar */}
       <StickyOfferBar />
       
@@ -601,6 +610,7 @@ const PricingPage = () => {
 
       <Footer />
     </div>
+    </>
   );
 };
 

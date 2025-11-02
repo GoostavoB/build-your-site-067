@@ -11,17 +11,56 @@ import UrgencyBanner from "./pricing/UrgencyBanner";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import SocialProof from "./pricing/SocialProof";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
+import { getSubscriptionProduct } from "@/config/stripe-products";
+import { initiateStripeCheckout } from "@/utils/stripeCheckout";
+import { trackCheckoutFunnel } from "@/utils/checkoutAnalytics";
+import { toast } from "@/components/ui/sonner";
 
 const Pricing = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const currentLang = i18n.language;
   const promoStatus = usePromoStatus();
   
-  const handleAuthNavigate = () => {
+  const handlePlanSelect = async (planId: string, planName: string, price: number) => {
     const authPath = currentLang === 'en' ? '/auth' : `/${currentLang}/auth`;
-    navigate(authPath);
+    
+    // Free plan always goes to auth
+    if (planId === 'free') {
+      navigate(authPath);
+      return;
+    }
+    
+    // Track analytics
+    trackCheckoutFunnel.selectPlan(planName, billingCycle, price);
+    
+    // If not authenticated, redirect to signup
+    if (!user) {
+      navigate(`${authPath}?mode=signup`);
+      return;
+    }
+    
+    // User is authenticated - initiate Stripe checkout
+    try {
+      setLoadingPlan(planId);
+      
+      // Map plan to Stripe product
+      const tier = planId === 'pro' ? 'pro' : 'elite';
+      const product = getSubscriptionProduct(tier, billingCycle);
+      
+      await initiateStripeCheckout({
+        priceId: product.priceId,
+        productType: billingCycle === 'monthly' ? 'subscription_monthly' : 'subscription_annual',
+      });
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to start checkout');
+      setLoadingPlan(null);
+    }
   };
 
   const plans = [
@@ -312,16 +351,17 @@ const Pricing = () => {
                 </div>
 
                 <motion.button
-                  onClick={handleAuthNavigate}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handlePlanSelect(plan.id, plan.name, getDisplayPrice(plan))}
+                  disabled={loadingPlan === plan.id}
+                  whileHover={{ scale: loadingPlan === plan.id ? 1 : 1.02 }}
+                  whileTap={{ scale: loadingPlan === plan.id ? 1 : 0.98 }}
                   className={`w-full h-12 mb-4 rounded-xl font-semibold transition-all relative z-10 overflow-hidden shadow-lg group/btn
                     ${plan.popular
                       ? ""
                       : isElite
                       ? "bg-amber-500/15 border-2 border-amber-500/30 text-amber-400 hover:bg-amber-500/25 hover:border-amber-500/50"
                       : "bg-white/5 border border-white/10 hover:bg-white/10 text-muted-foreground hover:text-foreground"
-                  }`}
+                  } ${loadingPlan === plan.id ? 'opacity-70 cursor-not-allowed' : ''}`}
                   style={plan.popular ? {
                     background: 'linear-gradient(90deg, #2D68FF, #5A8CFF)',
                     boxShadow: '0 4px 15px rgba(45,104,255,0.3), inset 0 1px 0 rgba(255,255,255,0.2)',
@@ -341,8 +381,8 @@ const Pricing = () => {
                     />
                   )}
                   <span className="relative z-10 flex items-center justify-center gap-2">
-                    {plan.cta}
-                    {plan.popular && (
+                    {loadingPlan === plan.id ? 'Loading...' : plan.cta}
+                    {plan.popular && loadingPlan !== plan.id && (
                       <motion.span
                         animate={{ x: [0, 4, 0] }}
                         transition={{ 

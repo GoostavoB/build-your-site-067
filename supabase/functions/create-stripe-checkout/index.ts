@@ -23,13 +23,31 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  console.log('🔵 create-stripe-checkout: Function invoked');
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
+    console.log('✅ CORS preflight handled');
     return new Response('ok', { headers: corsHeaders })
   }
 
+  // Check Stripe key immediately
+  const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
+  console.log('🔐 Stripe key status:', stripeKey ? '✅ Found' : '❌ MISSING');
+  
+  if (!stripeKey) {
+    console.error('❌ CRITICAL: STRIPE_SECRET_KEY not configured in Supabase');
+    return new Response(
+      JSON.stringify({ error: 'Stripe configuration error. Please contact support.' }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500,
+      }
+    )
+  }
+
   try {
-    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+    const stripe = new Stripe(stripeKey, {
       apiVersion: '2023-10-16',
     })
 

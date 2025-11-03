@@ -168,18 +168,62 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- Blog Articles (English) -->
+  <!-- Blog Articles (English) - Pillar Content -->
+  <url>
+    <loc>https://www.thetradingdiary.com/blog/how-to-keep-a-trading-journal</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.thetradingdiary.com/blog/trading-performance-metrics</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Blog Articles (English) - Supporting Content -->
+  <url>
+    <loc>https://www.thetradingdiary.com/blog/stop-revenge-trading-crypto</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.thetradingdiary.com/blog/neurology-of-fomo-crypto-trading</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.thetradingdiary.com/blog/systematic-crypto-trading-rules</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.thetradingdiary.com/blog/crypto-trading-psychology</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.thetradingdiary.com/blog/crypto-trading-consistency</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
   <url>
     <loc>https://www.thetradingdiary.com/blog/best-way-to-log-crypto-trades</loc>
     <lastmod>2025-11-02</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.thetradingdiary.com/blog/how-professional-traders-journal</loc>
     <lastmod>2025-11-02</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   
   <!-- Blog Articles (Spanish) -->

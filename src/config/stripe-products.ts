@@ -120,6 +120,27 @@ export const CREDIT_PRODUCTS: Record<CreditPackType, StripeProduct> = {
 };
 
 /**
+ * ANNUAL UPGRADE UPSELL PRODUCTS
+ * Special 50% discount on credits during annual subscription checkout
+ */
+export const UPSELL_CREDIT_PRODUCTS = {
+  annual_promo: {
+    priceId: 'price_annual_upsell_credits', // Create this in Stripe
+    name: 'Annual Upgrade Bonus Credits',
+    description: '50% off - One-time exclusive offer',
+    price: 1.00, // $1 per 10 credits (50% off from $2)
+    originalPrice: 2.00,
+    maxQuantity: 10, // Max 100 credits (10 packs)
+    features: [
+      '10 upload credits per pack',
+      '50% savings (was $2, now $1)',
+      'Never expires',
+      'One-time offer - Annual upgrade only'
+    ]
+  }
+};
+
+/**
  * Helper function to get subscription product by tier and interval
  */
 export const getSubscriptionProduct = (

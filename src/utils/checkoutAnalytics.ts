@@ -87,5 +87,34 @@ export const trackCheckoutFunnel = {
     analytics.track('upsell_dismissed', {
       event_category: 'conversion'
     });
+  },
+
+  // Annual upgrade upsell tracking
+  annualUpsellShown: (planName: string) => {
+    analytics.track('annual_upsell_shown', {
+      plan_name: planName,
+      discount_percent: 50,
+      event_category: 'conversion'
+    });
+    trackEvent('annual_upsell_shown', { planName });
+  },
+
+  annualUpsellAccepted: (quantity: number, totalPrice: number, totalSavings: number) => {
+    analytics.track('annual_upsell_accepted', {
+      credits_quantity: quantity * 10,
+      packs_purchased: quantity,
+      total_price: totalPrice,
+      total_savings: totalSavings,
+      event_category: 'conversion'
+    });
+    trackEvent('annual_upsell_accepted', { quantity, totalPrice, totalSavings });
+  },
+
+  annualUpsellDeclined: (planName: string) => {
+    analytics.track('annual_upsell_declined', {
+      plan_name: planName,
+      event_category: 'conversion'
+    });
+    trackEvent('annual_upsell_declined', { planName });
   }
 };

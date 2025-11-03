@@ -52,7 +52,7 @@ serve(async (req) => {
       throw new Error('No user found')
     }
 
-    const { priceId, productType, successUrl, cancelUrl } = await req.json()
+    const { priceId, productType, successUrl, cancelUrl, upsellCredits } = await req.json()
 
     if (!priceId || !productType) {
       throw new Error('Missing required parameters: priceId and productType')
@@ -65,22 +65,38 @@ serve(async (req) => {
       productType,
     })
 
+    // Build line items - start with the main subscription/product
+    const lineItems: any[] = [
+      {
+        price: priceId,
+        quantity: 1,
+      },
+    ];
+
+    // If upsellCredits is provided (annual upgrade promo), add discounted credit packs
+    if (upsellCredits && upsellCredits > 0) {
+      const creditPacks = Math.floor(upsellCredits / 10); // Each pack is 10 credits
+      if (creditPacks > 0) {
+        lineItems.push({
+          price: 'price_annual_upsell_credits', // Stripe price ID for $1/10 credits
+          quantity: creditPacks,
+        });
+        console.log('Adding upsell credits:', { creditPacks, totalCredits: upsellCredits });
+      }
+    }
+
     // Determine session configuration based on product type
     let sessionConfig: any = {
       customer_email: user.email,
       client_reference_id: user.id,
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
+      line_items: lineItems,
       mode: 'payment', // Default to payment mode
       success_url: successUrl || `${Deno.env.get('FRONTEND_URL')}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl || `${Deno.env.get('FRONTEND_URL')}/pricing`,
       metadata: {
         user_id: user.id,
         product_type: productType,
+        upsell_credits: upsellCredits || 0,
       },
     }
 

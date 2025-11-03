@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { trackCheckoutFunnel } from '@/utils/checkoutAnalytics';
+import { AnnualUpgradeUpsell } from '@/components/checkout/AnnualUpgradeUpsell';
 
 interface PricingPlan {
   id: string;
@@ -40,6 +41,12 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
   const { toast } = useToast();
   const currentLang = i18n.language;
   const [loading, setLoading] = useState(false);
+  const [showUpsell, setShowUpsell] = useState(false);
+  const [pendingCheckout, setPendingCheckout] = useState<{
+    tier: 'pro' | 'elite';
+    stripeProduct: any;
+    price: number;
+  } | null>(null);
   
   const handleCTA = async () => {
     if (plan.comingSoon) return;
@@ -63,6 +70,15 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
       const price = billingCycle === 'monthly' ? plan.monthlyPrice : plan.annualPrice;
       trackCheckoutFunnel.selectPlan(plan.nameKey, billingCycle, price || 0);
       
+      // If annual plan and not free, show upsell modal
+      if (billingCycle === 'annual' && plan.id !== 'free') {
+        setPendingCheckout({ tier, stripeProduct, price: price || 0 });
+        setShowUpsell(true);
+        trackCheckoutFunnel.annualUpsellShown(plan.nameKey);
+        setLoading(false);
+        return;
+      }
+      
       // Navigate to checkout interstitial
       navigate(`/checkout?priceId=${stripeProduct.priceId}&productType=${stripeProduct.productType}`);
     } catch (error) {
@@ -74,6 +90,31 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
       });
       setLoading(false);
     }
+  };
+
+  const handleUpsellAccept = (quantity: number) => {
+    if (!pendingCheckout) return;
+    
+    const totalSavings = quantity * 1.00; // $1 saved per pack
+    trackCheckoutFunnel.annualUpsellAccepted(quantity, quantity * 1.00, totalSavings);
+    
+    // Navigate with upsell credits parameter
+    navigate(
+      `/checkout?priceId=${pendingCheckout.stripeProduct.priceId}&productType=${pendingCheckout.stripeProduct.productType}&upsellCredits=${quantity * 10}`
+    );
+    setShowUpsell(false);
+  };
+
+  const handleUpsellDecline = () => {
+    if (!pendingCheckout) return;
+    
+    trackCheckoutFunnel.annualUpsellDeclined(plan.nameKey);
+    
+    // Navigate without upsell
+    navigate(
+      `/checkout?priceId=${pendingCheckout.stripeProduct.priceId}&productType=${pendingCheckout.stripeProduct.productType}`
+    );
+    setShowUpsell(false);
   };
   
   const getDisplayPrice = () => {
@@ -87,17 +128,26 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ 
-        duration: 0.45,
-        delay: index * 0.09,
-        ease: [0.22, 1, 0.36, 1]
-      }}
-      className="h-full"
-    >
-      <GlassCard 
+    <>
+      <AnnualUpgradeUpsell
+        open={showUpsell}
+        onAccept={handleUpsellAccept}
+        onDecline={handleUpsellDecline}
+        planName={t(plan.nameKey)}
+        annualPrice={pendingCheckout?.price || 0}
+      />
+      
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ 
+          duration: 0.45,
+          delay: index * 0.09,
+          ease: [0.22, 1, 0.36, 1]
+        }}
+        className="h-full"
+      >
+        <GlassCard
         elevated={plan.popular}
         className={`group p-8 h-full flex flex-col relative ${plan.popular ? 'scale-105' : ''}`}
         style={plan.popular ? {
@@ -232,5 +282,6 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
         </ul>
       </GlassCard>
     </motion.div>
+    </>
   );
 };

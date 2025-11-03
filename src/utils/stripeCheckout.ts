@@ -88,40 +88,34 @@ export const initiateStripeCheckout = async (params: CheckoutParams): Promise<st
   console.info('📊 Tracking checkout initiation');
   trackCheckoutFunnel.initiateCheckout(productType, priceId, amount);
 
-  // Redirect with multiple strategies for iframe compatibility
+  // Detect if running in iframe (like Lovable preview)
+  const isInIframe = window.self !== window.top;
   console.info('🔗 Received Stripe checkout URL:', data.url);
+  console.info('🖼️ Running in iframe:', isInIframe);
   
-  // Try multiple redirect strategies with error handling
+  // For iframe environments, open in new tab (most reliable method)
+  if (isInIframe) {
+    console.info('🔄 Opening checkout in new tab (iframe-friendly)...');
+    const opened = window.open(data.url, '_blank');
+    if (!opened) {
+      console.warn('⚠️ Popup blocked - returning URL for manual redirect');
+    } else {
+      console.info('✅ Checkout opened in new tab');
+    }
+    // Always return URL so CheckoutRedirect can show manual button
+    return data.url;
+  }
+  
+  // For non-iframe, try normal redirects
   let redirected = false;
   
   try {
-    console.info('🔄 Attempting top-level window redirect...');
-    if (window.top && window.top !== window.self) {
-      window.top.location.href = data.url;
-      redirected = true;
-      console.info('✅ Top-level redirect initiated');
-    }
-  } catch (e) {
-    console.warn('⚠️ Top-level redirect blocked:', e);
-  }
-  
-  if (!redirected) {
-    try {
-      console.info('🔄 Attempting parent window redirect...');
-      if (window.parent && window.parent !== window.self) {
-        window.parent.location.href = data.url;
-        redirected = true;
-        console.info('✅ Parent redirect initiated');
-      }
-    } catch (e) {
-      console.warn('⚠️ Parent redirect blocked:', e);
-    }
-  }
-  
-  if (!redirected) {
-    console.info('🔄 Using same-window redirect as fallback...');
+    console.info('🔄 Attempting same-window redirect...');
     window.location.href = data.url;
+    redirected = true;
     console.info('✅ Same-window redirect initiated');
+  } catch (e) {
+    console.warn('⚠️ Redirect failed:', e);
   }
   
   // Return the URL in case the component needs to handle redirect failure

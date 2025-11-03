@@ -49,14 +49,17 @@ const CheckoutRedirect = () => {
           upsellCredits: upsellCredits ? parseInt(upsellCredits) : undefined,
         });
         
-        // Store URL for manual redirect if automatic redirect fails
+        // Store URL for manual redirect
         setCheckoutUrl(url);
         
-        // Set a timeout to show manual redirect option if automatic redirect didn't work
+        // Detect iframe environment
+        const isInIframe = window.self !== window.top;
+        
+        // Show manual redirect option quickly (2 seconds for iframe, immediate for popup blocks)
         setTimeout(() => {
-          console.warn('⏰ Redirect timeout reached - showing manual redirect option');
+          console.warn('⏰ Showing manual redirect option', { isInIframe });
           setRedirectFailed(true);
-        }, 5000);
+        }, isInIframe ? 1000 : 2000);
         
       } catch (error) {
         console.error('❌ CheckoutRedirect: Checkout failed', error);
@@ -76,7 +79,8 @@ const CheckoutRedirect = () => {
   const handleManualRedirect = () => {
     if (checkoutUrl) {
       console.info('👆 Manual redirect clicked, opening:', checkoutUrl);
-      window.open(checkoutUrl, '_self');
+      // Open in new tab for better iframe compatibility
+      window.open(checkoutUrl, '_blank');
     }
   };
 
@@ -111,9 +115,9 @@ const CheckoutRedirect = () => {
               <ExternalLink className="w-12 h-12 text-primary" />
             </div>
             
-            <h2 className="text-2xl font-bold mb-3">Almost There!</h2>
+            <h2 className="text-2xl font-bold mb-3">Ready to Checkout!</h2>
             <p className="text-muted-foreground mb-6">
-              Click the button below to continue to checkout
+              Click below to open Stripe checkout in a new tab
             </p>
             
             <Button 

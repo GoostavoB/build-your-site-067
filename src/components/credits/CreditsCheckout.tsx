@@ -75,16 +75,8 @@ export const CreditsCheckout = ({ onSuccess }) => {
       // Track checkout initiation
       trackCheckoutFunnel.initiateCheckout(creditProduct.productType, creditProduct.priceId, totalPrice);
 
-      // Pre-open a new tab for smooth editor experience
-      const checkoutUrl = `/checkout?priceId=${creditProduct.priceId}&productType=${creditProduct.productType}`;
-      const checkoutWindow = window.open('about:blank', '_blank');
-      
-      // If we successfully opened a window, navigate it; otherwise use standard navigation
-      if (checkoutWindow) {
-        checkoutWindow.location.href = window.location.origin + checkoutUrl;
-      } else {
-        navigate(checkoutUrl);
-      }
+      // Navigate to checkout interstitial
+      navigate(`/checkout?priceId=${creditProduct.priceId}&productType=${creditProduct.productType}`);
 
     } catch (err) {
       console.error('Purchase error:', err);

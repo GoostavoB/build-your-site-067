@@ -55,17 +55,7 @@ const Pricing = () => {
       console.log('Stripe product:', product);
       
       const productType = billingCycle === 'monthly' ? 'subscription_monthly' : 'subscription_annual';
-      const checkoutUrl = `/checkout?priceId=${product.priceId}&productType=${productType}`;
-      
-      // Pre-open a new tab for smooth editor experience
-      const checkoutWindow = window.open('about:blank', '_blank');
-      
-      // If we successfully opened a window, navigate it; otherwise use standard navigation
-      if (checkoutWindow) {
-        checkoutWindow.location.href = window.location.origin + checkoutUrl;
-      } else {
-        navigate(checkoutUrl);
-      }
+      navigate(`/checkout?priceId=${product.priceId}&productType=${productType}`);
       
       // Only reset loading if redirect didn't happen
       setTimeout(() => setLoadingPlan(null), 5000);

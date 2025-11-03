@@ -298,13 +298,13 @@ const AppRoutes = () => {
         <Route path="/how-it-works" element={<PublicPageThemeWrapper><HowItWorks /></PublicPageThemeWrapper>} />
         <Route path="/features" element={<PublicPageThemeWrapper><FeaturesPage /></PublicPageThemeWrapper>} />
         <Route path="/custom/:pageId" element={<ProtectedRoute><CustomPage /></ProtectedRoute>} />
+        
+        {/* Checkout route - must be before NotFound */}
+        <Route path="/checkout" element={<CheckoutRedirect />} />
+        
         <Route path="*" element={<NotFound />} />
       </Routes>
       </Suspense>
-      {/* Checkout route outside Suspense to prevent loading state interference */}
-      <Routes>
-        <Route path="/checkout" element={<CheckoutRedirect />} />
-      </Routes>
     </>
   );
 };

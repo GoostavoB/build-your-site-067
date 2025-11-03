@@ -55,8 +55,9 @@ serve(async (req) => {
           // Determine tier and interval from metadata
           const tier = productType?.includes('elite') ? 'elite' : 'pro'
           const interval = productType?.includes('annual') ? 'year' : 'month'
+          const monthlyCredits = tier === 'elite' ? 150 : 30
 
-          // Upsert subscription record
+          // Upsert subscription record with monthly credits
           const { error: subError } = await supabase
             .from('subscriptions')
             .upsert(
@@ -66,11 +67,14 @@ serve(async (req) => {
                 stripe_subscription_id: subscription.id,
                 stripe_price_id: subscription.items.data[0].price.id,
                 status: subscription.status,
+                plan_type: tier,
                 tier: tier,
                 interval: interval,
                 current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
                 current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
                 cancel_at_period_end: subscription.cancel_at_period_end,
+                upload_credits_balance: monthlyCredits,
+                monthly_upload_limit: monthlyCredits,
               },
               { onConflict: 'user_id' }
             )
@@ -78,56 +82,76 @@ serve(async (req) => {
           if (subError) {
             console.error('Error upserting subscription:', subError)
           } else {
-            console.log('Subscription created/updated for user:', userId)
+            console.log(`Subscription created/updated for user: ${userId}, awarded ${monthlyCredits} credits`)
           }
 
-          // Update profile with subscription tier
+          // Update profile with subscription tier and complete onboarding
           const { error: profileError } = await supabase
             .from('profiles')
             .update({ 
               subscription_tier: tier,
-              subscription_status: subscription.status
+              subscription_status: subscription.status,
+              plan_started_at: new Date().toISOString(),
+              onboarding_completed: true,
             })
             .eq('id', userId)
 
           if (profileError) {
             console.error('Error updating profile:', profileError)
           }
+          
+          // Log analytics
+          try {
+            await supabase.from('user_analytics_events').insert({
+              user_id: userId,
+              event_name: 'subscription_created',
+              event_params: { plan: tier, credits_awarded: monthlyCredits, amount: session.amount_total ? session.amount_total / 100 : 0 }
+            })
+          } catch (err: any) {
+            console.log('Analytics logging skipped:', err.message)
+          }
         }
 
         // Handle credit purchases
-        if (session.mode === 'payment' && session.metadata?.credit_type) {
-          const creditAmount = parseInt(session.metadata.credit_amount || '0')
-          const creditType = session.metadata.credit_type
+        if (session.mode === 'payment' && session.metadata?.product_type?.includes('credits')) {
+          const creditQuantity = parseInt(session.metadata.credit_quantity || '0')
 
-          if (creditAmount > 0) {
-            // Add credits to user's balance
-            const { error: creditError } = await supabase.rpc('add_credits', {
+          if (creditQuantity > 0) {
+            // Add credits using new RPC function
+            const { error: creditError } = await supabase.rpc('increment_upload_credits', {
               p_user_id: userId,
-              p_amount: creditAmount
+              p_credits: creditQuantity
             })
 
             if (creditError) {
               console.error('Error adding credits:', creditError)
             } else {
-              console.log(`Added ${creditAmount} credits to user ${userId}`)
+              console.log(`Added ${creditQuantity} credits to user ${userId}`)
             }
 
-            // Record transaction
-            const { error: txError } = await supabase
-              .from('transactions')
-              .insert({
-                user_id: userId,
-                type: 'credit_purchase',
-                amount: session.amount_total ? session.amount_total / 100 : 0,
-                credits: creditAmount,
-                stripe_payment_intent_id: session.payment_intent as string,
-                description: `Purchased ${creditAmount} credits (${creditType})`,
-                status: 'completed'
-              })
+            // Log analytics
+            await supabase.from('user_analytics_events').insert({
+              user_id: userId,
+              event_name: 'credits_purchased',
+              event_params: { credits: creditQuantity, amount: session.amount_total ? session.amount_total / 100 : 0 }
+            })
 
-            if (txError) {
-              console.error('Error recording transaction:', txError)
+            // Record transaction if table exists
+            try {
+              await supabase
+                .from('transactions')
+                .insert({
+                  user_id: userId,
+                  type: 'credit_purchase',
+                  amount: session.amount_total ? session.amount_total / 100 : 0,
+                  credits: creditQuantity,
+                  stripe_payment_intent_id: session.payment_intent as string,
+                  description: `Purchased ${creditQuantity} credits`,
+                  status: 'completed'
+                })
+              console.log('Transaction recorded')
+            } catch (err: any) {
+              console.log('Transaction recording skipped (table may not exist):', err.message)
             }
           }
         }
@@ -221,17 +245,34 @@ serve(async (req) => {
             .single()
 
           if (sub) {
-            // Record transaction
+            // Renew monthly credits
+            const monthlyCredits = sub.tier === 'elite' ? 150 : 30;
+            
             await supabase
-              .from('transactions')
-              .insert({
-                user_id: sub.user_id,
-                type: 'subscription_payment',
-                amount: invoice.amount_paid / 100,
-                stripe_invoice_id: invoice.id,
-                description: `${sub.tier} subscription payment`,
-                status: 'completed'
+              .from('subscriptions')
+              .update({
+                upload_credits_balance: monthlyCredits,
+                upload_credits_used_this_month: 0,
               })
+              .eq('user_id', sub.user_id);
+            
+            console.log(`Renewed ${monthlyCredits} credits for user ${sub.user_id}`);
+
+            // Record transaction
+            try {
+              await supabase
+                .from('transactions')
+                .insert({
+                  user_id: sub.user_id,
+                  type: 'subscription_payment',
+                  amount: invoice.amount_paid / 100,
+                  stripe_invoice_id: invoice.id,
+                  description: `${sub.tier} subscription payment`,
+                  status: 'completed'
+                })
+            } catch (err: any) {
+              console.log('Transaction recording skipped:', err.message)
+            }
           }
         }
         break

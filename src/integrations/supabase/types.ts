@@ -4852,6 +4852,10 @@ export type Database = {
         Args: { p_template_id: string }
         Returns: undefined
       }
+      increment_upload_credits: {
+        Args: { p_credits: number; p_user_id: string }
+        Returns: undefined
+      }
       record_social_share:
         | {
             Args: {

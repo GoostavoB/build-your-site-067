@@ -241,15 +241,38 @@ export const useUploadCredits = () => {
       return true;
     }
 
+    // Check balance before attempting deduction
+    if (credits.balance <= 0) {
+      toast({
+        title: 'No Credits Available',
+        description: 'You have no credits. Buy more or upgrade to Pro.',
+        variant: 'destructive',
+      });
+      return false;
+    }
+
     try {
       const { data, error } = await supabase.rpc('deduct_upload_credit', {
         p_user_id: user.id,
       });
 
-      if (error || !data) {
+      if (error) {
+        console.error('Error deducting credit:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to process upload credit. Please try again.',
+          variant: 'destructive',
+        });
+        return false;
+      }
+
+      // Parse the JSONB response
+      const result = data as { success: boolean; error?: string; message?: string; remaining_balance?: number };
+      
+      if (!result.success) {
         toast({
           title: 'No Credits Available',
-          description: 'You have used all your upload credits for this month. Purchase extra credits to continue.',
+          description: result.message || 'You have used all your upload credits.',
           variant: 'destructive',
         });
         return false;

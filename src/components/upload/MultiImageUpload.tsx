@@ -12,6 +12,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ChevronDown } from 'lucide-react';
 import { PreAnalysisConfirmDialog } from './PreAnalysisConfirmDialog';
 import { CreditPurchaseDialog } from './CreditPurchaseDialog';
+import { UploadCreditsGate } from '@/components/upload/UploadCreditsGate';
 import { runOCR } from '@/utils/ocrPipeline';
 import { uploadLogger } from '@/utils/uploadLogger';
 import { Progress } from '@/components/ui/progress';
@@ -42,6 +43,11 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
   const [batchBroker, setBatchBroker] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const credits = useUploadCredits();
+  
+  // Check if user has no credits and can't upload
+  if (!credits.isLoading && (!credits.canUpload || credits.balance <= 0)) {
+    return <UploadCreditsGate />;
+  }
 
   const processFiles = (files: File[]) => {
     uploadLogger.fileSelection(`Processing ${files.length} files`, { fileCount: files.length });

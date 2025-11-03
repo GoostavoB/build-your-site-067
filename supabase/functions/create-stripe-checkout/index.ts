@@ -74,7 +74,7 @@ serve(async (req) => {
       console.warn('Auth check failed (non-blocking)', e)
     }
 
-    const { priceId, productType, successUrl, cancelUrl, upsellCredits } = await req.json()
+    const { priceId, productType, successUrl, cancelUrl, upsellCredits, creditQuantity } = await req.json()
 
     if (!priceId || !productType) {
       throw new Error('Missing required parameters: priceId and productType')
@@ -85,13 +85,15 @@ serve(async (req) => {
       email: user?.email || 'guest',
       priceId,
       productType,
+      creditQuantity,
     })
 
-    // Build line items - start with the main subscription/product
+    // Build line items - handle credit quantity
+    const quantity = productType.includes('credits') ? (creditQuantity || 1) : 1;
     const lineItems: any[] = [
       {
         price: priceId,
-        quantity: 1,
+        quantity: quantity,
       },
     ];
 
@@ -119,6 +121,7 @@ serve(async (req) => {
         user_id: user?.id || '',
         product_type: productType,
         upsell_credits: upsellCredits || 0,
+        credit_quantity: productType.includes('credits') ? (quantity * 10).toString() : '0',
       },
     }
 

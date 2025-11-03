@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,12 +15,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { User, LogOut, KeyRound, Coins, ChevronRight } from 'lucide-react';
+import { User, LogOut, KeyRound, Coins, ChevronRight, Crown, Star, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useUploadCredits } from '@/hooks/useUploadCredits';
 import { useAccount } from '@/contexts/AccountContext';
+import { cn } from '@/lib/utils';
 
 const passwordChangeSchema = z.object({
   newPassword: z.string().min(6, 'Password must be at least 6 characters').max(128, 'Password is too long'),
@@ -35,11 +37,30 @@ export const UserMenu = () => {
   const navigate = useNavigate();
   const { balance, limit } = useUploadCredits();
   const { accounts, activeAccount, switchAccount } = useAccount();
+  const { subscription } = useSubscription();
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [profileName, setProfileName] = useState<string | null>(null);
+  
+  // Get plan details
+  const planType = subscription?.plan_type || 'free';
+  const isPro = planType === 'pro';
+  const isElite = planType === 'elite';
+  
+  const getPlanBadge = () => {
+    if (isElite) {
+      return { label: 'Elite', color: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300', icon: Crown };
+    }
+    if (isPro) {
+      return { label: 'Pro', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300', icon: Star };
+    }
+    return { label: 'Free', color: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300', icon: null };
+  };
+  
+  const planBadge = getPlanBadge();
+  const PlanIcon = planBadge.icon;
 
   // Fetch profile name from database
   useEffect(() => {
@@ -173,9 +194,15 @@ export const UserMenu = () => {
           <DropdownMenuLabel>{t('userMenu.myAccount')}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           
-          {/* User Email */}
-          <div className="px-2 py-1.5 text-sm text-muted-foreground">
-            {user.email}
+          {/* User Email & Plan Badge */}
+          <div className="px-2 py-2 space-y-2">
+            <div className="text-sm text-muted-foreground">
+              {user.email}
+            </div>
+            <div className={cn("inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-semibold", planBadge.color)}>
+              {PlanIcon && <PlanIcon className="w-3 h-3" />}
+              {planBadge.label} Plan
+            </div>
           </div>
           
           <DropdownMenuSeparator />
@@ -189,14 +216,27 @@ export const UserMenu = () => {
               </div>
               <span className="text-sm font-bold">{balance} / {limit}</span>
             </div>
-            <Button
-              variant="link"
-              size="sm"
-              className="w-full mt-1 h-auto p-1 text-xs"
-              onClick={() => (window.location.href = '/#pricing-section')}
-            >
-              {balance < 5 ? 'Buy More Credits' : 'Manage Credits'}
-            </Button>
+            <div className="flex gap-1 mt-1">
+              <Button
+                variant="link"
+                size="sm"
+                className="flex-1 h-auto p-1 text-xs"
+                onClick={() => navigate('/credits/purchase')}
+              >
+                Buy Credits
+              </Button>
+              {!isElite && (
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="flex-1 h-auto p-1 text-xs text-primary"
+                  onClick={() => navigate('/upgrade')}
+                >
+                  <Zap className="w-3 h-3 mr-1" />
+                  Upgrade
+                </Button>
+              )}
+            </div>
           </div>
           
           <DropdownMenuSeparator />
@@ -235,7 +275,20 @@ export const UserMenu = () => {
             </>
           )}
           
+          {/* Additional Options */}
+          {!isElite && (
+            <DropdownMenuItem onClick={() => navigate('/upgrade')}>
+              <Zap className="w-4 h-4 mr-2" />
+              Upgrade Plan
+            </DropdownMenuItem>
+          )}
+          
           {/* Settings */}
+          <DropdownMenuItem onClick={() => navigate('/settings')}>
+            <User className="w-4 h-4 mr-2" />
+            Settings
+          </DropdownMenuItem>
+          
           <DropdownMenuItem onClick={() => setChangePasswordOpen(true)}>
             <KeyRound className="w-4 h-4 mr-2" />
             {t('userMenu.changePassword')}

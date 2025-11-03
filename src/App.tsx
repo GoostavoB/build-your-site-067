@@ -98,6 +98,9 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 const BlogArticle = lazy(() => import("./pages/BlogArticle"));
 const BlogCategory = lazy(() => import("./pages/BlogCategory"));
+const SelectPlan = lazy(() => import("./pages/SelectPlan"));
+const Upgrade = lazy(() => import("./pages/Upgrade"));
+const CreditsPurchase = lazy(() => import("./pages/CreditsPurchase"));
 const Learn = lazy(() => import("./pages/Learn"));
 const FAQPage = lazy(() => import("./pages/FAQPage"));
 const ApiDocs = lazy(() => import("./pages/ApiDocs"));
@@ -202,6 +205,11 @@ const AppRoutes = () => {
         
         {/* Auth routes - wrapped with default theme */}
         <Route path="/auth" element={<PublicPageThemeWrapper><Auth /></PublicPageThemeWrapper>} />
+        
+        {/* Plan selection & upgrade routes */}
+        <Route path="/select-plan" element={<ProtectedRoute><SelectPlan /></ProtectedRoute>} />
+        <Route path="/upgrade" element={<ProtectedRoute><Upgrade /></ProtectedRoute>} />
+        <Route path="/credits/purchase" element={<ProtectedRoute><CreditsPurchase /></ProtectedRoute>} />
         
         {/* Public pages - wrapped with default theme */}
         

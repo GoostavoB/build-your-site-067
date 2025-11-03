@@ -151,7 +151,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signUp = async (email: string, password: string, fullName: string, country: string, marketingConsent: boolean) => {
-    const redirectUrl = `${window.location.origin}/dashboard`;
+    const redirectUrl = `${window.location.origin}/select-plan`;
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -173,7 +173,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         country,
         marketing_consent: marketingConsent,
       });
-      navigate('/dashboard');
+      
+      // Check if onboarding is completed
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('id', data.user.id)
+        .single();
+      
+      if (!profile?.onboarding_completed) {
+        navigate('/select-plan');
+      } else {
+        navigate('/dashboard');
+      }
     }
     return { error };
   };

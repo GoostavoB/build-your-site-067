@@ -12,6 +12,9 @@ interface FeatureAccess {
   customMetricsLimit: number;
   customMetricsUsed: number;
   canCreateCustomMetric: boolean;
+  customThemes: boolean;
+  premiumWidgets: boolean;
+  premiumAnalytics: boolean;
   planType: PlanType;
   isLoading: boolean;
 }
@@ -26,6 +29,9 @@ export const useFeatureAccess = () => {
     customMetricsLimit: 0,
     customMetricsUsed: 0,
     canCreateCustomMetric: false,
+    customThemes: false,
+    premiumWidgets: false,
+    premiumAnalytics: false,
     planType: 'basic',
     isLoading: true,
   });
@@ -40,6 +46,9 @@ export const useFeatureAccess = () => {
         customMetricsLimit: 0,
         customMetricsUsed: 0,
         canCreateCustomMetric: false,
+        customThemes: false,
+        premiumWidgets: false,
+        premiumAnalytics: false,
         planType: 'basic',
         isLoading: false,
       });
@@ -80,6 +89,9 @@ export const useFeatureAccess = () => {
           customMetricsLimit: 999,
           customMetricsUsed: 0,
           canCreateCustomMetric: true,
+          customThemes: true,
+          premiumWidgets: true,
+          premiumAnalytics: true,
           planType: 'elite',
           isLoading: false,
         });
@@ -92,6 +104,9 @@ export const useFeatureAccess = () => {
           customMetricsLimit: 999,
           customMetricsUsed: 0,
           canCreateCustomMetric: true,
+          customThemes: true,
+          premiumWidgets: true,
+          premiumAnalytics: true,
           planType: 'pro',
           isLoading: false,
         });
@@ -105,6 +120,9 @@ export const useFeatureAccess = () => {
           customMetricsLimit: 0,
           customMetricsUsed: 0,
           canCreateCustomMetric: false,
+          customThemes: false,
+          premiumWidgets: false,
+          premiumAnalytics: false,
           planType: 'basic',
           isLoading: false,
         });
@@ -119,6 +137,9 @@ export const useFeatureAccess = () => {
         customMetricsLimit: 0,
         customMetricsUsed: 0,
         canCreateCustomMetric: false,
+        customThemes: false,
+        premiumWidgets: false,
+        premiumAnalytics: false,
         planType: 'basic',
         isLoading: false,
       });

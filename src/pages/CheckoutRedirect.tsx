@@ -59,7 +59,7 @@ const CheckoutRedirect = () => {
           priceId,
           productType,
           successUrl: `${window.location.origin}/checkout-success`,
-          cancelUrl: `${window.location.origin}/pricing`,
+          cancelUrl: `${window.location.origin}/#pricing-section`,
         });
 
         console.info('✅ Got checkout URL:', url);

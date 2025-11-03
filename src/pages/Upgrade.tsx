@@ -9,10 +9,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { COPY } from "@/config/copy";
 import { trackUserJourney } from "@/utils/analyticsEvents";
 import { SUBSCRIPTION_PRODUCTS } from "@/config/stripe-products";
 import AppLayout from "@/components/layout/AppLayout";
+import { PRICING_PLANS } from "@/config/pricing";
 
 export default function Upgrade() {
   const { user } = useAuth();
@@ -56,22 +56,16 @@ export default function Upgrade() {
 
   const plans = [
     {
-      ...COPY.plans.pro,
+      ...PRICING_PLANS.pro,
       icon: Star,
-      monthlyPrice: 12,
-      annualPrice: 10,
-      annualSavings: 24,
       monthlyPriceId: SUBSCRIPTION_PRODUCTS.pro.monthly.priceId,
       annualPriceId: SUBSCRIPTION_PRODUCTS.pro.annual.priceId,
       color: "text-blue-500",
       isCurrentPlan: subscription?.plan_type === 'pro',
     },
     {
-      ...COPY.plans.elite,
+      ...PRICING_PLANS.elite,
       icon: Crown,
-      monthlyPrice: 25,
-      annualPrice: 20,
-      annualSavings: 60,
       monthlyPriceId: SUBSCRIPTION_PRODUCTS.elite.monthly.priceId,
       annualPriceId: SUBSCRIPTION_PRODUCTS.elite.annual.priceId,
       color: "text-amber-500",
@@ -110,7 +104,8 @@ export default function Upgrade() {
             const Icon = plan.icon;
             const price = billingCycle === 'monthly' ? plan.monthlyPrice : plan.annualPrice;
             const priceId = billingCycle === 'monthly' ? plan.monthlyPriceId : plan.annualPriceId;
-            const savings = billingCycle === 'annual' ? plan.annualSavings : 0;
+            const savings = billingCycle === 'annual' ? ((plan.monthlyPrice * 12) - plan.annualTotal) : 0;
+            const cta = billingCycle === 'monthly' ? plan.cta.monthly : plan.cta.annual;
 
             return (
               <motion.div
@@ -148,7 +143,7 @@ export default function Upgrade() {
                       {plan.features.map((feature, i) => (
                         <li key={i} className="flex items-start gap-2">
                           <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                          <span className="text-sm">{feature}</span>
+                          <span className="text-sm">{feature.text}</span>
                         </li>
                       ))}
                     </ul>
@@ -157,7 +152,7 @@ export default function Upgrade() {
                   <CardFooter>
                     <Button
                       onClick={() => handleUpgrade(
-                        plan.name.toLowerCase() as 'pro' | 'elite',
+                        plan.id as 'pro' | 'elite',
                         priceId,
                         price
                       )}
@@ -165,7 +160,7 @@ export default function Upgrade() {
                       className="w-full"
                       size="lg"
                     >
-                      {plan.isCurrentPlan ? 'Current Plan' : plan.cta}
+                      {plan.isCurrentPlan ? 'Current Plan' : cta}
                     </Button>
                   </CardFooter>
                 </Card>

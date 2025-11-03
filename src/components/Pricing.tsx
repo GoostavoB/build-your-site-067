@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Check, Sparkles, Clock, Upload, Palette, Trophy, BarChart3 } from "lucide-react";
+import { Check, Sparkles, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
@@ -16,6 +16,7 @@ import { getSubscriptionProduct } from "@/config/stripe-products";
 import { initiateStripeCheckout } from "@/utils/stripeCheckout";
 import { trackCheckoutFunnel } from "@/utils/checkoutAnalytics";
 import { toast } from "@/components/ui/sonner";
+import { PRICING_PLANS } from "@/config/pricing";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -66,77 +67,11 @@ const Pricing = () => {
     }
   };
 
-  const plans = [
-    {
-      id: 'free',
-      name: "Starter",
-      description: "For new traders – Get started free",
-      monthlyPrice: 0,
-      annualPrice: 0,
-      annualTotal: 0,
-      uploads: "5 uploads total",
-      uploadSubtext: "(gift 🎁)",
-      features: [
-        { icon: Upload, text: "5 uploads total (gift 🎁)" },
-        { icon: Palette, text: "Essential widgets (Tiers 1-2)" },
-        { icon: Trophy, text: "Basic XP system" },
-        { icon: BarChart3, text: "Starter analytics" },
-        { text: "One account only" },
-      ],
-      cta: "Start Free",
-      tagline: "No credit card required",
-      popular: false,
-      priceCurrency: "USD",
-    },
-    {
-      id: 'pro',
-      name: "Pro",
-      description: "For serious traders ⚡ Progress faster",
-      monthlyPrice: 12,
-      annualPrice: 10,
-      annualTotal: 120,
-      uploads: "30 uploads/month",
-      uploadSubtext: "",
-      features: [
-        { icon: Upload, text: "30 uploads per month" },
-        { icon: Palette, text: "Advanced widgets & customization" },
-        { icon: Trophy, text: "Full XP system with leaderboards" },
-        { icon: BarChart3, text: "Advanced analytics & tracking" },
-        { text: "Unlimited trading accounts" },
-        { text: "Fee tracking & reporting" },
-        { text: "Add 10 uploads for $2" },
-        { text: "Renew every 30 days" },
-      ],
-      cta: "Go Pro Now • Offer Ends Soon",
-      tagline: "Credit card required",
-      popular: true,
-      priceCurrency: "USD",
-    },
-    {
-      id: 'elite',
-      name: "Elite",
-      description: "For power traders ⚡ Full control and flexibility",
-      monthlyPrice: 25,
-      annualPrice: 20,
-      annualTotal: 240,
-      uploads: "150 uploads/month",
-      uploadSubtext: "",
-      features: [
-        { icon: Upload, text: "150 uploads per month" },
-        { text: "All widgets unlocked" },
-        { text: "Full color & background customization" },
-        { text: "Premium priority support" },
-        { text: "Custom branding options" },
-        { text: "Add 10 uploads for $1 (50% off)" },
-        { text: "Everything in Pro" },
-        { text: "Renew every 30 days" },
-      ],
-      cta: "Join Elite • Save $60/Year",
-      tagline: "Credit card required",
-      popular: false,
-      priceCurrency: "USD",
-    },
-  ];
+  // Use centralized pricing configuration
+  const plans = Object.values(PRICING_PLANS).map(plan => ({
+    ...plan,
+    cta: billingCycle === 'monthly' ? plan.cta.monthly : plan.cta.annual
+  }));
 
   const getDisplayPrice = (plan: typeof plans[0]) => {
     return billingCycle === 'monthly' ? plan.monthlyPrice : plan.annualPrice;

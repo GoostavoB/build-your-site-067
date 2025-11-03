@@ -42,7 +42,7 @@ const CheckoutRedirect = () => {
       return;
     }
 
-    // Add customer email as prefill if user is logged in
+    // Add customer email as prefill if user is logged in (but don't wait for auth to load)
     const finalUrl = user?.email 
       ? `${stripeUrl}?prefilled_email=${encodeURIComponent(user.email)}`
       : stripeUrl;
@@ -50,10 +50,11 @@ const CheckoutRedirect = () => {
     console.info('🔗 Redirecting to Stripe Payment Link:', finalUrl);
     setRedirectUrl(finalUrl);
     
-    // Small timeout to ensure component has mounted
+    // Immediate redirect using replace (doesn't add to history)
     const redirectTimer = setTimeout(() => {
-      window.location.href = finalUrl;
-    }, 150);
+      console.info('⚡ Executing redirect now...');
+      window.location.replace(finalUrl);
+    }, 50);
     
     // Fallback: Show manual link if redirect doesn't happen within 3 seconds
     const fallbackTimer = setTimeout(() => {
@@ -64,7 +65,7 @@ const CheckoutRedirect = () => {
       clearTimeout(redirectTimer);
       clearTimeout(fallbackTimer);
     };
-  }, [searchParams, user, navigate]);
+  }, [searchParams]);
 
   // Show error UI
   if (error) {

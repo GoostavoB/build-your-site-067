@@ -244,7 +244,6 @@ const AppRoutes = () => {
         <Route path="/gamification" element={<ProtectedRoute><Gamification /></ProtectedRoute>} />
         <Route path="/tier-preview" element={<ProtectedRoute><TierPreview /></ProtectedRoute>} />
         <Route path="/premium-features" element={<ProtectedRoute><PremiumFeatures /></ProtectedRoute>} />
-        <Route path="/checkout" element={<CheckoutRedirect />} />
         <Route path="/checkout-success" element={<CheckoutSuccess />} />
         <Route path="/checkout-cancel" element={<CheckoutCancel />} />
         <Route path="/market-data" element={<ProtectedRoute><MarketData /></ProtectedRoute>} />
@@ -302,6 +301,10 @@ const AppRoutes = () => {
         <Route path="*" element={<NotFound />} />
       </Routes>
       </Suspense>
+      {/* Checkout route outside Suspense to prevent loading state interference */}
+      <Routes>
+        <Route path="/checkout" element={<CheckoutRedirect />} />
+      </Routes>
     </>
   );
 };

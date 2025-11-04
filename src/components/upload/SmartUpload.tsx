@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, X, Sparkles, Check, Loader2, AlertCircle, Plus, ImagePlus } from 'lucide-react';
+import { Upload, X, Sparkles, Check, TrendingUp, AlertCircle, Plus, ImagePlus } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { BrokerSelect } from './BrokerSelect';
@@ -322,25 +322,25 @@ export function SmartUpload({ onTradesExtracted, onShowAnnotator, maxImages = 10
           </div>
           
           {/* Outer glow ring */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 opacity-20 blur-3xl scale-150 animate-pulse-slow" />
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 opacity-20 blur-3xl scale-150 animate-pulse-slow" />
           
           {/* Inner gradient circle - responsive size */}
-          <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 p-1 shadow-2xl">
+          <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-primary via-secondary to-accent p-1 shadow-2xl">
             <div className="w-full h-full rounded-full bg-background flex items-center justify-center">
-              <Sparkles className="w-14 h-14 md:w-20 md:h-20 text-transparent bg-clip-text bg-gradient-to-br from-purple-400 to-blue-400" strokeWidth={1.5} />
+              <Sparkles className="w-14 h-14 md:w-20 md:h-20 text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent" strokeWidth={1.5} />
             </div>
           </div>
           
           {/* Rotating ring - hidden on mobile for performance */}
           <div 
-            className="absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-br from-purple-500 to-blue-500 opacity-30 animate-spin-slow hidden md:block" 
+            className="absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-br from-primary to-accent opacity-30 animate-spin-slow hidden md:block" 
             style={{ clipPath: 'polygon(0 0, 100% 0, 100% 50%, 0 50%)' }}
           />
         </div>
 
         {/* Title - Responsive */}
         <h1 className="text-3xl md:text-5xl lg:text-6xl font-black mb-3 md:mb-4 tracking-tight">
-          <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent drop-shadow-2xl">
+          <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent drop-shadow-2xl">
             AI Trade Extraction
           </span>
         </h1>
@@ -427,7 +427,19 @@ export function SmartUpload({ onTradesExtracted, onShowAnnotator, maxImages = 10
                   
                   {item.status === 'processing' && (
                     <div className="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center">
-                      <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+                      <motion.div
+                        animate={{
+                          y: [0, -4, 0],
+                          opacity: [0.6, 1, 0.6],
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      >
+                        <TrendingUp className="w-6 h-6 text-primary" />
+                      </motion.div>
                     </div>
                   )}
                   
@@ -602,7 +614,7 @@ export function SmartUpload({ onTradesExtracted, onShowAnnotator, maxImages = 10
                 <div className="relative flex items-center justify-center gap-2 md:gap-3">
                   {processing ? (
                     <>
-                      <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" />
+                      <TrendingUp className="w-4 h-4 md:w-5 md:h-5 animate-pulse" />
                       <span className="text-sm md:text-base">Processing {currentImageIndex + 1}/{imageQueue.length}</span>
                     </>
                   ) : (

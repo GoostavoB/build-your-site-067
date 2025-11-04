@@ -25,7 +25,7 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    const { trades, creditsToDeduct } = await req.json();
+    const { trades } = await req.json();
 
     if (!Array.isArray(trades) || trades.length === 0) {
       throw new Error('No trades provided');
@@ -33,33 +33,64 @@ serve(async (req) => {
 
     console.log(`Processing ${trades.length} trades for user ${user.id}`);
 
-    // TODO: Implement credit system deduction here
-    // const { error: creditError } = await supabaseClient.rpc('deduct_credits', {
-    //   user_id: user.id,
-    //   amount: creditsToDeduct
-    // });
-    // if (creditError) throw creditError;
+    const successfulTrades = [];
+    const failures = [];
 
-    // Insert all trades
-    const { data: insertedTrades, error } = await supabaseClient
-      .from('trades')
-      .insert(
-        trades.map(t => ({
-          ...t,
-          user_id: user.id,
-        }))
-      )
-      .select();
+    for (let i = 0; i < trades.length; i++) {
+      try {
+        const { data: deductResult, error: deductError } = await supabaseClient.rpc('deduct_upload_credit', {
+          p_user_id: user.id,
+        });
 
-    if (error) throw error;
+        if (deductError) {
+          console.error(`Credit deduction failed for trade ${i + 1}:`, deductError);
+          failures.push({ index: i, error: 'Credit deduction failed', trade: trades[i].symbol });
+          break;
+        }
 
-    console.log(`Successfully inserted ${insertedTrades?.length || 0} trades`);
+        const result = deductResult as { success: boolean; error?: string; message?: string };
+        
+        if (!result.success) {
+          console.warn(`Insufficient credits at trade ${i + 1}`);
+          failures.push({ index: i, error: result.message || 'Insufficient credits', trade: trades[i].symbol });
+          break;
+        }
+
+        const { data: insertedTrade, error: insertError } = await supabaseClient
+          .from('trades')
+          .insert({
+            ...trades[i],
+            user_id: user.id,
+          })
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error(`Insert failed for trade ${i + 1}:`, insertError);
+          failures.push({ index: i, error: insertError.message, trade: trades[i].symbol });
+        } else {
+          successfulTrades.push(insertedTrade);
+          console.log(`Trade ${i + 1}/${trades.length} inserted successfully`);
+        }
+      } catch (err) {
+        console.error(`Unexpected error processing trade ${i + 1}:`, err);
+        failures.push({ 
+          index: i, 
+          error: err instanceof Error ? err.message : 'Unknown error',
+          trade: trades[i].symbol 
+        });
+      }
+    }
+
+    console.log(`Batch complete: ${successfulTrades.length} inserted, ${failures.length} failed`);
 
     return new Response(
       JSON.stringify({ 
-        success: true,
-        trades: insertedTrades,
-        tradesInserted: insertedTrades?.length || 0
+        success: successfulTrades.length > 0,
+        trades: successfulTrades,
+        tradesInserted: successfulTrades.length,
+        failures: failures.length > 0 ? failures : undefined,
+        partialSuccess: successfulTrades.length > 0 && failures.length > 0
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

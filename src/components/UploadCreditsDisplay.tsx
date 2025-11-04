@@ -1,18 +1,26 @@
 import { useUploadCredits } from '@/hooks/useUploadCredits';
 import { Upload, Plus } from 'lucide-react';
 import { Button } from './ui/button';
-import { useNavigate } from 'react-router-dom';
 import { Progress } from './ui/progress';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "./ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { initiateStripeCheckout } from '@/utils/stripeCheckout';
+import { STRIPE_PRODUCTS } from '@/config/stripeProducts';
+import { toast } from 'sonner';
 
 export const UploadCreditsDisplay = () => {
   const { balance, limit, canUpload, isLoading } = useUploadCredits();
-  const navigate = useNavigate();
+
+  const handleBuyCredits = async () => {
+    try {
+      await initiateStripeCheckout({
+        priceId: STRIPE_PRODUCTS.CREDITS_10.priceId,
+        productType: 'credits_starter',
+      });
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast.error('Failed to open checkout. Please try again.');
+    }
+  };
 
   if (isLoading) {
     return null;
@@ -42,7 +50,7 @@ export const UploadCreditsDisplay = () => {
             <Button
               size="sm"
               variant="outline"
-              onClick={() => (window.location.href = '/#pricing-section')}
+              onClick={handleBuyCredits}
               className="gap-1"
             >
               <Plus className="w-3 h-3" />

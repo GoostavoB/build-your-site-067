@@ -193,25 +193,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signOut = async () => {
     try {
       console.log('[Auth] Signing out...');
-      await supabase.auth.signOut();
+      await supabase.auth.signOut({ scope: 'local' });
       
-      // Clear all sb-* keys from localStorage
       const keysToRemove: string[] = [];
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key && key.startsWith('sb-')) {
+        if (key && (key.startsWith('sb-') || key === 'rememberMe')) {
           keysToRemove.push(key);
         }
       }
       keysToRemove.forEach(key => localStorage.removeItem(key));
-      localStorage.removeItem('rememberMe');
       
-      console.log('[Auth] Cleared localStorage, redirecting...');
+      if (typeof analytics !== 'undefined' && analytics.reset) {
+        analytics.reset();
+      }
       
-      // Hard redirect to guarantee clean state
-      window.location.href = '/auth?loggedOut=1';
+      console.log('[Auth] Cleared localStorage and analytics, redirecting...');
+      
+      window.location.replace('/auth?loggedOut=1');
     } catch (error) {
       console.error('[Auth] Sign out error:', error);
+      window.location.replace('/auth?loggedOut=1');
     }
   };
 

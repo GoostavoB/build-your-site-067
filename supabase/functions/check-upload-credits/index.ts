@@ -32,47 +32,50 @@ serve(async (req) => {
 
     console.log(`Checking upload credits for user: ${user.id}`);
 
-    // Get user's tier data
-    const { data: tierData, error: tierError } = await supabase
-      .from('user_xp_tiers')
-      .select('daily_upload_count, daily_upload_limit')
+    const { data: subscription, error: subError } = await supabase
+      .from('subscriptions')
+      .select('upload_credits_balance')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
-    if (tierError) {
-      console.error('Error fetching tier data:', tierError);
-    }
-
-    const dailyCount = tierData?.daily_upload_count || 0;
-    const dailyLimit = tierData?.daily_upload_limit || 1;
-
-    console.log(`Upload stats - Used: ${dailyCount}, Limit: ${dailyLimit}`);
-
-    if (dailyCount >= dailyLimit) {
+    if (subError) {
+      console.error('Error fetching subscription:', subError);
       return new Response(
         JSON.stringify({
           canUpload: false,
           remaining: 0,
-          limit: dailyLimit,
-          used: dailyCount,
+          balance: 0,
+          error: 'Failed to fetch subscription data'
         }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
       );
     }
 
+    const balance = subscription?.upload_credits_balance ?? 0;
+    const canUpload = balance > 0;
+
+    console.log(`Credits check - Balance: ${balance}, Can upload: ${canUpload}`);
+
     return new Response(
       JSON.stringify({
-        canUpload: true,
-        remaining: dailyLimit - dailyCount,
-        limit: dailyLimit,
-        used: dailyCount,
+        canUpload,
+        remaining: balance,
+        balance,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
     console.error('Error in check-upload-credits:', error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
+      JSON.stringify({ 
+        error: error instanceof Error ? error.message : 'Unknown error',
+        canUpload: false,
+        remaining: 0,
+        balance: 0
+      }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

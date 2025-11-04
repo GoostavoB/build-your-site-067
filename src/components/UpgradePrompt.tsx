@@ -7,9 +7,11 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Crown, Check, ArrowRight, Sparkles, Clock } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { usePromoStatus } from '@/hooks/usePromoStatus';
 import { Badge } from '@/components/ui/badge';
+import { initiateStripeCheckout } from '@/utils/stripeCheckout';
+import { STRIPE_PRODUCTS } from '@/config/stripeProducts';
+import { toast } from 'sonner';
 
 interface UpgradePromptProps {
   open: boolean;
@@ -19,8 +21,20 @@ interface UpgradePromptProps {
 }
 
 export function UpgradePrompt({ open, onClose, feature = 'this feature', trigger = 'widget_lock' }: UpgradePromptProps) {
-  const navigate = useNavigate();
   const promoStatus = usePromoStatus();
+
+  const handleUpgrade = async () => {
+    try {
+      await initiateStripeCheckout({
+        priceId: STRIPE_PRODUCTS.PRO_MONTHLY.priceId,
+        productType: 'subscription_monthly',
+      });
+      onClose();
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast.error('Failed to open checkout. Please try again.');
+    }
+  };
 
   const getContent = () => {
     switch (trigger) {
@@ -127,18 +141,22 @@ export function UpgradePrompt({ open, onClose, feature = 'this feature', trigger
           <div className="pt-4 space-y-2">
             <Button
               className="w-full gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-primary-foreground"
+              onClick={handleUpgrade}
+              aria-label="Upgrade to Pro plan"
+            >
+              <Sparkles className="w-4 h-4" />
+              Upgrade to Pro
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              className="w-full" 
               onClick={() => {
                 window.location.href = '/#pricing-section';
                 onClose();
               }}
-              aria-label="View pricing plans to upgrade account"
             >
-              <Sparkles className="w-4 h-4" />
-              View Pricing Plans
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-            <Button variant="ghost" className="w-full" onClick={onClose}>
-              Maybe Later
+              View All Plans
             </Button>
           </div>
         </div>

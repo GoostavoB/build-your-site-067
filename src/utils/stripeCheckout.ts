@@ -68,7 +68,7 @@ export const initiateStripeCheckout = async (params: CheckoutParams): Promise<st
   });
 
   const timeout = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error('Checkout request timed out (30s)')), 30000)
+    setTimeout(() => reject(new Error('Checkout request timed out (60s)')), 60000)
   );
 
   console.log('⏳ Waiting for response...');

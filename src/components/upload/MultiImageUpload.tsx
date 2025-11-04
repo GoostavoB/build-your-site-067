@@ -199,7 +199,6 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
             });
             const imageBase64 = await base64Promise;
 
-            // Run OCR on the image
             let ocrResult: any | undefined;
             try {
               ocrResult = await runOCR(image.file);
@@ -210,24 +209,33 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
               });
             } catch (ocrError) {
               console.error('OCR failed for image:', ocrError);
+              const failed: UploadedImage = { ...image, status: 'error', trades: [] };
+              setImages(prev => prev.map((img, idx) => (idx === globalIndex ? failed : img)));
+              toast.error('OCR Failed', { description: 'Could not extract text from image' });
+              success = true;
+              return failed;
             }
 
-            const { data, error } = await supabase.functions.invoke('extract-trade-info', {
+            if (!ocrResult?.text) {
+              const failed: UploadedImage = { ...image, status: 'error', trades: [] };
+              setImages(prev => prev.map((img, idx) => (idx === globalIndex ? failed : img)));
+              toast.error('No Text Found', { description: 'Image does not contain readable text' });
+              success = true;
+              return failed;
+            }
+
+            const { data, error } = await supabase.functions.invoke('structure-trade', {
               body: {
-                imageBase64: imageBase64,
-                ocrText: ocrResult?.text || null,
-                ocrConfidence: ocrResult?.confidence || null,
-                imageHash: ocrResult?.imageHash || null,
-                perceptualHash: ocrResult?.perceptualHash || null,
-                bypassCache: bypassCache,
+                text: ocrResult.text,
                 broker: batchBroker || null,
               },
             });
 
-            if (data?.trades && Array.isArray(data.trades)) {
-              console.log(`✅ Success: ${data.trades.length} trades detected`);
-              uploadLogger.success('MultiImage', `Image ${globalIndex + 1} extracted ${data.trades.length} trades`);
-              const successImg: UploadedImage = { ...image, status: 'success', trades: data.trades };
+            if (data?.trade && data?.success) {
+              const tradeArray = [data.trade];
+              console.log(`✅ Success: trade extracted with confidence ${data.trade.confidence}`);
+              uploadLogger.success('MultiImage', `Image ${globalIndex + 1} extracted 1 trade (confidence: ${data.trade.confidence})`);
+              const successImg: UploadedImage = { ...image, status: 'success', trades: tradeArray };
               setImages(prev => prev.map((img, idx) => (idx === globalIndex ? successImg : img)));
               success = true;
               return successImg;

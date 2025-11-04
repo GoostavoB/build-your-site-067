@@ -586,18 +586,6 @@ const Upload = () => {
           </Card>
         )}
 
-        {/* Tertiary: Manual Entry Link */}
-        <div className="flex justify-center">
-          <Button
-            variant="ghost"
-            onClick={() => setShowManualEntry(true)}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Enter Trade Manually
-          </Button>
-        </div>
-
         <UploadHistory />
       </div>
 

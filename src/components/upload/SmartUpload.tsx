@@ -231,6 +231,15 @@ export function SmartUpload({
         });
         const imageBase64 = await base64Promise;
 
+        // Ensure session is fresh before calling edge function
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError || !session) {
+          console.error('❌ Session error:', sessionError);
+          throw new Error('Authentication expired. Please refresh the page and try again.');
+        }
+
+        console.log('✅ Session valid, calling vision extraction...');
+
         // Call vision extraction
         const {
           data,

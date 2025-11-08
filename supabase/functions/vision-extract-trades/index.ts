@@ -12,27 +12,46 @@ serve(async (req) => {
   }
 
   try {
+    // Get auth from JWT verification (handled by Supabase since verify_jwt = true)
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'No authorization header' }), {
+      console.error('❌ No authorization header');
+      return new Response(JSON.stringify({ error: 'Authentication required' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
+    // Create Supabase client with auth header
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       { global: { headers: { Authorization: authHeader } } }
     );
 
+    // Get user - with JWT verification enabled, this should work
     const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+    
+    if (userError) {
+      console.error('❌ Auth error:', userError.message);
+      return new Response(JSON.stringify({ 
+        error: 'Authentication failed',
+        details: userError.message 
+      }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
+    
+    if (!user) {
+      console.error('❌ No user found');
+      return new Response(JSON.stringify({ error: 'User not authenticated' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    console.log('✅ User authenticated:', user.id);
 
     const { imageBase64, broker, annotations, debug } = await req.json();
 

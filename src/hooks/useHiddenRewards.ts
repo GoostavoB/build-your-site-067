@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { useTriggerConfetti } from './useTriggerConfetti';
 
 interface Trade {
   pnl?: number;
@@ -11,7 +10,6 @@ interface Trade {
 
 export const useHiddenRewards = (trades: Trade[]) => {
   const { user } = useAuth();
-  const { triggerConfetti } = useTriggerConfetti();
 
   useEffect(() => {
     if (!user || !trades || trades.length === 0) return;
@@ -91,15 +89,14 @@ export const useHiddenRewards = (trades: Trade[]) => {
           });
         }
 
-        // Show notification with confetti
-        triggerConfetti();
-        toast.success(`🎁 Hidden Reward Unlocked! ${message}`, {
-          description: `+${xpReward} XP`,
+        // Show notification
+        toast.success(`Milestone Reached: ${message}`, {
+          description: `+${xpReward} points`,
           duration: 5000,
         });
       }
     };
 
     checkHiddenThresholds();
-  }, [user, trades, triggerConfetti]);
+  }, [user, trades]);
 };

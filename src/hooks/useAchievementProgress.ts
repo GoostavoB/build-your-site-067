@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import confetti from 'canvas-confetti';
 import { analytics } from '@/utils/analytics';
 
 export interface Achievement {
@@ -158,18 +157,10 @@ export const useAchievementProgress = () => {
       const result = (data as any)?.[0];
       if (result?.completed) {
         const achievement = achievements.find(a => a.id === achievementId);
-        
-        // Trigger confetti
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#8b5cf6', '#ec4899', '#f59e0b']
-        });
 
         // Show toast
-        toast.success(`🏆 Achievement Unlocked!`, {
-          description: achievement?.name || 'New achievement completed!'
+        toast.success(`Achievement Unlocked`, {
+          description: achievement?.name || 'New achievement completed'
         });
 
         // Track analytics

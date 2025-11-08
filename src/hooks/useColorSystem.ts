@@ -124,18 +124,6 @@ export function useColorSystem() {
           })
           .eq('id', user.id);
 
-        // Trigger confetti
-        try {
-          const confetti = (await import('canvas-confetti')).default;
-          confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 }
-          });
-        } catch (e) {
-          console.error('Failed to load confetti:', e);
-        }
-
         // Show toast
         const { toast } = await import('sonner');
         toast.success('🎨 Primary color unlocked!', {

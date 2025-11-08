@@ -37,35 +37,35 @@ export const TrophyAnimation = ({ show, size = 'medium', onComplete }: TrophyAni
       exit={{ opacity: 0 }}
     >
       <motion.div
-        className={`${sizeMap[size]} filter drop-shadow-[0_0_30px_rgba(234,179,8,0.8)]`}
-        initial={{ scale: 0, rotate: -180, y: 100 }}
-        animate={{ 
-          scale: [0, 1.3, 0.9, 1.1, 1],
-          rotate: [0, 10, -10, 5, 0],
-          y: [100, -20, 0, -10, 0]
-        }}
-        transition={{ 
-          duration: 1.5,
-          times: [0, 0.3, 0.5, 0.7, 1],
-          ease: "easeOut"
-        }}
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.8, opacity: 0 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="relative"
       >
-        <motion.span
-          animate={{ 
-            filter: [
-              'drop-shadow(0 0 20px rgba(234,179,8,0.8))',
-              'drop-shadow(0 0 40px rgba(234,179,8,1))',
-              'drop-shadow(0 0 20px rgba(234,179,8,0.8))',
-            ]
-          }}
-          transition={{ 
-            duration: 0.8,
-            repeat: 2,
-            ease: "easeInOut"
-          }}
-        >
-          🏆
-        </motion.span>
+        {/* Subtle background glow */}
+        <motion.div
+          className="absolute inset-0 bg-primary/10 rounded-full blur-3xl"
+          animate={{ opacity: [0.3, 0.5, 0.3] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        />
+        
+        {/* Simple checkmark in circle */}
+        <div className="relative w-24 h-24 rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center">
+          <svg
+            className="w-12 h-12 text-primary"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={3}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </div>
       </motion.div>
     </motion.div>
   );

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import confetti from 'canvas-confetti';
 import posthog from 'posthog-js';
 
 type Platform = 'twitter' | 'linkedin' | 'facebook' | 'telegram' | 'whatsapp';
@@ -83,15 +82,8 @@ export const useSocialSharing = (): UseSocialSharingReturn => {
 
         // Show success toast
         toast({
-          title: "🎉 Share Successful!",
-          description: `+${result.xp_awarded} XP earned! (${result.shares_this_week}/3 shares this week)`,
-        });
-
-        // Confetti animation
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 }
+          title: "Share Successful",
+          description: `+${result.xp_awarded} points earned (${result.shares_this_week}/3 shares this week)`,
         });
 
         // Track analytics

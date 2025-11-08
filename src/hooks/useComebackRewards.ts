@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import confetti from 'canvas-confetti';
 
 const COMEBACK_THRESHOLD_DAYS = 7;
 
@@ -47,15 +46,8 @@ export const useComebackRewards = () => {
           });
           setShowComebackModal(true);
 
-          // Confetti celebration
-          confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 },
-          });
-
-          toast.success('Welcome back!', {
-            description: `You earned ${xpReward} XP for returning!`,
+          toast.success('Welcome back', {
+            description: `You earned ${xpReward} points for returning`,
           });
         }
       } catch (error) {

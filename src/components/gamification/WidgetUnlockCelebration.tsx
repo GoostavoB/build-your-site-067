@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import confetti from 'canvas-confetti';
 import { WIDGET_CATALOG } from '@/config/widgetCatalog';
 import { LucideIcon } from 'lucide-react';
 
@@ -23,48 +22,12 @@ export function WidgetUnlockCelebration({
   const [showDetails, setShowDetails] = useState(false);
   const widget = WIDGET_CATALOG[widgetId];
 
-  useEffect(() => {
+  // Simplified effect without confetti
+  useState(() => {
     if (isVisible && widget) {
-      // Golden confetti for widget unlocks
-      const duration = 3000;
-      const animationEnd = Date.now() + duration;
-      const defaults = { 
-        startVelocity: 30, 
-        spread: 360, 
-        ticks: 60, 
-        zIndex: 100,
-        colors: ['#FFD700', '#FFA500', '#FF6B35', '#FFED4E']
-      };
-
-      const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
-
-      const interval = setInterval(() => {
-        const timeLeft = animationEnd - Date.now();
-
-        if (timeLeft <= 0) {
-          return clearInterval(interval);
-        }
-
-        const particleCount = 50 * (timeLeft / duration);
-        
-        confetti({
-          ...defaults,
-          particleCount,
-          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-        });
-        confetti({
-          ...defaults,
-          particleCount,
-          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-        });
-      }, 250);
-
-      // Show details after initial animation
-      setTimeout(() => setShowDetails(true), 600);
-
-      return () => clearInterval(interval);
+      setTimeout(() => setShowDetails(true), 400);
     }
-  }, [isVisible, widget]);
+  });
 
   if (!widget) return null;
 
@@ -90,56 +53,16 @@ export function WidgetUnlockCelebration({
             <div className="bg-gradient-to-br from-card via-card to-primary/5 border-2 border-primary/50 rounded-3xl p-8 shadow-2xl text-center space-y-6 relative overflow-hidden">
               
               {/* Background glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-orange-500/10 animate-pulse" />
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
               
               {/* Content */}
               <div className="relative z-10 space-y-6">
                 {/* Icon with animated glow */}
-                <motion.div
-                  animate={{ 
-                    scale: [1, 1.05, 1],
-                  }}
-                  transition={{ 
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                  className="relative mx-auto w-24 h-24"
-                >
-                  <div className="w-24 h-24 mx-auto rounded-2xl bg-gradient-to-br from-yellow-500/30 via-orange-500/30 to-primary/30 flex items-center justify-center relative shadow-xl">
-                    <Icon className="w-12 h-12 text-yellow-500 drop-shadow-lg" strokeWidth={2} />
-                    
-                    {/* Rotating glow effect */}
-                    <motion.div
-                      animate={{ 
-                        rotate: 360,
-                      }}
-                      transition={{ 
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: "linear"
-                      }}
-                      className="absolute inset-0 rounded-2xl"
-                      style={{
-                        background: 'linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.3), transparent)',
-                      }}
-                    />
+                <div className="relative mx-auto w-20 h-20">
+                  <div className="w-20 h-20 mx-auto rounded-xl bg-primary/10 border-2 border-primary flex items-center justify-center">
+                    <Icon className="w-10 h-10 text-primary" strokeWidth={2} />
                   </div>
-                  
-                  {/* Pulsing outer glow */}
-                  <motion.div
-                    animate={{ 
-                      scale: [1, 1.3, 1],
-                      opacity: [0.6, 0.2, 0.6]
-                    }}
-                    transition={{ 
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                    className="absolute inset-0 rounded-2xl bg-gradient-to-br from-yellow-500/40 to-orange-500/40 blur-2xl -z-10"
-                  />
-                </motion.div>
+                </div>
 
                 {/* Unlock announcement */}
                 <motion.div
@@ -148,11 +71,11 @@ export function WidgetUnlockCelebration({
                   transition={{ delay: 0.3 }}
                   className="space-y-3"
                 >
-                  <div className="text-4xl font-bold bg-gradient-to-r from-yellow-500 via-orange-500 to-yellow-600 bg-clip-text text-transparent">
-                    🎉 Widget Unlocked!
+                  <div className="text-xl font-semibold text-foreground">
+                    Feature Unlocked
                   </div>
                   
-                  <h3 className="text-2xl font-bold text-foreground">
+                  <h3 className="text-2xl font-bold text-primary">
                     {widget.title}
                   </h3>
                   
@@ -160,10 +83,10 @@ export function WidgetUnlockCelebration({
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    transition={{ delay: 0.5, type: "spring" }}
-                    className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 text-yellow-600 dark:text-yellow-400 text-sm font-bold"
+                    transition={{ delay: 0.3, type: "spring" }}
+                    className="inline-block px-4 py-1.5 rounded-lg bg-primary/10 border border-primary/20 text-primary text-sm font-semibold"
                   >
-                    {xpAwarded} XP Milestone Reached
+                    {xpAwarded} Points Milestone
                   </motion.div>
                 </motion.div>
 

@@ -80,6 +80,8 @@ export function PlanEditor({ plan, onSave, onCancel }: PlanEditorProps) {
   };
 
   const handleSave = async () => {
+    console.info('[TradingPlan] Save clicked');
+    
     if (!formData.name.trim()) {
       toast({
         title: "Missing Name",
@@ -89,11 +91,20 @@ export function PlanEditor({ plan, onSave, onCancel }: PlanEditorProps) {
       return;
     }
 
+    if (!user) {
+      toast({
+        title: "Not signed in",
+        description: "Please log in and try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSaving(true);
 
     try {
       const planData = {
-        user_id: user?.id,
+        user_id: user.id,
         ...formData,
       };
 
@@ -103,13 +114,21 @@ export function PlanEditor({ plan, onSave, onCancel }: PlanEditorProps) {
           .update(planData)
           .eq('id', plan.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('[TradingPlan] Update failed:', error);
+          throw error;
+        }
+        console.info('[TradingPlan] Plan updated successfully');
       } else {
         const { error } = await supabase
           .from('trading_plans')
           .insert(planData);
 
-        if (error) throw error;
+        if (error) {
+          console.error('[TradingPlan] Insert failed:', error);
+          throw error;
+        }
+        console.info('[TradingPlan] Plan created successfully');
       }
 
       toast({
@@ -118,11 +137,11 @@ export function PlanEditor({ plan, onSave, onCancel }: PlanEditorProps) {
       });
 
       onSave();
-    } catch (error) {
-      console.error("Error saving plan:", error);
+    } catch (error: any) {
+      console.error('[TradingPlan] Save error:', error);
       toast({
         title: "Error",
-        description: "Failed to save trading plan",
+        description: error?.message || "Failed to save trading plan",
         variant: "destructive",
       });
     } finally {
@@ -303,11 +322,21 @@ export function PlanEditor({ plan, onSave, onCancel }: PlanEditorProps) {
         </Tabs>
 
         <div className="flex gap-2 mt-6">
-          <Button onClick={handleSave} disabled={isSaving} className="flex-1">
+          <Button 
+            onClick={handleSave} 
+            disabled={isSaving || !user}
+            type="button" 
+            className="flex-1"
+          >
             <Save className="h-4 w-4 mr-2" />
             {isSaving ? "Saving..." : "Save Plan"}
           </Button>
-          <Button variant="outline" onClick={onCancel}>
+          <Button 
+            variant="outline" 
+            onClick={onCancel}
+            type="button"
+            disabled={isSaving}
+          >
             Cancel
           </Button>
         </div>

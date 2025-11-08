@@ -45,6 +45,8 @@ export const CurrentROIWidget = memo(({
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
+    console.info('[ROI] Save clicked');
+    
     const newValue = parseFloat(capitalValue);
     
     if (isNaN(newValue) || newValue < 0) {
@@ -53,7 +55,9 @@ export const CurrentROIWidget = memo(({
     }
 
     if (!user) {
-      toast.error(t('errors.unauthorized'));
+      toast.error("You're not signed in", {
+        description: "Please log in and try again."
+      });
       return;
     }
 
@@ -66,17 +70,24 @@ export const CurrentROIWidget = memo(({
           { onConflict: 'user_id' }
         );
 
-      if (error) throw error;
+      if (error) {
+        console.error('[ROI] Save failed:', error);
+        throw error;
+      }
 
+      console.info('[ROI] Saved successfully');
+      
       if (onInitialInvestmentUpdate) {
         onInitialInvestmentUpdate(newValue);
       }
       
       toast.success(t('success.updated'));
       setIsDialogOpen(false);
-    } catch (error) {
-      console.error('Error updating initial investment:', error);
-      toast.error(t('errors.generic'));
+    } catch (error: any) {
+      console.error('[ROI] Save error:', error);
+      toast.error(t('errors.generic'), {
+        description: error?.message || "Please try again."
+      });
     } finally {
       setIsSaving(false);
     }
@@ -165,10 +176,15 @@ export const CurrentROIWidget = memo(({
                         variant="outline"
                         onClick={() => setIsDialogOpen(false)}
                         disabled={isSaving}
+                        type="button"
                       >
                         {t('common.cancel')}
                       </Button>
-                      <Button onClick={handleSave} disabled={isSaving}>
+                      <Button 
+                        onClick={handleSave} 
+                        disabled={isSaving || !user}
+                        type="button"
+                      >
                         {isSaving ? t('settings.saving') : t('common.save')}
                       </Button>
                     </div>

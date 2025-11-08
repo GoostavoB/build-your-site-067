@@ -85,8 +85,12 @@ export function CreateGoalDialog({ onGoalCreated, editingGoal, onClose }: Create
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.info('[CreateGoal] Submit clicked');
+    
     if (!user) {
-      toast.error('You must be logged in to create goals');
+      toast.error("You're not signed in", {
+        description: "Please log in and try again."
+      });
       return;
     }
 
@@ -150,11 +154,12 @@ export function CreateGoalDialog({ onGoalCreated, editingGoal, onClose }: Create
         toast.success("Goal created successfully");
       }
 
-      // Close dialog and refresh
+      // Close dialog and refresh - only on success
       setOpen(false);
       form.reset();
       onGoalCreated();
       if (onClose) onClose();
+      setIsSubmitting(false);
       
     } catch (error: any) {
       console.error('[CreateGoal] Error saving goal:', error);
@@ -164,9 +169,10 @@ export function CreateGoalDialog({ onGoalCreated, editingGoal, onClose }: Create
       } else if (error.message?.includes('violates check constraint')) {
         toast.error("Invalid goal data. Please check all fields and try again.");
       } else {
-        toast.error(error?.message || "Failed to save goal. Please try again.");
+        toast.error("Failed to save goal", {
+          description: error?.message || "Please try again."
+        });
       }
-    } finally {
       setIsSubmitting(false);
     }
   };

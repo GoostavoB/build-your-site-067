@@ -102,6 +102,12 @@ export function PlanEditor({ plan, onSave, onCancel }: PlanEditorProps) {
 
     setIsSaving(true);
 
+    // Optimistic success feedback
+    toast({
+      title: "Saving...",
+      description: plan ? "Updating your plan" : "Creating your plan",
+    });
+
     try {
       const planData = {
         user_id: user.id,

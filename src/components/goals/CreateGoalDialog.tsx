@@ -101,9 +101,9 @@ export function CreateGoalDialog({ onGoalCreated, editingGoal, onClose }: Create
       const normalizedValue = normalizeNumericInput(values.target_value);
       
       // Convert date to end-of-day local time as ISO timestamptz
-    const deadlineDate = new Date(values.target_date);
-    deadlineDate.setUTCHours(23, 59, 59, 999);
-    const deadlineISO = deadlineDate.toISOString();
+      const deadlineDate = new Date(values.target_date);
+      deadlineDate.setUTCHours(23, 59, 59, 999);
+      const deadlineISO = deadlineDate.toISOString();
 
       console.info('[CreateGoal] Submitting goal:', { 
         title: values.title, 
@@ -117,12 +117,26 @@ export function CreateGoalDialog({ onGoalCreated, editingGoal, onClose }: Create
         title: values.title.trim(),
         description: values.description?.trim() || '',
         goal_type: values.goal_type,
-        target_value: normalizedValue, // Send as number
+        target_value: normalizedValue,
         deadline: deadlineISO,
         current_value: editingGoal?.current_value || 0,
         period: editingGoal?.period || 'monthly',
       };
 
+      // Optimistic update - close dialog and show success immediately
+      setOpen(false);
+      form.reset();
+      
+      if (editingGoal) {
+        toast.success("Updating goal...", { duration: 1000 });
+      } else {
+        toast.success("Creating goal...", { duration: 1000 });
+      }
+      
+      // Trigger refresh immediately for optimistic UI
+      onGoalCreated();
+
+      // Perform actual database operation
       if (editingGoal) {
         const { error } = await supabase
           .from('trading_goals')
@@ -154,15 +168,16 @@ export function CreateGoalDialog({ onGoalCreated, editingGoal, onClose }: Create
         toast.success("Goal created successfully");
       }
 
-      // Close dialog and refresh - only on success
-      setOpen(false);
-      form.reset();
+      // Refresh data after successful save to get actual DB state
       onGoalCreated();
       if (onClose) onClose();
       setIsSubmitting(false);
       
     } catch (error: any) {
       console.error('[CreateGoal] Error saving goal:', error);
+      
+      // Revert optimistic update by refreshing
+      onGoalCreated();
       
       if (error.message?.includes('Target date cannot be in the past')) {
         toast.error("Target date must be today or in the future. Please check your date selection.");

@@ -62,6 +62,16 @@ export const CurrentROIWidget = memo(({
     }
 
     setIsSaving(true);
+    
+    // Optimistic update - update UI immediately
+    const previousValue = initialInvestment;
+    if (onInitialInvestmentUpdate) {
+      onInitialInvestmentUpdate(newValue);
+    }
+    
+    toast.success("Updating...", { duration: 1000 });
+    setIsDialogOpen(false);
+    
     try {
       const { error } = await supabase
         .from('user_settings')
@@ -72,22 +82,23 @@ export const CurrentROIWidget = memo(({
 
       if (error) {
         console.error('[ROI] Save failed:', error);
+        // Revert optimistic update on error
+        if (onInitialInvestmentUpdate) {
+          onInitialInvestmentUpdate(previousValue);
+        }
         throw error;
       }
 
       console.info('[ROI] Saved successfully');
-      
-      if (onInitialInvestmentUpdate) {
-        onInitialInvestmentUpdate(newValue);
-      }
-      
       toast.success(t('success.updated'));
-      setIsDialogOpen(false);
+      
     } catch (error: any) {
       console.error('[ROI] Save error:', error);
       toast.error(t('errors.generic'), {
         description: error?.message || "Please try again."
       });
+      // Reopen dialog on error so user can retry
+      setIsDialogOpen(true);
     } finally {
       setIsSaving(false);
     }

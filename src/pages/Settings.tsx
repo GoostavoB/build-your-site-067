@@ -326,7 +326,7 @@ const Settings = () => {
   };
 
   return (
-    <AppLayout>
+    <>
       <SkipToContent />
       <main id="main-content" className="max-w-4xl mx-auto space-y-6">
         <header>
@@ -704,9 +704,9 @@ const Settings = () => {
           </div>
         </Card>
       </TabsContent>
-    </Tabs>
-  </main>
-    </AppLayout>
+      </Tabs>
+    </main>
+    </>
   );
 };
 

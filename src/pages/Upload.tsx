@@ -430,7 +430,8 @@ const Upload = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <>
+      <div className="max-w-4xl mx-auto space-y-6">
       <div>
         <h1 className="text-4xl font-bold mb-2">{editId ? 'Edit Trade' : 'Upload Trade'}</h1>
         <p className="text-muted-foreground">Record your trading activity</p>
@@ -710,7 +711,7 @@ const Upload = () => {
         trigger="upload_limit"
         feature="more daily uploads"
       />
-    </div>
+    </>
   );
 };
 

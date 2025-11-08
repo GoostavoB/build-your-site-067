@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
@@ -20,6 +20,7 @@ import { AccountSwitcher } from '@/components/accounts/AccountSwitcher';
 import { CreditDisplay } from '@/components/CreditDisplay';
 import { TourButton } from '@/components/tour/TourButton';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { PageSkeleton } from '@/components/PageSkeleton';
 
 // Session storage key for scroll positions
 const SCROLL_POSITIONS_KEY = 'app_scroll_positions';
@@ -34,6 +35,7 @@ export function AppShell() {
   const { isCollapsed, setIsCollapsed } = useSidebarState();
   const location = useLocation();
   const mainContentRef = useRef<HTMLDivElement>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Save scroll position on route change
   useEffect(() => {
@@ -56,6 +58,10 @@ export function AppShell() {
 
   // Restore scroll position when route changes
   useEffect(() => {
+    // Show loading skeleton during transition
+    setIsTransitioning(true);
+    const timer = setTimeout(() => setIsTransitioning(false), 150);
+
     if (mainContentRef.current) {
       const positions = JSON.parse(
         sessionStorage.getItem(SCROLL_POSITIONS_KEY) || '{}'
@@ -85,6 +91,8 @@ export function AppShell() {
       (h1 as HTMLElement).setAttribute('tabindex', '-1');
       (h1 as HTMLElement).focus();
     }
+
+    return () => clearTimeout(timer);
   }, [location]);
 
   return (
@@ -158,7 +166,7 @@ export function AppShell() {
               aria-label="Main content"
             >
               <Breadcrumbs />
-              {/* React Router Outlet with Page Transitions */}
+              {/* React Router Outlet with Page Transitions and Loading Skeletons */}
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={location.pathname}
@@ -171,7 +179,7 @@ export function AppShell() {
                   }}
                   className="w-full"
                 >
-                  <Outlet />
+                  {isTransitioning ? <PageSkeleton /> : <Outlet />}
                 </motion.div>
               </AnimatePresence>
             </main>

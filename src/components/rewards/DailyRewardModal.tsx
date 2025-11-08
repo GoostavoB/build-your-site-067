@@ -29,6 +29,11 @@ export function DailyRewardModal({ open, onClose, reward, onClaim }: DailyReward
     }
   }, [isOpen]);
 
+  // Don't render if reward is null
+  if (!reward) {
+    return null;
+  }
+
   const handleClaim = async () => {
     if (isClaiming) return;
     

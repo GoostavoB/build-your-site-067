@@ -26,8 +26,13 @@ export interface CheckoutResponse {
  * @returns Promise that resolves with the checkout URL
  */
 export const initiateStripeCheckout = async (params: CheckoutParams): Promise<string> => {
+  const startTime = performance.now();
   console.log('🚀 initiateStripeCheckout called with:', params);
   const { priceId, productType, successUrl, cancelUrl, upsellCredits } = params;
+
+  // Import error tracker
+  const { checkoutErrorTracker } = await import('./checkoutErrorTracking');
+  const browserContext = checkoutErrorTracker.getBrowserContext();
 
   // Validate productType
   const validProductTypes: Array<CheckoutParams['productType']> = [
@@ -40,20 +45,48 @@ export const initiateStripeCheckout = async (params: CheckoutParams): Promise<st
   if (!validProductTypes.includes(productType)) {
     const error = `Invalid productType: "${productType}". Must be one of: ${validProductTypes.join(', ')}`;
     console.error('❌', error);
+    
+    // Track validation error
+    checkoutErrorTracker.trackCheckoutError({
+      step: 'validation',
+      errorType: 'validation_error',
+      errorMessage: error,
+      priceId,
+      productType,
+      browserContext,
+      performance: { timeToError: performance.now() - startTime }
+    });
+    
     throw new Error(error);
   }
 
   // Verify user is authenticated (non-blocking)
   console.log('🔐 Checking authentication (non-blocking)...');
+  let userId: string | undefined;
+  let userEmail: string | undefined;
+  
   try {
     const sessionResult: any = await Promise.race([
       supabase.auth.getSession(),
       new Promise((resolve) => setTimeout(() => resolve({ data: { session: null }, error: null }), 2000))
     ]);
     const session = sessionResult?.data?.session || null;
+    userId = session?.user?.id;
+    userEmail = session?.user?.email;
     console.log('🔐 Session (optional):', session ? 'Found' : 'Not yet');
   } catch (e) {
     console.warn('⚠️ Auth check skipped due to timeout');
+    
+    // Track auth timeout
+    checkoutErrorTracker.trackCheckoutError({
+      step: 'authentication',
+      errorType: 'timeout_error',
+      errorMessage: 'Authentication check timed out',
+      priceId,
+      productType,
+      browserContext,
+      performance: { timeToError: performance.now() - startTime }
+    });
   }
 
 
@@ -86,20 +119,82 @@ export const initiateStripeCheckout = async (params: CheckoutParams): Promise<st
   );
 
   console.log('⏳ Waiting for response...');
-  const { data, error } = await Promise.race([invokePromise, timeout]) as any;
+  
+  let data: any;
+  let error: any;
+  
+  try {
+    const result = await Promise.race([invokePromise, timeout]) as any;
+    data = result.data;
+    error = result.error;
+  } catch (e) {
+    // Timeout occurred
+    const timeoutError = 'Checkout request timed out (60s)';
+    console.error('❌', timeoutError);
+    
+    checkoutErrorTracker.trackCheckoutError({
+      step: 'api_call',
+      errorType: 'timeout_error',
+      errorMessage: timeoutError,
+      priceId,
+      productType,
+      userId,
+      userEmail,
+      browserContext,
+      performance: { timeToError: performance.now() - startTime }
+    });
+    
+    throw new Error(timeoutError);
+  }
 
   console.log('📦 Response received:', { data, error });
 
   if (error) {
     console.error('❌ Checkout error:', error);
-    // Surface the exact error from the backend
+    
+    // Categorize error type
+    let errorType: 'stripe_error' | 'network_error' | 'unknown_error' = 'unknown_error';
     const errorMessage = error.message || data?.error || 'Failed to create checkout session';
+    
+    if (errorMessage.includes('No such price')) {
+      errorType = 'stripe_error';
+    } else if (errorMessage.includes('network') || errorMessage.includes('timeout')) {
+      errorType = 'network_error';
+    } else if (error.status === 400 || error.status === 404) {
+      errorType = 'stripe_error';
+    }
+    
+    checkoutErrorTracker.trackCheckoutError({
+      step: 'api_call',
+      errorType,
+      errorMessage,
+      priceId,
+      productType,
+      userId,
+      userEmail,
+      browserContext,
+      performance: { timeToError: performance.now() - startTime }
+    });
+    
     throw new Error(errorMessage);
   }
 
   if (!data?.url) {
     console.error('❌ No checkout URL in response:', data);
     const errorMessage = data?.error || 'No checkout URL received from server';
+    
+    checkoutErrorTracker.trackCheckoutError({
+      step: 'api_call',
+      errorType: 'stripe_error',
+      errorMessage,
+      priceId,
+      productType,
+      userId,
+      userEmail,
+      browserContext,
+      performance: { timeToError: performance.now() - startTime }
+    });
+    
     throw new Error(errorMessage);
   }
 
@@ -119,6 +214,14 @@ export const initiateStripeCheckout = async (params: CheckoutParams): Promise<st
     const opened = window.open(data.url, '_blank');
     if (!opened) {
       console.warn('⚠️ Popup blocked - returning URL for manual redirect');
+      
+      checkoutErrorTracker.trackPopupBlocked({
+        priceId,
+        productType,
+        userId,
+        userEmail,
+        browserContext,
+      });
     } else {
       console.info('✅ Checkout opened in new tab');
     }
@@ -136,6 +239,18 @@ export const initiateStripeCheckout = async (params: CheckoutParams): Promise<st
     console.info('✅ Same-window redirect initiated');
   } catch (e) {
     console.warn('⚠️ Redirect failed:', e);
+    
+    checkoutErrorTracker.trackCheckoutError({
+      step: 'redirect',
+      errorType: 'unknown_error',
+      errorMessage: `Redirect failed: ${e}`,
+      priceId,
+      productType,
+      userId,
+      userEmail,
+      browserContext,
+      performance: { timeToError: performance.now() - startTime }
+    });
   }
   
   // Return the URL in case the component needs to handle redirect failure

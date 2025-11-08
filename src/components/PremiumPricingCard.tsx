@@ -13,6 +13,7 @@ import { Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { trackCheckoutFunnel } from '@/utils/checkoutAnalytics';
 import { AnnualUpgradeUpsell } from '@/components/checkout/AnnualUpgradeUpsell';
+import { checkoutErrorTracker } from '@/utils/checkoutErrorTracking';
 
 interface PricingPlan {
   id: string;
@@ -83,9 +84,36 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
       navigate(`/checkout?priceId=${stripeProduct.priceId}&productType=${stripeProduct.productType}`);
     } catch (error) {
       console.error('Checkout error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to start checkout';
+      const tier = plan.id.toLowerCase() as 'pro' | 'elite';
+      
+      let priceId = '';
+      let productType = '';
+      try {
+        const stripeProduct = getSubscriptionProduct(tier, billingCycle);
+        priceId = stripeProduct.priceId;
+        productType = stripeProduct.productType;
+      } catch {
+        // If we can't get the product, use fallback values
+        priceId = 'unknown';
+        productType = billingCycle === 'monthly' ? 'subscription_monthly' : 'subscription_annual';
+      }
+      
+      // Track error
+      checkoutErrorTracker.trackCheckoutError({
+        step: 'validation',
+        errorType: 'validation_error',
+        errorMessage,
+        priceId,
+        productType,
+        browserContext: checkoutErrorTracker.getBrowserContext(),
+      });
+      
+      trackCheckoutFunnel.checkoutErrorOccurred('pricing_card_error', errorMessage, productType, priceId, 'validation');
+      
       toast({
         title: 'Checkout Failed',
-        description: error instanceof Error ? error.message : 'Failed to start checkout',
+        description: errorMessage,
         variant: 'destructive',
       });
       setLoading(false);

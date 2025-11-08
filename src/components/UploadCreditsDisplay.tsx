@@ -7,15 +7,19 @@ import { initiateStripeCheckout } from '@/utils/stripeCheckout';
 import { getCreditProduct } from '@/config/stripe-products';
 import { toast } from 'sonner';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { checkoutErrorTracker } from '@/utils/checkoutErrorTracking';
+import { trackCheckoutFunnel } from '@/utils/checkoutAnalytics';
 
 export const UploadCreditsDisplay = () => {
   const { balance, limit, canUpload, isLoading } = useUploadCredits();
   const { subscription } = useSubscription();
 
   const handleBuyCredits = async () => {
+    const hasSubscription = subscription?.status === 'active';
+    let creditProduct;
+    
     try {
-      const hasSubscription = subscription?.status === 'active';
-      const creditProduct = getCreditProduct(hasSubscription);
+      creditProduct = getCreditProduct(hasSubscription);
       
       await initiateStripeCheckout({
         priceId: creditProduct.priceId,
@@ -23,7 +27,23 @@ export const UploadCreditsDisplay = () => {
       });
     } catch (error) {
       console.error('Checkout error:', error);
-      toast.error('Failed to open checkout. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to start checkout';
+      const productType = hasSubscription ? 'credits_pro' : 'credits_starter';
+      const priceId = creditProduct?.priceId || 'unknown';
+      
+      // Track error
+      checkoutErrorTracker.trackCheckoutError({
+        step: 'validation',
+        errorType: 'validation_error',
+        errorMessage,
+        priceId,
+        productType,
+        browserContext: checkoutErrorTracker.getBrowserContext(),
+      });
+      
+      trackCheckoutFunnel.checkoutErrorOccurred('credits_widget_error', errorMessage, productType, priceId, 'validation');
+      
+      toast.error(errorMessage);
     }
   };
 

@@ -13,6 +13,8 @@ import { trackUserJourney } from "@/utils/analyticsEvents";
 import { SUBSCRIPTION_PRODUCTS } from "@/config/stripe-products";
 import AppLayout from "@/components/layout/AppLayout";
 import { PRICING_PLANS } from "@/config/pricing";
+import { checkoutErrorTracker } from "@/utils/checkoutErrorTracking";
+import { trackCheckoutFunnel } from "@/utils/checkoutAnalytics";
 
 export default function Upgrade() {
   const { user } = useAuth();
@@ -29,10 +31,10 @@ export default function Upgrade() {
     if (!user) return;
     
     setLoading(true);
+    const productType = billingCycle === 'monthly' ? 'subscription_monthly' : 'subscription_annual';
+    
     try {
       trackUserJourney.checkoutStarted('subscription', amount, priceId);
-      
-      const productType = billingCycle === 'monthly' ? 'subscription_monthly' : 'subscription_annual';
       
       const { data, error } = await supabase.functions.invoke('create-stripe-checkout', {
         body: {
@@ -50,7 +52,21 @@ export default function Upgrade() {
       }
     } catch (error) {
       console.error('Error creating checkout:', error);
-      toast.error("Failed to start checkout. Please try again.");
+      const errorMessage = error instanceof Error ? error.message : 'Failed to start checkout';
+      
+      // Track error
+      checkoutErrorTracker.trackCheckoutError({
+        step: 'api_call',
+        errorType: 'unknown_error',
+        errorMessage,
+        priceId,
+        productType,
+        browserContext: checkoutErrorTracker.getBrowserContext(),
+      });
+      
+      trackCheckoutFunnel.checkoutErrorOccurred('upgrade_page_error', errorMessage, productType, priceId, 'api_call');
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

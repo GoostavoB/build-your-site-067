@@ -12,6 +12,8 @@ import { Badge } from '@/components/ui/badge';
 import { initiateStripeCheckout } from '@/utils/stripeCheckout';
 import { getSubscriptionProduct } from '@/config/stripe-products';
 import { toast } from 'sonner';
+import { checkoutErrorTracker } from '@/utils/checkoutErrorTracking';
+import { trackCheckoutFunnel } from '@/utils/checkoutAnalytics';
 
 interface UpgradePromptProps {
   open: boolean;
@@ -24,8 +26,10 @@ export function UpgradePrompt({ open, onClose, feature = 'this feature', trigger
   const promoStatus = usePromoStatus();
 
   const handleUpgrade = async () => {
+    let proProduct;
+    
     try {
-      const proProduct = getSubscriptionProduct('pro', 'monthly');
+      proProduct = getSubscriptionProduct('pro', 'monthly');
       
       await initiateStripeCheckout({
         priceId: proProduct.priceId,
@@ -34,7 +38,22 @@ export function UpgradePrompt({ open, onClose, feature = 'this feature', trigger
       onClose();
     } catch (error) {
       console.error('Checkout error:', error);
-      toast.error('Failed to open checkout. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to start checkout';
+      const priceId = proProduct?.priceId || 'unknown';
+      
+      // Track error
+      checkoutErrorTracker.trackCheckoutError({
+        step: 'validation',
+        errorType: 'validation_error',
+        errorMessage,
+        priceId,
+        productType: 'subscription_monthly',
+        browserContext: checkoutErrorTracker.getBrowserContext(),
+      });
+      
+      trackCheckoutFunnel.checkoutErrorOccurred('upgrade_prompt_error', errorMessage, 'subscription_monthly', priceId, 'validation');
+      
+      toast.error(errorMessage);
     }
   };
 

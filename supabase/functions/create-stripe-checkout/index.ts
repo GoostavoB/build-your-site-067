@@ -149,7 +149,17 @@ serve(async (req) => {
         break
 
       default:
-        throw new Error(`Unknown product type: ${productType}`)
+        console.error('❌ Invalid product type:', productType);
+        return new Response(
+          JSON.stringify({ 
+            error: `Unknown product type: ${productType}`,
+            errorType: 'invalid_product_type'
+          }),
+          {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 400,
+          }
+        )
     }
 
     // Create Checkout Session
@@ -168,10 +178,27 @@ serve(async (req) => {
       }
     )
   } catch (error) {
-    console.error('Error creating checkout session:', error)
+    console.error('Error creating checkout session:', error);
+    
+    // Categorize error
+    let errorType = 'unknown_error';
+    let errorMessage = error instanceof Error ? error.message : 'Failed to create checkout session';
+    
+    if (errorMessage.includes('No such price')) {
+      errorType = 'stripe_price_not_found';
+      console.error('❌ STRIPE ERROR: Invalid price ID');
+    } else if (errorMessage.includes('network') || errorMessage.includes('timeout')) {
+      errorType = 'network_error';
+      console.error('❌ NETWORK ERROR');
+    } else if (error instanceof Stripe.errors.StripeError) {
+      errorType = 'stripe_api_error';
+      console.error('❌ STRIPE API ERROR:', (error as Stripe.errors.StripeError).type);
+    }
+    
     return new Response(
       JSON.stringify({
-        error: error instanceof Error ? error.message : 'Failed to create checkout session',
+        error: errorMessage,
+        errorType,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

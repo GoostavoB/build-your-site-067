@@ -116,5 +116,58 @@ export const trackCheckoutFunnel = {
       event_category: 'conversion'
     });
     trackEvent('annual_upsell_declined', { planName });
+  },
+
+  // Error tracking
+  checkoutErrorOccurred: (errorType: string, errorMessage: string, productType: string, priceId: string, step: string) => {
+    analytics.track('checkout_error_occurred', {
+      error_type: errorType,
+      error_message: errorMessage,
+      product_type: productType,
+      price_id: priceId,
+      step: step,
+      event_category: 'conversion'
+    });
+    trackEvent('checkout_error', { errorType, errorMessage, productType, priceId, step });
+  },
+
+  checkoutTimedOut: (duration: number, productType: string, priceId: string, step: string) => {
+    analytics.track('checkout_timed_out', {
+      duration_seconds: duration,
+      product_type: productType,
+      price_id: priceId,
+      step: step,
+      event_category: 'conversion'
+    });
+    trackEvent('checkout_timeout', { duration, productType, priceId, step });
+  },
+
+  checkoutRetried: (attemptNumber: number, productType: string, priceId: string) => {
+    analytics.track('checkout_retried', {
+      attempt_number: attemptNumber,
+      product_type: productType,
+      price_id: priceId,
+      event_category: 'conversion'
+    });
+    trackEvent('checkout_retry', { attemptNumber, productType, priceId });
+  },
+
+  checkoutPopupBlocked: (productType: string, priceId: string) => {
+    analytics.track('checkout_popup_blocked', {
+      product_type: productType,
+      price_id: priceId,
+      event_category: 'conversion'
+    });
+    trackEvent('checkout_popup_blocked', { productType, priceId });
+  },
+
+  checkoutValidationFailed: (validationError: string, productType: string, priceId: string) => {
+    analytics.track('checkout_validation_failed', {
+      validation_error: validationError,
+      product_type: productType,
+      price_id: priceId,
+      event_category: 'conversion'
+    });
+    trackEvent('checkout_validation_failed', { validationError, productType, priceId });
   }
 };

@@ -5,6 +5,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { initiateStripeCheckout } from '@/utils/stripeCheckout';
+import { checkoutErrorTracker } from '@/utils/checkoutErrorTracking';
+import { trackCheckoutFunnel } from '@/utils/checkoutAnalytics';
 
 const CheckoutRedirect = () => {
   const [searchParams] = useSearchParams();
@@ -25,6 +27,7 @@ const CheckoutRedirect = () => {
   });
 
   useEffect(() => {
+    const pageLoadTime = performance.now();
     let safetyLinkTimer: number | undefined;
     let safetyStopLoadingTimer: number | undefined;
     let message10sTimer: number | undefined;
@@ -38,15 +41,37 @@ const CheckoutRedirect = () => {
       const productType = searchParams.get('productType') as 'subscription_monthly' | 'subscription_annual' | 'credits_starter' | 'credits_pro';
 
       if (!priceId || !productType) {
-        setError('No product selected. Please select a plan.');
+        const validationError = 'No product selected. Please select a plan.';
+        setError(validationError);
         setIsLoading(false);
+        
+        // Track validation error
+        checkoutErrorTracker.trackValidationFailed(validationError, {
+          step: 'validation',
+          priceId,
+          productType,
+          browserContext: checkoutErrorTracker.getBrowserContext(),
+        });
+        
+        trackCheckoutFunnel.checkoutValidationFailed(validationError, productType || 'unknown', priceId || 'unknown');
         return;
       }
+      
+      // Track page load
+      trackCheckoutFunnel.checkoutPageLoaded(priceId);
 
       // Progressive message updates for cold start awareness
       message10sTimer = window.setTimeout(() => {
         console.info('⏰ 10s: Updating message');
         setLoadingMessage('Almost ready...');
+        
+        // Track slow checkout warning
+        checkoutErrorTracker.trackCheckoutTimeout(10, {
+          step: 'loading',
+          priceId,
+          productType,
+          browserContext: checkoutErrorTracker.getBrowserContext(),
+        });
       }, 10000);
       
       message20sTimer = window.setTimeout(() => {
@@ -54,12 +79,31 @@ const CheckoutRedirect = () => {
         setLoadingMessage('This is taking longer than expected...');
         setShowManualLink(true);
         setLongWait(true);
+        
+        // Track checkout timeout warning
+        checkoutErrorTracker.trackCheckoutTimeout(20, {
+          step: 'loading',
+          priceId,
+          productType,
+          browserContext: checkoutErrorTracker.getBrowserContext(),
+        });
+        trackCheckoutFunnel.checkoutTimedOut(20, productType, priceId, 'loading');
       }, 20000);
       
       // Safety: stop spinner after 35s
       safetyStopLoadingTimer = window.setTimeout(() => {
         console.warn('⏰ Safety timer: stopping loading state');
         setIsLoading(false);
+        
+        // Track checkout timeout failure
+        checkoutErrorTracker.trackCheckoutTimeout(35, {
+          step: 'loading',
+          priceId,
+          productType,
+          browserContext: checkoutErrorTracker.getBrowserContext(),
+        });
+        trackCheckoutFunnel.checkoutTimedOut(35, productType, priceId, 'loading');
+        trackCheckoutFunnel.checkoutAbandoned('timeout', productType);
       }, 35000);
 
       try {
@@ -96,10 +140,24 @@ const CheckoutRedirect = () => {
         }
       } catch (err) {
         console.error('❌ Checkout error:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Failed to initiate checkout. Please try again.';
         setIsLoading(false);
         setShowManualLink(true);
         setLongWait(true);
-        setError(err instanceof Error ? err.message : 'Failed to initiate checkout. Please try again.');
+        setError(errorMessage);
+        
+        // Track checkout error
+        checkoutErrorTracker.trackCheckoutError({
+          step: 'api_call',
+          errorType: 'unknown_error',
+          errorMessage,
+          priceId,
+          productType,
+          browserContext: checkoutErrorTracker.getBrowserContext(),
+          performance: { timeToError: performance.now() - pageLoadTime },
+        });
+        
+        trackCheckoutFunnel.checkoutErrorOccurred('checkout_initiation_failed', errorMessage, productType, priceId, 'api_call');
       } finally {
         if (message10sTimer) clearTimeout(message10sTimer);
         if (message20sTimer) clearTimeout(message20sTimer);
@@ -113,6 +171,20 @@ const CheckoutRedirect = () => {
       if (message10sTimer) clearTimeout(message10sTimer);
       if (message20sTimer) clearTimeout(message20sTimer);
       if (safetyStopLoadingTimer) clearTimeout(safetyStopLoadingTimer);
+      
+      // Track potential abandonment if user leaves page quickly
+      const timeOnPage = (performance.now() - pageLoadTime) / 1000;
+      if (timeOnPage < 5) {
+        const priceId = searchParams.get('priceId');
+        const productType = searchParams.get('productType');
+        if (priceId && productType) {
+          checkoutErrorTracker.trackCheckoutAbandonment('loading', {
+            priceId,
+            productType: productType as any,
+            performance: { timeToError: timeOnPage },
+          });
+        }
+      }
     };
   }, [searchParams, isInIframe, retryCount]);
 
@@ -133,7 +205,18 @@ const CheckoutRedirect = () => {
             <p className="text-muted-foreground mb-6">{error}</p>
             <div className="space-y-3">
               <Button 
-                onClick={() => window.location.reload()}
+                onClick={() => {
+                  const priceId = searchParams.get('priceId');
+                  const productType = searchParams.get('productType');
+                  if (priceId && productType) {
+                    checkoutErrorTracker.trackCheckoutRetry(retryCount + 1, {
+                      priceId,
+                      productType: productType as any,
+                    });
+                    trackCheckoutFunnel.checkoutRetried(retryCount + 1, productType, priceId);
+                  }
+                  window.location.reload();
+                }}
                 className="w-full"
               >
                 Try Again

@@ -2,11 +2,15 @@ import { useState, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, X, Sparkles, Check, TrendingUp, AlertCircle, Plus, ImagePlus } from 'lucide-react';
+import { Upload, X, Sparkles, Check, TrendingUp, AlertCircle, Plus, ImagePlus, Info, Bug } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { BrokerSelect } from './BrokerSelect';
+import { DebugDataModal } from './DebugDataModal';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import type { ExtractedTrade } from '@/types/trade';
 import { cn } from '@/lib/utils';
 interface SmartUploadProps {
@@ -14,6 +18,19 @@ interface SmartUploadProps {
   onShowAnnotator?: () => void;
   maxImages?: number;
 }
+interface DebugData {
+  timestamp: string;
+  request: {
+    imageSize: number;
+    imageName: string;
+    broker: string;
+  };
+  rawResponse: any;
+  error: any;
+  processedTrades: ExtractedTrade[];
+  debugInfo?: any;
+}
+
 interface ImageQueueItem {
   file: File;
   preview: string;
@@ -22,6 +39,7 @@ interface ImageQueueItem {
   progress?: number;
   trades?: ExtractedTrade[];
   error?: string;
+  debugData?: DebugData;
 }
 export function SmartUpload({
   onTradesExtracted,
@@ -35,6 +53,9 @@ export function SmartUpload({
   const [totalTradesFound, setTotalTradesFound] = useState(0);
   const [broker, setBroker] = useState('');
   const [isDragging, setIsDragging] = useState(false);
+  const [debugMode, setDebugMode] = useState(false);
+  const [showDebugModal, setShowDebugModal] = useState(false);
+  const [selectedDebugData, setSelectedDebugData] = useState<DebugData | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Client-side blur detection
@@ -217,9 +238,25 @@ export function SmartUpload({
         } = await supabase.functions.invoke('vision-extract-trades', {
           body: {
             imageBase64: imageBase64,  // Send full data URL
-            broker: broker || undefined
+            broker: broker || undefined,
+            debug: debugMode
           }
         });
+
+        // Store debug data if in debug mode
+        const debugData: DebugData | undefined = debugMode ? {
+          timestamp: new Date().toISOString(),
+          request: {
+            imageSize: item.file.size,
+            imageName: item.file.name,
+            broker: broker || 'auto-detect'
+          },
+          rawResponse: data,
+          error: error,
+          processedTrades: data?.trades || [],
+          debugInfo: data?.debug
+        } : undefined;
+
         if (error || data?.error) {
           throw new Error(data?.error || error?.message || 'Extraction failed');
         }
@@ -238,7 +275,8 @@ export function SmartUpload({
             status: 'success',
             quality,
             progress: 100,
-            trades
+            trades,
+            debugData
           };
           return updated;
         });
@@ -275,9 +313,36 @@ export function SmartUpload({
     }
   };
   const hasQueuedImages = imageQueue.length > 0;
-  return <div className="space-y-6">
+
+  const openDebugModal = (debugData: DebugData) => {
+    setSelectedDebugData(debugData);
+    setShowDebugModal(true);
+  };
+
+  return <TooltipProvider>
+    <div className="space-y-6">
       {/* Hero Section - Mobile Optimized Premium */}
       <div className="text-center mb-8 md:mb-12 px-4 my-[21px] py-[46px]">
+        {/* Debug Mode Toggle */}
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <Switch
+            id="debug-mode"
+            checked={debugMode}
+            onCheckedChange={setDebugMode}
+          />
+          <Label htmlFor="debug-mode" className="text-sm cursor-pointer">
+            Debug Mode
+          </Label>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Show raw AI responses for debugging extraction issues</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+
         {/* Title - Responsive */}
         <h1 className="text-3xl md:text-5xl lg:text-6xl font-black mb-3 md:mb-4 tracking-tight">
           <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent drop-shadow-2xl">
@@ -409,9 +474,20 @@ export function SmartUpload({
                       </p>
                     </>}
                   
-                  {item.status === 'success' && item.trades && <p className="text-xs text-green-500 font-medium">
-                      ✓ {item.trades.length} trade{item.trades.length !== 1 ? 's' : ''} found
-                    </p>}
+                  {item.status === 'success' && item.trades && <div className="flex items-center gap-2">
+                      <p className="text-xs text-green-500 font-medium">
+                        ✓ {item.trades.length} trade{item.trades.length !== 1 ? 's' : ''} found
+                      </p>
+                      {debugMode && item.debugData && <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => openDebugModal(item.debugData!)}
+                        className="h-6 px-2 text-xs"
+                      >
+                        <Bug className="w-3 h-3 mr-1" />
+                        Debug
+                      </Button>}
+                    </div>}
                   
                   {item.status === 'error' && item.error && <p className="text-xs text-red-500 font-medium">
                       {item.error}
@@ -509,5 +585,13 @@ export function SmartUpload({
 
       {/* Hidden file input */}
       <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={e => handleFileSelect(e.target.files)} />
-    </div>;
+
+      {/* Debug Data Modal */}
+      <DebugDataModal
+        open={showDebugModal}
+        onOpenChange={setShowDebugModal}
+        debugData={selectedDebugData}
+      />
+    </div>
+  </TooltipProvider>;
 }

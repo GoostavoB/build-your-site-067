@@ -34,7 +34,7 @@ serve(async (req) => {
       });
     }
 
-    const { imageBase64, broker, annotations } = await req.json();
+    const { imageBase64, broker, annotations, debug } = await req.json();
 
     if (!imageBase64) {
       return new Response(JSON.stringify({ error: 'No image provided' }), {
@@ -46,7 +46,8 @@ serve(async (req) => {
     console.log('📸 Vision extraction request:', { 
       userId: user.id, 
       broker,
-      hasAnnotations: !!annotations?.length 
+      hasAnnotations: !!annotations?.length,
+      debug: !!debug
     });
 
     // Build prompt based on whether annotations are provided
@@ -298,7 +299,15 @@ Return as a JSON array where each trade is an object with the fields you found. 
         detectedLayout,
         needsAnnotation: true,
         reason: 'no_trades_detected',
-        message: 'Could not detect trades. Please mark one example trade to help us understand the layout.'
+        message: 'Could not detect trades. Please mark one example trade to help us understand the layout.',
+        debug: debug ? {
+          rawAIResponse: content.substring(0, 1000),
+          parsedTradesCount: 0,
+          validatedTradesCount: 0,
+          validationFailures: 0,
+          model: 'openai/gpt-5',
+          timestamp: new Date().toISOString()
+        } : undefined
       }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -310,7 +319,15 @@ Return as a JSON array where each trade is an object with the fields you found. 
       confidence,
       totalFound: validTrades.length,
       detectedLayout,
-      needsAnnotation: false
+      needsAnnotation: false,
+      debug: debug ? {
+        rawAIResponse: content.substring(0, 1000),
+        parsedTradesCount: tradesData.length,
+        validatedTradesCount: validTrades.length,
+        validationFailures: tradesData.length - validTrades.length,
+        model: 'openai/gpt-5',
+        timestamp: new Date().toISOString()
+      } : undefined
     }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }

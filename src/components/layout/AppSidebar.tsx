@@ -551,7 +551,14 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={signOut} tooltip={t('auth.signOut')} className="text-muted-foreground hover:text-foreground hover:bg-muted/50">
+                <SidebarMenuButton 
+                  onClick={() => {
+                    console.log('[Sidebar] Logout button clicked');
+                    signOut();
+                  }} 
+                  tooltip={t('auth.signOut')} 
+                  className="text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                >
                   <LogOut className="h-4 w-4" />
                   {open && <span>{t('auth.signOut')}</span>}
                 </SidebarMenuButton>

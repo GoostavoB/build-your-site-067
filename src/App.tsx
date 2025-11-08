@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { PublicOnlyGuard } from "@/guards/PublicOnlyGuard";
+import { AuthRequiredGuard } from "@/guards/AuthRequiredGuard";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { AccountProvider } from "@/contexts/AccountContext";
 import { AIAssistantProvider } from "@/contexts/AIAssistantContext";
@@ -138,6 +140,8 @@ const PageLoader = () => (
 
 const queryClient = new QueryClient();
 
+// Legacy ProtectedRoute wrapper - kept for backward compatibility
+// New routes should use AuthRequiredGuard instead
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   
@@ -191,30 +195,26 @@ const AppRoutes = () => {
       )}
       <Suspense fallback={<PageLoader />}>
         <Routes>
-        {/* Landing page (English only) */}
-        <Route path="/" element={<PublicPageThemeWrapper><Index /></PublicPageThemeWrapper>} />
-        
-        {/* Redirect all language-prefixed routes to English */}
-        <Route path="/vi" element={<Navigate to="/" replace />} />
-        <Route path="/vi/*" element={<Navigate to="/" replace />} />
-        <Route path="/pt" element={<Navigate to="/" replace />} />
-        <Route path="/pt/*" element={<Navigate to="/" replace />} />
-        <Route path="/es" element={<Navigate to="/" replace />} />
-        <Route path="/es/*" element={<Navigate to="/" replace />} />
-        <Route path="/ar" element={<Navigate to="/" replace />} />
-        <Route path="/ar/*" element={<Navigate to="/" replace />} />
-        
-        {/* Auth routes - wrapped with default theme */}
-        <Route path="/auth" element={<PublicPageThemeWrapper><Auth /></PublicPageThemeWrapper>} />
-        
-        {/* Upgrade routes */}
-        <Route path="/upgrade" element={<ProtectedRoute><Upgrade /></ProtectedRoute>} />
-        <Route path="/credits/purchase" element={<ProtectedRoute><CreditsPurchase /></ProtectedRoute>} />
-        
-        {/* Public pages - wrapped with default theme */}
-        
-        
-        <Route path="/contact" element={<PublicPageThemeWrapper><Contact /></PublicPageThemeWrapper>} />
+        {/* Public routes - redirect to /dashboard if logged in */}
+        <Route element={<PublicOnlyGuard />}>
+          {/* Landing page (English only) */}
+          <Route path="/" element={<PublicPageThemeWrapper><Index /></PublicPageThemeWrapper>} />
+          
+          {/* Redirect all language-prefixed routes to English */}
+          <Route path="/vi" element={<Navigate to="/" replace />} />
+          <Route path="/vi/*" element={<Navigate to="/" replace />} />
+          <Route path="/pt" element={<Navigate to="/" replace />} />
+          <Route path="/pt/*" element={<Navigate to="/" replace />} />
+          <Route path="/es" element={<Navigate to="/" replace />} />
+          <Route path="/es/*" element={<Navigate to="/" replace />} />
+          <Route path="/ar" element={<Navigate to="/" replace />} />
+          <Route path="/ar/*" element={<Navigate to="/" replace />} />
+          
+          {/* Auth routes - wrapped with default theme */}
+          <Route path="/auth" element={<PublicPageThemeWrapper><Auth /></PublicPageThemeWrapper>} />
+          
+          {/* Public pages - wrapped with default theme */}
+          <Route path="/contact" element={<PublicPageThemeWrapper><Contact /></PublicPageThemeWrapper>} />
         
         <Route path="/legal" element={<PublicPageThemeWrapper><Legal /></PublicPageThemeWrapper>} />
         
@@ -237,79 +237,90 @@ const AppRoutes = () => {
         {/* Other public pages - wrapped with default theme */}
         <Route path="/logo-download" element={<PublicPageThemeWrapper><LogoDownload /></PublicPageThemeWrapper>} />
         <Route path="/logo-generator" element={<PublicPageThemeWrapper><LogoGenerator /></PublicPageThemeWrapper>} />
-        <Route path="/calculators" element={<ProtectedRoute><Calculators /></ProtectedRoute>} />
         <Route path="/crypto-trading-faq" element={<PublicPageThemeWrapper><CryptoTradingFAQ /></PublicPageThemeWrapper>} />
         <Route path="/faq" element={<PublicPageThemeWrapper><FAQPage /></PublicPageThemeWrapper>} />
         <Route path="/sitemap" element={<PublicPageThemeWrapper><Sitemap /></PublicPageThemeWrapper>} />
         <Route path="/about" element={<PublicPageThemeWrapper><About /></PublicPageThemeWrapper>} />
         <Route path="/seo-dashboard" element={<PublicPageThemeWrapper><SEODashboard /></PublicPageThemeWrapper>} />
         
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/upload" element={<ProtectedRoute><Upload /></ProtectedRoute>} />
-        <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-        <Route path="/forecast" element={<ProtectedRoute><Forecast /></ProtectedRoute>} />
-        <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
-        <Route path="/gamification" element={<ProtectedRoute><Gamification /></ProtectedRoute>} />
-        <Route path="/tier-preview" element={<ProtectedRoute><TierPreview /></ProtectedRoute>} />
-        <Route path="/premium-features" element={<ProtectedRoute><PremiumFeatures /></ProtectedRoute>} />
-        <Route path="/checkout-success" element={<CheckoutSuccess />} />
-        <Route path="/checkout-cancel" element={<CheckoutCancel />} />
-        <Route path="/orders" element={<ProtectedRoute><OrderHistory /></ProtectedRoute>} />
-        <Route path="/market-data" element={<ProtectedRoute><MarketData /></ProtectedRoute>} />
-        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-        {/* Phase 2: Social features - temporarily disabled for backlog #34 */}
-        {/* <Route path="/social" element={<ProtectedRoute><Social /></ProtectedRoute>} /> */}
-        <Route path="/ai-tools" element={<ProtectedRoute><AITools /></ProtectedRoute>} />
-        <Route path="/journal" element={<ProtectedRoute><Journal /></ProtectedRoute>} />
-        {/* Trade Analysis temporarily disabled - incomplete module */}
-        {/* <Route path="/trade-analysis" element={<ProtectedRoute><TradeAnalysis /></ProtectedRoute>} /> */}
-        <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
-        <Route path="/risk-management" element={<ProtectedRoute><RiskManagement /></ProtectedRoute>} />
-        <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
-        <Route path="/psychology" element={<ProtectedRoute><Psychology /></ProtectedRoute>} />
-        <Route path="/trading-plan" element={<ProtectedRoute><TradingPlan /></ProtectedRoute>} />
-        {/* Exchange connections temporarily hidden for future use */}
-        {/* <Route path="/exchanges" element={<ProtectedRoute><ExchangeConnections /></ProtectedRoute>} /> */}
-        <Route path="/spot-wallet" element={<ProtectedRoute><SpotWallet /></ProtectedRoute>} />
-        <Route path="/track-capital" element={<ProtectedRoute><TrackCapital /></ProtectedRoute>} />
-        <Route path="/fee-analysis" element={<ProtectedRoute><FeeAnalysis /></ProtectedRoute>} />
-        <Route path="/faq" element={<ProtectedRoute><FAQ /></ProtectedRoute>} />
-        <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
-        <Route path="/friend-leaderboard" element={<ProtectedRoute><FriendLeaderboard /></ProtectedRoute>} />
-        <Route path="/long-short-ratio" element={<ProtectedRoute><LongShortRatio /></ProtectedRoute>} />
-        {/* Phase 2: Economic Calendar and Performance Alerts - temporarily disabled for backlog #30 */}
-        {/* <Route path="/economic-calendar" element={<ProtectedRoute><EconomicCalendar /></ProtectedRoute>} /> */}
-        <Route path="/tax-reports" element={<ProtectedRoute><TaxReports /></ProtectedRoute>} />
-        <Route path="/withdrawals" element={<ProtectedRoute><Withdrawals /></ProtectedRoute>} />
-        {/* Phase 2: Trading Accounts - temporarily disabled for backlog #18 */}
-        {/* <Route path="/accounts" element={<ProtectedRoute><Accounts /></ProtectedRoute>} /> */}
-        {/* <Route path="/performance-alerts" element={<ProtectedRoute><PerformanceAlerts /></ProtectedRoute>} /> */}
-        {/* Exchange connections temporarily hidden for future use */}
-        {/* <Route path="/exchange-connections" element={<ProtectedRoute><ExchangeConnections /></ProtectedRoute>} /> */}
-        {/* Phase 2: Progress Analytics (IXP/XP) - temporarily disabled for backlog #36 */}
-        {/* <Route path="/progress-analytics" element={<ProtectedRoute><ProgressAnalytics /></ProtectedRoute>} /> */}
-        <Route path="/my-metrics" element={<ProtectedRoute><MyMetrics /></ProtectedRoute>} />
-        <Route path="/user-guide" element={<ProtectedRoute><UserGuide /></ProtectedRoute>} />
-        <Route path="/accessibility" element={<ProtectedRoute><AccessibilityGuide /></ProtectedRoute>} />
-        <Route path="/support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
+        {/* Checkout route */}
+        <Route path="/checkout" element={<CheckoutRedirect />} />
+        </Route>
+        
+        {/* Authenticated routes - redirect to /auth if logged out */}
+        <Route element={<AuthRequiredGuard />}>
+          {/* Upgrade routes */}
+          <Route path="/upgrade" element={<Upgrade />} />
+          <Route path="/credits/purchase" element={<CreditsPurchase />} />
+          
+          {/* Core app routes */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/upload" element={<Upload />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/forecast" element={<Forecast />} />
+          <Route path="/achievements" element={<Achievements />} />
+          <Route path="/gamification" element={<Gamification />} />
+          <Route path="/tier-preview" element={<TierPreview />} />
+          <Route path="/premium-features" element={<PremiumFeatures />} />
+          <Route path="/checkout-success" element={<CheckoutSuccess />} />
+          <Route path="/checkout-cancel" element={<CheckoutCancel />} />
+          <Route path="/orders" element={<OrderHistory />} />
+          <Route path="/market-data" element={<MarketData />} />
+          <Route path="/settings" element={<Settings />} />
+          {/* Phase 2: Social features - temporarily disabled for backlog #34 */}
+          {/* <Route path="/social" element={<Social />} /> */}
+          <Route path="/ai-tools" element={<AITools />} />
+          <Route path="/journal" element={<Journal />} />
+          {/* Trade Analysis temporarily disabled - incomplete module */}
+          {/* <Route path="/trade-analysis" element={<TradeAnalysis />} /> */}
+          <Route path="/goals" element={<Goals />} />
+          <Route path="/risk-management" element={<RiskManagement />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/psychology" element={<Psychology />} />
+          <Route path="/trading-plan" element={<TradingPlan />} />
+          {/* Exchange connections temporarily hidden for future use */}
+          {/* <Route path="/exchanges" element={<ExchangeConnections />} /> */}
+          <Route path="/spot-wallet" element={<SpotWallet />} />
+          <Route path="/track-capital" element={<TrackCapital />} />
+          <Route path="/fee-analysis" element={<FeeAnalysis />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/friend-leaderboard" element={<FriendLeaderboard />} />
+          <Route path="/long-short-ratio" element={<LongShortRatio />} />
+          {/* Phase 2: Economic Calendar and Performance Alerts - temporarily disabled for backlog #30 */}
+          {/* <Route path="/economic-calendar" element={<EconomicCalendar />} /> */}
+          <Route path="/tax-reports" element={<TaxReports />} />
+          <Route path="/withdrawals" element={<Withdrawals />} />
+          {/* Phase 2: Trading Accounts - temporarily disabled for backlog #18 */}
+          {/* <Route path="/accounts" element={<Accounts />} /> */}
+          {/* <Route path="/performance-alerts" element={<PerformanceAlerts />} /> */}
+          {/* Exchange connections temporarily hidden for future use */}
+          {/* <Route path="/exchange-connections" element={<ExchangeConnections />} /> */}
+          {/* Phase 2: Progress Analytics (IXP/XP) - temporarily disabled for backlog #36 */}
+          {/* <Route path="/progress-analytics" element={<ProgressAnalytics />} /> */}
+          <Route path="/my-metrics" element={<MyMetrics />} />
+          <Route path="/user-guide" element={<UserGuide />} />
+          <Route path="/accessibility" element={<AccessibilityGuide />} />
+          <Route path="/support" element={<Support />} />
+          <Route path="/calculators" element={<Calculators />} />
+          <Route path="/learn" element={<Learn />} />
+          <Route path="/api-docs" element={<ApiDocs />} />
+          <Route path="/advanced-analytics" element={<AdvancedAnalytics />} />
+          <Route path="/custom/:pageId" element={<CustomPage />} />
+        </Route>
+        
+        {/* Public content pages - no auth required */}
         <Route path="/cookie-policy" element={<PublicPageThemeWrapper><CookiePolicy /></PublicPageThemeWrapper>} />
         <Route path="/blog/:slug" element={<PublicPageThemeWrapper><BlogArticle /></PublicPageThemeWrapper>} />
         <Route path="/:lang/blog/:slug" element={<PublicPageThemeWrapper><BlogArticle /></PublicPageThemeWrapper>} />
         <Route path="/blog/category/:category" element={<PublicPageThemeWrapper><BlogCategory /></PublicPageThemeWrapper>} />
         <Route path="/:lang/blog/category/:category" element={<PublicPageThemeWrapper><BlogCategory /></PublicPageThemeWrapper>} />
-        <Route path="/learn" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
-        <Route path="/api-docs" element={<ProtectedRoute><ApiDocs /></ProtectedRoute>} />
-        <Route path="/advanced-analytics" element={<ProtectedRoute><AdvancedAnalytics /></ProtectedRoute>} />
         {/* Phase 2: Social Feed - temporarily disabled for backlog #34 */}
-        {/* <Route path="/social-feed" element={<ProtectedRoute><SocialFeed /></ProtectedRoute>} /> */}
+        {/* <Route path="/social-feed" element={<SocialFeed />} /> */}
         <Route path="/testimonials" element={<PublicPageThemeWrapper><Testimonials /></PublicPageThemeWrapper>} />
         <Route path="/changelog" element={<PublicPageThemeWrapper><ChangelogPage /></PublicPageThemeWrapper>} />
         <Route path="/how-it-works" element={<PublicPageThemeWrapper><HowItWorks /></PublicPageThemeWrapper>} />
         <Route path="/features" element={<PublicPageThemeWrapper><FeaturesPage /></PublicPageThemeWrapper>} />
-        <Route path="/custom/:pageId" element={<ProtectedRoute><CustomPage /></ProtectedRoute>} />
-        
-        {/* Checkout route - must be before NotFound */}
-        <Route path="/checkout" element={<CheckoutRedirect />} />
         
         <Route path="*" element={<NotFound />} />
       </Routes>

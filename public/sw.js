@@ -67,7 +67,63 @@ self.addEventListener('fetch', (event) => {
 
   // JavaScript modules - Always fetch fresh with correct MIME types (bypass cache)
   if (request.destination === 'script' || url.pathname.endsWith('.js') || url.pathname.endsWith('.mjs')) {
-    event.respondWith(fetch(request));
+    event.respondWith(
+      (async () => {
+        const maxRetries = 3;
+        let lastError;
+        
+        // Retry logic with exponential backoff
+        for (let attempt = 0; attempt < maxRetries; attempt++) {
+          try {
+            const response = await fetch(request, {
+              cache: 'no-cache',
+              credentials: 'same-origin'
+            });
+            
+            // Only accept successful responses with correct MIME type
+            if (response.ok) {
+              const contentType = response.headers.get('content-type');
+              if (contentType && (contentType.includes('javascript') || contentType.includes('ecmascript'))) {
+                console.log(`[SW] Successfully loaded script: ${url.pathname}`);
+                return response;
+              } else {
+                console.warn(`[SW] Script has incorrect MIME type: ${contentType} for ${url.pathname}`);
+                // Continue to retry
+              }
+            }
+            
+            lastError = new Error(`HTTP ${response.status}: ${response.statusText}`);
+          } catch (error) {
+            lastError = error;
+            console.warn(`[SW] Script load attempt ${attempt + 1}/${maxRetries} failed for ${url.pathname}:`, error);
+          }
+          
+          // Exponential backoff: 100ms, 200ms, 400ms
+          if (attempt < maxRetries - 1) {
+            await new Promise(resolve => setTimeout(resolve, 100 * Math.pow(2, attempt)));
+          }
+        }
+        
+        // All retries failed, try cache as last resort
+        console.error(`[SW] All retry attempts failed for ${url.pathname}, trying cache fallback`);
+        const cachedResponse = await caches.match(request);
+        if (cachedResponse) {
+          console.warn(`[SW] Serving stale cached version of ${url.pathname}`);
+          return cachedResponse;
+        }
+        
+        // No cache available, return error response
+        console.error(`[SW] Complete failure loading script ${url.pathname}:`, lastError);
+        return new Response(
+          `// Script load failed: ${url.pathname}\n// Error: ${lastError?.message || 'Unknown error'}\nconsole.error('Failed to load module: ${url.pathname}');`,
+          {
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: { 'Content-Type': 'text/javascript' }
+          }
+        );
+      })()
+    );
     return;
   }
 

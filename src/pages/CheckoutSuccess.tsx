@@ -1,345 +1,224 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { CheckCircle, Sparkles, ArrowRight, Mail, Lock, User } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import confetti from 'canvas-confetti';
-import { motion } from 'framer-motion';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CheckCircle2, Loader2, Mail, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
-import { useAuth } from '@/contexts/AuthContext';
+
+interface OrderDetails {
+  id: string;
+  amount_total: number;
+  currency: string;
+  customer_email: string;
+  customer_name: string;
+  payment_status: string;
+  line_items: Array<{
+    description: string;
+    amount_total: number;
+  }>;
+  metadata: Record<string, string>;
+}
 
 const CheckoutSuccess = () => {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
+  const [emailSent, setEmailSent] = useState(false);
   const sessionId = searchParams.get('session_id');
-  const { user } = useAuth();
-  
-  const [countdown, setCountdown] = useState(10);
-  const [showSignup, setShowSignup] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [fetchingEmail, setFetchingEmail] = useState(true);
 
-  // Fetch customer email from Stripe session
   useEffect(() => {
-    const fetchSessionEmail = async () => {
-      if (!sessionId || user) {
-        setFetchingEmail(false);
+    const fetchOrderDetails = async () => {
+      if (!sessionId) {
+        toast.error('No session ID found');
+        navigate('/');
         return;
       }
 
       try {
-        const { data, error } = await supabase.functions.invoke('get-stripe-session', {
-          body: { sessionId }
-        });
+        // Get checkout session details
+        const { data: sessionData, error: sessionError } = await supabase.functions.invoke(
+          'get-checkout-session',
+          { body: { sessionId } }
+        );
 
-        if (error) throw error;
+        if (sessionError) throw sessionError;
 
-        if (data?.email) {
-          setEmail(data.email);
-          if (data.customerName) {
-            setFullName(data.customerName);
+        const session = sessionData.session;
+        setOrderDetails(session);
+
+        // Send confirmation email
+        const productType = session.metadata?.productType || 'purchase';
+        const { error: emailError } = await supabase.functions.invoke(
+          'send-checkout-confirmation',
+          {
+            body: {
+              email: session.customer_email,
+              name: session.customer_name,
+              productType,
+              orderDetails: {
+                amount: session.amount_total,
+                currency: session.currency,
+                items: session.line_items,
+                sessionId: session.id,
+              },
+            },
           }
-          setShowSignup(true);
+        );
+
+        if (emailError) {
+          console.error('Email sending failed:', emailError);
+        } else {
+          setEmailSent(true);
         }
       } catch (error) {
-        console.error('Error fetching session email:', error);
-        toast.error('Could not retrieve payment details');
+        console.error('Error fetching order details:', error);
+        toast.error('Failed to load order details');
       } finally {
-        setFetchingEmail(false);
+        setLoading(false);
       }
     };
 
-    fetchSessionEmail();
-  }, [sessionId, user]);
+    fetchOrderDetails();
+  }, [sessionId, navigate]);
 
-  // Confetti and auto-redirect (only for logged-in users)
-  useEffect(() => {
-    if (user || !showSignup) {
-      const duration = 3000;
-      const end = Date.now() + duration;
-
-      const frame = () => {
-        confetti({
-          particleCount: 3,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0 },
-          colors: ['#2D68FF', '#5A8CFF', '#8AB4FF']
-        });
-
-        confetti({
-          particleCount: 3,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1 },
-          colors: ['#2D68FF', '#5A8CFF', '#8AB4FF']
-        });
-
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      };
-
-      frame();
-
-      const timer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            navigate('/dashboard');
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(timer);
-    }
-  }, [navigate, user, showSignup]);
-
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!email || !password || password.length < 6) {
-      toast.error('Please enter a valid email and password (min 6 characters)');
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const redirectUrl = `${window.location.origin}/dashboard`;
-      
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: fullName || '',
-          }
-        }
-      });
-
-      if (error) throw error;
-
-      if (data.user) {
-        toast.success('Account created! Welcome to The Trading Diary 🎉');
-        
-        // Trigger confetti
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-
-        // Redirect to dashboard
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 1500);
-      }
-    } catch (error: any) {
-      console.error('Signup error:', error);
-      
-      if (error.message?.includes('already registered')) {
-        toast.error('This email is already registered. Please log in instead.', {
-          action: {
-            label: 'Log In',
-            onClick: () => navigate('/auth')
-          }
-        });
-      } else {
-        toast.error(error.message || 'Failed to create account');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Show loading while fetching email
-  if (fetchingEmail) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-primary/5 to-background">
-        <Card className="max-w-md w-full p-8 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading payment details...</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6 flex flex-col items-center gap-4">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <p className="text-muted-foreground">Loading your order details...</p>
+          </CardContent>
         </Card>
       </div>
     );
   }
 
-  // Guest user needs to sign up
-  if (!user && showSignup) {
+  if (!orderDetails) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-primary/5 to-background">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-md"
-        >
-          <Card className="p-8 glass-strong">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-              className="mx-auto w-20 h-20 mb-6 rounded-full bg-primary/10 flex items-center justify-center"
-            >
-              <CheckCircle className="w-12 h-12 text-primary" />
-            </motion.div>
-
-            <h1 className="text-3xl font-bold mb-2 text-center flex items-center justify-center gap-2">
-              Payment Successful! <Sparkles className="w-6 h-6 text-primary" />
-            </h1>
-            <p className="text-muted-foreground mb-6 text-center">
-              Create your account to access your subscription
-            </p>
-
-            <form onSubmit={handleSignup} className="space-y-4">
-              <div>
-                <Label htmlFor="fullName">Full Name (Optional)</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="fullName"
-                    type="text"
-                    placeholder="John Doe"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="pl-10"
-                    disabled
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Using the email from your payment
-                </p>
-              </div>
-
-              <div>
-                <Label htmlFor="password">Create Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Min 6 characters"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={6}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full"
-                size="lg"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>Creating Account...</>
-                ) : (
-                  <>
-                    Create Account & Continue
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </>
-                )}
-              </Button>
-
-              <p className="text-xs text-center text-muted-foreground">
-                Already have an account?{' '}
-                <button
-                  type="button"
-                  onClick={() => navigate('/auth')}
-                  className="text-primary hover:underline"
-                >
-                  Log in instead
-                </button>
-              </p>
-            </form>
-          </Card>
-        </motion.div>
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Order Not Found</CardTitle>
+            <CardDescription>We couldn't find your order details.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => navigate('/')} className="w-full">
+              Return to Home
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
-  // Logged-in user success screen
+  const formattedAmount = (orderDetails.amount_total / 100).toFixed(2);
+  const currencySymbol = orderDetails.currency === 'usd' ? '$' : orderDetails.currency.toUpperCase();
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-primary/5 to-background">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Card className="max-w-md w-full p-8 text-center glass-strong">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-            className="mx-auto w-20 h-20 mb-6 rounded-full bg-primary/10 flex items-center justify-center"
-          >
-            <CheckCircle className="w-12 h-12 text-primary" />
-          </motion.div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
+      <Card className="w-full max-w-2xl shadow-xl">
+        <CardHeader className="text-center space-y-4 pb-6">
+          <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+            <CheckCircle2 className="h-10 w-10 text-green-600 dark:text-green-400" />
+          </div>
+          <div>
+            <CardTitle className="text-3xl font-bold mb-2">Payment Successful!</CardTitle>
+            <CardDescription className="text-lg">
+              Thank you for your purchase, {orderDetails.customer_name || 'valued customer'}
+            </CardDescription>
+          </div>
+        </CardHeader>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <h1 className="text-3xl font-bold mb-3 flex items-center justify-center gap-2">
-              Welcome to Pro! <Sparkles className="w-6 h-6 text-primary" />
-            </h1>
-            <p className="text-muted-foreground mb-6">
-              Your subscription is now active. Get ready to supercharge your trading journey!
-            </p>
-
-            {sessionId && (
-              <p className="text-xs text-muted-foreground mb-4">
-                Session ID: {sessionId.slice(0, 20)}...
-              </p>
-            )}
-
+        <CardContent className="space-y-6">
+          {/* Order Summary */}
+          <div className="bg-muted/50 rounded-lg p-6 space-y-4">
+            <h3 className="font-semibold text-lg border-b border-border pb-2">Order Summary</h3>
+            
             <div className="space-y-3">
-              <Button
-                onClick={() => navigate('/dashboard')}
-                size="lg"
-                className="w-full"
-              >
-                Go to Dashboard
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+              {orderDetails.line_items?.map((item, index) => (
+                <div key={index} className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">{item.description}</span>
+                  <span className="font-medium">
+                    {currencySymbol}
+                    {((item.amount_total || 0) / 100).toFixed(2)}
+                  </span>
+                </div>
+              ))}
+              
+              <div className="pt-3 border-t border-border flex justify-between items-center">
+                <span className="font-semibold text-lg">Total</span>
+                <span className="font-bold text-2xl text-primary">
+                  {currencySymbol}
+                  {formattedAmount}
+                </span>
+              </div>
+            </div>
+          </div>
 
-              <p className="text-sm text-muted-foreground">
-                Redirecting in {countdown} seconds...
+          {/* Order Details */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">Order ID</p>
+              <p className="font-mono text-sm font-medium truncate">{orderDetails.id}</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">Payment Status</p>
+              <p className="font-medium text-green-600 dark:text-green-400 flex items-center gap-1">
+                <CheckCircle2 className="h-4 w-4" />
+                {orderDetails.payment_status}
               </p>
             </div>
-          </motion.div>
-        </Card>
-      </motion.div>
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">Email</p>
+              <p className="text-sm font-medium">{orderDetails.customer_email}</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">Product Type</p>
+              <p className="text-sm font-medium">
+                {orderDetails.metadata?.productType?.replace('_', ' ') || 'Purchase'}
+              </p>
+            </div>
+          </div>
+
+          {/* Email Confirmation */}
+          {emailSent && (
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 flex items-start gap-3">
+              <Mail className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                  Confirmation Email Sent
+                </p>
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  Check your inbox at {orderDetails.customer_email} for your order details.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            <Button
+              onClick={() => navigate('/dashboard')}
+              className="flex-1"
+              size="lg"
+            >
+              Go to Dashboard
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+            <Button
+              onClick={() => navigate('/')}
+              variant="outline"
+              className="flex-1"
+              size="lg"
+            >
+              Return Home
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

@@ -76,3 +76,10 @@ verify_jwt = false
 
 [functions.get-stripe-session]
 verify_jwt = false
+
+[functions.get-checkout-session]
+verify_jwt = false
+
+[functions.send-checkout-confirmation]
+verify_jwt = false
+

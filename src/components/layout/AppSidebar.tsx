@@ -486,15 +486,13 @@ export function AppSidebar() {
                   <SidebarMenu>
                     {archivedMenu.map((group) => (
                       <SidebarMenuItem key={group.label}>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="w-full justify-start text-muted-foreground hover:text-foreground"
+                        <SidebarMenuButton
                           onClick={() => toggleArchive(group.label)}
+                          className="w-full justify-start text-muted-foreground hover:text-foreground"
                         >
                           <Archive className="mr-2 h-4 w-4" />
                           {t('sidebar.restore', { group: group.label })}
-                        </Button>
+                        </SidebarMenuButton>
                       </SidebarMenuItem>
                     ))}
                   </SidebarMenu>

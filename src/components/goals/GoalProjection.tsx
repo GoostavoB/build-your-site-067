@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, AlertTriangle, Target } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { TrendingUp, TrendingDown, AlertTriangle, Target, Trash2 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { format, addDays, addWeeks, addMonths, differenceInDays } from 'date-fns';
 
@@ -23,9 +24,10 @@ interface Trade {
 interface GoalProjectionProps {
   goals: Goal[];
   trades: Trade[];
+  onDelete?: (goalId: string) => void;
 }
 
-export const GoalProjection = ({ goals, trades }: GoalProjectionProps) => {
+export const GoalProjection = ({ goals, trades, onDelete }: GoalProjectionProps) => {
   const activeGoals = goals.filter(g => (g.current_value / g.target_value) < 1);
   
   if (activeGoals.length === 0 || trades.length === 0) {
@@ -131,22 +133,34 @@ export const GoalProjection = ({ goals, trades }: GoalProjectionProps) => {
                   <h4 className="font-semibold text-lg">{goal.title}</h4>
                   <p className="text-sm text-muted-foreground capitalize">{goal.period} goal</p>
                 </div>
-                <Badge 
-                  variant={projection.isOnTrack ? "default" : "destructive"}
-                  className="gap-1"
-                >
-                  {projection.isOnTrack ? (
-                    <>
-                      <TrendingUp className="h-3 w-3" />
-                      On Track
-                    </>
-                  ) : (
-                    <>
-                      <AlertTriangle className="h-3 w-3" />
-                      Behind
-                    </>
+                <div className="flex items-center gap-2">
+                  <Badge 
+                    variant={projection.isOnTrack ? "default" : "destructive"}
+                    className="gap-1"
+                  >
+                    {projection.isOnTrack ? (
+                      <>
+                        <TrendingUp className="h-3 w-3" />
+                        On Track
+                      </>
+                    ) : (
+                      <>
+                        <AlertTriangle className="h-3 w-3" />
+                        Behind
+                      </>
+                    )}
+                  </Badge>
+                  {onDelete && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onDelete(goal.id)}
+                      className="h-8 w-8"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   )}
-                </Badge>
+                </div>
               </div>
 
               {/* Current Status */}

@@ -162,7 +162,8 @@ export default function Goals() {
         {activeGoals.length > 0 && trades && trades.length > 0 && (
           <GoalProjection 
             goals={(goals || []) as any} 
-            trades={trades as any} 
+            trades={trades as any}
+            onDelete={setDeletingGoalId}
           />
         )}
 

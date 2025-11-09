@@ -195,10 +195,23 @@ export function SmartUpload({
   const processImages = async () => {
     if (imageQueue.length === 0) return;
     
-    // Check credits BEFORE any processing
-    await refetchCredits();
-    if (!canUpload || balance <= 0) {
-      console.log('❌ No credits available, showing gate');
+    // Server-side credit check BEFORE any processing to avoid 90% stalls
+    try {
+      const queuedCount = imageQueue.filter(i => i.status === 'queued').length;
+      const { data: creditData, error: creditErr } = await supabase.functions.invoke('check-upload-credits');
+      if (creditErr) {
+        console.error('❌ Credit check failed:', creditErr);
+      }
+      const remaining = (creditData as any)?.remaining ?? 0;
+      const canUploadNow = (creditData as any)?.canUpload === true && remaining >= queuedCount;
+      if (!canUploadNow) {
+        console.log('❌ Not enough credits. Needed:', queuedCount, 'Remaining:', remaining);
+        setShowCreditsGate(true);
+        return;
+      }
+    } catch (e) {
+      console.error('❌ Unexpected error during credit check:', e);
+      // Fail closed: show gate to prevent bad UX
       setShowCreditsGate(true);
       return;
     }

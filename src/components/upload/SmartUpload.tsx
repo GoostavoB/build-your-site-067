@@ -511,16 +511,7 @@ export function SmartUpload({
                     </div>}
                   
                   {item.status === 'processing' && <div className="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center">
-                      <motion.div animate={{
-                y: [0, -4, 0],
-                opacity: [0.6, 1, 0.6]
-              }} transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}>
-                        <TrendingUp className="w-6 h-6 text-primary" />
-                      </motion.div>
+                      <TrendingUp className="w-6 h-6 text-primary" />
                     </div>}
                   
                   {item.status === 'success' && <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-600/20 backdrop-blur-[2px] flex items-center justify-center">

@@ -649,7 +649,7 @@ export function SmartUpload({
               {!processing && <Button variant="ghost" onClick={clearAll} disabled={imageQueue.length === 0} size="lg" className="w-full sm:w-auto text-muted-foreground hover:text-foreground">
                   Cancel
                 </Button>}
-              <Button onClick={processImages} disabled={processing || imageQueue.length === 0} size="lg" className="w-full sm:flex-1 shimmer-button-premium text-white rounded-xl group relative overflow-hidden min-h-[44px]">
+              <Button onClick={processImages} disabled={processing || imageQueue.length === 0} size="lg" className="w-full sm:flex-1 text-white rounded-xl group relative overflow-hidden min-h-[44px] bg-gradient-to-r from-primary to-primary/80">
                 {/* Background glow */}
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity blur-xl" />
                 

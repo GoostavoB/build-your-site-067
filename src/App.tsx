@@ -37,6 +37,7 @@ import { DailyRewardModal } from "@/components/rewards/DailyRewardModal";
 import { DailyRewardIndicator } from "@/components/rewards/DailyRewardIndicator";
 import { useDailyRewards } from "@/hooks/useDailyRewards";
 import { AppShell } from "@/layouts/AppShell";
+import { ModuleLoadErrorBanner } from "@/components/upload/ModuleLoadErrorBanner";
 
 // Eagerly load critical pages (landing, auth, and checkout)
 import Index from "./pages/Index";
@@ -176,6 +177,7 @@ const AppRoutes = () => {
   
   return (
     <>
+      <ModuleLoadErrorBanner />
       <LanguageSync />
       {user && !isPublicPage && <WelcomeBackToast />}
       {user && !isPublicPage && <OnboardingWrapper />}

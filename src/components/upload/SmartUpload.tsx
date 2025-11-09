@@ -63,6 +63,21 @@ export function SmartUpload({
   
   const { canUpload, balance, refetch: refetchCredits } = useUploadCredits();
 
+  // Startup credit check - proactively show gate on mount if no credits
+  useEffect(() => {
+    const startupCreditCheck = async () => {
+      console.log('🚀 [STARTUP] Checking credits on component mount...');
+      const hasCredits = await checkCredits();
+      if (!hasCredits) {
+        console.log('⚠️ [STARTUP] No credits detected - gate will be shown');
+      } else {
+        console.log('✅ [STARTUP] Credits available');
+      }
+    };
+    
+    startupCreditCheck();
+  }, []); // Run once on mount
+
   // Debug: Track showCreditsGate state changes
   useEffect(() => {
     console.log('🔍 [STATE CHANGE] showCreditsGate changed to:', showCreditsGate);
@@ -672,6 +687,18 @@ export function SmartUpload({
             <p className="text-xs text-muted-foreground">
               PNG, JPG, WEBP • Max 10 MB
             </p>
+            
+            {/* Non-JS fallback - always visible */}
+            <noscript>
+              <div className="mt-3 pt-3 border-t border-border/50">
+                <a 
+                  href="/credits/purchase" 
+                  className="inline-block px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                >
+                  Buy Credits to Upload
+                </a>
+              </div>
+            </noscript>
           </div>
         </div>}
 

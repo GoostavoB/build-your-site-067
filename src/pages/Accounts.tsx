@@ -63,8 +63,22 @@ const Accounts = () => {
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
-      const { error } = await supabase.from("trading_accounts").insert([data]);
-      if (error) throw error;
+      // Session guard
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) {
+        throw new Error('Session expired. Please sign in again.');
+      }
+
+      const { error } = await supabase.from("trading_accounts").insert([data]).select().single();
+      if (error) {
+        const msg = error.message || 'Failed to create account';
+        const code = error.code || '';
+        if (code === '42501' || msg.toLowerCase().includes('row-level security')) {
+          throw new Error('Permission denied. Please sign in again.');
+        }
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trading-accounts"] });
@@ -79,11 +93,27 @@ const Accounts = () => {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      // Session guard
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) {
+        throw new Error('Session expired. Please sign in again.');
+      }
+
       const { error } = await supabase
         .from("trading_accounts")
         .update(data)
-        .eq("id", id);
-      if (error) throw error;
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) {
+        const msg = error.message || 'Failed to update account';
+        const code = error.code || '';
+        if (code === '42501' || msg.toLowerCase().includes('row-level security')) {
+          throw new Error('Permission denied. Please sign in again.');
+        }
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trading-accounts"] });

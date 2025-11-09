@@ -90,8 +90,22 @@ const PerformanceAlerts = () => {
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
-      const { error } = await supabase.from("performance_alerts").insert([data]);
-      if (error) throw error;
+      // Session guard
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) {
+        throw new Error('Session expired. Please sign in again.');
+      }
+
+      const { error } = await supabase.from("performance_alerts").insert([data]).select().single();
+      if (error) {
+        const msg = error.message || 'Failed to create alert';
+        const code = error.code || '';
+        if (code === '42501' || msg.toLowerCase().includes('row-level security')) {
+          throw new Error('Permission denied. Please sign in again.');
+        }
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["performance-alerts"] });

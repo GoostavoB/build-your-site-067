@@ -64,12 +64,29 @@ export const CreateAccountDialog = ({ open, onOpenChange }: CreateAccountDialogP
 
     setIsSubmitting(true);
     try {
+      // 1) Session guard
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) {
+        toast.error('Session expired. Please sign in again.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // 2) User guard
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData?.user) {
+        toast.error('You must be signed in to create an account.');
+        setIsSubmitting(false);
+        return;
+      }
+
       const response = await fetch(
         `https://qziawervfvptoretkjrn.supabase.co/functions/v1/accounts`,
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(values),

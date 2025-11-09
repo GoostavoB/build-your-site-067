@@ -59,8 +59,22 @@ export const StrategyEditor = ({ onClose, onSave }: StrategyEditorProps) => {
     setSubmitting(true);
 
     try {
+      // 1) Session guard
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) {
+        toast.error('Session expired. Please sign in again.');
+        setSubmitting(false);
+        return;
+      }
+
+      // 2) User guard
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!user) {
+        toast.error('You must be signed in to share a strategy.');
+        setSubmitting(false);
+        return;
+      }
 
       const { error } = await supabase.from("shared_strategies").insert({
         user_id: user.id,

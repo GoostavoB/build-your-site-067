@@ -274,6 +274,15 @@ const Upload = () => {
     setLoading(true);
     
     try {
+      // 1) Session guard
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) {
+        toast.error('Session expired. Please sign in again.');
+        setLoading(false);
+        return;
+      }
+
       const tradesData = extractedTrades.map((trade, index) => {
         const edits = tradeEdits[index] || {};
         const finalTrade = { ...trade, ...edits };
@@ -315,32 +324,41 @@ const Upload = () => {
         .insert(tradesData)
         .select('id, symbol, profit_loss');
 
-      if (!error) {
-        const assets = [...new Set(tradesData.map(t => t.symbol))];
-        const totalEntryValue = tradesData.reduce((sum, t) => sum + (t.entry_price * t.position_size), 0);
-        const mostRecentTrade = insertedTrades?.[0];
-
-        await supabase.from('upload_batches').insert({
-          user_id: user.id,
-          trade_count: extractedTrades.length,
-          assets: assets,
-          total_entry_value: totalEntryValue,
-          most_recent_trade_id: mostRecentTrade?.id,
-          most_recent_trade_asset: mostRecentTrade?.symbol,
-          most_recent_trade_value: mostRecentTrade?.profit_loss
-        });
-
-        setSavedTradesCount(extractedTrades.length);
-        setShowSuccess(true);
-        setExtractedTrades([]);
-        setTradeEdits({});
-        toast.success(`${extractedTrades.length} trade${extractedTrades.length > 1 ? 's' : ''} saved successfully!`);
-      } else {
+      if (error) {
         console.error('Error saving trades:', error);
-        toast.error('Failed to save trades', {
-          description: error.message
-        });
+        const msg = error.message || 'Failed to save trades';
+        const code = error.code || '';
+        
+        if (code === '42501' || msg.toLowerCase().includes('row-level security')) {
+          toast.error('Permission denied. Please sign in again.');
+        } else if (msg.includes('JWT') || msg.toLowerCase().includes('expired')) {
+          toast.error('Session expired. Please sign in again.');
+        } else {
+          toast.error('Failed to save trades', { description: msg });
+        }
+        setLoading(false);
+        return;
       }
+
+      const assets = [...new Set(tradesData.map(t => t.symbol))];
+      const totalEntryValue = tradesData.reduce((sum, t) => sum + (t.entry_price * t.position_size), 0);
+      const mostRecentTrade = insertedTrades?.[0];
+
+      await supabase.from('upload_batches').insert({
+        user_id: user.id,
+        trade_count: extractedTrades.length,
+        assets: assets,
+        total_entry_value: totalEntryValue,
+        most_recent_trade_id: mostRecentTrade?.id,
+        most_recent_trade_asset: mostRecentTrade?.symbol,
+        most_recent_trade_value: mostRecentTrade?.profit_loss
+      });
+
+      setSavedTradesCount(extractedTrades.length);
+      setShowSuccess(true);
+      setExtractedTrades([]);
+      setTradeEdits({});
+      toast.success(`${extractedTrades.length} trade${extractedTrades.length > 1 ? 's' : ''} saved successfully!`);
     } finally {
       setLoading(false);
     }
@@ -353,6 +371,14 @@ const Upload = () => {
     setLoading(true);
 
     try {
+      // 1) Session guard
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) {
+        toast.error('Session expired. Please sign in again.');
+        setLoading(false);
+        return;
+      }
       let screenshotUrl = screenshotPreview;
       
       if (screenshot && screenshot instanceof File) {
@@ -407,23 +433,48 @@ const Upload = () => {
         const { error } = await supabase
           .from('trades')
           .update(tradeData)
-          .eq('id', editId);
+          .eq('id', editId)
+          .select()
+          .single();
 
-        if (error) throw error;
+        if (error) {
+          const msg = error.message || 'Failed to update trade';
+          const code = error.code || '';
+          if (code === '42501' || msg.toLowerCase().includes('row-level security')) {
+            toast.error('Permission denied. Please sign in again.');
+          } else {
+            toast.error(msg);
+          }
+          setLoading(false);
+          return;
+        }
         toast.success('Trade updated successfully');
       } else {
         const { error } = await supabase
           .from('trades')
-          .insert(tradeData);
+          .insert(tradeData)
+          .select()
+          .single();
 
-        if (error) throw error;
+        if (error) {
+          const msg = error.message || 'Failed to save trade';
+          const code = error.code || '';
+          if (code === '42501' || msg.toLowerCase().includes('row-level security')) {
+            toast.error('Permission denied. Please sign in again.');
+          } else {
+            toast.error(msg);
+          }
+          setLoading(false);
+          return;
+        }
         toast.success('Trade saved successfully');
       }
 
       navigate('/dashboard');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving trade:', error);
-      toast.error('Failed to save trade');
+      const msg = error?.message || 'Failed to save trade';
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

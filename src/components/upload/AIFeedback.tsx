@@ -24,18 +24,38 @@ export function AIFeedback({ extractedData, imagePath }: AIFeedbackProps) {
     if (type === 'positive') {
       // Quick positive feedback without dialog
       try {
+        // Session guard
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData?.session?.access_token;
+        if (!token) {
+          toast.error('Session expired. Please sign in again.');
+          return;
+        }
+
         const { error } = await supabase.from('ai_extraction_feedback').insert({
           user_id: user?.id,
           image_path: imagePath,
           extracted_data: extractedData,
           feedback_type: 'positive',
           feedback_text: null,
-        });
+        })
+        .select()
+        .single();
 
-        if (error) throw error;
+        if (error) {
+          const msg = error.message || 'Failed to submit feedback';
+          const code = error.code || '';
+          if (code === '42501' || msg.toLowerCase().includes('row-level security')) {
+            toast.error('Permission denied. Please sign in again.');
+          } else {
+            console.error('Error submitting feedback:', error);
+          }
+          return;
+        }
         toast.success('Thanks for your feedback!');
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error submitting feedback:', error);
+        toast.error(error?.message || 'Failed to submit feedback');
       }
     } else {
       // Show dialog for negative feedback to get details
@@ -51,23 +71,44 @@ export function AIFeedback({ extractedData, imagePath }: AIFeedbackProps) {
 
     setSubmitting(true);
     try {
+      // Session guard
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) {
+        toast.error('Session expired. Please sign in again.');
+        setSubmitting(false);
+        return;
+      }
+
       const { error } = await supabase.from('ai_extraction_feedback').insert({
         user_id: user?.id,
         image_path: imagePath,
         extracted_data: extractedData,
         feedback_type: 'negative',
         feedback_text: feedbackText,
-      });
+      })
+      .select()
+      .single();
 
-      if (error) throw error;
+      if (error) {
+        const msg = error.message || 'Failed to submit feedback';
+        const code = error.code || '';
+        if (code === '42501' || msg.toLowerCase().includes('row-level security')) {
+          toast.error('Permission denied. Please sign in again.');
+        } else {
+          toast.error(msg);
+        }
+        setSubmitting(false);
+        return;
+      }
       
       toast.success('Thanks for helping us improve!');
       setShowFeedback(false);
       setFeedbackText('');
       setFeedbackType(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting feedback:', error);
-      toast.error('Failed to submit feedback');
+      toast.error(error?.message || 'Failed to submit feedback');
     } finally {
       setSubmitting(false);
     }

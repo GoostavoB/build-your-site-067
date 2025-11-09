@@ -63,8 +63,30 @@ export const MenuCustomizationDialog = () => {
 
     setLoading(true);
     try {
+      // 1) Session guard
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) {
+        toast({
+          title: 'Error',
+          description: 'Session expired. Please sign in again.',
+          variant: 'destructive',
+        });
+        setLoading(false);
+        return;
+      }
+
+      // 2) User guard
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      if (!user) {
+        toast({
+          title: 'Error',
+          description: 'You must be signed in to add menu items.',
+          variant: 'destructive',
+        });
+        setLoading(false);
+        return;
+      }
 
       const { error } = await supabase.from('custom_menu_items').insert({
         user_id: user.id,
@@ -72,9 +94,29 @@ export const MenuCustomizationDialog = () => {
         icon: newItem.icon,
         route: newItem.route || `/custom/${newItem.label.toLowerCase().replace(/\s+/g, '-')}`,
         order_index: menuItems.length,
-      });
+      })
+      .select()
+      .single();
 
-      if (error) throw error;
+      if (error) {
+        const msg = error.message || 'Failed to add menu item';
+        const code = error.code || '';
+        if (code === '42501' || msg.toLowerCase().includes('row-level security')) {
+          toast({
+            title: 'Error',
+            description: 'Permission denied. Please sign in again.',
+            variant: 'destructive',
+          });
+        } else {
+          toast({
+            title: 'Error',
+            description: msg,
+            variant: 'destructive',
+          });
+        }
+        setLoading(false);
+        return;
+      }
 
       toast({
         title: 'Success',

@@ -29,8 +29,20 @@ export const QuickAddTrade = () => {
     setLoading(true);
 
     try {
+      // 1) Session guard
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) {
+        toast.error('Session expired. Please sign in again.');
+        return;
+      }
+
+      // 2) User guard
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!user) {
+        toast.error('You must be signed in to add a trade.');
+        return;
+      }
 
       const { error } = await supabase.from("trades").insert({
         user_id: user.id,
@@ -41,9 +53,21 @@ export const QuickAddTrade = () => {
         position_size: parseDecimalInput(formData.position_size),
         profit_loss: parseDecimalInput(formData.profit_loss),
         trade_date: new Date().toISOString(),
-      });
+      })
+      .select()
+      .single();
 
-      if (error) throw error;
+      if (error) {
+        const msg = error.message || 'Failed to add trade';
+        const code = error.code || '';
+        if (code === '42501' || msg.toLowerCase().includes('row-level security')) {
+          toast.error('Permission denied. Please sign in again.');
+        } else {
+          toast.error(msg);
+        }
+        setLoading(false);
+        return;
+      }
 
       toast.success("Trade added successfully!");
       setOpen(false);

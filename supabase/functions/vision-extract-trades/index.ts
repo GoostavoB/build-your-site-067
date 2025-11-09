@@ -22,15 +22,14 @@ serve(async (req) => {
       });
     }
 
-    // Create Supabase client with auth header
-    const supabase = createClient(
+    // Create Supabase client and verify token
+    const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: authHeader } } }
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get user - with JWT verification enabled, this should work
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
     
     if (userError) {
       console.error('❌ Auth error:', userError.message);
@@ -142,7 +141,7 @@ Return as a JSON array where each trade is an object with the fields you found. 
             ]
           }
         ],
-        max_tokens: 4000
+        max_completion_tokens: 1500
       })
     });
 

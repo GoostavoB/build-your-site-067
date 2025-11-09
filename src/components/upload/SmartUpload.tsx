@@ -254,17 +254,65 @@ export function SmartUpload({
 
         console.log('✅ Session valid, calling vision extraction...');
 
-        // Call vision extraction with explicit auth header
-        const { data, error } = await supabase.functions.invoke('vision-extract-trades', {
+        // Call vision extraction with direct fetch to expose HTTP status codes
+        const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/vision-extract-trades`;
+        
+        console.log('🚀 Calling vision-extract-trades...');
+        const response = await fetch(functionUrl, {
+          method: 'POST',
           headers: {
-            Authorization: `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
           },
-          body: {
-            imageBase64: imageBase64,  // Send full data URL
+          body: JSON.stringify({
+            imageBase64: imageBase64,
             broker: broker || undefined,
             debug: debugMode
-          }
+          })
         });
+
+        // Parse response
+        let data: any;
+        try {
+          data = await response.json();
+        } catch (parseError) {
+          console.error('❌ Failed to parse response:', parseError);
+          throw new Error(`Failed to parse response (${response.status})`);
+        }
+
+        // Handle specific HTTP status codes
+        if (!response.ok) {
+          console.error(`❌ API Error ${response.status}:`, data);
+          
+          // Session expired
+          if (response.status === 401) {
+            toast.error('Session expired', {
+              description: 'Signing you out. Please log in again.',
+              duration: 5000
+            });
+            await supabase.auth.signOut();
+            window.location.href = '/auth';
+            throw new Error('AUTH_ERROR');
+          }
+          
+          // Rate limited
+          if (response.status === 429) {
+            throw new Error('RATE_LIMITED: Too many requests. Wait 60 seconds and try again.');
+          }
+          
+          // Credits exhausted
+          if (response.status === 402) {
+            throw new Error('NO_CREDITS: AI credits exhausted. Add funds to your Lovable workspace in Settings.');
+          }
+          
+          // Service unavailable
+          if (response.status === 404) {
+            throw new Error('SERVICE_UNAVAILABLE: Function not deployed. Try CSV upload or manual entry instead.');
+          }
+          
+          // Generic error
+          throw new Error(data.error || data.message || `Request failed (${response.status})`);
+        }
 
         // Store debug data if in debug mode
         const debugData: DebugData | undefined = debugMode ? {
@@ -275,14 +323,16 @@ export function SmartUpload({
             broker: broker || 'auto-detect'
           },
           rawResponse: data,
-          error: error,
+          error: null,
           processedTrades: data?.trades || [],
           debugInfo: data?.debug
         } : undefined;
 
-        if (error || data?.error) {
-          throw new Error(data?.error || error?.message || 'Extraction failed');
+        // Check for explicit errors in response
+        if (data?.error) {
+          throw new Error(data.error);
         }
+        
         const trades = data.trades || [];
 
         // Determine quality by calculating variance
@@ -306,7 +356,24 @@ export function SmartUpload({
         allTrades.push(...trades);
         setTotalTradesFound(prev => prev + trades.length);
       } catch (error: any) {
-        console.error('Extraction error:', error);
+        console.error('❌ Extraction error:', error);
+
+        // Parse specific error messages
+        let userMessage = 'Extraction failed';
+        let description = error.message || 'Unknown error';
+        
+        if (error.message?.includes('AUTH_ERROR')) {
+          return; // Already handled above
+        } else if (error.message?.includes('RATE_LIMITED')) {
+          userMessage = 'Rate limited';
+          description = 'Too many requests. Wait 60 seconds and try again.';
+        } else if (error.message?.includes('NO_CREDITS')) {
+          userMessage = 'Credits exhausted';
+          description = 'Add funds to your Lovable workspace in Settings.';
+        } else if (error.message?.includes('SERVICE_UNAVAILABLE')) {
+          userMessage = 'Service unavailable';
+          description = 'Function not deployed. Try CSV upload or manual entry instead.';
+        }
 
         // Update status to error
         clearInterval(progressInterval);
@@ -316,11 +383,15 @@ export function SmartUpload({
             ...updated[i],
             status: 'error',
             progress: 0,
-            error: error.message || 'Failed to extract'
+            error: userMessage
           };
           return updated;
         });
-        toast.error(`Failed to extract from image ${i + 1}`);
+        
+        toast.error(`Image ${i + 1}: ${userMessage}`, {
+          description: description,
+          duration: 6000
+        });
       }
 
       // Update progress

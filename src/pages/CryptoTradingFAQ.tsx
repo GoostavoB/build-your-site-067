@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { Logo } from "@/components/Logo";
 import Footer from "@/components/Footer";
 import { updatePageMeta, addStructuredData } from "@/utils/seoHelpers";
@@ -46,6 +47,7 @@ const CryptoTradingFAQ = () => {
             <Logo size="lg" variant="horizontal" showText={true} className="hover:opacity-80 transition-opacity" />
           </div>
           <div className="flex items-center gap-3">
+            <LanguageToggle />
             <Button onClick={() => navigate('/auth')} variant="default" className="rounded-xl">
               Get Started Free
             </Button>

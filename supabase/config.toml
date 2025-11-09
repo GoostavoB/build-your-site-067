@@ -1,11 +1,5 @@
 project_id = "qziawervfvptoretkjrn"
 
-[functions.vision-extract-trades]
-verify_jwt = true
-
-[functions.claude-database-api]
-verify_jwt = false
-
 [functions.ai-dashboard-assistant]
 verify_jwt = true
 
@@ -49,37 +43,3 @@ verify_jwt = true
 
 [functions.process-multi-upload]
 verify_jwt = true
-
-[functions.ai-insights-home]
-verify_jwt = true
-
-[functions.extract-trade-info]
-verify_jwt = true
-
-[functions.structure-trade]
-verify_jwt = true
-
-[functions.check-upload-credits]
-verify_jwt = true
-
-[functions.accounts]
-verify_jwt = true
-
-[functions.ai-trade-analysis]
-verify_jwt = true
-
-[functions.ai-chat]
-verify_jwt = true
-
-[functions.create-stripe-checkout]
-verify_jwt = false
-
-[functions.get-stripe-session]
-verify_jwt = false
-
-[functions.get-checkout-session]
-verify_jwt = false
-
-[functions.send-checkout-confirmation]
-verify_jwt = false
-

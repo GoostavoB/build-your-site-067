@@ -11,7 +11,7 @@ import { GoalProjection } from "@/components/goals/GoalProjection";
 // GamificationSidebar temporarily disabled - XP/Level/Challenges hidden
 // import { GamificationSidebar } from "@/components/gamification/GamificationSidebar";
 import { AchievementBadges } from "@/components/AchievementBadges";
-import { Target, TrendingUp, AlertTriangle, CheckCircle2, X, Trophy, Star, CircleDashed } from "lucide-react";
+import { Target, TrendingUp, Award, CheckCircle, X, Trophy, Star } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -94,29 +94,20 @@ export default function Goals() {
     {
       label: "Active Goals",
       value: activeGoals.length,
-      icon: CircleDashed,
-      color: "text-blue-400",
-      bgColor: "bg-gradient-to-br from-blue-500/10 to-blue-600/5",
-      hoverColor: "hover:from-blue-500/15 hover:to-blue-600/10",
-      iconStroke: 1.5
+      icon: Target,
+      color: "text-blue-600"
     },
     {
       label: "Completed",
       value: completedGoals.length,
-      icon: CheckCircle2,
-      color: "text-emerald-400",
-      bgColor: "bg-gradient-to-br from-emerald-500/10 to-emerald-600/5",
-      hoverColor: "hover:from-emerald-500/15 hover:to-emerald-600/10",
-      iconStroke: 1.5
+      icon: CheckCircle,
+      color: "text-green-600"
     },
     {
       label: "Overdue",
       value: overdueGoals.length,
-      icon: AlertTriangle,
-      color: "text-red-400",
-      bgColor: "bg-gradient-to-br from-red-500/10 to-red-600/5",
-      hoverColor: "hover:from-red-500/15 hover:to-red-600/10",
-      iconStroke: 1.5
+      icon: Award,
+      color: "text-red-600"
     },
     {
       label: "Total Progress",
@@ -124,15 +115,12 @@ export default function Goals() {
         ? `${(activeGoals.reduce((sum, g) => sum + (g.current_value / g.target_value * 100), 0) / activeGoals.length).toFixed(0)}%`
         : "0%",
       icon: TrendingUp,
-      color: "text-purple-400",
-      bgColor: "bg-gradient-to-br from-purple-500/10 to-purple-600/5",
-      hoverColor: "hover:from-purple-500/15 hover:to-purple-600/10",
-      iconStroke: 1.5
+      color: "text-purple-600"
     }
   ];
 
   return (
-    <>
+    <AppLayout>
       <SkipToContent />
       <main id="main-content" className={layout.container}>
         <div className={spacing.section}>
@@ -148,10 +136,7 @@ export default function Goals() {
               </p>
             </div>
             <CreateGoalDialog 
-              onGoalCreated={() => {
-                refetch();
-                toast.success("Goal saved successfully!");
-              }}
+              onGoalCreated={refetch}
               editingGoal={editingGoal}
               onClose={() => setEditingGoal(null)}
             />
@@ -161,19 +146,13 @@ export default function Goals() {
           <section className={layout.grid.stats} aria-labelledby="goals-stats-heading">
             <h2 id="goals-stats-heading" className="sr-only">Goal Statistics</h2>
             {stats.map((stat, index) => (
-              <Card 
-                key={index} 
-                className={`p-6 transition-all duration-300 cursor-default ${stat.bgColor} ${stat.hoverColor} hover:scale-[1.02] border-border/50 backdrop-blur-sm`} 
-                role="article"
-              >
+              <Card key={index} className="p-4" role="article">
                 <div className={layout.flex.between}>
-                  <div className="space-y-2">
-                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{stat.label}</p>
-                    <p className="text-4xl font-bold tracking-tight">{stat.value}</p>
+                  <div>
+                    <p className={typography.body}>{stat.label}</p>
+                    <p className="text-2xl font-bold mt-1">{stat.value}</p>
                   </div>
-                  <div className="flex items-center justify-center">
-                    <stat.icon className={`h-8 w-8 ${stat.color}`} aria-hidden="true" strokeWidth={stat.iconStroke} />
-                  </div>
+                  <stat.icon className={`h-8 w-8 ${stat.color}`} aria-hidden="true" />
                 </div>
               </Card>
             ))}
@@ -204,12 +183,10 @@ export default function Goals() {
           <TabsContent value="active" className="space-y-4" role="region" aria-labelledby="active-goals-heading">
             <h2 id="active-goals-heading" className="sr-only">Active Goals</h2>
             {activeGoals.length === 0 ? (
-              <Card className="p-16 text-center glass">
-                <div className="mx-auto w-fit p-6 rounded-2xl bg-muted/20 mb-6">
-                  <Target className="h-12 w-12 mx-auto text-muted-foreground/60" strokeWidth={1.5} />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">No Active Goals</h3>
-                <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+              <Card className="p-12 text-center">
+                <Target className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                <h3 className="text-lg font-semibold mb-2">No Active Goals</h3>
+                <p className="text-sm text-muted-foreground mb-4">
                   Create your first goal to start tracking your progress
                 </p>
                 <CreateGoalDialog onGoalCreated={refetch} />
@@ -230,12 +207,10 @@ export default function Goals() {
 
           <TabsContent value="completed" className="space-y-4">
             {completedGoals.length === 0 ? (
-              <Card className="p-16 text-center glass">
-                <div className="mx-auto w-fit p-6 rounded-2xl bg-muted/20 mb-6">
-                  <CheckCircle2 className="h-12 w-12 mx-auto text-muted-foreground/60" strokeWidth={1.5} />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">No Completed Goals Yet</h3>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              <Card className="p-12 text-center">
+                <CheckCircle className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                <h3 className="text-lg font-semibold mb-2">No Completed Goals Yet</h3>
+                <p className="text-sm text-muted-foreground">
                   Keep working towards your active goals!
                 </p>
               </Card>
@@ -327,6 +302,6 @@ export default function Goals() {
         {/* Floating Action Button - Temporarily disabled */}
         </div>
       </main>
-    </>
+    </AppLayout>
   );
 }

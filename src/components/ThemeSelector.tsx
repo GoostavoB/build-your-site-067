@@ -2,9 +2,9 @@ import { motion } from 'framer-motion';
 import { Check, Lock, Palette } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { useThemeUnlocks } from '@/hooks/useThemeUnlocks';
 import { toast } from 'sonner';
-import { TIER_ICONS } from '@/utils/themePresets';
 
 export const ThemeSelector = () => {
   const { themes, activeTheme, loading, activateTheme } = useThemeUnlocks();
@@ -66,42 +66,36 @@ export const ThemeSelector = () => {
                   </div>
                 )}
 
-                {theme.isNew && (
-                  <Badge className="absolute top-2 left-2 z-20 animate-pulse" variant="default">
-                    NEW
-                  </Badge>
-                )}
-
                 <div className="space-y-3">
                   {/* Color Preview */}
                   <div className="flex gap-2 h-12 rounded-lg overflow-hidden">
                     <div 
                       className="flex-1" 
-                      style={{ backgroundColor: `hsl(${theme.primary})` }}
+                      style={{ backgroundColor: theme.previewColors.primary }}
                     />
                     <div 
                       className="flex-1" 
-                      style={{ backgroundColor: `hsl(${theme.secondary})` }}
+                      style={{ backgroundColor: theme.previewColors.secondary }}
                     />
                     <div 
                       className="flex-1" 
-                      style={{ backgroundColor: `hsl(${theme.accent})` }}
+                      style={{ backgroundColor: theme.previewColors.accent }}
                     />
                   </div>
 
                   {/* Theme Info */}
                   <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      {theme.icon && <span className="text-lg">{theme.icon}</span>}
-                      <h4 className="font-semibold">{theme.name}</h4>
-                    </div>
+                    <h4 className="font-semibold mb-1">{theme.name}</h4>
                     <p className="text-xs text-muted-foreground mb-2">
-                      {theme.description || 'Custom theme'}
+                      {theme.description}
                     </p>
                     
                     {/* Unlock Requirement */}
                     <Badge variant={theme.isUnlocked ? "default" : "secondary"} className="text-xs">
-                      {TIER_ICONS[theme.tier]} {theme.tier.charAt(0).toUpperCase() + theme.tier.slice(1)} - {theme.xpRequired} XP
+                      {theme.unlockRequirement.type === 'level' 
+                        ? `Level ${theme.unlockRequirement.value}`
+                        : theme.unlockRequirement.value.toString().replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
+                      }
                     </Badge>
                   </div>
                 </div>

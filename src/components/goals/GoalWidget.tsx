@@ -7,8 +7,6 @@ import { Target, TrendingUp, Calendar, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext';
 import { BlurredCurrency, BlurredPercent } from '@/components/ui/BlurredValue';
-import { PinButton } from '@/components/widgets/PinButton';
-import { usePinnedWidgets } from '@/contexts/PinnedWidgetsContext';
 
 interface GoalProjection {
   daily_progress: number;
@@ -21,8 +19,6 @@ interface GoalProjection {
 
 export function GoalWidget() {
   const { user } = useAuth();
-  const { isPinned, togglePin } = usePinnedWidgets();
-  const pinnedId = 'goals' as const;
 
   const { data: goals = [] } = useQuery({
     queryKey: ['goals-widget', user?.id],
@@ -65,32 +61,7 @@ export function GoalWidget() {
   });
 
   if (goals.length === 0) {
-    return (
-      <Card className="relative col-span-full">
-        <div className="absolute top-2 right-2 z-10">
-          <PinButton isPinned={isPinned(pinnedId)} onToggle={() => togglePin(pinnedId)} />
-        </div>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5" />
-            Active Goals
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-center py-8">
-          <Target className="w-12 h-12 mx-auto mb-3 text-muted-foreground/50" />
-          <h3 className="text-lg font-semibold mb-2">No Active Goals</h3>
-          <p className="text-muted-foreground text-sm mb-4">
-            Set trading goals to track your progress and stay motivated
-          </p>
-          <button
-            onClick={() => window.location.href = '/goals'}
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-          >
-            Create Your First Goal
-          </button>
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
 
   const formatValue = (value: number, type: string) => {
@@ -111,10 +82,7 @@ export function GoalWidget() {
   };
 
   return (
-    <Card className="relative col-span-full">
-      <div className="absolute top-2 right-2 z-10">
-        <PinButton isPinned={isPinned(pinnedId)} onToggle={() => togglePin(pinnedId)} />
-      </div>
+    <Card className="col-span-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Target className="h-5 w-5" />

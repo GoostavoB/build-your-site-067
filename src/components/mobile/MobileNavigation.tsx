@@ -4,9 +4,9 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
   { icon: Home, label: 'Home', path: '/dashboard' },
-  { icon: TrendingUp, label: 'Insights', path: '/dashboard?tab=insights' },
-  { icon: LineChart, label: 'History', path: '/dashboard?tab=history' },
-  { icon: BookOpen, label: 'Upload', path: '/upload' },
+  { icon: LineChart, label: 'Trades', path: '/trades' },
+  { icon: TrendingUp, label: 'Analytics', path: '/analytics' },
+  { icon: BookOpen, label: 'Learn', path: '/learn' },
   { icon: User, label: 'Profile', path: '/profile' },
 ];
 

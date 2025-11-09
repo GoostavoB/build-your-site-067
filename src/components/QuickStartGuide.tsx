@@ -25,7 +25,7 @@ export function QuickStartGuide({ onClose }: QuickStartGuideProps) {
       number: 1,
       icon: Upload,
       title: "Add Your First Trade",
-      description: "Navigate to Trades → Add Trade. Upload CSV or enter manually.",
+      description: "Navigate to Trades → Add Trade. Upload CSV, connect exchange, or enter manually.",
       time: "30 seconds"
     },
     {

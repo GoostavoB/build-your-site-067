@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import AppLayout from "@/components/layout/AppLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -63,22 +64,8 @@ const Accounts = () => {
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
-      // Session guard
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData?.session?.access_token;
-      if (!token) {
-        throw new Error('Session expired. Please sign in again.');
-      }
-
-      const { error } = await supabase.from("trading_accounts").insert([data]).select().single();
-      if (error) {
-        const msg = error.message || 'Failed to create account';
-        const code = error.code || '';
-        if (code === '42501' || msg.toLowerCase().includes('row-level security')) {
-          throw new Error('Permission denied. Please sign in again.');
-        }
-        throw error;
-      }
+      const { error } = await supabase.from("trading_accounts").insert([data]);
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trading-accounts"] });
@@ -93,27 +80,11 @@ const Accounts = () => {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
-      // Session guard
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData?.session?.access_token;
-      if (!token) {
-        throw new Error('Session expired. Please sign in again.');
-      }
-
       const { error } = await supabase
         .from("trading_accounts")
         .update(data)
-        .eq("id", id)
-        .select()
-        .single();
-      if (error) {
-        const msg = error.message || 'Failed to update account';
-        const code = error.code || '';
-        if (code === '42501' || msg.toLowerCase().includes('row-level security')) {
-          throw new Error('Permission denied. Please sign in again.');
-        }
-        throw error;
-      }
+        .eq("id", id);
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trading-accounts"] });
@@ -201,7 +172,8 @@ const Accounts = () => {
   const activeAccounts = accounts.filter(acc => acc.is_active).length;
 
   return (
-    <div className="space-y-6">
+    <AppLayout>
+      <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-foreground">Trading Accounts</h1>
@@ -481,6 +453,7 @@ const Accounts = () => {
           </Card>
         )}
       </div>
+    </AppLayout>
   );
 };
 

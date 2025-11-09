@@ -2,12 +2,12 @@ import { useEffect } from "react";
 import Hero from "@/components/Hero";
 import DashboardShowcase from "@/components/DashboardShowcase";
 import Features from "@/components/Features";
-import BenefitsGrid from "@/components/landing/BenefitsGrid";
+import ExchangeLogos from "@/components/ExchangeLogos";
 import Testimonials from "@/components/Testimonials";
 import Pricing from "@/components/Pricing";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
-import { PublicHeader } from "@/components/PublicHeader";
+import { MobileHeader } from "@/components/MobileHeader";
 import { ProofBar } from "@/components/ProofBar";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -17,15 +17,13 @@ import { SUPPORTED_LANGUAGES } from "@/utils/languageRouting";
 
 const IndexEs = () => {
   const navigate = useNavigate();
-  const { t, language, changeLanguage, isLoading } = useTranslation();
+  const { t } = useTranslation();
 
   // Add hreflang tags for SEO
   useHreflang({
     languages: [...SUPPORTED_LANGUAGES],
     defaultLanguage: 'en'
   });
-
-  // Language is set by i18n initialization - no need to force it here
 
   useEffect(() => {
     // Update meta tags and SEO
@@ -41,18 +39,16 @@ const IndexEs = () => {
     navigate('/auth?lang=es');
   };
 
-  // Loading is handled at App level - no need for page-level guard
-
   return (
-    <div key={`landing-${language}`} className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-background">
-      <PublicHeader />
+    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-background">
+      <MobileHeader />
       
       <main className="pt-14">
         <Hero />
         <ProofBar />
         <DashboardShowcase />
         <Features />
-        <BenefitsGrid />
+        <ExchangeLogos />
         <Testimonials />
         <Pricing />
         <CTA />

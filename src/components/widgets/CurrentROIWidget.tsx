@@ -2,18 +2,14 @@ import { memo, useState } from 'react';
 import { WidgetWrapper } from './WidgetWrapper';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { formatCurrency, formatPercent } from '@/utils/formatNumber';
-import { TrendingUp, TrendingDown, Edit2, Info } from 'lucide-react';
-import { PinButton } from '@/components/widgets/PinButton';
-import { usePinnedWidgets } from '@/contexts/PinnedWidgetsContext';
+import { TrendingUp, TrendingDown, Edit2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
-
 import { useTranslation } from '@/hooks/useTranslation';
 import { BlurredCurrency } from '@/components/ui/BlurredValue';
 
@@ -38,55 +34,42 @@ export const CurrentROIWidget = memo(({
 }: CurrentROIWidgetProps) => {
   const { user } = useAuth();
   const { t } = useTranslation();
-  const { isPinned, togglePin } = usePinnedWidgets();
-  const pinnedId = 'currentROI' as const;
   const isPositive = currentROI >= 0;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [capitalValue, setCapitalValue] = useState(initialInvestment.toString());
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
-    if (!user || !capitalValue) return;
-
     const newValue = parseFloat(capitalValue);
-    if (isNaN(newValue) || newValue <= 0) {
-      toast.error('Please enter a valid amount');
+    
+    if (isNaN(newValue) || newValue < 0) {
+      toast.error(t('errors.validationError'));
+      return;
+    }
+
+    if (!user) {
+      toast.error(t('errors.unauthorized'));
       return;
     }
 
     setIsSaving(true);
-    const previousValue = initialInvestment;
-    const startTime = Date.now();
-    const toastId = toast.loading('Updating initial capital...');
-
-    // Optimistically update UI immediately
-    onInitialInvestmentUpdate?.(newValue);
-
     try {
       const { error } = await supabase
         .from('user_settings')
-        .upsert({
-          user_id: user.id,
-          initial_capital: newValue,
-          updated_at: new Date().toISOString(),
-        }, {
-          onConflict: 'user_id'
-        });
+        .update({ initial_investment: newValue })
+        .eq('user_id', user.id);
 
       if (error) throw error;
 
-      toast.success('Initial capital updated', { id: toastId });
+      if (onInitialInvestmentUpdate) {
+        onInitialInvestmentUpdate(newValue);
+      }
+      
+      toast.success(t('success.updated'));
       setIsDialogOpen(false);
-    } catch (error: any) {
-      console.error('[CurrentROIWidget] Failed to save initial capital:', error);
-      
-      // Revert optimistic update on error
-      onInitialInvestmentUpdate?.(previousValue);
-      
-      toast.error('Failed to update capital', {
-        id: toastId,
-        description: error.message || 'Please try again'
-      });
+    } catch (error) {
+      console.error('Error updating initial investment:', error);
+      toast.error(t('errors.generic'));
     } finally {
       setIsSaving(false);
     }
@@ -98,14 +81,6 @@ export const CurrentROIWidget = memo(({
       title={t('widgets.currentROI.title')}
       isEditMode={isEditMode}
       onRemove={onRemove}
-      headerActions={
-        !isEditMode && (
-          <PinButton
-            isPinned={isPinned(pinnedId)}
-            onToggle={() => togglePin(pinnedId)}
-          />
-        )
-      }
     >
       <div className="space-y-3">
         <div className="flex items-baseline gap-2">
@@ -163,11 +138,11 @@ export const CurrentROIWidget = memo(({
                           }
                         }}
                       />
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Current Balance: <BlurredCurrency amount={currentBalance} />
+                      <p className="text-xs text-muted-foreground">
+                        {t('widgets.currentBalance')}: <BlurredCurrency amount={currentBalance} className="inline" />
                       </p>
-                      <p className="text-xs text-muted-foreground/70 mb-4">
-                        Note: This updates your ROI calculations. To track deposits/withdrawals, visit Track Capital.
+                      <p className="text-xs text-muted-foreground mt-2">
+                        💡 Tip: Use Capital Management in Settings → Trading to track capital additions over time for accurate ROI calculation.
                       </p>
                     </div>
                     <div className="flex gap-2 justify-end">
@@ -175,15 +150,10 @@ export const CurrentROIWidget = memo(({
                         variant="outline"
                         onClick={() => setIsDialogOpen(false)}
                         disabled={isSaving}
-                        type="button"
                       >
                         {t('common.cancel')}
                       </Button>
-                      <Button 
-                        onClick={handleSave} 
-                        disabled={isSaving || !user}
-                        type="button"
-                      >
+                      <Button onClick={handleSave} disabled={isSaving}>
                         {isSaving ? t('settings.saving') : t('common.save')}
                       </Button>
                     </div>
@@ -193,27 +163,13 @@ export const CurrentROIWidget = memo(({
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              <span className="text-muted-foreground">{t('widgets.currentCapital')}</span>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-3 w-3 text-muted-foreground/60 cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
-                    <p className="text-xs">
-                      Invested Trading Capital + Total Profit - Withdrawn Capital
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <span className="text-muted-foreground">{t('widgets.currentCapital')}</span>
             <span className="font-medium">
               <BlurredCurrency amount={currentBalance} className="inline" />
             </span>
           </div>
           <p className="text-[10px] text-muted-foreground/70 mt-2">
-            Total profit from trading, regardless of withdrawals
+            ROI calculation includes all capital additions tracked in Capital Management
           </p>
         </div>
       </div>

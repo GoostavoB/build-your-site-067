@@ -19,7 +19,7 @@ export const AIWidgetCreator = ({ menuItemId, onWidgetCreated }: AIWidgetCreator
   const [open, setOpen] = useState(false);
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
-  const [selectedVisualization, setSelectedVisualization] = useState<string>('__auto__');
+  const [selectedVisualization, setSelectedVisualization] = useState<string>('');
   const [addToDashboard, setAddToDashboard] = useState(false);
   const { toast } = useToast();
 
@@ -78,7 +78,7 @@ export const AIWidgetCreator = ({ menuItemId, onWidgetCreated }: AIWidgetCreator
           body: { 
             prompt, 
             tradesSummary,
-            preferredVisualization: selectedVisualization !== '__auto__' ? selectedVisualization : undefined
+            preferredVisualization: selectedVisualization || undefined
           }
         }
       );
@@ -138,7 +138,7 @@ export const AIWidgetCreator = ({ menuItemId, onWidgetCreated }: AIWidgetCreator
       });
 
       setPrompt('');
-      setSelectedVisualization('__auto__');
+      setSelectedVisualization('');
       setAddToDashboard(false);
       setOpen(false);
       onWidgetCreated?.();
@@ -196,7 +196,7 @@ export const AIWidgetCreator = ({ menuItemId, onWidgetCreated }: AIWidgetCreator
                 <SelectValue placeholder="Let AI decide" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__auto__">Let AI decide</SelectItem>
+                <SelectItem value="">Let AI decide</SelectItem>
                 {visualizationTypes.map((type) => (
                   <SelectItem key={type.value} value={type.value}>
                     {type.label}

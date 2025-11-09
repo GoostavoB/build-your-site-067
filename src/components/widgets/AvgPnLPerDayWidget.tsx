@@ -5,8 +5,6 @@ import { formatCurrency } from '@/utils/formatNumber';
 import { TrendingUp, TrendingDown, Calendar } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { BlurredCurrency } from '@/components/ui/BlurredValue';
-import { PinButton } from '@/components/widgets/PinButton';
-import { usePinnedWidgets } from '@/contexts/PinnedWidgetsContext';
 
 interface AvgPnLPerDayWidgetProps {
   id: string;
@@ -24,8 +22,6 @@ export const AvgPnLPerDayWidget = memo(({
   tradingDays,
 }: AvgPnLPerDayWidgetProps) => {
   const { t } = useTranslation();
-  const { isPinned, togglePin } = usePinnedWidgets();
-  const pinnedId = 'avgPnLPerDay' as const;
   const isPositive = avgPnLPerDay >= 0;
 
   return (
@@ -34,14 +30,6 @@ export const AvgPnLPerDayWidget = memo(({
       title={t('widgets.avgPnLPerDay.title')}
       isEditMode={isEditMode}
       onRemove={onRemove}
-      headerActions={
-        !isEditMode && (
-          <PinButton
-            isPinned={isPinned(pinnedId)}
-            onToggle={() => togglePin(pinnedId)}
-          />
-        )
-      }
     >
       <div className="space-y-3">
         <div className="flex items-baseline gap-2">

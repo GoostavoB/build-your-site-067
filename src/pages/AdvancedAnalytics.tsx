@@ -1,10 +1,11 @@
 import { Helmet } from 'react-helmet';
+import AppLayout from '@/components/layout/AppLayout';
 import { AdvancedMetricsCard } from '@/components/analytics/AdvancedMetricsCard';
 import { ABTestingPanel } from '@/components/analytics/ABTestingPanel';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PremiumFeatureLock } from '@/components/PremiumFeatureLock';
-import { useSubscription } from '@/contexts/SubscriptionContext';
+import { usePremiumFeatures } from '@/hooks/usePremiumFeatures';
 
 // Mock data
 const performanceData = Array.from({ length: 30 }, (_, i) => ({
@@ -23,16 +24,7 @@ const profitData = Array.from({ length: 30 }, (_, i) => ({
 }));
 
 export default function AdvancedAnalytics() {
-  const { isFeatureLocked, isLoading } = useSubscription();
-  
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
-      </div>
-    );
-  }
-  
+  const { isFeatureLocked } = usePremiumFeatures();
   const isPremiumLocked = isFeatureLocked('pro');
 
   return (
@@ -42,7 +34,8 @@ export default function AdvancedAnalytics() {
         <meta name="description" content="Deep dive into your trading performance with advanced analytics and A/B testing." />
       </Helmet>
 
-      <PremiumFeatureLock requiredPlan="pro" isLocked={isPremiumLocked}>
+      <AppLayout>
+        <PremiumFeatureLock requiredPlan="pro" isLocked={isPremiumLocked}>
           <div className="space-y-6">
             <div>
               <h1 className="text-3xl font-bold mb-2">Advanced Analytics</h1>
@@ -156,6 +149,7 @@ export default function AdvancedAnalytics() {
           </Tabs>
         </div>
         </PremiumFeatureLock>
+      </AppLayout>
     </>
   );
 }

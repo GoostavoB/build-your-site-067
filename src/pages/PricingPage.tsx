@@ -1,621 +1,340 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Check, HelpCircle, Clock, CircleCheck } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
+import { usePageMeta } from "@/hooks/usePageMeta";
+import { useHreflang } from "@/hooks/useHreflang";
+import { SUPPORTED_LANGUAGES, SupportedLanguage } from "@/utils/languageRouting";
 import { motion } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
-import { usePromoStatus } from "@/hooks/usePromoStatus";
-import { PublicHeader } from "@/components/PublicHeader";
-import Footer from "@/components/Footer";
-import { trackLandingEvents } from "@/utils/analyticsEvents";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import PricingComparison from "@/components/pricing/PricingComparison";
-import PricingFAQ from "@/components/pricing/PricingFAQ";
-import PricingAddOns from "@/components/pricing/PricingAddOns";
-import FirstWeekBlock from "@/components/pricing/FirstWeekBlock";
-import { StickyOfferBar } from "@/components/pricing/StickyOfferBar";
-import { AnimatedStats } from "@/components/pricing/AnimatedStats";
-import { PricingStorySection } from "@/components/pricing/PricingStorySection";
-import { XPProgressAnimation } from "@/components/pricing/XPProgressAnimation";
-import { ProblemVisual } from "@/components/pricing/ProblemVisual";
-import InteractiveSpeedChart from "@/components/pricing/InteractiveSpeedChart";
-import { SecurityVisual } from "@/components/pricing/SecurityVisual";
-import { SocialProofSection } from "@/components/pricing/SocialProofSection";
-import MetaTags from "@/components/SEO/MetaTags";
-import SchemaMarkup from "@/components/SEO/SchemaMarkup";
+import PricingComparison from "@/components/PricingComparison";
+import { WideOutcomeCard } from "@/components/premium/WideOutcomeCard";
+import { ParallaxTradingElements } from "@/components/premium/ParallaxTradingElements";
+import { PremiumPricingCard } from "@/components/PremiumPricingCard";
+import { MagneticButton } from "@/components/MagneticButton";
+import { PremiumBillingToggle } from "@/components/premium/PremiumBillingToggle";
+import { Logo } from "@/components/Logo";
+import { GlassCard } from "@/components/GlassCard";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import appStoreSoon from "@/assets/coming_soon_appstore.png";
+import googlePlaySoon from "@/assets/google-play-coming-soon.png";
 
 const PricingPage = () => {
   const navigate = useNavigate();
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
-  const promoStatus = usePromoStatus();
+  const { t, changeLanguage } = useTranslation();
+  
+  // Add hreflang tags for SEO
+  useHreflang({
+    languages: [...SUPPORTED_LANGUAGES],
+    defaultLanguage: 'en'
+  });
+  
+  const heroRef = useRef<HTMLDivElement>(null);
+  const pricingRef = useRef<HTMLDivElement>(null);
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
 
+  // Sync language with URL
   useEffect(() => {
-    trackLandingEvents.trackViewPricing();
-  }, []);
+    const pathLang = window.location.pathname.split('/')[1];
+    if (['pt', 'es', 'ar', 'vi'].includes(pathLang)) {
+      changeLanguage(pathLang as SupportedLanguage);
+    }
+  }, [changeLanguage]);
 
-  const handleBillingToggle = (cycle: 'monthly' | 'yearly') => {
-    setBillingCycle(cycle);
-    trackLandingEvents.trackEvent('track_toggle_billing', { cycle });
-  };
+  usePageMeta({
+    title: 'Pricing Plans - AI-Powered Crypto Trading Journal',
+    description: 'Choose the perfect plan for your crypto trading journey. AI insights, pattern recognition, risk management, and performance analytics.',
+    canonical: 'https://www.thetradingdiary.com/pricing',
+  });
 
-  const handleStartTrial = (plan: string) => {
-    trackLandingEvents.trackStartTrial(plan);
-    navigate('/auth');
-  };
-
-  const includedFeatures = [
-    "AI uploads from image screenshots",
-    "Weekly heatmap and best assets",
-    "Fees dashboard. Compare how much fee you are paying in each exchange",
-    "Leverage and position size calculator",
-    "Pre-trade checklist",
-    "Encrypted data and CSV export"
-  ];
 
   const plans = [
     {
-      id: 'free',
-      name: 'Free',
-      description: 'Start your trading discipline journey',
-      monthlyPrice: 0,
-      yearlyPrice: 0,
-      yearlyTotal: 0,
-      features: [
-        '5 uploads total',
-        'Basic analytics and XP system',
-        'Limited widgets',
-        'Community leaderboard',
-        'CSV upload support',
-        'Basic win rate tracking'
+      id: 'basic',
+      nameKey: "pricing.plans.basic.name",
+      descriptionKey: "pricing.plans.basic.description",
+      monthlyPrice: 15,
+      annualPrice: 12,
+      annualTotal: 144,
+      featuresKeys: [
+        "pricing.plans.basic.features.uploads",
+        "pricing.plans.basic.features.manualUploads",
+        "pricing.plans.basic.features.dashboard",
+        "pricing.plans.basic.features.charts",
+        "pricing.plans.basic.features.basicJournal",
+        "pricing.plans.basic.features.feeAnalytics",
+        "pricing.plans.basic.features.csv",
+        "pricing.plans.basic.features.social",
       ],
-      cta: 'Start Free',
-      popular: false
+      ctaKey: "pricing.plans.cta",
+      popular: false,
     },
     {
       id: 'pro',
-      name: 'Pro',
-      description: 'Active traders optimizing discipline and costs',
-      monthlyPrice: promoStatus.isActive ? 12 : 15,
-      yearlyPrice: promoStatus.isActive ? 8 : 10,
-      yearlyTotal: promoStatus.isActive ? 96 : 120,
-      regularMonthlyPrice: 15,
-      regularYearlyPrice: 10,
-      features: [
-        '30 uploads per month',
-        'Unlimited accounts',
-        'Full XP system + gamified progression',
-        'Advanced analytics suite',
-        'Custom widgets and color themes',
-        'Upload up to 10 trades at once',
-        'Fee analysis and optimization',
-        '$2 per 10 extra uploads',
-        'Email support'
+      nameKey: "pricing.plans.pro.name",
+      descriptionKey: "pricing.plans.pro.description",
+      monthlyPrice: 35,
+      annualPrice: 28,
+      annualTotal: 336,
+      featuresKeys: [
+        "pricing.plans.pro.features.uploads",
+        "pricing.plans.pro.features.aiAnalysis",
+        "pricing.plans.pro.features.tradingPlan",
+        "pricing.plans.pro.features.goals",
+        "pricing.plans.pro.features.richJournal",
+        "pricing.plans.pro.features.customWidgets",
+        "pricing.plans.pro.features.fullSocial",
+        "pricing.plans.pro.features.everythingBasic",
       ],
-      cta: 'Go Pro Now',
-      popular: true
+      ctaKey: "pricing.plans.cta",
+      popular: true,
     },
     {
       id: 'elite',
-      name: 'Elite',
-      description: 'Professional traders with unlimited needs',
-      monthlyPrice: 25,
-      yearlyPrice: 20,
-      yearlyTotal: 240,
-      features: [
-        'Unlimited uploads',
-        'Unlimited accounts',
-        'Everything in Pro',
-        'Elite XP tiers and rewards',
-        'Priority analytics reports',
-        'Full customization',
-        'MFE/MAE analysis',
-        'Automated weekly email reports',
-        'Priority support',
-        'No extra costs ever',
-        'Early access to new features'
+      nameKey: "pricing.plans.elite.name",
+      descriptionKey: "pricing.plans.elite.description",
+      monthlyPrice: 79,
+      annualPrice: 63,
+      annualTotal: 756,
+      featuresKeys: [
+        "pricing.plans.elite.features.uploads",
+        "pricing.plans.elite.features.aiAnalysis",
+        "pricing.plans.elite.features.tradeReplay",
+        "pricing.plans.elite.features.positionCalculator",
+        "pricing.plans.elite.features.riskDashboard",
+        "pricing.plans.elite.features.advancedAlerts",
+        "pricing.plans.elite.features.everythingPro",
       ],
-      cta: 'Join Elite',
-      popular: false
-    }
+      ctaKey: "pricing.plans.cta",
+      popular: false,
+    },
   ];
 
-  const getPrice = (plan: typeof plans[0]) => {
-    return billingCycle === 'yearly' ? plan.yearlyPrice : plan.monthlyPrice;
-  };
-
   return (
-    <>
-      <MetaTags
-        title="Pricing | The Trading Diary - Trading Journal Plans"
-        description="Choose the perfect trading journal plan. Free plan available. Premium plans with unlimited trades, AI insights, and advanced analytics. Start your 14-day free trial today."
-        keywords="trading journal pricing, trading journal plans, crypto trading journal cost, trading diary pricing"
-      />
-      <SchemaMarkup type="product" />
-      <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black overflow-x-hidden">
-      {/* Sticky Offer Bar */}
-      <StickyOfferBar />
-      
-      <PublicHeader />
-      
-      <main className="pt-8 pb-20 overflow-x-hidden">
-        {/* Hero Section */}
-        <section className="px-6 mb-8">
-          <div className="container mx-auto max-w-4xl text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="space-y-8"
-            >
-              <div className="space-y-4">
-                <h1 
-                  className="font-bold leading-tight tracking-tight"
-                  style={{ 
-                    fontSize: 'clamp(32px, 4.5vw, 52px)',
-                    letterSpacing: '-0.01em'
-                  }}
-                >
-                  Train your discipline. Master your trading performance.
-                </h1>
-                <p className="text-[17px] text-muted-foreground/70 font-light leading-relaxed max-w-2xl mx-auto">
-                  Develop the mindset of top traders through our XP discipline system, proven to increase trading performance by 23% within 4 weeks.
-                </p>
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-background">
+      {/* Logo */}
+      <div 
+        className="absolute top-6 left-6 z-50 cursor-pointer" 
+        onClick={() => navigate('/')}
+      >
+        <Logo 
+          size="lg" 
+          variant="horizontal" 
+          showText={true} 
+          className="hover:opacity-80 transition-opacity"
+        />
+      </div>
 
-              {/* CTAs */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  size="lg"
-                  onClick={() => handleStartTrial('pro')}
-                  className="px-8 py-6 text-[15px] font-semibold"
-                >
-                  Start Free
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => {
-                    const element = document.getElementById('pricing-cards');
-                    element?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="px-8 py-6 text-[15px] font-semibold"
-                >
-                  See Plans
-                </Button>
-              </div>
+      {/* Theme Toggle */}
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
 
-              {/* Risk reversal strip */}
-              <p className="text-[15px] text-foreground/90 font-semibold">
-                Free entry plan • No credit card • Cancel anytime
-              </p>
-            </motion.div>
-          </div>
-        </section>
+      {/* Hero Section */}
+      <section ref={heroRef} className="relative py-16 md:py-20 px-6">
+        <div className="container relative mx-auto max-w-4xl text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
+              {t('pricing.hero.title')}
+            </h1>
+            
+            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+              {t('pricing.hero.subtitle')}
+            </p>
+            
+            <div className="flex justify-center">
+              <MagneticButton
+                onClick={() => navigate('/auth')}
+                size="lg"
+                className="px-10 py-7"
+              >
+                {t('pricing.hero.primaryCta')}
+              </MagneticButton>
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
-        {/* Animated Stats */}
-        <section className="px-6 mb-20">
-          <div className="container mx-auto max-w-4xl">
-            <AnimatedStats />
-          </div>
-        </section>
-
-        {/* Included in all plans */}
-        <section className="px-6 mb-20">
-          <div className="container mx-auto max-w-5xl">
-            <motion.div
+      {/* Solutions Section */}
+      <section className="relative py-16 px-6 overflow-hidden">
+        <ParallaxTradingElements />
+        
+        <div className="container mx-auto max-w-7xl relative z-10">
+          <div className="text-center mb-16">
+            <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="glass-card p-8 md:p-10 border border-primary/30 relative overflow-hidden"
+              className="text-3xl md:text-4xl font-bold mb-4"
             >
-              {/* Subtle background gradient */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 pointer-events-none" />
+              {t('pricing.solutions.headline1', 'Your rules.')}{' '}
+              <span className="font-serif italic text-primary">{t('pricing.solutions.headline2', 'Your results.')}</span>
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              viewport={{ once: true }}
+              className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto"
+            >
+              {t('pricing.solutions.tagline', 'If you cannot measure it, you cannot improve it.')}
+            </motion.p>
+          </div>
+
+          <div className="max-w-5xl mx-auto space-y-6 md:space-y-8">
+            <WideOutcomeCard
+              headline={t('pricing.solutions.outcome1.headline', 'Upload 40x Faster')}
+              subhead={t('pricing.solutions.outcome1.subhead', 'Batch upload trades from screenshots instead of manual entry')}
+              metric="40x"
+              metricValue={40}
+              proofPoint={t('pricing.solutions.outcome1.proof', 'Batch uploads from screenshots beat manual entry every time')}
+            />
+            <WideOutcomeCard
+              headline={t('pricing.solutions.outcome2.headline', 'Save 75-97% of Your Time')}
+              subhead={t('pricing.solutions.outcome2.subhead', 'Spend less time logging, more time analyzing and trading')}
+              metric="97%"
+              metricValue={97}
+              proofPoint={t('pricing.solutions.outcome2.proof', 'Spend less time logging, more time winning')}
+            />
+          </div>
+        </div>
+      </section>
+
+
+      {/* Pricing Cards */}
+      <section ref={pricingRef} className="py-16 px-6">
+        <div className="container mx-auto max-w-7xl">
+          <div className="text-center mb-16">
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              viewport={{ once: true }}
+              className="text-4xl md:text-5xl font-bold mb-6 tracking-tight"
+              style={{ letterSpacing: '-0.01em' }}
+            >
+              {t('pricing.title')}
+            </motion.h2>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.09, ease: [0.22, 1, 0.36, 1] }}
+              viewport={{ once: true }}
+              className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed"
+            >
+              {t('pricing.subtitle')}
+            </motion.p>
+
+            {/* Premium Billing Toggle */}
+            <div className="flex justify-center mb-6">
+              <PremiumBillingToggle
+                billingCycle={billingCycle}
+                onToggle={setBillingCycle}
+              />
+            </div>
+
+            {/* Guarantee Banner */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.28, delay: 0.27 }}
+              viewport={{ once: true }}
+              className="text-sm text-muted-foreground dark:text-muted-foreground/70"
+            >
+              {t('pricing.guaranteeNote')}
+            </motion.p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            {plans.map((plan, index) => (
+              <PremiumPricingCard 
+                key={plan.id} 
+                plan={plan} 
+                billingCycle={billingCycle}
+                index={index}
+                t={t}
+              />
+            ))}
+          </div>
+
+          {/* Coming Soon Section - Enterprise & Mobile Apps */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            viewport={{ once: true }}
+            className="relative mt-12"
+          >
+            <GlassCard className="p-8 md:p-12 text-center">
+              <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-gradient-to-r from-accent via-primary to-accent bg-size-200 animate-gradient mb-8 shadow-lg shadow-accent/20">
+                <span className="text-sm font-bold text-white uppercase tracking-wider">{t('pricing.comingSoon.badge', 'Coming Soon')}</span>
+              </div>
               
-              <div className="relative z-10">
-                <h3 className="text-[24px] md:text-[28px] font-bold mb-3 text-center bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                  Included in all plans
-                </h3>
-                <p className="text-[14px] text-muted-foreground text-center mb-8 max-w-2xl mx-auto">
-                  Every plan includes our core features to help you track, analyze, and improve your trading
+              {/* Enterprise */}
+              <div className="mb-12">
+                <h3 className="text-3xl md:text-4xl font-bold mb-4">{t('pricing.comingSoon.enterprise.title', 'Enterprise')}</h3>
+                <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
+                  {t('pricing.comingSoon.enterprise.description', 'Team collaboration, powerful reports & white label solutions for professional trading teams')}
                 </p>
-                
-                <div className="grid md:grid-cols-2 gap-x-8 gap-y-5">
-                  {includedFeatures.map((feature, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, x: -10 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: index * 0.05 }}
-                      className="flex items-start gap-3 group"
-                    >
-                      <div className="mt-0.5 flex-shrink-0">
-                        <div className="relative">
-                          <div className="absolute inset-0 bg-primary/20 rounded-full blur-md group-hover:bg-primary/30 transition-colors" />
-                          <CircleCheck className="w-5 h-5 text-primary relative z-10" strokeWidth={2} />
-                        </div>
-                      </div>
-                      <span className="text-[15px] leading-relaxed text-foreground/90 font-medium">
-                        {feature}
-                      </span>
-                    </motion.div>
-                  ))}
+                <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
+                  <span>• {t('pricing.comingSoon.enterprise.features.collaboration', 'Team Collaboration Tools')}</span>
+                  <span>• {t('pricing.comingSoon.enterprise.features.reporting', 'Advanced Reporting')}</span>
+                  <span>• {t('pricing.comingSoon.enterprise.features.whiteLabel', 'White Label Solution')}</span>
+                  <span>• {t('pricing.comingSoon.enterprise.features.support', 'Priority Support')}</span>
+                  <span>• {t('pricing.comingSoon.enterprise.features.integrations', 'Custom Integrations')}</span>
                 </div>
               </div>
-            </motion.div>
-          </div>
-        </section>
 
-        {/* Storytelling Section 1 - The Problem */}
-        <PricingStorySection
-          headline="Most traders fail because they lack consistency."
-          copy={
-            <>
-              <p>
-                90% of traders lose money because they don't journal, track performance, or follow 
-                a daily structure. Emotions take over. Discipline disappears. Losses pile up.
-              </p>
-              <p>
-                Our system fixes that. Automatically. By making discipline rewarding through gamification, 
-                we help you build the habits that separate winning traders from the rest.
-              </p>
-            </>
-          }
-          visual={<ProblemVisual />}
-        />
+              {/* Divider */}
+              <div className="h-px w-full max-w-2xl mx-auto bg-gradient-to-r from-transparent via-primary/30 to-transparent mb-12" />
 
-        {/* Storytelling Section 2 - The XP System */}
-        <PricingStorySection
-          headline="Discipline, gamified."
-          copy={
-            <>
-              <p>
-                Our XP system rewards consistency and discipline. Every time you follow your plan, 
-                journal your trades, and stick to your rules, you earn XP and level up your profile.
-              </p>
-              <p>
-                The system trains your mind through repetition and small wins. It's not just tracking—it's 
-                behavioral transformation backed by real performance data.
-              </p>
-            </>
-          }
-          dataFact="Traders who journal and review trades consistently show an average 23% performance improvement in 4 weeks (based on data from over 1,000 active users)."
-          visual={<XPProgressAnimation />}
-          reverse
-        />
-
-        {/* Storytelling Section 3 - Speed and Efficiency */}
-        <PricingStorySection
-          headline="Upload 10 trades in one click."
-          copy={
-            <>
-              <p>
-                Most traders skip journaling because it's slow. Our AI-based uploader lets you upload 
-                trades from screenshots instantly. <strong>14x faster for single trades</strong> 
-                (140s manual → 10s upload).
-              </p>
-              <p>
-                With our <strong>Batch Analyzer</strong>, you're <strong>93x faster for 10 trades</strong> 
-                (23 minutes → 15 seconds) and <strong>700x faster for 100 trades</strong> 
-                (3h 53min → 20 seconds). Save hours of manual data entry every week.
-              </p>
-            </>
-          }
-          visual={<InteractiveSpeedChart />}
-        />
-
-        {/* Storytelling Section 4 - Security and Privacy */}
-        <PricingStorySection
-          headline="Safe by design. Your data, your trades."
-          copy={
-            <>
-              <p>
-                We never connect to APIs or exchanges. Your trading data is encrypted and saved securely 
-                on our cloud infrastructure. Only you can access it.
-              </p>
-              <p>
-                No risk of external tracking or data leaks. No third-party integrations that compromise 
-                your privacy. 100% trader-owned data.
-              </p>
-            </>
-          }
-          visual={<SecurityVisual />}
-          reverse
-        />
-
-        {/* Pricing Cards Section */}
-        <section id="pricing-cards" className="px-6 mb-12 scroll-mt-20">
-          <div className="container mx-auto max-w-6xl">
-            <div className="text-center mb-12">
-              <h2 
-                className="font-bold leading-tight tracking-tight mb-4"
-                style={{ 
-                  fontSize: 'clamp(28px, 4vw, 42px)',
-                  letterSpacing: '-0.01em'
-                }}
-              >
-                Choose your plan. Train like a pro.
-              </h2>
-              <p className="text-[17px] text-muted-foreground/80 max-w-2xl mx-auto">
-                No credit card required. Upgrade anytime. Plans built to keep you disciplined.
-              </p>
-            </div>
-            <div className="flex flex-col items-center justify-center gap-3 mb-8">
-              {/* Badge above buttons */}
-              <div className="inline-block bg-green-500 text-white text-[13px] px-3 py-1.5 rounded-full font-semibold">
-                Save 2 months with yearly
-              </div>
-              
-              {/* Toggle buttons */}
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => handleBillingToggle('monthly')}
-                  className={`px-6 py-3 rounded-xl text-[15px] font-medium transition-all ${
-                    billingCycle === 'monthly'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  Monthly
-                </button>
-                <button
-                  onClick={() => handleBillingToggle('yearly')}
-                  className={`px-6 py-3 rounded-xl text-[15px] font-medium transition-all ${
-                    billingCycle === 'yearly'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  Yearly
-                </button>
-              </div>
-            </div>
-
-            {/* Plan Cards */}
-            <div className="grid md:grid-cols-3 gap-6">
-              {plans.map((plan, index) => (
-                <motion.div
-                  key={plan.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                  className={`relative glass backdrop-blur-md rounded-2xl p-8 ${
-                    plan.popular ? 'ring-2 ring-primary shadow-xl' : ''
-                  }`}
-                >
-                  {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary text-primary-foreground text-sm font-semibold rounded-full">
-                      Recommended
-                    </div>
-                  )}
-                  
-                  {promoStatus.isActive && plan.id === 'pro' && (
-                    <Badge 
-                      variant="destructive" 
-                      className="absolute -top-3 right-4 animate-pulse flex items-center gap-1"
-                    >
-                      <Clock className="w-3 h-3" />
-                      {promoStatus.daysRemaining > 0 
-                        ? `Offer ends in ${promoStatus.daysRemaining}d`
-                        : `Ends in ${promoStatus.hoursRemaining}h`
-                      }
-                    </Badge>
-                  )}
-
-                  <div className="mb-6">
-                    <h3 className="text-[22px] font-bold mb-2 tracking-tight">{plan.name}</h3>
-                    <p className="text-[14px] text-muted-foreground/70 mb-4 leading-relaxed">{plan.description}</p>
-                    
-                    {plan.monthlyPrice > 0 ? (
-                      <>
-                        <div className="flex items-baseline gap-2 mb-2">
-                          {promoStatus.isActive && plan.id === 'pro' && (
-                            <span className="text-2xl font-bold text-muted-foreground line-through mr-1">
-                              ${billingCycle === 'yearly' ? plan.regularYearlyPrice : plan.regularMonthlyPrice}
-                            </span>
-                          )}
-                          <span className="text-[38px] font-bold tracking-tight tabular-nums">${getPrice(plan)}</span>
-                          <span className="text-[14px] text-muted-foreground/70">
-                            /month
-                          </span>
-                        </div>
-                        {promoStatus.isActive && plan.id === 'pro' && (
-                          <div className="text-[13px] font-semibold text-green-600 dark:text-green-400 mb-2">
-                            🎉 Save 40% during launch offer
-                          </div>
-                        )}
-                        {billingCycle === 'yearly' && plan.yearlyTotal && (
-                          <div className="text-[13px] text-muted-foreground/70 mb-2">
-                            Billed ${plan.yearlyTotal} once
-                          </div>
-                        )}
-                        {billingCycle === 'yearly' && (
-                          <div className="inline-block px-2 py-1 bg-green-500/20 text-green-400 text-[12px] rounded-md font-medium">
-                            Save {((1 - plan.yearlyPrice / plan.monthlyPrice) * 12).toFixed(0)} months
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      <div className="text-[38px] font-bold tracking-tight mb-2">Free</div>
-                    )}
-                  </div>
-
-                  <Button
-                    onClick={() => {
-                      trackLandingEvents.trackEvent('track_select_plan_click', { plan: plan.name });
-                      handleStartTrial(plan.id);
-                    }}
-                    className={`w-full mb-4 py-6 text-[15px] font-semibold ${
-                      plan.popular ? 'bg-primary hover:bg-primary/90' : ''
-                    }`}
-                    variant={plan.popular ? 'default' : 'outline'}
-                  >
-                    {plan.cta}
-                  </Button>
-
-                  <p className="text-[13px] text-muted-foreground/70 text-center mb-6">
-                    No hidden fees
-                  </p>
-
-                  <ul className="space-y-3">
-                    {plan.features.map((feature, i) => {
-                      // Determine if this feature needs a tooltip
-                      let tooltipContent = null;
-                      
-                      if (feature.includes('uploads')) {
-                        tooltipContent = "One upload can include up to 10 trades. Upload 10 trades at once to maximize efficiency.";
-                      } else if (feature.includes('XP system')) {
-                        tooltipContent = "Earn XP points for consistency, build discipline streaks, and unlock higher trading tiers.";
-                      } else if (feature.includes('analytics')) {
-                        tooltipContent = "Track win rate, drawdown, expectancy, and consistency metrics in real time.";
-                      } else if (feature.includes('widgets')) {
-                        tooltipContent = "Build your own dashboard with custom widgets for psychology, risk, or PnL metrics.";
-                      } else if (feature.includes('Fee analysis')) {
-                        tooltipContent = "Analyze maker vs taker fees, funding rates, and optimize your trading costs.";
-                      } else if (feature.includes('MFE/MAE')) {
-                        tooltipContent = "Maximum Favorable Excursion and Maximum Adverse Excursion analysis to refine your entries and exits.";
-                      }
-                      
-                      return (
-                        <li key={i} className="flex items-start gap-2">
-                          <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                          <span className="text-[14px] text-muted-foreground/70 flex items-center gap-1 leading-relaxed">
-                            {feature}
-                            {tooltipContent && (
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
-                                  </TooltipTrigger>
-                                  <TooltipContent className="max-w-xs">
-                                    <p className="text-[13px]">{tooltipContent}</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            )}
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </motion.div>
-              ))}
-            </div>
-
-          </div>
-        </section>
-
-        {/* Limits and Definitions */}
-        <section className="px-6 mb-12">
-          <div className="container mx-auto max-w-6xl">
-            <div className="bg-secondary/20 rounded-xl p-6">
-              <div className="flex flex-wrap gap-6 justify-center text-sm">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger className="flex items-center gap-1 cursor-help">
-                      <HelpCircle className="w-4 h-4" />
-                      <span>What counts as a trade?</span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Each closed order counts as 1 trade</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger className="flex items-center gap-1 cursor-help">
-                      <HelpCircle className="w-4 h-4" />
-                      <span>What counts as an upload?</span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Counted per file or image processed by AI</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-
-                <p className="text-muted-foreground">
-                  Taxes calculated at checkout
+              {/* Mobile Apps */}
+              <div>
+                <h3 className="text-2xl md:text-3xl font-bold mb-4">
+                  {t('pricing.comingSoon.mobile.title', 'iOS & Android Apps')}
+                </h3>
+                <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
+                  {t('pricing.comingSoon.mobile.description', 'Native mobile apps are in development. Soon you\'ll be able to take your trading diary with you, track trades, analyze performance, and stay on top of your game from anywhere.')}
                 </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                  <img 
+                    src={appStoreSoon} 
+                    alt={t('pricing.comingSoon.mobile.appStoreAlt', 'Coming soon to the App Store')}
+                    className="h-14 hover:opacity-80 transition-opacity"
+                  />
+                  <img 
+                    src={googlePlaySoon} 
+                    alt={t('pricing.comingSoon.mobile.playStoreAlt', 'Coming soon to Google Play')}
+                    className="h-14 hover:opacity-80 transition-opacity"
+                  />
+                </div>
               </div>
-            </div>
-          </div>
-        </section>
+            </GlassCard>
+          </motion.div>
+        </div>
+      </section>
 
-        {/* Comparison Table */}
-        <PricingComparison />
+      {/* Comparison Table */}
+      <PricingComparison />
 
-        {/* First Week Block */}
-        <FirstWeekBlock />
-
-        {/* Add-ons */}
-        <PricingAddOns />
-
-        {/* FAQ */}
-        <PricingFAQ />
-
-        {/* Social Proof & Testimonials */}
-        <SocialProofSection />
-
-        {/* Trust and Security */}
-        <section className="px-6 mb-12">
-          <div className="container mx-auto max-w-4xl">
-            <div className="bg-primary/5 border border-primary/20 rounded-xl p-6 text-center">
-              <div className="flex flex-wrap justify-center gap-6 mb-4">
-                <span className="text-sm">Encrypted data</span>
-                <span className="text-sm">Local imports</span>
-                <span className="text-sm">Access control by account</span>
-              </div>
-              <div className="flex justify-center gap-4 text-sm text-muted-foreground">
-                <Link to="/privacy" className="hover:underline">Privacy Policy</Link>
-                <span>•</span>
-                <Link to="/terms" className="hover:underline">Terms</Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Bottom CTA */}
-        <section className="px-6 mb-20">
-          <div className="container mx-auto max-w-3xl text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <h2 
-                className="font-bold leading-tight tracking-tight mb-4"
-                style={{ 
-                  fontSize: 'clamp(28px, 4vw, 40px)',
-                  letterSpacing: '-0.01em'
-                }}
-              >
-                Start your free plan. Begin training your discipline today.
-              </h2>
-              <p className="text-[17px] text-muted-foreground/80 mb-6 max-w-xl mx-auto">
-                Upload your trades and start earning XP. Build the habits of top traders.
-              </p>
-              <Button
-                size="lg"
-                onClick={() => handleStartTrial('pro')}
-                className="px-10 py-7 text-[15px] font-semibold"
-              >
-                Start Free
-              </Button>
-              <p className="text-[13px] text-muted-foreground mt-4">
-                No credit card required • Free entry plan
-              </p>
-            </motion.div>
-          </div>
-        </section>
-      </main>
-
-      <Footer />
+      {/* Final CTA Button */}
+      <section className="py-16 px-6">
+        <div className="container mx-auto max-w-4xl text-center">
+          <MagneticButton
+            onClick={() => navigate('/auth')}
+            className="text-xl px-16 py-8"
+          >
+            {t('pricing.hero.primaryCta')}
+          </MagneticButton>
+        </div>
+      </section>
     </div>
-    </>
   );
 };
+
+// Remove the old SolutionCard component as it's now in its own file
 
 export default PricingPage;

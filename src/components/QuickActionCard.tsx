@@ -22,8 +22,8 @@ export const QuickActionCard = memo(({ className }: QuickActionCardProps) => {
     },
     {
       icon: Upload,
-      label: t('widgets.exportData'),
-      onClick: () => navigate('/reports'),
+      label: t('widgets.importCSV'),
+      onClick: () => navigate('/upload'),
       variant: "outline" as const
     },
     {

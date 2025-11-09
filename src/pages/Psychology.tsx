@@ -1,31 +1,20 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import AppLayout from "@/components/layout/AppLayout";
 import { EmotionalStateLogger } from "@/components/psychology/EmotionalStateLogger";
 import { EmotionalTimeline } from "@/components/psychology/EmotionalTimeline";
 import { BehaviorPatternAnalysis } from "@/components/psychology/BehaviorPatternAnalysis";
 import { EmotionPerformanceCorrelation } from "@/components/psychology/EmotionPerformanceCorrelation";
 import { Brain, Clock, BarChart3, Lightbulb, Tags } from "lucide-react";
 import { PremiumFeatureLock } from "@/components/PremiumFeatureLock";
-import { useSubscription } from "@/contexts/SubscriptionContext";
-import { useEmotionalLogXP } from "@/hooks/useEmotionalLogXP";
+import { usePremiumFeatures } from "@/hooks/usePremiumFeatures";
 
 export default function Psychology() {
-  const { isFeatureLocked, isLoading } = useSubscription();
-  
-  // Process XP rewards for emotional logging
-  useEmotionalLogXP();
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
-      </div>
-    );
-  }
-  
+  const { isFeatureLocked } = usePremiumFeatures();
   const isPremiumLocked = isFeatureLocked('pro');
 
   return (
-    <PremiumFeatureLock requiredPlan="pro" isLocked={isPremiumLocked}>
+    <AppLayout>
+      <PremiumFeatureLock requiredPlan="pro" isLocked={isPremiumLocked}>
         <div className="container mx-auto p-6 max-w-7xl">
         <div className="flex items-center gap-2 mb-6">
           <Brain className="h-8 w-8" />
@@ -90,5 +79,6 @@ export default function Psychology() {
         </Tabs>
       </div>
       </PremiumFeatureLock>
+    </AppLayout>
   );
 }

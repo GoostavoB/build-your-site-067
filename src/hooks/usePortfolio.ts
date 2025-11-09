@@ -13,40 +13,32 @@ export const usePortfolio = (range: TimeRange = '1M') => {
   const { data: holdings, isLoading: holdingsLoading } = useQuery({
     queryKey: ['spot_holdings'],
     queryFn: async () => {
-      try {
-        const { data: holdingsData, error } = await supabase
-          .from('spot_holdings')
-          .select('*')
-          .order('token_symbol');
-        
-        if (error) {
-          console.warn('usePortfolio: holdings fetch error', error);
-          return [] as any[];
-        }
-        
-        // Fetch asset metadata for each holding (tolerate missing assets)
-        const enrichedHoldings = await Promise.all(
-          (holdingsData || []).map(async (holding) => {
-            const { data: assetData } = await supabase
-              .from('assets')
-              .select('primary_category, categories_json, coingecko_id')
-              .eq('symbol', holding.token_symbol)
-              .maybeSingle();
-            
-            return {
-              ...holding,
-              primary_category: assetData?.primary_category,
-              categories_json: assetData?.categories_json,
-              coingecko_id: assetData?.coingecko_id,
-            };
-          })
-        );
-        
-        return enrichedHoldings;
-      } catch (e) {
-        console.warn('usePortfolio: unexpected holdings error', e);
-        return [] as any[];
-      }
+      const { data: holdingsData, error } = await supabase
+        .from('spot_holdings')
+        .select('*')
+        .order('token_symbol');
+      
+      if (error) throw error;
+      
+      // Fetch asset metadata for each holding
+      const enrichedHoldings = await Promise.all(
+        (holdingsData || []).map(async (holding) => {
+          const { data: assetData } = await supabase
+            .from('assets')
+            .select('primary_category, categories_json, coingecko_id')
+            .eq('symbol', holding.token_symbol)
+            .single();
+          
+          return {
+            ...holding,
+            primary_category: assetData?.primary_category,
+            categories_json: assetData?.categories_json,
+            coingecko_id: assetData?.coingecko_id,
+          };
+        })
+      );
+      
+      return enrichedHoldings;
     },
   });
 
@@ -54,97 +46,68 @@ export const usePortfolio = (range: TimeRange = '1M') => {
   const { data: transactions, isLoading: transactionsLoading } = useQuery({
     queryKey: ['spot_transactions'],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('spot_transactions')
-          .select('*')
-          .order('transaction_date', { ascending: false });
-        
-        if (error) {
-          console.warn('usePortfolio: transactions fetch error', error);
-          return [] as any[];
-        }
-        return data || [];
-      } catch (e) {
-        console.warn('usePortfolio: unexpected transactions error', e);
-        return [] as any[];
-      }
+      const { data, error } = await supabase
+        .from('spot_transactions')
+        .select('*')
+        .order('transaction_date', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
     },
   });
 
   // Fetch portfolio settings
-  const { data: settings, isLoading: settingsLoading } = useQuery({
+  const { data: settings } = useQuery({
     queryKey: ['portfolio_settings'],
     queryFn: async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return null;
-  
-        const { data, error } = await supabase
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data, error } = await supabase
+        .from('portfolio_settings')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') throw error;
+      
+      // Create default settings if none exist
+      if (!data) {
+        const { data: newSettings, error: insertError } = await supabase
           .from('portfolio_settings')
-          .select('*')
-          .eq('user_id', user.id)
-          .maybeSingle();
+          .insert({
+            user_id: user.id,
+            base_currency: 'USD',
+            cost_method: 'FIFO',
+            blur_sensitive: false,
+            category_split_mode: false,
+          })
+          .select()
+          .single();
         
-        if (error && error.code !== 'PGRST116') {
-          console.warn('usePortfolio: settings fetch error', error);
-          return null;
-        }
-        
-        // Create default settings if none exist
-        if (!data) {
-          const { data: newSettings, error: insertError } = await supabase
-            .from('portfolio_settings')
-            .insert({
-              user_id: user.id,
-              base_currency: 'USD',
-              cost_method: 'FIFO',
-              blur_sensitive: false,
-              category_split_mode: false,
-            })
-            .select()
-            .single();
-          
-          if (insertError) {
-            console.warn('usePortfolio: settings insert error', insertError);
-            return null;
-          }
-          return newSettings;
-        }
-        
-        return data;
-      } catch (e) {
-        console.warn('usePortfolio: unexpected settings error', e);
-        return null;
+        if (insertError) throw insertError;
+        return newSettings;
       }
+      
+      return data;
     },
-    retry: 1,
-    staleTime: 60000,
   });
 
   // Fetch realized P&L
   const { data: realizedPnL } = useQuery({
     queryKey: ['realized_pnl', range],
     queryFn: async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return [] as any[];
-  
-        const { data, error } = await supabase
-          .from('realized_pnl')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('realized_date', { ascending: false });
-        
-        if (error) {
-          console.warn('usePortfolio: realized_pnl fetch error', error);
-          return [] as any[];
-        }
-        return data || [];
-      } catch (e) {
-        console.warn('usePortfolio: unexpected realized_pnl error', e);
-        return [] as any[];
-      }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+
+      const { data, error } = await supabase
+        .from('realized_pnl')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('realized_date', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
     },
   });
 
@@ -206,7 +169,7 @@ export const usePortfolio = (range: TimeRange = '1M') => {
     amount: tx.total_value
   })) || [];
 
-  const isLoading = holdingsLoading || transactionsLoading || settingsLoading || pricesLoading;
+  const isLoading = holdingsLoading || transactionsLoading || pricesLoading;
 
   return {
     holdings,

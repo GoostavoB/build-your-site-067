@@ -17,32 +17,26 @@ const CTA = () => {
           viewport={{ once: true }}
           className="text-center space-y-6"
         >
-          <h2 id="cta-heading" 
-              className="font-bold leading-tight tracking-tight"
-              style={{ 
-                fontSize: 'clamp(28px, 3.5vw, 42px)',
-                letterSpacing: '-0.01em'
-              }}
-          >
-            {t('landing.cta.finalTitle', 'Start today and upload your last 30 days of trades.')}
+          <h2 id="cta-heading" className="text-3xl md:text-4xl font-bold leading-tight">
+            {t('landing.cta.title')}
           </h2>
           
-          <p className="text-[17px] text-muted-foreground/70 font-light max-w-xl mx-auto leading-relaxed">
-            {t('landing.cta.finalSubtitle', 'Get AI-powered insights to improve your performance.')}
+          <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto">
+            {t('landing.cta.subtitle')}
           </p>
           
           <div>
             <Button 
               onClick={() => navigate('/auth')}
               size="lg"
-              className="px-10 py-7 text-[15px] font-semibold rounded-xl"
-              aria-label="Start for free"
+              className="px-10 py-7 text-base font-medium rounded-xl"
+              aria-label="Start using The Trading Diary for free"
             >
-              {t('landing.cta.finalButton', 'Start for free')}
+              {t('landing.cta.button')}
             </Button>
             
-            <p className="mt-4 text-[13px] text-muted-foreground/70">
-              {t('landing.cta.finalNote', 'No credit card required.')}
+            <p className="mt-4 text-xs text-muted-foreground">
+              {t('landing.cta.note')}
             </p>
           </div>
         </motion.div>

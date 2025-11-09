@@ -84,5 +84,4 @@ export interface FetchOptions {
   endTime?: Date;
   limit?: number;
   symbol?: string;
-  tradingType?: 'spot' | 'futures' | 'both';
 }

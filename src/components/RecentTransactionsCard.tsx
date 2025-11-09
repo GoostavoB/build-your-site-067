@@ -1,5 +1,4 @@
 import { memo } from 'react';
-import { Link } from 'react-router-dom';
 import { GlassCard } from "@/components/ui/glass-card";
 import { Badge } from "@/components/ui/badge";
 import { Trade } from "@/types/trade";
@@ -36,9 +35,9 @@ export const RecentTransactionsCard = memo(({ trades, className }: RecentTransac
               context={recentTrades.length > 0 ? `Latest: ${recentTrades[0].symbol} (${formatAmount(recentTrades[0].pnl || 0)})` : ''}
               onExplain={openWithPrompt}
             />
-            <Link to="/dashboard" className="text-xs text-primary hover:underline">
+            <a href="/dashboard" className="text-xs text-primary hover:underline">
               {t('widgets.recentTransactions.viewAll')}
-            </Link>
+            </a>
           </div>
         </div>
         

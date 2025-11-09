@@ -2,91 +2,69 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/useTranslation";
-import { Twitter, Linkedin, Facebook, Share2, CheckCircle2, Gift, Loader2 } from "lucide-react";
-import { useSocialSharing } from "@/hooks/useSocialSharing";
-
-type Platform = 'twitter' | 'linkedin' | 'facebook';
+import { Twitter, Linkedin, Facebook, Share2, CheckCircle2, Gift } from "lucide-react";
+import { toast } from "sonner";
 
 interface SocialPlatform {
-  name: Platform;
-  displayName: string;
+  name: string;
   icon: React.ReactNode;
   color: string;
-  xpReward: number;
+  shareUrl: (text: string, url: string) => string;
+  reward: number;
 }
 
 export const SocialShareRewards = () => {
   const { t } = useTranslation();
-  const { recordShare, getShareUrl, canShare, sharesThisWeek, isLoading } = useSocialSharing();
-  const [loading, setLoading] = useState<Platform | null>(null);
+  const [sharedPlatforms, setSharedPlatforms] = useState<Set<string>>(new Set());
 
   const platforms: SocialPlatform[] = [
     {
-      name: "twitter",
-      displayName: "Twitter",
+      name: "Twitter",
       icon: <Twitter className="h-5 w-5" />,
       color: "hover:text-[#1DA1F2]",
-      xpReward: 50
+      shareUrl: (text, url) => `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
+      reward: 2
     },
     {
-      name: "linkedin",
-      displayName: "LinkedIn",
+      name: "LinkedIn",
       icon: <Linkedin className="h-5 w-5" />,
       color: "hover:text-[#0A66C2]",
-      xpReward: 50
+      shareUrl: (text, url) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+      reward: 2
     },
     {
-      name: "facebook",
-      displayName: "Facebook",
+      name: "Facebook",
       icon: <Facebook className="h-5 w-5" />,
       color: "hover:text-[#1877F2]",
-      xpReward: 50
+      shareUrl: (text, url) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+      reward: 2
     }
   ];
 
-  const handleShare = async (platform: SocialPlatform) => {
-    setLoading(platform.name);
+  const handleShare = (platform: SocialPlatform) => {
+    const shareText = t('social.shareText') || "Check out The Trading Diary - AI-powered crypto trading journal!";
+    const shareUrl = window.location.origin;
+    
+    // Open share window
+    window.open(
+      platform.shareUrl(shareText, shareUrl),
+      '_blank',
+      'width=600,height=400'
+    );
 
-    try {
-      const shareText = t('social.shareText') || "Check out The Trading Diary - AI-powered crypto trading journal!";
-      const shareUrl = window.location.origin;
-      
-      // Open share window
-      const shareWindow = window.open(
-        getShareUrl(platform.name, shareText, shareUrl),
-        '_blank',
-        'width=600,height=400'
-      );
+    // Mark as shared (in production, this would be tracked in the database)
+    setSharedPlatforms(prev => new Set(prev).add(platform.name));
 
-      // Wait for user to complete the share
-      await new Promise(resolve => setTimeout(resolve, 3000));
-
-      // Close the share window if still open
-      if (shareWindow && !shareWindow.closed) {
-        shareWindow.close();
-      }
-
-      // Record the share and award XP
-      await recordShare(platform.name, 'general');
-
-    } catch (error) {
-      console.error('Error sharing:', error);
-    } finally {
-      setLoading(null);
-    }
+    toast.success(t('social.shareSuccess', { platform: platform.name, uploads: platform.reward }), {
+      description: t('social.shareRewardDescription'),
+      icon: <Gift className="h-5 w-5 text-primary" />
+    });
   };
 
-  const totalXPEarned = sharesThisWeek * 50;
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="p-6 flex items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </CardContent>
-      </Card>
-    );
-  }
+  const totalRewards = Array.from(sharedPlatforms).reduce((sum, platformName) => {
+    const platform = platforms.find(p => p.name === platformName);
+    return sum + (platform?.reward || 0);
+  }, 0);
 
   return (
     <Card>
@@ -96,22 +74,22 @@ export const SocialShareRewards = () => {
           <CardTitle>{t('social.shareRewards')}</CardTitle>
         </div>
         <CardDescription>
-          Share on social media and earn 50 XP per share (3 shares per week max)
+          {t('social.shareDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* XP Summary */}
-        {totalXPEarned > 0 && (
+        {/* Reward Summary */}
+        {totalRewards > 0 && (
           <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Gift className="h-5 w-5 text-primary" />
-                <span className="font-semibold">This Week's Rewards</span>
+                <span className="font-semibold">{t('social.earnedRewards')}</span>
               </div>
-              <span className="text-2xl font-bold text-primary">+{totalXPEarned} XP</span>
+              <span className="text-2xl font-bold text-primary">+{totalRewards}</span>
             </div>
             <p className="text-sm text-muted-foreground mt-1">
-              {sharesThisWeek}/3 shares completed
+              {t('social.uploadsEarned')}
             </p>
           </div>
         )}
@@ -119,28 +97,24 @@ export const SocialShareRewards = () => {
         {/* Share Buttons */}
         <div className="grid gap-3">
           {platforms.map((platform) => {
-            const isDisabled = !canShare || loading !== null;
+            const isShared = sharedPlatforms.has(platform.name);
             
             return (
               <Button
                 key={platform.name}
-                variant={!canShare ? "outline" : "default"}
+                variant={isShared ? "outline" : "default"}
                 className={`w-full justify-between ${platform.color} transition-colors`}
                 onClick={() => handleShare(platform)}
-                disabled={isDisabled}
+                disabled={isShared}
               >
                 <div className="flex items-center gap-2">
-                  {loading === platform.name ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    platform.icon
-                  )}
-                  <span>Share on {platform.displayName}</span>
+                  {platform.icon}
+                  <span>{t('social.shareOn', { platform: platform.name })}</span>
                 </div>
-                {!canShare ? (
+                {isShared ? (
                   <CheckCircle2 className="h-5 w-5 text-green-500" />
                 ) : (
-                  <span className="text-sm font-semibold">+{platform.xpReward} XP</span>
+                  <span className="text-sm font-semibold">+{platform.reward} uploads</span>
                 )}
               </Button>
             );
@@ -149,14 +123,7 @@ export const SocialShareRewards = () => {
 
         {/* Info */}
         <div className="text-xs text-muted-foreground text-center pt-2">
-          <div className={canShare ? 'text-primary font-medium' : 'text-destructive'}>
-            {sharesThisWeek}/3 shares this week
-          </div>
-          {!canShare && (
-            <p className="mt-1">
-              You've reached the weekly limit. Come back next week!
-            </p>
-          )}
+          {t('social.shareLimit')}
         </div>
       </CardContent>
     </Card>

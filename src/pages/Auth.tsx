@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { supabase } from '@/integrations/supabase/client';
@@ -46,7 +45,6 @@ const signupSchema = z.object({
 });
 
 const Auth = () => {
-  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState('');
@@ -59,7 +57,7 @@ const Auth = () => {
   const [marketingConsent, setMarketingConsent] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp, signInWithGoogle, user } = useAuth();
+  const { signIn, signUp, signInWithGoogle } = useAuth();
   const { i18n } = useTranslation();
 
   // Detect language from URL parameter
@@ -72,17 +70,6 @@ const Auth = () => {
       localStorage.setItem('app-language', langParam);
     }
   }, [i18n]);
-
-  // Auto-navigate authenticated users
-  useEffect(() => {
-    if (user) {
-      console.log('User authenticated, navigating to dashboard...');
-      const timer = setTimeout(() => {
-        navigate('/dashboard');
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,7 +112,6 @@ const Auth = () => {
         if (error) {
           toast.error(error.message || 'Failed to sign in');
         } else {
-          console.log('Sign in successful, waiting for navigation...');
           toast.success('Welcome back!');
         }
       } else {

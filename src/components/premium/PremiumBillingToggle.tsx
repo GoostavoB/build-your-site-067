@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 
 interface PremiumBillingToggleProps {
   billingCycle: 'monthly' | 'annual';
@@ -8,7 +7,6 @@ interface PremiumBillingToggleProps {
 }
 
 export const PremiumBillingToggle = ({ billingCycle, onToggle }: PremiumBillingToggleProps) => {
-  const { t } = useTranslation();
   const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
@@ -101,7 +99,7 @@ export const PremiumBillingToggle = ({ billingCycle, onToggle }: PremiumBillingT
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
-          {t('pricing.billing.monthly')}
+          Monthly
         </button>
 
         {/* Annual button */}
@@ -125,7 +123,7 @@ export const PremiumBillingToggle = ({ billingCycle, onToggle }: PremiumBillingT
               ease: "easeInOut"
             }}
           >
-            {t('pricing.billing.annual')}
+            Yearly
           </motion.span>
         </button>
       </div>
@@ -208,7 +206,7 @@ export const PremiumBillingToggle = ({ billingCycle, onToggle }: PremiumBillingT
             ease: "easeInOut"
           }}
         >
-          {t('pricing.billing.save20')}
+          SAVE 20%
         </motion.span>
       </motion.div>
     </div>

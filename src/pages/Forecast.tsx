@@ -4,6 +4,7 @@ import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import AppLayout from '@/components/layout/AppLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { ForecastScenarioCard } from '@/components/forecast/ForecastScenarioCard';
@@ -16,46 +17,27 @@ import { calculateGrowth } from '@/utils/growthFormatting';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { Sparkles, Settings2, TrendingDown } from 'lucide-react';
 import { PremiumFeatureLock } from '@/components/PremiumFeatureLock';
-import { useSubscription } from '@/contexts/SubscriptionContext';
+import { usePremiumFeatures } from '@/hooks/usePremiumFeatures';
 
 const Forecast = () => {
   useKeyboardShortcuts();
   const { user } = useAuth();
-  const { isFeatureLocked, isLoading: subscriptionLoading } = useSubscription();
+  const { isFeatureLocked } = usePremiumFeatures();
+  const isPremiumLocked = isFeatureLocked('pro');
   const [days, setDays] = useState([30]);
   const [avgDailyPnl, setAvgDailyPnl] = useState(0);
   const [projectedEquity, setProjectedEquity] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [loadingTimeout, setLoadingTimeout] = useState(false);
   const [advancedStats, setAdvancedStats] = useState<AdvancedStats | null>(null);
   const [currentBalance, setCurrentBalance] = useState(0);
   const [showCalculationModal, setShowCalculationModal] = useState(false);
   const [customDailyGrowth, setCustomDailyGrowth] = useState<number | null>(null);
   const [includeDrawdown, setIncludeDrawdown] = useState(false);
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
-  
-  if (subscriptionLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
-      </div>
-    );
-  }
-  
-  const isPremiumLocked = isFeatureLocked('pro');
 
   useEffect(() => {
     fetchAvgPnl();
     fetchAdvancedStats();
-    
-    // Set up loading timeout (8 seconds)
-    const timeoutId = setTimeout(() => {
-      if (loading) {
-        console.warn('Forecast: Loading timeout reached');
-        setLoadingTimeout(true);
-        setLoading(false);
-      }
-    }, 8000);
     
     // Set up realtime subscription for trades changes
     const channel = supabase
@@ -70,7 +52,6 @@ const Forecast = () => {
       .subscribe();
     
     return () => {
-      clearTimeout(timeoutId);
       supabase.removeChannel(channel);
     };
   }, [user]);
@@ -80,73 +61,54 @@ const Forecast = () => {
   }, [days, avgDailyPnl]);
 
   const fetchAvgPnl = async () => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+    if (!user) return;
 
-    try {
-      const { data: trades, error } = await supabase
-        .from('trades')
-        .select('pnl, trade_date, trading_fee, funding_fee')
-        .eq('user_id', user.id)
-        .is('deleted_at', null);
+    const { data: trades } = await supabase
+      .from('trades')
+      .select('pnl, trade_date, trading_fee, funding_fee')
+      .eq('user_id', user.id)
+      .is('deleted_at', null);
 
-      if (error) {
-        console.warn('Forecast: fetchAvgPnl error', error);
-        setAvgDailyPnl(0);
-        return;
-      }
-
-      if (trades && trades.length > 0) {
-        // Calculate P&L after fees
-        const totalPnl = trades.reduce((sum, t) => {
-          const pnl = t.pnl || 0;
-          const tradingFee = t.trading_fee || 0;
-          const fundingFee = t.funding_fee || 0;
-          return sum + (pnl - tradingFee - fundingFee);
-        }, 0);
-        const uniqueDays = new Set(trades.map(t => new Date(t.trade_date).toDateString())).size;
-        setAvgDailyPnl(totalPnl / (uniqueDays || 1));
-      } else {
-        setAvgDailyPnl(0);
-      }
-    } catch (e) {
-      console.warn('Forecast: unexpected fetchAvgPnl error', e);
+    if (trades && trades.length > 0) {
+      // Calculate P&L after fees
+      const totalPnl = trades.reduce((sum, t) => {
+        const pnl = t.pnl || 0;
+        const tradingFee = t.trading_fee || 0;
+        const fundingFee = t.funding_fee || 0;
+        return sum + (pnl - tradingFee - fundingFee);
+      }, 0);
+      const uniqueDays = new Set(trades.map(t => new Date(t.trade_date).toDateString())).size;
+      setAvgDailyPnl(totalPnl / (uniqueDays || 1));
+    } else {
       setAvgDailyPnl(0);
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   const fetchAdvancedStats = async () => {
     if (!user) return;
 
-    try {
-      // Fetch trades with ROI and margin data
-      const { data: trades, error: tradesError } = await supabase
-        .from('trades')
-        .select('roi, margin, pnl')
-        .eq('user_id', user.id)
-        .is('deleted_at', null);
+    // Fetch trades with ROI and margin data
+    const { data: trades } = await supabase
+      .from('trades')
+      .select('roi, margin, pnl')
+      .eq('user_id', user.id)
+      .is('deleted_at', null);
 
-      // Fetch user settings for balance
-      const { data: settings, error: settingsError } = await supabase
-        .from('user_settings')
-        .select('initial_investment')
-        .eq('user_id', user.id)
-        .maybeSingle();
+    // Fetch user settings for balance
+    const { data: settings } = await supabase
+      .from('user_settings')
+      .select('initial_investment')
+      .eq('user_id', user.id)
+      .single();
 
-      if (!settingsError && settings) {
-        setCurrentBalance(settings.initial_investment || 0);
-      }
+    if (settings) {
+      setCurrentBalance(settings.initial_investment || 0);
+    }
 
-      if (!tradesError && trades) {
-        const stats = calculateAdvancedStats(trades);
-        setAdvancedStats(stats);
-      }
-    } catch (e) {
-      console.warn('Forecast: unexpected fetchAdvancedStats error', e);
+    if (trades) {
+      const stats = calculateAdvancedStats(trades);
+      setAdvancedStats(stats);
     }
   };
 
@@ -159,34 +121,13 @@ const Forecast = () => {
   };
 
   return (
-    <>
+    <AppLayout>
       <PremiumFeatureLock requiredPlan="pro" isLocked={isPremiumLocked}>
         <div className="max-w-5xl mx-auto space-y-8">
         <header>
           <h1 className="text-4xl md:text-5xl font-bold mb-2 text-foreground">Equity Forecast</h1>
           <p className="text-muted-foreground text-lg">Project your future equity based on historical performance</p>
         </header>
-
-        {loadingTimeout && (
-          <Card className="p-4 mb-6 bg-warning/10 border-warning">
-            <p className="text-sm text-warning">
-              Loading is taking longer than usual. Your forecasts may still appear.
-            </p>
-          </Card>
-        )}
-
-        {avgDailyPnl === 0 && !loading && (
-          <Card className="p-6 text-center glass-subtle border-primary/20 mb-6">
-            <TrendingDown className="w-12 h-12 mx-auto mb-3 text-primary/70" />
-            <h3 className="text-lg font-semibold mb-2">Upload Your Trades to See Forecasts</h3>
-            <p className="text-muted-foreground text-sm mb-4">
-              Add your trading history to unlock personalized equity projections and growth analysis
-            </p>
-            <Button onClick={() => window.location.href = '/upload'} size="sm">
-              Upload Trades
-            </Button>
-          </Card>
-        )}
 
         {loading ? (
           <div className="text-center py-16">
@@ -505,7 +446,7 @@ const Forecast = () => {
         onOpenChange={setShowCalculationModal}
       />
       </PremiumFeatureLock>
-    </>
+    </AppLayout>
   );
 };
 

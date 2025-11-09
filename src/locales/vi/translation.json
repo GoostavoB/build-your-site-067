@@ -11,6 +11,8 @@
     "success": "Thành công",
     "inDevelopment": "Đang Phát Triển",
     "comingSoon": "Sắp Ra Mắt",
+    "inDevelopment": "Đang Phát Triển",
+    "comingSoon": "Sắp Ra Mắt",
     "confirm": "Xác nhận",
     "close": "Đóng",
     "back": "Quay lại",
@@ -32,91 +34,6 @@
     "settings": "Cài đặt"
   },
   "landing": {
-    "hero": {
-      "title": "Nhật ký giao dịch crypto của bạn, nhanh hơn 40 lần.",
-      "subtitle": "Tải lên ảnh chụp màn hình → AI trích xuất điểm vào, điểm ra, phí và R → Xem bản đồ nhiệt hàng tuần, tài sản hàng đầu và PnL ròng → Nhận các hành động thực tế bạn có thể áp dụng ngay hôm nay.",
-      "uploadNote": "Quyết định giao dịch không dễ dàng. Nhưng theo dõi chúng không nên khó khăn.",
-      "primaryCta": "Bắt đầu miễn phí",
-      "secondaryCta": "Xem cách hoạt động"
-    },
-    "howItWorks": {
-      "title": "Cách hoạt động",
-      "subtitle": "Từ tải lên đến thông tin chi tiết trong vài phút",
-      "step1": {
-        "title": "Tải lên ảnh chụp màn hình (chỉ hình ảnh)",
-        "description": "Kéo và thả ảnh chụp màn hình giao dịch của bạn; AI xử lý phần còn lại."
-      },
-      "step2": {
-        "title": "AI trích xuất điểm vào, điểm ra, phí và R",
-        "description": "AI của chúng tôi tự động điền nhật ký của bạn với tất cả các chi tiết giao dịch"
-      },
-      "step3": {
-        "title": "Bảng điều khiển hiển thị bản đồ nhiệt hàng tuần, tài sản hàng đầu và PnL ròng",
-        "description": "Xem hiệu suất của bạn trong nháy mắt với thông tin chi tiết trực quan"
-      },
-      "step4": {
-        "title": "Nhận các hành động thực tế bạn có thể áp dụng ngay hôm nay",
-        "description": "• Xem những gì cần điều chỉnh tiếp theo, với các đề xuất rõ ràng dựa trên dữ liệu"
-      },
-      "dashboardAlt": "Bảng điều khiển giao dịch hiển thị bản đồ nhiệt hàng tuần và các chỉ số hiệu suất"
-    },
-    "completeTradingJournal": {
-      "title": "Nhật Ký Giao Dịch Hoàn Chỉnh",
-      "subtitle": "Mọi thứ bạn cần để theo dõi, phân tích và cải thiện hiệu suất giao dịch của bạn",
-      "dreamOutcome": {
-        "title": "Kết Quả Mơ Ước",
-        "description": "Nhiều R hơn, ít sụt giảm hơn, nhất quán hàng tuần"
-      },
-      "likelihood": {
-        "title": "Khả Năng",
-        "description": "Cơ chế rõ ràng và bằng chứng số"
-      },
-      "timeDelay": {
-        "title": "Thời Gian Chờ",
-        "description": "Thông tin chi tiết đầu tiên trong cùng ngày bạn tải lên"
-      },
-      "effort": {
-        "title": "Nỗ Lực",
-        "description": "Nhanh hơn tới 40 lần so với thủ công, không cần bảng tính"
-      }
-    },
-    "tradingFramework": {
-      "title": "Khung Thành Công Giao Dịch Của Bạn",
-      "blueprint": {
-        "title": "Bản Thiết Kế",
-        "description": "Đặt rủi ro mỗi giao dịch và mục tiêu R hàng tuần"
-      },
-      "unblock": {
-        "title": "Mở Khóa",
-        "description": "Loại bỏ việc nhập tay và mù phí"
-      },
-      "install": {
-        "title": "Cài Đặt",
-        "description": "Tải lên lịch sử giao dịch của bạn ngay lập tức"
-      },
-      "launch": {
-        "title": "Khởi Chạy",
-        "description": "Nhận thông tin chi tiết được hỗ trợ bởi AI ngay lập tức"
-      },
-      "deliver": {
-        "title": "Giao Hàng",
-        "description": "Xem tác động đến tỷ lệ thắng và sụt giảm"
-      }
-    },
-    "security": {
-      "encryptedData": {
-        "title": "Dữ liệu được mã hóa",
-        "description": "Mã hóa cấp ngân hàng"
-      },
-      "localImports": {
-        "title": "Nhập cục bộ",
-        "description": "Xử lý dữ liệu an toàn"
-      },
-      "accessControl": {
-        "title": "Kiểm soát truy cập",
-        "description": "Bảo mật theo tài khoản"
-      }
-    },
     "stats": {
       "fasterUploads": {
         "title": "Nhanh Hơn 40 Lần",
@@ -131,9 +48,23 @@
         "description": "Chỉ số, màu sắc và bố cục hoàn toàn tùy chỉnh."
       }
     },
+    "benefits": {
+      "fasterUploads": {
+        "title": "Nhanh Hơn 40 Lần",
+        "description": "Tải lên hàng loạt từ ảnh chụp màn hình. Không cần nhập thủ công."
+      },
+      "knowEveryFee": {
+        "title": "Biết Mọi Phí",
+        "description": "So sánh sàn giao dịch và phát hiện chi phí ẩn."
+      },
+      "yourRules": {
+        "title": "Bảng Điều Khiển Của Bạn",
+        "description": "Chỉ số, màu sắc và bố cục hoàn toàn tùy chỉnh."
+      }
+    },
     "dashboardShowcase": {
-      "title": "Tiến bộ nhanh hơn bao giờ hết",
-      "subtitle": "Nhật ký giao dịch được hỗ trợ bởi AI nhanh nhất giúp theo dõi, phân tích và gắn thẻ các giao dịch của bạn nhanh hơn gấp 40 lần. Không cần nhập thủ công, không lãng phí thời gian, chỉ có hiệu suất tối đa.",
+      "title": "Các giao dịch của bạn, được tổ chức. Cái này cho thấy tiến độ.",
+      "subtitle": "Theo dõi mọi thứ ở một nơi—P&L, cảm xúc, lỗi. Tìm những gì hiệu quả.",
       "cta": "Bắt Đầu Theo Dõi"
     },
     "exchangeLogos": {
@@ -143,33 +74,6 @@
     "features": {
       "title": "Giao Dịch Tốt Hơn với Dữ Liệu",
       "subtitle": "Mọi thứ bạn cần để cải thiện hiệu suất giao dịch của bạn",
-      "mainTitle": "Tính Năng Tạo Kết Quả",
-      "mainSubtitle": "Công cụ được thiết kế để cải thiện hiệu suất giao dịch của bạn",
-      "leverage": {
-        "title": "Đòn bẩy và kích thước vị thế theo rủi ro và stop",
-        "description": "Tính toán kích thước vị thế phù hợp cho mọi giao dịch dựa trên mức độ chấp nhận rủi ro của bạn",
-        "action": "Đặt các thông số rủi ro của bạn ngay"
-      },
-      "fees": {
-        "title": "Bảng điều khiển phí và mô phỏng maker vs taker với funding",
-        "description": "Hiểu chi phí giao dịch thực sự và tối ưu hóa cấu trúc phí",
-        "action": "Cắt giảm chi phí bằng cách chuyển đổi cặp có phí cao chỉ với một cú nhấp chuột"
-      },
-      "heatmap": {
-        "title": "Bản đồ nhiệt hàng tuần, tài sản và giờ tốt nhất",
-        "description": "Xác định các mô hình giao dịch có lợi nhuận nhất và khung thời gian",
-        "action": "Tìm lợi thế của bạn với phân tích trực quan"
-      },
-      "mfeMae": {
-        "title": "MFE và MAE để điều chỉnh mục tiêu và stop",
-        "description": "Tối ưu hóa chiến lược thoát của bạn với phân tích độ lệch tối đa thuận lợi và bất lợi",
-        "action": "Cải thiện điểm thoát của bạn ngay hôm nay"
-      },
-      "riskAlerts": {
-        "title": "Cảnh báo rủi ro và danh sách kiểm tra trước giao dịch",
-        "description": "Duy trì kỷ luật với cảnh báo tự động và xác thực giao dịch có hệ thống",
-        "action": "Kích hoạt bảo vệ thông minh"
-      },
       "smartLogging": {
         "title": "Ghi Nhật Ký Thông Minh",
         "description": "Chụp ảnh màn hình, thêm thẻ cảm xúc, theo dõi lỗi—tất cả ở một nơi.",
@@ -220,14 +124,6 @@
     },
     "hero": {
       "titleShort": "Theo dõi mọi giao dịch tiền điện tử. Học nhanh hơn.",
-      "mainTitle": "Tối đa hóa hiệu suất giao dịch của bạn",
-      "mainSubtitle": "Tải lên giao dịch của bạn, AI điền nhật ký, bạn nhận được 3 hành động để nâng cao R trung bình ngày hôm nay",
-      "ctaStartTrial": "Bắt đầu dùng thử miễn phí",
-      "ctaWatchDemo": "Xem demo 2 phút",
-      "proofBadge1": "Ghi nhật ký nhanh hơn tới 40 lần",
-      "proofBadge2": "Tỷ lệ thắng tới +8 điểm",
-      "proofBadge3": "Giảm drawdown hàng tuần tối đa −30%",
-      "proofDisclaimer": "Kết quả quan sát được ở các nhóm thử nghiệm, khác nhau tùy theo rủi ro, thị trường và kỷ luật",
       "benefits": [
         "Nhập giao dịch trong vài phút",
         "Xem P&L thực với phí",
@@ -235,54 +131,9 @@
       ],
       "ctaPrimary": "Bắt đầu miễn phí"
     },
-    "valueBar": {
-      "message": "Dữ liệu rõ ràng hôm nay, quyết định tốt hơn trong giao dịch tiếp theo của bạn"
-    },
-    "benefits": {
-      "mainTitle": "Xây Dựng Cho Mọi Trader",
-      "mainSubtitle": "Bảo mật, quyền riêng tư và tương thích với mọi sàn giao dịch.",
-      "fasterUploads": {
-        "title": "Nhanh Hơn 40 Lần",
-        "description": "Tải lên hàng loạt từ ảnh chụp màn hình. Không cần nhập thủ công."
-      },
-      "knowEveryFee": {
-        "title": "Biết Mọi Phí",
-        "description": "So sánh sàn giao dịch và phát hiện chi phí ẩn."
-      },
-      "yourRules": {
-        "title": "Bảng Điều Khiển Của Bạn",
-        "description": "Chỉ số, màu sắc và bố cục hoàn toàn tùy chỉnh."
-      },
-      "noApiKeys": {
-        "title": "Không cần khóa API. Bảo mật tối đa.",
-        "description": "Tránh rủi ro và đơn giản hóa thiết lập. Không có khóa API nghĩa là không có lỗ hổng truy cập."
-      },
-      "allExchanges": {
-        "title": "Tương thích với mọi sàn giao dịch.",
-        "description": "Hoạt động liền mạch với Binance, Bybit, OKX và tất cả các nền tảng chính."
-      },
-      "privateDefault": {
-        "title": "Quyền riêng tư được đảm bảo mặc định.",
-        "description": "Dữ liệu của bạn vẫn là của bạn. Mã hóa đầu cuối và không chia sẻ dữ liệu."
-      },
-      "saferDesign": {
-        "title": "Bảo mật đầu tiên, theo thiết kế.",
-        "description": "Được xây dựng với các tiêu chuẩn bảo mật hàng đầu ngành từ đầu."
-      },
-      "uploadGo": {
-        "title": "Tải lên và giao dịch ngay lập tức.",
-        "description": "Chụp ảnh màn hình giao dịch và tải lên. AI xử lý phần còn lại trong vài giây."
-      },
-      "trustedBy": "Được tin tưởng bởi hơn 45,000 trader trên toàn thế giới",
-      "ctaButton": "Dùng thử miễn phí ngay"
-    },
     "cta": {
       "title": "Sẵn Sàng Nâng Cấp Giao Dịch của Bạn?",
       "subtitle": "Tham gia hàng nghìn trader đang cải thiện kỷ luật và lợi nhuận của họ.",
-      "mainTitle": "Bắt đầu hôm nay",
-      "mainSubtitle": "Tải lên 30 ngày gần nhất và nhận thông tin chi tiết từ AI để nâng cao R trung bình của bạn",
-      "buttonText": "Bắt đầu dùng thử miễn phí",
-      "disclaimer": "Không yêu cầu thẻ tín dụng • Dùng thử miễn phí 7 ngày",
       "button": "Bắt Đầu Dùng Thử Miễn Phí",
       "note": "Không yêu cầu thẻ tín dụng"
     },
@@ -442,7 +293,6 @@
     "psychology": "Tâm lý học",
     "reports": "Báo cáo",
     "taxReports": "Báo cáo thuế",
-    "withdrawals": "Rút tiền",
     "myMetrics": "Chỉ số của tôi",
     "leaderboard": "Bảng xếp hạng",
     "progressXP": "Tiến độ & Kinh nghiệm",
@@ -456,11 +306,6 @@
     "perMonthBilledAnnually": "tháng, thanh toán hàng năm",
     "savingsAmount": "Tiết kiệm ${{amount}}/năm",
     "guaranteeNote": "Đảm bảo hoàn tiền trong 7 ngày • Hủy bất cứ lúc nào • Không có phí ẩn",
-    "uploadNote": "Tối đa 10 giao dịch mỗi lần tải lên",
-    "speedBanner": "🚀 Bắt Đầu Cải Thiện Kết Quả Giao Dịch Ngay Hôm Nay — Nhận 3 Thông Tin Chi Tiết AI Ngay Lập Tức",
-    "saveBadge": "Tiết kiệm 2 tháng",
-    "trialTerms": "Dùng thử 7 ngày • Hủy bất cứ lúc nào • Hoàn tiền theo tỷ lệ trong 14 ngày đầu khi đăng ký hàng năm",
-    "noCardRequired": "Không cần thẻ tín dụng",
     "hero": {
       "title": "Giao dịch với sự rõ ràng.",
       "subtitle": "Nhật ký giao dịch được hỗ trợ bởi AI cho nhà đầu tư tiền điện tử. Ghi lại mọi giao dịch, tìm kiếm mẫu và theo dõi lợi thế của bạn.",
@@ -470,19 +315,6 @@
     "solutions": {
       "title": "Kết Quả Quan Trọng",
       "subtitle": "Khả năng cao cấp được xây dựng cho các trader chuyên nghiệp",
-      "headline1": "Quy tắc của bạn.",
-      "headline2": "Kết quả của bạn.",
-      "tagline": "Nếu bạn không thể đo lường nó, bạn không thể cải thiện nó.",
-      "outcome1": {
-        "headline": "Tải Lên Nhanh Hơn 40 Lần",
-        "subhead": "Tải lên hàng loạt giao dịch từ ảnh chụp màn hình thay vì nhập thủ công",
-        "proof": "Tải lên hàng loạt từ ảnh chụp màn hình luôn thắng so với nhập thủ công"
-      },
-      "outcome2": {
-        "headline": "Tiết Kiệm 75-97% Thời Gian",
-        "subhead": "Dành ít thời gian hơn cho việc ghi nhật ký, nhiều thời gian hơn cho phân tích và giao dịch",
-        "proof": "Dành ít thời gian hơn cho việc ghi nhật ký, nhiều thời gian hơn để chiến thắng"
-      },
       "seePatterns": {
         "headline": "Nhìn thấy mẫu ngay lập tức",
         "subhead": "AI đọc toàn bộ lịch sử của bạn. Làm nổi bật những gì thực sự tạo ra tiền.",
@@ -542,57 +374,42 @@
       "basic": {
         "name": "Basic",
         "description": "Hoàn hảo cho các trader đang xây dựng cấu trúc",
-        "tradeLimit": "20 lần tải lên/tháng",
-        "cta": "Bắt đầu dùng thử 7 ngày miễn phí",
         "features": {
-          "uploads": "20 lần tải lên/tháng • Tối đa 10 giao dịch mỗi lần tải",
-          "accounts": "1 tài khoản kết nối",
-          "aiInsights": "Thông tin chi tiết AI trên trang chủ",
-          "tradingHistory": "Lịch sử giao dịch",
-          "manualEntry": "Nhập giao dịch thủ công",
-          "spotWallet": "Ví Spot",
-          "journal": "Nhật ký giao dịch",
-          "drawdown": "Phân tích sụt giảm",
-          "leverageCalculator": "Máy tính stop đòn bẩy",
-          "marketData": "Dữ liệu thị trường",
-          "equityForecast": "Dự báo vốn chủ sở hữu thông minh",
-          "emailSupport": "Hỗ trợ qua email",
-          "csvExport": "Chỉ xuất CSV",
-          "noFeeAnalysis": "Phân tích phí: không bao gồm"
+          "uploads": "50 lần tải lên giao dịch AI/tháng",
+          "manualUploads": "Tải lên thủ công không giới hạn",
+          "dashboard": "Bảng điều khiển tùy chỉnh với hơn 15 widget",
+          "charts": "Biểu đồ nâng cao & phân tích",
+          "basicJournal": "Nhật ký cơ bản với theo dõi cảm xúc",
+          "feeAnalytics": "Phân tích phí với cảnh báo",
+          "csv": "Nhập & xuất CSV",
+          "social": "Truy cập feed xã hội & bảng xếp hạng"
         }
       },
       "pro": {
         "name": "Pro",
         "description": "Dành cho các trader nghiêm túc cải thiện kỷ luật",
-        "tradeLimit": "50 lần tải lên/tháng",
-        "cta": "Bắt đầu dùng thử 7 ngày",
         "features": {
-          "uploads": "50 lần tải lên/tháng • Tối đa 10 giao dịch mỗi lần tải",
-          "unlimitedAccounts": "Tài khoản không giới hạn",
-          "feeAnalysis": "Phân tích phí",
-          "tradingPlan": "Kế hoạch giao dịch",
-          "goals": "Mục tiêu",
-          "psychology": "Tâm lý giao dịch",
-          "reports": "Báo cáo",
-          "taxReports": "Báo cáo thuế",
-          "customMetrics": "Chỉ số AI tùy chỉnh: 3 mỗi tháng",
-          "csvExport": "Xuất CSV",
-          "everythingBasic": "Mọi thứ trong Cơ Bản"
+          "uploads": "100 lần tải lên giao dịch AI/tháng",
+          "aiAnalysis": "1 Phân tích Hiệu suất AI mỗi tuần",
+          "tradingPlan": "Trình tạo Kế hoạch Giao dịch với danh sách kiểm tra",
+          "goals": "Theo dõi mục tiêu & tiến độ",
+          "richJournal": "Nhật ký phong phú với phân tích tâm trạng & mẫu",
+          "customWidgets": "5 widget KPI tùy chỉnh",
+          "fullSocial": "Tính năng xã hội đầy đủ (bài đăng, XP, huy hiệu)",
+          "everythingBasic": "Mọi thứ trong Basic"
         }
       },
       "elite": {
         "name": "Elite",
         "description": "Trader chuyên nghiệp & nhà phân tích",
-        "tradeLimit": "120 lần tải lên/tháng",
-        "cta": "Bắt đầu dùng thử 7 ngày",
         "features": {
-          "uploads": "120 lần tải lên/tháng • Tối đa 10 giao dịch mỗi lần tải",
-          "unlimitedAccounts": "Tài khoản không giới hạn",
-          "customMetrics": "Chỉ số AI tùy chỉnh: 10 mỗi tháng",
-          "earlyAccess": "Truy cập sớm các tính năng mới",
-          "prioritySupport": "Hỗ trợ ưu tiên cao cấp",
-          "extraCreditsDiscount": "Giảm giá 50% cho tín dụng bổ sung",
-          "csvExport": "Xuất CSV",
+          "uploads": "300 lần tải lên giao dịch AI/tháng",
+          "aiAnalysis": "5 Phân tích Hiệu suất AI mỗi tuần",
+          "tradeReplay": "Trade Replay (đánh giá từng bước)",
+          "positionCalculator": "Máy tính Kích thước Vị thế Nâng cao",
+          "riskDashboard": "Bảng điều khiển Rủi ro với phân tích sụt giảm",
+          "advancedAlerts": "Cảnh báo hiệu suất & phí nâng cao",
+          "customWidgets": "Widget KPI tùy chỉnh không giới hạn",
           "everythingPro": "Mọi thứ trong Pro"
         }
       }
@@ -639,36 +456,24 @@
         "challenges": "Thử thách Hàng ngày/Hàng tuần"
       }
     },
-    "expectedResults": {
-      "title": "Kết Quả Thực Tế từ Trader Thực Tế",
-      "subtitle": "Đây là những gì người dùng thường đạt được sau 8-12 tuần đánh giá hàng tuần nhất quán",
-      "metrics": {
-        "winRate": {
-          "label": "Cải Thiện Tỷ Lệ Thắng",
-          "description": "Tăng tỷ lệ phần trăm thắng bằng cách xác định và lặp lại các mẫu thành công",
-          "proof": "Lựa chọn và thời điểm giao dịch tốt hơn thông qua đánh giá hàng tuần"
-        },
-        "drawdown": {
-          "label": "Giảm Drawdown Tối Đa Hàng Tuần",
-          "description": "Bảo vệ vốn bằng cách cắt lỗ nhanh hơn và quản lý rủi ro tốt hơn",
-          "proof": "Quản lý rủi ro và kỷ luật kích thước vị thế được cải thiện"
-        },
-        "ruleBreaks": {
-          "label": "Ít Vi Phạm Quy Tắc Hơn Mỗi Tuần",
-          "description": "Xây dựng sự nhất quán bằng cách theo dõi và loại bỏ hành vi giao dịch bốc động",
-          "proof": "Tự nhận thức dẫn đến kỷ luật giao dịch tốt hơn"
-        },
-        "avgLoss": {
-          "label": "Thua Trung Bình Nhỏ Hơn",
-          "description": "Cắt lỗ sớm hơn và cải thiện việc thực hiện stop-loss",
-          "proof": "Kiểm soát rủi ro tốt hơn thông qua xem xét và phân tích giao dịch"
-        },
-        "avgWin": {
-          "label": "Thắng Trung Bình Lớn Hơn",
-          "description": "Để lợi nhuận chạy lâu hơn và cải thiện quyết định chốt lời",
-          "proof": "Sự tự tin để giữ vị thế thắng đến từ dữ liệu"
-        }
-      }
+    "roadmap": {
+      "title": "Sắp Ra mắt",
+      "subtitle": "Các tính năng mới thú vị mà chúng tôi đang xây dựng cho bạn",
+      "targetQuarter": "Mục tiêu",
+      "highPriority": "Ưu tiên Cao",
+      "mediumPriority": "Ưu tiên Trung bình",
+      "features": {
+        "bestAssetFinder": "Trình Tìm Tài sản Tốt nhất - Xác định các cặp có lợi nhuận nhất của bạn",
+        "batchEdit": "Chỉnh sửa Hàng loạt - Chỉnh sửa nhiều giao dịch cùng lúc",
+        "valueAtRisk": "Máy tính Giá trị Rủi ro (VaR)",
+        "apiAccess": "Quyền truy cập Khóa API Chỉ đọc",
+        "portfolioTracking": "Phân tích & Ảnh chụp Danh mục đầu tư",
+        "inAppAlerts": "Hệ thống Cảnh báo Trong ứng dụng",
+        "autosyncDelta": "Nhập Đồng bộ hóa Delta Tự động",
+        "savedViews": "Bộ lọc Nhanh & Chế độ xem Đã lưu",
+        "teamCollaboration": "Công cụ Cộng tác Nhóm"
+      },
+      "disclaimer": "Các tính năng và lịch trình có thể thay đổi dựa trên phản hồi của người dùng và ưu tiên phát triển"
     }
   },
   "blog": {
@@ -796,199 +601,6 @@
     "cancel": "Hủy",
     "apply": "Áp dụng",
     "showingData": "Hiển thị dữ liệu cho"
-  },
-  "pricing": {
-    "title": "Giá Cả Đơn Giản, Minh Bạch",
-    "subtitle": "Chọn gói phù hợp với hành trình giao dịch của bạn",
-    "mostPopular": "Phổ Biến Nhất",
-    "perMonth": "tháng",
-    "perMonthBilledAnnually": "tháng, thanh toán hàng năm",
-    "savingsAmount": "Tiết kiệm ${{amount}}/năm",
-    "guaranteeNote": "Đảm bảo hoàn tiền trong 7 ngày • Hủy bất cứ lúc nào • Không có phí ẩn",
-    "hero": {
-      "title": "Giao dịch với sự rõ ràng.",
-      "subtitle": "Nhật ký giao dịch được hỗ trợ bởi AI cho các nhà đầu tư tiền điện tử. Ghi lại mọi giao dịch, tìm ra mẫu hình và theo dõi lợi thế của bạn.",
-      "primaryCta": "Bắt Đầu Dùng Thử Miễn Phí",
-      "secondaryCta": "Xem demo 2 phút"
-    },
-    "solutions": {
-      "title": "Kết Quả Quan Trọng",
-      "subtitle": "Khả năng cao cấp được xây dựng cho các trader chuyên nghiệp",
-      "headline1": "Quy tắc của bạn.",
-      "headline2": "Kết quả của bạn.",
-      "tagline": "Nếu bạn không thể đo lường nó, bạn không thể cải thiện nó.",
-      "outcome1": {
-        "headline": "Tải lên Nhanh hơn 40 lần",
-        "subhead": "Tải lên hàng loạt từ ảnh chụp màn hình thay vì nhập thủ công",
-        "proof": "Tải lên hàng loạt từ ảnh chụp màn hình luôn nhanh hơn nhập thủ công"
-      },
-      "outcome2": {
-        "headline": "Tiết kiệm 75-97% Thời gian",
-        "subhead": "Dành ít thời gian ghi chép hơn, nhiều thời gian phân tích và giao dịch hơn",
-        "proof": "Dành ít thời gian ghi chép hơn, nhiều thời gian chiến thắng hơn"
-      },
-      "seePatterns": {
-        "headline": "Nhìn thấy mẫu hình ngay lập tức",
-        "subhead": "AI đọc toàn bộ lịch sử của bạn. Làm nổi bật những gì thực sự tạo ra tiền.",
-        "metric": "Đánh giá nhanh hơn 4.2 lần",
-        "proofPoint": "Trader trung bình phát hiện 3 mẫu hình có lợi nhuận trong tuần đầu tiên"
-      },
-      "knowEdge": {
-        "headline": "Biết lợi thế của bạn",
-        "subhead": "Mọi thiết lập, mọi giờ, mọi điều kiện thị trường. Được đo lường.",
-        "metric": "67%",
-        "metricValue": 67,
-        "proofPoint": "Cải thiện tỷ lệ thắng (người dùng trung bình)"
-      },
-      "tradeConfidence": {
-        "headline": "Giao dịch với sự tự tin",
-        "subhead": "Kích thước vị thế được tính toán. Rủi ro được kiểm soát. Sụt giảm được dự đoán.",
-        "metric": "89%",
-        "metricValue": 89,
-        "proofPoint": "Ít thua lỗ quá mức hơn"
-      },
-      "trackEffortlessly": {
-        "headline": "Theo dõi mọi thứ một cách dễ dàng",
-        "subhead": "Ảnh chụp màn hình, ghi chú, trạng thái cảm xúc. Tất cả được tổ chức. Luôn có thể tìm kiếm.",
-        "metric": "Tiết kiệm 12 phút",
-        "metricValue": 12,
-        "proofPoint": "Mỗi phiên đánh giá"
-      },
-      "performanceSpeaks": {
-        "headline": "Hiệu suất nói lên điều đó",
-        "subhead": "Tỷ lệ thắng, kỳ vọng, bội số R. Biểu đồ kể câu chuyện của bạn.",
-        "metric": "2.3 Sharpe",
-        "metricValue": 2.3,
-        "proofPoint": "Hiệu suất trung bình của người dùng chuyên nghiệp"
-      },
-      "yourRules": {
-        "headline": "Bảng điều khiển của bạn, quy tắc của bạn",
-        "subhead": "Widget bạn cần. Chỉ số quan trọng. Không gì khác.",
-        "metric": "8 bố cục",
-        "metricValue": 8,
-        "proofPoint": "Cấu hình tùy chỉnh mỗi người dùng (trung bình)"
-      },
-      "builtByTraders": {
-        "headline": "Được xây dựng bởi các trader hiểu biết",
-        "subhead": "Mọi quy trình từ nhật ký thực tế. Mọi tính năng được thử nghiệm trong thực chiến.",
-        "metric": "10.000+ giờ",
-        "metricValue": 10000,
-        "proofPoint": "Phản hồi từ trader được tích hợp"
-      }
-    },
-    "billing": {
-      "monthly": "Hàng Tháng",
-      "annual": "Hàng Năm",
-      "save20": "Tiết kiệm 20%"
-    },
-    "plans": {
-      "cta": "Bắt Đầu Dùng Thử Miễn Phí",
-      "terms": "Dùng thử miễn phí 7 ngày • Hủy bất cứ lúc nào • Thanh toán bằng USD",
-      "basic": {
-        "name": "Cơ Bản",
-        "description": "Hoàn hảo cho các trader tích cực xây dựng cấu trúc",
-        "features": {
-          "uploads": "50 lần tải lên giao dịch AI/tháng",
-          "manualUploads": "Tải lên thủ công không giới hạn",
-          "dashboard": "Bảng điều khiển tùy chỉnh với hơn 15 widget",
-          "charts": "Biểu đồ và phân tích nâng cao",
-          "basicJournal": "Nhật ký cơ bản với theo dõi cảm xúc",
-          "feeAnalytics": "Phân tích phí với cảnh báo",
-          "csv": "Nhập và xuất CSV",
-          "social": "Truy cập nguồn cấp dữ liệu xã hội và bảng xếp hạng"
-        }
-      },
-      "pro": {
-        "name": "Pro",
-        "description": "Dành cho các trader nghiêm túc cải thiện kỷ luật",
-        "features": {
-          "uploads": "100 lần tải lên giao dịch AI/tháng",
-          "aiAnalysis": "1 Phân tích Hiệu suất AI mỗi tuần",
-          "tradingPlan": "Trình tạo Kế hoạch Giao dịch với danh sách kiểm tra",
-          "goals": "Theo dõi mục tiêu và tiến độ",
-          "richJournal": "Nhật ký phong phú với phân tích tâm trạng và mẫu hình",
-          "customWidgets": "3 widget KPI tùy chỉnh",
-          "fullSocial": "Tính năng xã hội đầy đủ (bài đăng, XP, huy hiệu)",
-          "everythingBasic": "Mọi thứ trong Cơ Bản"
-        }
-      },
-      "elite": {
-        "name": "Elite",
-        "description": "Trader chuyên nghiệp và nhà phân tích",
-        "features": {
-          "uploads": "300 lần tải lên giao dịch AI/tháng",
-          "aiAnalysis": "5 Phân tích Hiệu suất AI mỗi tuần",
-          "tradeReplay": "Phát lại Giao dịch (đánh giá từng bước)",
-          "positionCalculator": "Máy tính Kích thước Vị thế Nâng cao",
-          "riskDashboard": "Bảng điều khiển Rủi ro với phân tích sụt giảm",
-          "advancedAlerts": "Cảnh báo hiệu suất và phí nâng cao",
-          "customWidgets": "10 widget KPI tùy chỉnh",
-          "everythingPro": "Mọi thứ trong Pro"
-        }
-      }
-    },
-    "comparison": {
-      "title": "So Sánh Gói Chi Tiết",
-      "subtitle": "Xem chính xác những gì có trong mỗi gói",
-      "feature": "Tính năng",
-      "unlimited": "Không giới hạn",
-      "categories": {
-        "aiAnalytics": "AI & Phân tích",
-        "tradingTools": "Công cụ Giao dịch",
-        "journaling": "Nhật ký & Tâm lý",
-        "riskManagement": "Quản lý Rủi ro",
-        "integrations": "Tích hợp",
-        "social": "Xã hội & Cộng đồng"
-      },
-      "features": {
-        "aiUploads": "Tải lên Giao dịch AI",
-        "manualUploads": "Tải lên Giao dịch Thủ công",
-        "aiAnalysis": "Phân tích Hiệu suất AI",
-        "customWidgets": "Widget KPI Tùy chỉnh",
-        "advancedCharts": "Biểu đồ & Phân tích Nâng cao",
-        "tradingPlan": "Trình tạo Kế hoạch Giao dịch",
-        "preTradeChecklist": "Danh sách Kiểm tra Trước Giao dịch",
-        "goalsTracking": "Theo dõi Mục tiêu",
-        "tradeReplay": "Phát lại Giao dịch",
-        "positionCalculator": "Máy tính Kích thước Vị thế",
-        "basicJournal": "Nhật ký Cơ bản",
-        "emotionalTimeline": "Dòng thời gian Cảm xúc",
-        "richJournal": "Nhật ký Phong phú với Theo dõi Tâm trạng",
-        "patternAnalysis": "Phân tích Mẫu hình",
-        "feeAnalytics": "Phân tích Phí",
-        "riskDashboard": "Bảng điều khiển Rủi ro",
-        "drawdownAnalysis": "Phân tích Sụt giảm",
-        "performanceAlerts": "Cảnh báo Hiệu suất",
-        "csvImport": "Nhập/Xuất CSV",
-        "exchangeConnections": "Kết nối Sàn giao dịch",
-        "autoRefresh": "Tự động Làm mới",
-        "viewFeed": "Xem Nguồn cấp Xã hội",
-        "createPosts": "Tạo Bài đăng & Bình luận",
-        "leaderboard": "Bảng xếp hạng",
-        "xpBadges": "XP & Huy hiệu",
-        "challenges": "Thử thách Hàng ngày/Hàng tuần"
-      }
-    },
-    "comingSoon": {
-      "badge": "Sắp Ra Mắt",
-      "enterprise": {
-        "title": "Doanh nghiệp",
-        "description": "Công cụ cộng tác nhóm, báo cáo mạnh mẽ và giải pháp nhãn trắng cho các đội giao dịch chuyên nghiệp",
-        "features": {
-          "collaboration": "Công cụ Cộng tác Nhóm",
-          "reporting": "Báo cáo Nâng cao",
-          "whiteLabel": "Giải pháp Nhãn Trắng",
-          "support": "Hỗ trợ Ưu tiên",
-          "integrations": "Tích hợp Tùy chỉnh"
-        }
-      },
-      "mobile": {
-        "title": "Ứng dụng iOS & Android",
-        "description": "Ứng dụng di động native đang được phát triển. Sớm thôi bạn sẽ có thể mang theo nhật ký giao dịch của mình, theo dõi giao dịch, phân tích hiệu suất và luôn nắm bắt tình hình từ mọi nơi.",
-        "appStoreAlt": "Sắp ra mắt trên App Store",
-        "playStoreAlt": "Sắp ra mắt trên Google Play"
-      }
-    }
   },
   "about": {
     "pageTitle": "Về Chúng Tôi",

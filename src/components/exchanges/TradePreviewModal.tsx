@@ -140,9 +140,9 @@ export function TradePreviewModal({
     });
   }, [pendingTrades, filters]);
 
-  // Get unique symbols (filter out falsy values)
+  // Get unique symbols
   const uniqueSymbols = useMemo(() => {
-    const symbols = new Set(pendingTrades.map((t) => t.trade_data.symbol).filter(Boolean));
+    const symbols = new Set(pendingTrades.map((t) => t.trade_data.symbol));
     return Array.from(symbols).sort();
   }, [pendingTrades]);
 

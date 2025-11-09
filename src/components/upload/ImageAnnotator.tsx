@@ -21,17 +21,9 @@ interface ImageAnnotatorProps {
   imageUrl: string;
   onAnnotationsChange: (annotations: Annotation[]) => void;
   initialAnnotations?: Annotation[];
-  guidedMode?: boolean;
-  requiredFields?: string[];
 }
 
-export const ImageAnnotator = ({ 
-  imageUrl, 
-  onAnnotationsChange, 
-  initialAnnotations = [],
-  guidedMode = false,
-  requiredFields = ['Direction', 'Symbol', 'PnL']
-}: ImageAnnotatorProps) => {
+export const ImageAnnotator = ({ imageUrl, onAnnotationsChange, initialAnnotations = [] }: ImageAnnotatorProps) => {
   const [annotations, setAnnotations] = useState<Annotation[]>(initialAnnotations);
   const [isAdding, setIsAdding] = useState(false);
   const [newLabel, setNewLabel] = useState('');
@@ -39,7 +31,6 @@ export const ImageAnnotator = ({
   const [pendingPosition, setPendingPosition] = useState<{ x: number; y: number } | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [zoom, setZoom] = useState(1);
-  const [currentGuidedStep, setCurrentGuidedStep] = useState(0);
   const imageRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -77,12 +68,6 @@ export const ImageAnnotator = ({
       relativeY
     };
     setAnnotations(prev => [...prev, annotation]);
-    
-    // Advance guided mode
-    if (guidedMode && currentGuidedStep < requiredFields.length - 1) {
-      setCurrentGuidedStep(prev => prev + 1);
-      setNewLabel('');
-    }
   };
 
   const removeAnnotation = (id: string) => {
@@ -205,29 +190,6 @@ export const ImageAnnotator = ({
 
               {isAdding && (
                 <div className="space-y-4 p-4 border border-accent/20 rounded-lg bg-accent/5">
-                  {guidedMode && (
-                    <div className="mb-4 p-3 bg-primary/10 rounded-md">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-semibold">
-                          Step {currentGuidedStep + 1} of {requiredFields.length}
-                        </span>
-                        <div className="flex gap-1">
-                          {requiredFields.map((_, idx) => (
-                            <div
-                              key={idx}
-                              className={`w-2 h-2 rounded-full ${
-                                idx <= currentGuidedStep ? 'bg-primary' : 'bg-muted'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                      <p className="text-sm">
-                        Click on ONE example trade to mark: <strong>{requiredFields[currentGuidedStep]}</strong>
-                      </p>
-                    </div>
-                  )}
-                  
                   <div className="space-y-2">
                     <Label className="text-sm font-semibold">Quick Select Field</Label>
                     <div className="flex flex-wrap gap-2">

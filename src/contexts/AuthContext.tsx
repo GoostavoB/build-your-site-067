@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { analytics } from '@/utils/analytics';
 
 interface AuthContextType {
   user: User | null;
@@ -22,36 +21,6 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within AuthProvider');
   }
   return context;
-};
-
-/**
- * Ensure user has both XP records initialized
- */
-const ensureUserXPRecords = async (userId: string) => {
-  try {
-    // Upsert user_xp_levels
-    await supabase
-      .from('user_xp_levels')
-      .upsert({
-        user_id: userId,
-        total_xp_earned: 0,
-        current_xp: 0,
-        current_level: 1
-      }, { onConflict: 'user_id' });
-
-    // Upsert user_xp_tiers
-    await supabase
-      .from('user_xp_tiers')
-      .upsert({
-        user_id: userId,
-        consecutive_login_days: 0,
-        consecutive_trade_days: 0,
-        daily_xp_earned: 0,
-        daily_upload_count: 0
-      }, { onConflict: 'user_id' });
-  } catch (error) {
-    console.error('Error ensuring XP records:', error);
-  }
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -78,56 +47,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           localStorage.removeItem('rememberMe');
         } else if (event === 'USER_UPDATED') {
           console.log('User data updated');
-        } else if (event === 'SIGNED_IN' && session?.user) {
-          // Ensure XP records exist
-          await ensureUserXPRecords(session.user.id);
-
-          // Update last login tracking for engagement reminders
-          const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-          const todayLocal = new Date().toLocaleDateString('en-CA');
-
-          await supabase
-            .from('user_xp_tiers')
-            .update({ 
-              last_login_date: todayLocal,
-              last_login_timezone: userTimezone
-            })
-            .eq('user_id', session.user.id);
-
-          // Identify user in analytics with full profile data
-          setTimeout(async () => {
-            // Fetch user tier data
-            const { data: xpData } = await supabase
-              .from('user_xp_levels')
-              .select('total_xp_earned, current_level')
-              .eq('user_id', session.user.id)
-              .single();
-
-            const { data: tierData } = await supabase
-              .from('user_xp_tiers')
-              .select('current_tier, daily_xp_earned, daily_xp_cap')
-              .eq('user_id', session.user.id)
-              .single();
-
-            const { data: subscription } = await supabase
-              .from('subscriptions')
-              .select('plan_type, status')
-              .eq('user_id', session.user.id)
-              .in('status', ['active', 'trial'])
-              .maybeSingle();
-
-            analytics.identify(session.user.id, {
-              email: session.user.email,
-              created_at: session.user.created_at,
-              tier: tierData?.current_tier || 0,
-              total_xp: xpData?.total_xp_earned || 0,
-              current_level: xpData?.current_level || 1,
-              subscription_plan: subscription?.plan_type || 'free',
-              subscription_status: subscription?.status || 'none',
-              daily_xp_earned: tierData?.daily_xp_earned || 0,
-              daily_xp_cap: tierData?.daily_xp_cap || 750,
-            });
-          }, 0);
         }
       }
     );
@@ -167,25 +86,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem('rememberMe', 'false');
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     
-    if (!error && data.user) {
-      // Track successful login
-      analytics.track('user_signed_in', {
-        method: 'email',
-        user_id: data.user.id,
-      });
+    if (!error) {
       navigate('/dashboard');
     }
     return { error };
   };
 
   const signUp = async (email: string, password: string, fullName: string, country: string, marketingConsent: boolean) => {
-    const redirectUrl = `${window.location.origin}/dashboard?welcome=true`;
-    const { data, error } = await supabase.auth.signUp({
+    const redirectUrl = `${window.location.origin}/dashboard`;
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -198,17 +112,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       }
     });
-    if (!error && data.user) {
-      // Track successful signup
-      analytics.track('user_signed_up', {
-        method: 'email',
-        user_id: data.user.id,
-        country,
-        marketing_consent: marketingConsent,
-      });
-      
-      // Redirect to dashboard with welcome param
-      navigate('/dashboard?welcome=true');
+    if (!error) {
+      navigate('/dashboard');
     }
     return { error };
   };
@@ -224,30 +129,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
-    try {
-      console.log('[Auth] Signing out...');
-      await supabase.auth.signOut({ scope: 'local' });
-      
-      const keysToRemove: string[] = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && (key.startsWith('sb-') || key === 'rememberMe')) {
-          keysToRemove.push(key);
-        }
-      }
-      keysToRemove.forEach(key => localStorage.removeItem(key));
-      
-      if (typeof analytics !== 'undefined' && analytics.reset) {
-        analytics.reset();
-      }
-      
-      console.log('[Auth] Cleared localStorage and analytics, redirecting...');
-      
-      window.location.replace('/auth?loggedOut=1');
-    } catch (error) {
-      console.error('[Auth] Sign out error:', error);
-      window.location.replace('/auth?loggedOut=1');
-    }
+    await supabase.auth.signOut();
+    navigate('/');
   };
 
   return (

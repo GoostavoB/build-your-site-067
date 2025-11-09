@@ -1,77 +1,87 @@
 import { Button } from "@/components/ui/button";
-import { Check, Sparkles, Clock } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { addStructuredData } from "@/utils/seoHelpers";
 import PricingComparison from "./PricingComparison";
-import { usePromoStatus } from "@/hooks/usePromoStatus";
-import { Badge } from "@/components/ui/badge";
-import UrgencyBanner from "./pricing/UrgencyBanner";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import SocialProof from "./pricing/SocialProof";
-import { motion } from "framer-motion";
-import { useAuth } from "@/contexts/AuthContext";
-import { getSubscriptionProduct } from "@/config/stripe-products";
-import { initiateStripeCheckout } from "@/utils/stripeCheckout";
-import { trackCheckoutFunnel } from "@/utils/checkoutAnalytics";
-import { toast } from "@/components/ui/sonner";
-import { PRICING_PLANS } from "@/config/pricing";
+import PricingRoadmap from "./PricingRoadmap";
 
 const Pricing = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const { user } = useAuth();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const currentLang = i18n.language;
-  const promoStatus = usePromoStatus();
   
-  const handlePlanSelect = async (planId: string, planName: string, price: number) => {
+  const handleAuthNavigate = () => {
     const authPath = currentLang === 'en' ? '/auth' : `/${currentLang}/auth`;
-    
-    // Free plan always goes to auth
-    if (planId === 'free') {
-      navigate(authPath);
-      return;
-    }
-    
-    // Track analytics
-    trackCheckoutFunnel.selectPlan(planName, billingCycle, price);
-    
-    // If not authenticated, redirect to signup
-    if (!user) {
-      navigate(`${authPath}?mode=signup`);
-      return;
-    }
-    
-    // User is authenticated - initiate Stripe checkout
-    try {
-      setLoadingPlan(planId);
-      console.log('Starting checkout for plan:', planId, 'tier:', planId === 'pro' ? 'pro' : 'elite');
-      
-      // Map plan to Stripe product
-      const tier = planId === 'pro' ? 'pro' : 'elite';
-      const product = getSubscriptionProduct(tier, billingCycle);
-      console.log('Stripe product:', product);
-      
-      const productType = billingCycle === 'monthly' ? 'subscription_monthly' : 'subscription_annual';
-      navigate(`/checkout?priceId=${product.priceId}&productType=${productType}`);
-      
-      // Only reset loading if redirect didn't happen
-      setTimeout(() => setLoadingPlan(null), 5000);
-    } catch (error) {
-      console.error('Checkout error:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to start checkout');
-      setLoadingPlan(null);
-    }
+    navigate(authPath);
   };
 
-  // Use centralized pricing configuration
-  const plans = Object.values(PRICING_PLANS).map(plan => ({
-    ...plan,
-    cta: billingCycle === 'monthly' ? plan.cta.monthly : plan.cta.annual
-  }));
+  const plans = [
+    {
+      id: 'basic',
+      nameKey: "pricing.plans.basic.name",
+      descriptionKey: "pricing.plans.basic.description",
+      monthlyPrice: 15,
+      annualPrice: 12,
+      annualTotal: 144,
+      featuresKeys: [
+        "pricing.plans.basic.features.uploads",
+        "pricing.plans.basic.features.manualUploads",
+        "pricing.plans.basic.features.dashboard",
+        "pricing.plans.basic.features.charts",
+        "pricing.plans.basic.features.basicJournal",
+        "pricing.plans.basic.features.feeAnalytics",
+        "pricing.plans.basic.features.csv",
+        "pricing.plans.basic.features.social",
+      ],
+      ctaKey: "pricing.plans.cta",
+      popular: false,
+      priceCurrency: "USD",
+    },
+    {
+      id: 'pro',
+      nameKey: "pricing.plans.pro.name",
+      descriptionKey: "pricing.plans.pro.description",
+      monthlyPrice: 35,
+      annualPrice: 28,
+      annualTotal: 336,
+      featuresKeys: [
+        "pricing.plans.pro.features.uploads",
+        "pricing.plans.pro.features.aiAnalysis",
+        "pricing.plans.pro.features.tradingPlan",
+        "pricing.plans.pro.features.goals",
+        "pricing.plans.pro.features.richJournal",
+        "pricing.plans.pro.features.customWidgets",
+        "pricing.plans.pro.features.fullSocial",
+        "pricing.plans.pro.features.everythingBasic",
+      ],
+      ctaKey: "pricing.plans.cta",
+      popular: true,
+      priceCurrency: "USD",
+    },
+    {
+      id: 'elite',
+      nameKey: "pricing.plans.elite.name",
+      descriptionKey: "pricing.plans.elite.description",
+      monthlyPrice: 79,
+      annualPrice: 63,
+      annualTotal: 756,
+      featuresKeys: [
+        "pricing.plans.elite.features.uploads",
+        "pricing.plans.elite.features.aiAnalysis",
+        "pricing.plans.elite.features.tradeReplay",
+        "pricing.plans.elite.features.positionCalculator",
+        "pricing.plans.elite.features.riskDashboard",
+        "pricing.plans.elite.features.advancedAlerts",
+        "pricing.plans.elite.features.everythingPro",
+      ],
+      ctaKey: "pricing.plans.cta",
+      popular: false,
+      priceCurrency: "USD",
+    },
+  ];
 
   const getDisplayPrice = (plan: typeof plans[0]) => {
     return billingCycle === 'monthly' ? plan.monthlyPrice : plan.annualPrice;
@@ -91,8 +101,8 @@ const Pricing = () => {
         "position": index + 1,
         "item": {
           "@type": "Offer",
-          "name": plan.name,
-          "description": plan.description,
+          "name": t(plan.nameKey),
+          "description": t(plan.descriptionKey),
           "price": billingCycle === 'monthly' ? plan.monthlyPrice : plan.annualPrice,
           "priceCurrency": plan.priceCurrency,
           "availability": "https://schema.org/InStock",
@@ -112,286 +122,125 @@ const Pricing = () => {
 
   return (
     <>
-      <section id="pricing-section" className="py-16 md:py-20 px-6 relative overflow-hidden" aria-labelledby="pricing-heading">
-        {/* Ambient Background Glow */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div 
-            className="absolute top-1/2 left-[30%] w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2"
-            style={{
-              background: 'radial-gradient(circle, rgba(45,104,255,0.08), transparent 60%)',
-              filter: 'blur(120px)',
-            }}
-          />
-          <div 
-            className="absolute top-1/2 right-[30%] w-[600px] h-[600px] translate-x-1/2 -translate-y-1/2"
-            style={{
-              background: 'radial-gradient(circle, rgba(255,200,45,0.08), transparent 60%)',
-              filter: 'blur(120px)',
-            }}
-          />
-        </div>
-
-        <div className="container mx-auto max-w-6xl relative z-10">
-          {/* Urgency Banner */}
-          <UrgencyBanner />
-
+      <section className="py-16 md:py-20 px-6" aria-labelledby="pricing-heading">
+        <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-8 md:mb-12 animate-fade-in">
-            <h2 id="pricing-heading" className="text-3xl md:text-5xl font-bold mb-3">
-              Get pro trading tools today. Early access ends soon.
+            <h2 id="pricing-heading" className="text-3xl md:text-4xl font-bold mb-3">
+              {t('pricing.title')}
             </h2>
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-2">
-              Start free. Upgrade anytime. Save up to $60/year.
-            </p>
-            <p className="text-sm text-orange-400 font-semibold">
-              Launch pricing available until November 30, 2025
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
+              {t('pricing.subtitle')}
             </p>
 
             {/* Billing Toggle */}
-            <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
-              <div className="inline-flex items-center rounded-xl bg-card/40 backdrop-blur-sm border border-border/50 p-1">
-                <button
-                  onClick={() => setBillingCycle('monthly')}
-                  aria-pressed={billingCycle === 'monthly'}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    billingCycle === 'monthly'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  {t('pricing.billing.monthly')}
-                </button>
-                <button
-                  onClick={() => setBillingCycle('annual')}
-                  aria-pressed={billingCycle === 'annual'}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    billingCycle === 'annual'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  {t('pricing.billing.annual')}
-                </button>
-              </div>
-
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-500/15 text-green-500 text-xs font-semibold">
-                <span className="animate-pulse">⚡</span>
-                {t('pricing.saveBadge', 'Save up to $60/year')}
-              </span>
-            </div>
-            {billingCycle === 'annual' && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-sm text-muted-foreground mt-2"
+            <div className="flex items-center justify-center gap-4 mb-8">
+              <button
+                onClick={() => setBillingCycle('monthly')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  billingCycle === 'monthly'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
               >
-                Save up to 16.7% when billed annually
-              </motion.p>
-            )}
+                {t('pricing.billing.monthly')}
+              </button>
+              <button
+                onClick={() => setBillingCycle('annual')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all relative ${
+                  billingCycle === 'annual'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {t('pricing.billing.annual')}
+                <span className="absolute -top-2 -right-2 bg-green-500 text-primary-foreground text-xs px-2 py-0.5 rounded-full font-semibold">
+                  {t('pricing.billing.save20')}
+                </span>
+              </button>
+            </div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto" role="list">
-            {plans.map((plan, index) => {
-              const isFree = plan.id === 'free';
-              const isElite = plan.id === 'elite';
-              
-              return (
-              <motion.article
+          <div className="grid md:grid-cols-3 gap-4 md:gap-6" role="list">
+            {plans.map((plan, index) => (
+              <article
                 role="listitem"
                 key={plan.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ 
-                  y: -6, 
-                  scale: plan.popular ? 1.07 : isElite ? 1.04 : 1.02,
-                  transition: { duration: 0.3, ease: "easeOut" }
-                }}
-                className={`relative rounded-3xl p-7 md:p-8 transition-all duration-300 group
-                  ${plan.popular ? 'md:scale-105' : isElite ? 'md:scale-102' : 'md:scale-100'}
-                `}
-                style={{
-                  background: isFree 
-                    ? 'rgba(255,255,255,0.02)'
-                    : plan.popular
-                    ? 'linear-gradient(180deg, rgba(45,104,255,0.12), rgba(45,104,255,0.05))'
-                    : 'linear-gradient(180deg, rgba(255,200,45,0.12), rgba(255,200,45,0.05))',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  boxShadow: plan.popular
-                    ? '0 4px 25px rgba(0,0,0,0.45), 0 0 0 rgba(45,104,255,0)'
-                    : '0 4px 25px rgba(0,0,0,0.45)',
-                }}
+                className={`glass backdrop-blur-[12px] rounded-2xl p-6 md:p-7 relative hover-lift transition-all shadow-sm animate-fade-in ${
+                  plan.popular ? "ring-2 ring-primary shadow-lg shadow-primary/20" : ""
+                }`}
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
-                {/* Hover glow effect */}
-                <motion.div
-                  className="absolute inset-0 rounded-3xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{
-                    boxShadow: plan.popular
-                      ? '0 0 30px rgba(45,104,255,0.4)'
-                      : isElite
-                      ? '0 0 30px rgba(255,200,45,0.35)'
-                      : 'none'
-                  }}
-                />
-
                 {plan.popular && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-xl text-[11px] font-semibold uppercase tracking-wider text-white z-20 shadow-lg"
-                    style={{
-                      background: 'linear-gradient(90deg, #2D68FF, #5A8CFF)',
-                      boxShadow: '0 4px 12px rgba(45,104,255,0.4)',
-                    }}
-                  >
-                    <span className="flex items-center gap-1">
-                      <Sparkles size={12} />
-                      Most Popular
-                    </span>
-                  </motion.div>
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full flex items-center gap-1 shadow-md">
+                    <Sparkles size={12} />
+                    {t('pricing.mostPopular')}
+                  </div>
                 )}
-                
 
-                <div className="mb-6 relative z-10">
-                  <h3 className={`text-2xl md:text-3xl font-bold mb-2 ${
-                    isElite ? 'bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent' : 'text-foreground'
-                  }`}>
-                    {plan.name}
-                  </h3>
-                  <p className="text-muted-foreground/65 text-sm mb-6 font-light">
-                    {plan.description}
+                <div className="mb-5">
+                  <h3 className="text-xl md:text-2xl font-bold mb-1.5">{t(plan.nameKey)}</h3>
+                  <p className="text-muted-foreground text-xs md:text-sm mb-3">
+                    {t(plan.descriptionKey)}
                   </p>
-                  {plan.monthlyPrice > 0 ? (
-                    <>
-                      <div className="flex items-baseline gap-2 mb-2">
-                        <span className={`font-bold ${plan.popular ? 'text-5xl' : 'text-4xl'}`} style={{ color: 'hsl(var(--primary))' }}>
-                          ${getDisplayPrice(plan)}
-                        </span>
-                        <span className="text-sm text-muted-foreground/65 font-light">
-                          /{billingCycle === 'monthly' ? t('pricing.perMonth') : t('pricing.perMonthBilledAnnually')}
-                        </span>
-                      </div>
-                      {billingCycle === 'annual' && (
-                        <div className="text-sm text-green-400 font-semibold mb-1">
-                          Save ${getSavings(plan)} annually
-                        </div>
-                      )}
-                      {plan.monthlyPrice > 0 && (
-                        <p className="text-xs text-muted-foreground/50 font-light">
-                          {billingCycle === 'annual' ? `$${plan.annualTotal}/year billed annually` : 'Billed monthly'}
-                        </p>
-                      )}
-                    </>
-                  ) : (
-                    <div className="text-4xl md:text-5xl font-bold mb-2" style={{ color: 'hsl(var(--primary))' }}>
-                      Free
+                  <div className="flex items-baseline gap-2 mb-2">
+                    <span className="text-3xl md:text-4xl font-bold" style={{ color: 'hsl(var(--primary))' }}>
+                      ${getDisplayPrice(plan)}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      /{billingCycle === 'monthly' ? t('pricing.perMonth') : t('pricing.perMonthBilledAnnually')}
+                    </span>
+                  </div>
+                  {billingCycle === 'annual' && (
+                    <div className="text-xs text-green-600 dark:text-green-400 font-medium">
+                      {t('pricing.savingsAmount', { amount: getSavings(plan) })}
                     </div>
                   )}
                 </div>
 
-                <motion.button
-                  onClick={() => handlePlanSelect(plan.id, plan.name, getDisplayPrice(plan))}
-                  disabled={loadingPlan === plan.id}
-                  whileHover={{ scale: loadingPlan === plan.id ? 1 : 1.02 }}
-                  whileTap={{ scale: loadingPlan === plan.id ? 1 : 0.98 }}
-                  className={`w-full h-12 mb-4 rounded-xl font-semibold transition-all relative z-10 overflow-hidden shadow-lg group/btn
-                    ${plan.popular
-                      ? ""
-                      : isElite
-                      ? "bg-amber-500/15 border-2 border-amber-500/30 text-amber-400 hover:bg-amber-500/25 hover:border-amber-500/50"
-                      : "bg-white/5 border border-white/10 hover:bg-white/10 text-muted-foreground hover:text-foreground"
-                  } ${loadingPlan === plan.id ? 'opacity-70 cursor-not-allowed' : ''}`}
-                  style={plan.popular ? {
-                    background: 'linear-gradient(90deg, #2D68FF, #5A8CFF)',
-                    boxShadow: '0 4px 15px rgba(45,104,255,0.3), inset 0 1px 0 rgba(255,255,255,0.2)',
-                  } : undefined}
+                <Button
+                  onClick={handleAuthNavigate}
+                  className={`w-full h-12 mb-3 rounded-xl font-medium transition-all ${
+                    plan.popular
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md"
+                      : "glass border border-primary/30 hover:bg-primary/10 hover:border-primary/50"
+                  }`}
+                  variant={plan.popular ? "default" : "outline"}
                 >
-                  {plan.popular && (
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                      initial={{ x: '-100%' }}
-                      animate={{ x: '200%' }}
-                      transition={{ 
-                        duration: 2,
-                        repeat: Infinity,
-                        repeatDelay: 3,
-                        ease: "easeInOut"
-                      }}
-                    />
-                  )}
-                  <span className="relative z-10 flex items-center justify-center gap-2">
-                    {loadingPlan === plan.id ? 'Loading...' : plan.cta}
-                    {plan.popular && loadingPlan !== plan.id && (
-                      <motion.span
-                        animate={{ x: [0, 4, 0] }}
-                        transition={{ 
-                          duration: 1.5,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      >
-                        →
-                      </motion.span>
-                    )}
-                  </span>
-                </motion.button>
+                  {t(plan.ctaKey)}
+                </Button>
 
-                <p className="text-xs text-muted-foreground/50 text-center mb-6 leading-relaxed relative z-10 font-light">
-                  {isFree 
-                    ? plan.tagline
-                    : plan.tagline}
+                <p className="text-xs text-muted-foreground text-center mb-5 leading-relaxed">
+                  {t('pricing.plans.terms')}
                 </p>
 
-                <ul className="space-y-3 relative z-10">
-                  {plan.features.map((feature, i) => {
-                    const Icon = feature.icon;
-                    return (
-                      <motion.li 
-                        key={i} 
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.4 + (i * 0.05) }}
-                        className="flex items-start gap-3"
-                      >
-                        {Icon ? (
-                          <Icon
-                            size={20}
-                            className={`mt-0.5 flex-shrink-0 ${
-                              plan.popular ? "text-primary" : isElite ? "text-amber-400" : "text-foreground/60"
-                            }`}
-                            strokeWidth={2.5}
-                          />
-                        ) : (
-                          <Check
-                            size={20}
-                            className={`mt-0.5 flex-shrink-0 ${
-                              plan.popular ? "text-primary" : isElite ? "text-amber-400" : "text-foreground/60"
-                            }`}
-                            strokeWidth={2.5}
-                          />
-                        )}
-                        <span className="text-sm text-muted-foreground/80 leading-relaxed font-light">
-                          {feature.text}
-                        </span>
-                      </motion.li>
-                    );
-                  })}
+                <ul className="space-y-2.5">
+                  {plan.featuresKeys.map((featureKey, i) => (
+                    <li key={i} className="flex items-start gap-2.5">
+                      <Check
+                        size={18}
+                        className={`mt-0.5 flex-shrink-0 ${
+                          plan.popular ? "text-primary" : "text-foreground"
+                        }`}
+                      />
+                      <span className="text-xs md:text-sm text-muted-foreground leading-relaxed">{t(featureKey)}</span>
+                    </li>
+                  ))}
                 </ul>
-              </motion.article>
-            );
-            })}
+              </article>
+            ))}
           </div>
 
           <p className="text-center text-muted-foreground text-xs md:text-sm mt-10 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            Extra uploads: $2 per 10 (Pro) • $1 per 10 (Elite, 50% off)
+            {t('pricing.guaranteeNote')}
           </p>
-
-          {/* Social Proof */}
-          <SocialProof />
         </div>
       </section>
 
       {/* Comparison Table */}
       <PricingComparison />
+
+      {/* Roadmap */}
+      <PricingRoadmap />
     </>
   );
 };

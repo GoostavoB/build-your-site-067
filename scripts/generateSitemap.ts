@@ -8,480 +8,130 @@
 import { writeFileSync } from 'fs';
 import { join } from 'path';
 
-// Import blog articles data (English only)
+// Import blog articles data
 const blogArticles = [
   {
     slug: 'ai-tools-for-crypto-trading',
     lastmod: '2025-10-22',
+    language: 'en',
+    alternates: {
+      pt: 'ferramentas-ia-trading-cripto',
+      es: 'herramientas-ia-trading-cripto',
+      ar: 'adawat-ai-trading-crypto-ar',
+      vi: 'cong-cu-ai-giao-dich-crypto-vi',
+    }
   },
   {
     slug: 'trading-journal-for-crypto',
     lastmod: '2025-10-20',
+    language: 'en',
+    alternates: {
+      pt: 'diario-trading-cripto',
+      es: 'diario-trading-cripto-es',
+      ar: 'daftar-trading-crypto-ar',
+      vi: 'nhat-ky-giao-dich-crypto-vi',
+    }
   },
   {
     slug: 'trading-psychology-control-emotions',
     lastmod: '2025-10-17',
-  },
-  {
-    slug: 'best-way-to-log-crypto-trades',
-    lastmod: '2025-10-29',
-  },
-  {
-    slug: 'how-professional-traders-journal',
-    lastmod: '2025-10-29',
-  },
-  {
-    slug: 'tradezella-vs-thetradingdiary-com',
-    lastmod: '2025-10-29',
-  },
-  {
-    slug: 'trading-journal-for-beginners-crypto',
-    lastmod: '2025-10-29',
-  },
-  {
-    slug: 'trading-journal-for-day-traders-crypto',
-    lastmod: '2025-10-29',
-  },
-  {
-    slug: 'altcoin-trading-strategies',
-    lastmod: '2025-10-29',
-  },
-  {
-    slug: 'bitcoin-trading-tips',
-    lastmod: '2025-10-29',
+    language: 'en',
+    alternates: {
+      pt: 'psicologia-trading-controlar-emocoes',
+      es: 'psicologia-trading-controlar-emocoes-es',
+      ar: 'nafsia-trading-ar',
+      vi: 'tam-ly-giao-dich-vi',
+    }
   },
   {
     slug: 'data-driven-trading',
     lastmod: '2025-10-15',
+    language: 'en',
+    alternates: {
+      pt: 'trading-orientado-dados',
+      es: 'trading-basado-datos-es',
+      ar: 'trading-bayanat-ar',
+      vi: 'giao-dich-du-lieu-vi',
+    }
   },
   {
     slug: 'ai-powered-trading-journal',
     lastmod: '2025-10-13',
-  },
-  {
-    slug: 'journal-vs-excel',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-notion',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-google-sheets',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'integrations/binance-trading-journal',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'integrations/bybit-trading-journal',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'integrations/okx-trading-journal',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'integrations/coinbase-trading-journal',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'integrations/kraken-trading-journal',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'trading-journal/bybit-bitcoin',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'trading-journal/binance-ethereum',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'integrations/kucoin-trading-journal',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'integrations/tradingview-trading-journal',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'integrations/metatrader5-trading-journal',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'trading-journal/okx-bitcoin',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'trading-journal/kraken-ethereum',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'trading-journal/coinbase-bitcoin',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'trading-journal/binance-bitcoin',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/scalping-bitcoin',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/day-trading-ethereum',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/swing-trading-bitcoin',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'trading-journal/okx-ethereum',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'trading-journal/kraken-bitcoin',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'trading-journal/kucoin-ethereum',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'trading-journal/bybit-ethereum',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'trading-journal/binance-avalanche',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'trading-journal/okx-avalanche',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'trading-journal/coinbase-ethereum',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/breakout-bitcoin',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/grid-bots-bitcoin',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/copy-trading-ethereum',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-excel/bybit',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-notion/bybit',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-google-sheets/bybit',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'trading-journal/kucoin-bitcoin',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'trading-journal/kucoin-avalanche',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'trading-journal/kraken-avalanche',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'trading-journal/coinbase-avalanche',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/day-trading-bitcoin',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/scalping-ethereum',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-excel/binance',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-notion/binance',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-google-sheets/binance',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-excel/okx',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-notion/okx',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-google-sheets/okx',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-excel/kraken',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-notion/kraken',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-google-sheets/kraken',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-excel/kucoin',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-notion/kucoin',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-google-sheets/kucoin',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-excel/coinbase',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-notion/coinbase',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-google-sheets/coinbase',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-excel/tradingview',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-notion/tradingview',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-google-sheets/tradingview',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-excel/metatrader5',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-google-sheets/metatrader5',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'journal-vs-notion/metatrader5',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/dca-bitcoin',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/copy-trading-bitcoin',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/grid-bots-ethereum',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/breakout-ethereum',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/swing-trading-ethereum',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/day-trading-avalanche',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/scalping-avalanche',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/breakout-avalanche',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/copy-trading-avalanche',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/scalping-bitcoin-5min',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/scalping-bitcoin-15min',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/day-trading-bitcoin-1h',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/swing-trading-bitcoin-daily',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/breakout-bitcoin-4h',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/scalping-ethereum-5min',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/day-trading-ethereum-1h',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/swing-trading-ethereum-daily',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/breakout-ethereum-4h',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'strategy-tracker/grid-bots-ethereum-daily',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'metric-hub/win-rate',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'metric-hub/profit-factor',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'metric-hub/max-drawdown',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'metric-hub/sharpe-ratio',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'metric-hub/sortino-ratio',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'metric-hub/expectancy',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'metric-hub/holding-time',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'metric-hub/pnl-by-coin',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'metric-hub/market-regime',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'metric-hub/trade-duration',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'calculators/risk-reward-ratio',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'calculators/position-size',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'calculators/max-safe-leverage',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'calculators/liquidation-price',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'calculators/breakeven-with-fees',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'calculators/margin-required',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'calculators/expectancy',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'calculators/kelly-fraction',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'calculators/win-rate-from-log',
-    lastmod: '2025-10-28',
-  },
-  {
-    slug: 'calculators/sample-size-win-rate',
-    lastmod: '2025-10-28',
+    language: 'en',
+    alternates: {
+      pt: 'diario-trading-ia',
+      es: 'diario-trading-ia-es',
+      ar: 'daftar-ai-ar',
+      vi: 'nhat-ky-ai-vi',
+    }
   }
 ];
 
 const staticPages = [
   { loc: '/', priority: '1.0', changefreq: 'weekly' },
+  { loc: '/pt', priority: '1.0', changefreq: 'weekly' },
+  { loc: '/es', priority: '1.0', changefreq: 'weekly' },
+  { loc: '/ar', priority: '1.0', changefreq: 'weekly' },
+  { loc: '/vi', priority: '1.0', changefreq: 'weekly' },
   { loc: '/auth', priority: '0.8', changefreq: 'monthly' },
-  { loc: '/pricing', priority: '0.9', changefreq: 'weekly' },
-  { loc: '/contact', priority: '0.7', changefreq: 'monthly' },
-  { loc: '/about', priority: '0.7', changefreq: 'monthly' },
-  { loc: '/legal', priority: '0.5', changefreq: 'monthly' },
-  { loc: '/terms', priority: '0.5', changefreq: 'monthly' },
-  { loc: '/privacy', priority: '0.5', changefreq: 'monthly' },
-  { loc: '/cookie-policy', priority: '0.5', changefreq: 'monthly' },
   { loc: '/blog', priority: '0.8', changefreq: 'weekly' },
   { loc: '/crypto-trading-faq', priority: '0.7', changefreq: 'monthly' },
   { loc: '/logo-download', priority: '0.5', changefreq: 'yearly' },
 ];
 
+function generateHreflangLinks(article: typeof blogArticles[0]) {
+  const baseUrl = 'https://www.thetradingdiary.com/blog';
+  let links = '';
+  
+  // English
+  links += `    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/${article.slug}" />\n`;
+  
+  // Other languages
+  Object.entries(article.alternates).forEach(([lang, slug]) => {
+    links += `    <xhtml:link rel="alternate" hreflang="${lang}" href="${baseUrl}/${slug}" />\n`;
+  });
+  
+  return links;
+}
+
+function generateLandingHreflang() {
+  return `    <xhtml:link rel="alternate" hreflang="en" href="https://www.thetradingdiary.com/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.thetradingdiary.com/pt" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.thetradingdiary.com/es" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.thetradingdiary.com/ar" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://www.thetradingdiary.com/vi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.thetradingdiary.com/" />`;
+}
+
 function generateSitemap() {
   const today = new Date().toISOString().split('T')[0];
   
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
 `;
 
-  // Add static pages
-  staticPages.forEach(page => {
+  // Add landing pages with hreflang
+  const landingPages = ['/', '/pt', '/es', '/ar', '/vi'];
+  landingPages.forEach(page => {
+    const pageMeta = staticPages.find(p => p.loc === page);
     xml += `  <url>
+    <loc>https://www.thetradingdiary.com${page === '/' ? '' : page}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>${pageMeta?.changefreq || 'weekly'}</changefreq>
+    <priority>${pageMeta?.priority || '1.0'}</priority>
+${generateLandingHreflang()}
+  </url>
+  
+`;
+  });
+
+  // Add other static pages
+  staticPages
+    .filter(p => !landingPages.includes(p.loc))
+    .forEach(page => {
+      xml += `  <url>
     <loc>https://www.thetradingdiary.com${page.loc}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
@@ -489,15 +139,17 @@ function generateSitemap() {
   </url>
   
 `;
-  });
+    });
 
-  // Add blog articles (English only)
+  // Add blog articles with hreflang
   blogArticles.forEach(article => {
-    xml += `  <url>
+    xml += `  <!-- Blog: ${article.slug} -->
+  <url>
     <loc>https://www.thetradingdiary.com/blog/${article.slug}</loc>
     <lastmod>${article.lastmod}</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
+${generateHreflangLinks(article)}
   </url>
   
 `;

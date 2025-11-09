@@ -38,16 +38,6 @@ export const AIChat = () => {
     setLoading(true);
 
     try {
-      // 1) Session guard
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData?.session?.access_token;
-      if (!token) {
-        toast.error('Session expired. Please sign in again.');
-        setMessages(prev => prev.slice(0, -1));
-        setLoading(false);
-        return;
-      }
-
       // Fetch user context
       const { data: trades } = await supabase
         .from('trades')

@@ -19,31 +19,25 @@ export const SortableWidget = memo(({ id, children, isEditMode, onRemove }: Sort
     transform,
     transition,
     isDragging,
-    isOver,
   } = useSortable({ 
     id,
     transition: {
-      duration: 200,
+      duration: 150,
       easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
     },
   });
 
   const nodeRef = useRef<HTMLDivElement | null>(null);
   const [lockedSize, setLockedSize] = useState<{ width: number; height: number } | null>(null);
-  const [finalSize, setFinalSize] = useState<{ width: number; height: number } | null>(null);
 
   useEffect(() => {
     if (isDragging && nodeRef.current) {
       const rect = nodeRef.current.getBoundingClientRect();
       setLockedSize({ width: rect.width, height: rect.height });
-    } else if (!isDragging && lockedSize) {
-      // Preserve size briefly after drop for smooth transition
-      setFinalSize(lockedSize);
+    } else if (!isDragging) {
       setLockedSize(null);
-      const timer = setTimeout(() => setFinalSize(null), 200);
-      return () => clearTimeout(timer);
     }
-  }, [isDragging, lockedSize]);
+  }, [isDragging]);
 
   const transformStr = transform
     ? `translate3d(${Math.round(transform.x)}px, ${Math.round(transform.y)}px, 0)`
@@ -51,13 +45,12 @@ export const SortableWidget = memo(({ id, children, isEditMode, onRemove }: Sort
 
   const style = {
     transform: transformStr,
-    transition: isDragging ? 'none' : 'all 0.2s cubic-bezier(0.25, 1, 0.5, 1)',
+    transition: isDragging ? 'transform 0s linear' : (transition || undefined),
     opacity: 1,
     touchAction: 'none',
     zIndex: isDragging ? 1000 : 'auto',
-    width: (isDragging && lockedSize) || finalSize ? `${(lockedSize || finalSize)!.width}px` : undefined,
-    height: (isDragging && lockedSize) || finalSize ? `${(lockedSize || finalSize)!.height}px` : undefined,
-    minHeight: finalSize ? `${finalSize.height}px` : undefined,
+    width: isDragging && lockedSize ? `${lockedSize.width}px` : undefined,
+    height: isDragging && lockedSize ? `${lockedSize.height}px` : undefined,
   } as React.CSSProperties;
 
   return (
@@ -68,11 +61,6 @@ export const SortableWidget = memo(({ id, children, isEditMode, onRemove }: Sort
       className={`widget-item relative ${isEditMode ? 'cursor-grab active:cursor-grabbing' : ''} ${isDragging ? 'dragging ring-2 ring-primary/60 shadow-2xl shadow-primary/40 rounded-lg' : ''}`}
       {...(isEditMode ? { ...attributes, ...listeners } : {})}
     >
-      {/* Visual drop preview when another widget is being dragged over this one */}
-      {isEditMode && isOver && !isDragging && (
-        <div className="absolute inset-0 bg-primary/10 border-2 border-primary border-dashed rounded-lg pointer-events-none z-40 animate-pulse" />
-      )}
-      
       {/* Remove button in edit mode */}
       {isEditMode && (
         <Button

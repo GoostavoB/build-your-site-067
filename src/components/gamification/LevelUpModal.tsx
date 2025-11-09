@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Award, X } from 'lucide-react';
+import { Trophy, Sparkles, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Confetti } from './Confetti';
 
 interface LevelUpModalProps {
   show: boolean;
@@ -9,8 +11,19 @@ interface LevelUpModalProps {
 }
 
 export const LevelUpModal = ({ show, level, onClose }: LevelUpModalProps) => {
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  useEffect(() => {
+    if (show) {
+      setShowConfetti(true);
+      const timer = setTimeout(() => setShowConfetti(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [show]);
+
   return (
     <>
+      <Confetti active={showConfetti} particleCount={80} />
       <AnimatePresence>
         {show && (
           <motion.div
@@ -44,34 +57,35 @@ export const LevelUpModal = ({ show, level, onClose }: LevelUpModalProps) => {
 
               <motion.div
                 initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.1, duration: 0.3, ease: "easeOut" }}
-                className="mx-auto w-20 h-20 rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center mb-6"
+                animate={{ scale: [0, 1.2, 1] }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="mx-auto w-24 h-24 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center mb-6"
                 role="img"
-                aria-label="Achievement icon"
+                aria-label="Trophy icon"
               >
-                <Award className="w-10 h-10 text-primary" />
+                <Trophy className="w-12 h-12 text-primary-foreground" />
               </motion.div>
 
               <motion.h2
                 id="level-up-title"
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="text-2xl font-semibold mb-2 text-foreground"
+                transition={{ delay: 0.3 }}
+                className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary via-purple-400 to-primary bg-clip-text text-transparent"
               >
-                Tier {level} Achieved
+                Level Up!
               </motion.h2>
 
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.4 }}
                 className="mb-6"
-                aria-label={`New tier: ${level}`}
+                aria-label={`New level: ${level}`}
               >
-                <div className="inline-flex items-center gap-3 px-5 py-2 rounded-lg bg-primary/5 border border-primary/10">
-                  <span className="text-3xl font-bold text-primary">{level}</span>
+                <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary/10 border border-primary/20">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                  <span className="text-4xl font-bold text-primary">{level}</span>
                 </div>
               </motion.div>
 
@@ -79,10 +93,10 @@ export const LevelUpModal = ({ show, level, onClose }: LevelUpModalProps) => {
                 id="level-up-description"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="text-muted-foreground mb-6 text-sm"
+                transition={{ delay: 0.5 }}
+                className="text-muted-foreground mb-6"
               >
-                You've advanced to tier {level}. Continue your progress to unlock additional features.
+                You've reached level {level}! Keep trading and improving to unlock more rewards.
               </motion.p>
 
               <motion.div

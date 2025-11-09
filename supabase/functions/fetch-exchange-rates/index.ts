@@ -22,40 +22,7 @@ serve(async (req) => {
   }
 
   try {
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Check if we have recent cached data (less than 30 minutes old)
-    const { data: cachedData, error: cacheError } = await supabase
-      .from('exchange_rates_cache')
-      .select('*')
-      .eq('id', 'latest')
-      .single();
-
-    if (!cacheError && cachedData) {
-      const cacheAge = Date.now() - new Date(cachedData.updated_at).getTime();
-      const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
-
-      // If cache is fresh, return it immediately
-      if (cacheAge < CACHE_DURATION) {
-        console.log(`Using cached data (age: ${Math.round(cacheAge / 1000 / 60)} minutes)`);
-        return new Response(
-          JSON.stringify({
-            success: true,
-            data: cachedData.rates,
-            cached: true,
-          }),
-          {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 200,
-          }
-        );
-      }
-    }
-
-    console.log('Cache miss or stale, fetching fresh exchange rates...');
+    console.log('Fetching exchange rates...');
 
     // Fetch crypto prices from CoinGecko
     const cryptoResponse = await fetch(
@@ -68,26 +35,7 @@ serve(async (req) => {
     );
 
     if (!cryptoResponse.ok) {
-      const errorText = await cryptoResponse.text();
-      console.error('CoinGecko API error:', errorText);
-      
-      // If rate limited (429), return cached data if available
-      if (cryptoResponse.status === 429 && cachedData) {
-        console.log('Rate limited, falling back to cached data');
-        return new Response(
-          JSON.stringify({
-            success: true,
-            data: cachedData.rates,
-            cached: true,
-            rateLimited: true,
-          }),
-          {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 200,
-          }
-        );
-      }
-      
+      console.error('CoinGecko API error:', await cryptoResponse.text());
       throw new Error(`CoinGecko API failed: ${cryptoResponse.status}`);
     }
 
@@ -119,7 +67,12 @@ serve(async (req) => {
       fiat: fiatData.rates,
     };
 
-    // Store or update exchange rates in cache table
+    // Store in Supabase for caching
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Store or update exchange rates in a table
     const { error: upsertError } = await supabase
       .from('exchange_rates_cache')
       .upsert({
@@ -146,38 +99,6 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error('Error fetching exchange rates:', error);
-    
-    // Try to return cached data as fallback
-    try {
-      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-      const supabase = createClient(supabaseUrl, supabaseKey);
-      
-      const { data: fallbackData } = await supabase
-        .from('exchange_rates_cache')
-        .select('*')
-        .eq('id', 'latest')
-        .single();
-      
-      if (fallbackData) {
-        console.log('Returning cached data as fallback after error');
-        return new Response(
-          JSON.stringify({
-            success: true,
-            data: fallbackData.rates,
-            cached: true,
-            fallback: true,
-          }),
-          {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 200,
-          }
-        );
-      }
-    } catch (fallbackError) {
-      console.error('Fallback also failed:', fallbackError);
-    }
-    
     return new Response(
       JSON.stringify({
         success: false,

@@ -10,12 +10,6 @@ export interface BudgetStatus {
   message?: string;
 }
 
-export interface RateLimitResult {
-  allowed: boolean;
-  message?: string;
-  retryAfterSec?: number;
-}
-
 /**
  * Check user's AI budget for the current month
  * Returns budget status and whether to force lite model or block
@@ -144,14 +138,14 @@ export async function checkRateLimit(
   supabase: SupabaseClient,
   userId: string,
   endpoint: string
-): Promise<RateLimitResult> {
+): Promise<{ allowed: boolean; message?: string }> {
   const now = new Date();
   const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
   const oneMinuteAgo = new Date(now.getTime() - 60 * 1000);
 
   // Rate limits specific to image extraction
   if (endpoint === 'extract-trade-info') {
-    // Check hourly limit: max 150 images/hour (raised from 10)
+    // Check hourly limit: max 10 images/hour
     const { count: hourCount } = await supabase
       .from('ai_cost_log')
       .select('id', { count: 'exact', head: true })
@@ -159,30 +153,14 @@ export async function checkRateLimit(
       .eq('endpoint', endpoint)
       .gte('created_at', oneHourAgo.toISOString());
 
-    if (hourCount && hourCount >= 150) {
-      // Calculate seconds until the hour window resets
-      const oldestLog = await supabase
-        .from('ai_cost_log')
-        .select('created_at')
-        .eq('user_id', userId)
-        .eq('endpoint', endpoint)
-        .gte('created_at', oneHourAgo.toISOString())
-        .order('created_at', { ascending: true })
-        .limit(1)
-        .single();
-      
-      const retryAfterSec = oldestLog?.data?.created_at 
-        ? Math.ceil((new Date(oldestLog.data.created_at).getTime() + 60 * 60 * 1000 - now.getTime()) / 1000)
-        : 3600;
-
+    if (hourCount && hourCount >= 10) {
       return { 
         allowed: false, 
-        message: 'Rate limit exceeded: Maximum 150 images per hour. Please try again later.',
-        retryAfterSec
+        message: 'Rate limit exceeded: Maximum 10 images per hour. Please try again later.' 
       };
     }
 
-    // Check minute limit: max 15 images/minute (raised from 5)
+    // Check minute limit: max 5 images/minute
     const { count: minCount } = await supabase
       .from('ai_cost_log')
       .select('id', { count: 'exact', head: true })
@@ -190,11 +168,10 @@ export async function checkRateLimit(
       .eq('endpoint', endpoint)
       .gte('created_at', oneMinuteAgo.toISOString());
 
-    if (minCount && minCount >= 15) {
+    if (minCount && minCount >= 5) {
       return { 
         allowed: false, 
-        message: 'Rate limit exceeded: Maximum 15 images per minute. Please slow down.',
-        retryAfterSec: 60
+        message: 'Rate limit exceeded: Maximum 5 images per minute. Please slow down.' 
       };
     }
   }

@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Award, TrendingUp, Flame, Star, X, Share2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Trophy, TrendingUp, Flame, Star, X, Share2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { Confetti } from './gamification/Confetti';
 
 interface WeeklyStats {
   xpGained: number;
@@ -24,6 +26,7 @@ export const WeeklySummaryRecap = () => {
   const { user } = useAuth();
   const [show, setShow] = useState(false);
   const [stats, setStats] = useState<WeeklyStats | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
     checkAndShowRecap();
@@ -47,6 +50,7 @@ export const WeeklySummaryRecap = () => {
       if (weeklyStats) {
         setStats(weeklyStats);
         setShow(true);
+        setShowConfetti(weeklyStats.xpGained > 100);
         localStorage.setItem(lastRecapKey, now.toISOString());
       }
     }
@@ -126,6 +130,8 @@ export const WeeklySummaryRecap = () => {
 
   return (
     <>
+      {showConfetti && <Confetti active={showConfetti} />}
+      
       <Dialog open={show} onOpenChange={setShow}>
         <DialogContent className="max-w-2xl border-primary/20">
           <button
@@ -142,10 +148,15 @@ export const WeeklySummaryRecap = () => {
             className="space-y-6 pt-6"
           >
             <div className="text-center">
-              <div className="inline-block">
-                <Award className="w-12 h-12 text-primary mx-auto mb-4" />
-              </div>
-              <h2 className="text-2xl font-semibold mb-2">Weekly Summary</h2>
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: 'spring' }}
+                className="inline-block"
+              >
+                <Trophy className="w-16 h-16 text-primary mx-auto mb-4" />
+              </motion.div>
+              <h2 className="text-3xl font-bold mb-2">Weekly Recap</h2>
               <p className="text-muted-foreground">
                 Here's how you performed this week
               </p>
@@ -167,8 +178,8 @@ export const WeeklySummaryRecap = () => {
                   {stats.achievementsUnlocked}
                 </div>
                 <div className="text-sm text-muted-foreground flex items-center justify-center gap-1">
-                  <Award className="w-4 h-4" />
-                  Milestones
+                  <Trophy className="w-4 h-4" />
+                  Achievements
                 </div>
               </Card>
 

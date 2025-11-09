@@ -16,16 +16,9 @@ const FAVORITES_CACHE_KEY = 'userFavorites:v1';
 const MAX_FAVORITES = 12;
 
 export function useFavorites() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [localFavorites, setLocalFavorites] = useState<Favorite[]>([]);
-
-  // Debug logging
-  console.log('[useFavorites] Auth state:', { 
-    hasUser: !!user, 
-    userId: user?.id, 
-    authLoading 
-  });
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -65,21 +58,14 @@ export function useFavorites() {
   // Add favorite mutation
   const addFavoriteMutation = useMutation({
     mutationFn: async ({ url, title, icon }: { url: string; title: string; icon: string }) => {
-      console.log('[addFavoriteMutation] Starting:', { url, title, icon });
-      
-      if (!user) {
-        console.error('[addFavoriteMutation] ERROR: No user');
-        throw new Error('You must be signed in to add favorites');
-      }
+      if (!user) throw new Error('Not authenticated');
 
       // Check current count
       const currentCount = favorites.length;
       if (currentCount >= MAX_FAVORITES) {
-        console.warn('[addFavoriteMutation] ERROR: Max favorites reached');
         throw new Error(`Maximum ${MAX_FAVORITES} favorites reached. Remove one to add another.`);
       }
 
-      console.log('[addFavoriteMutation] Making Supabase insert request...');
       const { data, error } = await supabase
         .from('user_favorites')
         .insert({
@@ -92,57 +78,38 @@ export function useFavorites() {
         .select()
         .single();
 
-      if (error) {
-        console.error('[addFavoriteMutation] Supabase error:', error);
-        throw error;
-      }
-      
-      console.log('[addFavoriteMutation] Success:', data);
+      if (error) throw error;
       return data;
     },
     onSuccess: () => {
-      console.log('[addFavoriteMutation] onSuccess triggered');
       queryClient.invalidateQueries({ queryKey: ['user-favorites'] });
       toast.success('Added to favorites');
     },
     onError: (error: Error) => {
-      console.error('[addFavoriteMutation] onError triggered:', error);
-      toast.error(error.message || 'Failed to add favorite');
+      toast.error(error.message);
     },
   });
 
   // Remove favorite mutation
   const removeFavoriteMutation = useMutation({
     mutationFn: async (url: string) => {
-      console.log('[removeFavoriteMutation] Starting:', { url });
-      
-      if (!user) {
-        console.error('[removeFavoriteMutation] ERROR: No user');
-        throw new Error('You must be signed in to remove favorites');
-      }
+      if (!user) throw new Error('Not authenticated');
 
-      console.log('[removeFavoriteMutation] Making Supabase delete request...');
       const { error } = await supabase
         .from('user_favorites')
         .delete()
         .eq('user_id', user.id)
         .eq('page_url', url);
 
-      if (error) {
-        console.error('[removeFavoriteMutation] Supabase error:', error);
-        throw error;
-      }
-      
-      console.log('[removeFavoriteMutation] Success');
+      if (error) throw error;
     },
     onSuccess: () => {
-      console.log('[removeFavoriteMutation] onSuccess triggered');
       queryClient.invalidateQueries({ queryKey: ['user-favorites'] });
       toast.success('Removed from favorites');
     },
     onError: (error: Error) => {
-      console.error('[removeFavoriteMutation] onError triggered:', error);
-      toast.error(error.message || 'Failed to remove favorite');
+      toast.error('Failed to remove favorite');
+      console.error(error);
     },
   });
 
@@ -181,36 +148,13 @@ export function useFavorites() {
 
   const toggleFavorite = useCallback(
     (url: string, title: string, icon: string) => {
-      console.log('[toggleFavorite] Called:', { url, title, icon, authLoading, hasUser: !!user });
-      
-      // Auth loading guard
-      if (authLoading) {
-        console.log('[toggleFavorite] BLOCKED: Auth still loading');
-        toast.error('Please wait while we verify your session...');
-        return;
-      }
-
-      // Auth required guard
-      if (!user) {
-        console.log('[toggleFavorite] BLOCKED: No user authenticated');
-        toast.error('Please sign in to manage favorites');
-        return;
-      }
-
-      console.log('[toggleFavorite] Proceeding with mutation:', { 
-        isFav: isFavorite(url),
-        action: isFavorite(url) ? 'remove' : 'add'
-      });
-
       if (isFavorite(url)) {
-        console.log('[toggleFavorite] Calling removeFavoriteMutation');
         removeFavoriteMutation.mutate(url);
       } else {
-        console.log('[toggleFavorite] Calling addFavoriteMutation');
         addFavoriteMutation.mutate({ url, title, icon });
       }
     },
-    [isFavorite, addFavoriteMutation, removeFavoriteMutation, authLoading, user]
+    [isFavorite, addFavoriteMutation, removeFavoriteMutation]
   );
 
   return {
@@ -221,7 +165,6 @@ export function useFavorites() {
     reorderFavorites: reorderFavoritesMutation.mutate,
     isAddingFavorite: addFavoriteMutation.isPending,
     isRemovingFavorite: removeFavoriteMutation.isPending,
-    isProcessing: addFavoriteMutation.isPending || removeFavoriteMutation.isPending || authLoading,
     canAddMore: favorites.length < MAX_FAVORITES,
     maxFavorites: MAX_FAVORITES,
   };

@@ -6,11 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Save, X } from "lucide-react";
+import { Save, X, Plus } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
 
 interface PlanEditorProps {
   plan?: any;
@@ -18,27 +17,25 @@ interface PlanEditorProps {
   onCancel: () => void;
 }
 
-const availableCurrencyTypes = ["BTC", "ETH", "Top 10", "Mid Cap", "Small Caps", "Meme Coins"];
+const availableMarkets = ["Crypto", "Forex", "Stocks", "Futures", "Options"];
 const availableTimeframes = ["1m", "5m", "15m", "30m", "1h", "4h", "1d", "1w"];
 
 export function PlanEditor({ plan, onSave, onCancel }: PlanEditorProps) {
   const { user } = useAuth();
-  const queryClient = useQueryClient();
+  const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    currency_types: [] as string[],
+    markets: [] as string[],
     timeframes: [] as string[],
-    trade_setups: "",
     entry_rules: "",
     exit_rules: "",
     risk_management: "",
     position_sizing: "",
     trading_schedule: "",
     review_process: "",
-    checklist: "",
     is_active: false,
   });
 
@@ -47,27 +44,25 @@ export function PlanEditor({ plan, onSave, onCancel }: PlanEditorProps) {
       setFormData({
         name: plan.name || "",
         description: plan.description || "",
-        currency_types: plan.currency_types || plan.markets || [],
+        markets: plan.markets || [],
         timeframes: plan.timeframes || [],
-        trade_setups: plan.trade_setups || "",
         entry_rules: plan.entry_rules || "",
         exit_rules: plan.exit_rules || "",
         risk_management: plan.risk_management || "",
         position_sizing: plan.position_sizing || "",
         trading_schedule: plan.trading_schedule || "",
         review_process: plan.review_process || "",
-        checklist: plan.checklist || "",
         is_active: plan.is_active || false,
       });
     }
   }, [plan]);
 
-  const toggleCurrencyType = (currencyType: string) => {
+  const toggleMarket = (market: string) => {
     setFormData(prev => ({
       ...prev,
-      currency_types: prev.currency_types.includes(currencyType)
-        ? prev.currency_types.filter(c => c !== currencyType)
-        : [...prev.currency_types, currencyType]
+      markets: prev.markets.includes(market)
+        ? prev.markets.filter(m => m !== market)
+        : [...prev.markets, market]
     }));
   };
 
@@ -82,63 +77,49 @@ export function PlanEditor({ plan, onSave, onCancel }: PlanEditorProps) {
 
   const handleSave = async () => {
     if (!formData.name.trim()) {
-      toast.error("Required field", {
-        description: "Please enter a title for your plan"
-      });
-      return;
-    }
-
-    if (!user) {
-      toast.error("Not authenticated", {
-        description: "Please sign in to save your plan"
+      toast({
+        title: "Missing Name",
+        description: "Please enter a plan name",
+        variant: "destructive",
       });
       return;
     }
 
     setIsSaving(true);
-    const startTime = performance.now();
 
     try {
-      console.info('[PlanEditor] Saving plan', { 
-        userId: user.id, 
-        isUpdate: !!plan?.id,
-        formData 
-      });
+      const planData = {
+        user_id: user?.id,
+        ...formData,
+      };
 
       if (plan?.id) {
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from('trading_plans')
-          .update(formData)
-          .eq('id', plan.id)
-          .select('*')
-          .single();
-        
+          .update(planData)
+          .eq('id', plan.id);
+
         if (error) throw error;
-        
-        const elapsed = Math.round(performance.now() - startTime);
-        console.info('[PlanEditor] Update success', { id: data.id, ms: elapsed });
-        toast.success("Plan updated successfully");
       } else {
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from('trading_plans')
-          .insert({ ...formData, user_id: user.id })
-          .select('*')
-          .single();
-        
+          .insert(planData);
+
         if (error) throw error;
-        
-        const elapsed = Math.round(performance.now() - startTime);
-        console.info('[PlanEditor] Insert success', { id: data.id, ms: elapsed });
-        toast.success("Plan created successfully");
       }
-      
-      queryClient.invalidateQueries({ queryKey: ['trading-plans', user.id] });
-      queryClient.invalidateQueries({ queryKey: ['active-trading-plan', user.id] });
+
+      toast({
+        title: "Success",
+        description: plan ? "Plan updated successfully" : "Plan created successfully",
+      });
+
       onSave();
-    } catch (error: any) {
-      console.error('[PlanEditor] Save failed:', error);
-      toast.error("Failed to save plan", {
-        description: error.message || "Please try again."
+    } catch (error) {
+      console.error("Error saving plan:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save trading plan",
+        variant: "destructive",
       });
     } finally {
       setIsSaving(false);
@@ -160,9 +141,8 @@ export function PlanEditor({ plan, onSave, onCancel }: PlanEditorProps) {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="basics" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="basics">Basics</TabsTrigger>
-            <TabsTrigger value="setups">Setups</TabsTrigger>
             <TabsTrigger value="rules">Rules</TabsTrigger>
             <TabsTrigger value="risk">Risk</TabsTrigger>
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
@@ -189,17 +169,16 @@ export function PlanEditor({ plan, onSave, onCancel }: PlanEditorProps) {
             </div>
 
             <div className="space-y-2">
-              <Label>Currency Types</Label>
-              <p className="text-sm text-muted-foreground">Select the types of cryptocurrencies you trade</p>
+              <Label>Markets</Label>
               <div className="flex flex-wrap gap-2">
-                {availableCurrencyTypes.map((currencyType) => (
+                {availableMarkets.map((market) => (
                   <Badge
-                    key={currencyType}
-                    variant={formData.currency_types.includes(currencyType) ? "default" : "outline"}
+                    key={market}
+                    variant={formData.markets.includes(market) ? "default" : "outline"}
                     className="cursor-pointer"
-                    onClick={() => toggleCurrencyType(currencyType)}
+                    onClick={() => toggleMarket(market)}
                   >
-                    {currencyType}
+                    {market}
                   </Badge>
                 ))}
               </div>
@@ -219,34 +198,6 @@ export function PlanEditor({ plan, onSave, onCancel }: PlanEditorProps) {
                   </Badge>
                 ))}
               </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="setups" className="space-y-4">
-            <div className="space-y-2">
-              <Label>Trade Setups</Label>
-              <p className="text-sm text-muted-foreground">
-                Document your specific trade setups - the patterns and conditions you look for
-              </p>
-              <Textarea
-                value={formData.trade_setups}
-                onChange={(e) => setFormData({ ...formData, trade_setups: e.target.value })}
-                placeholder="Example:&#10;• Breakout Setup: Price breaks above resistance with volume confirmation&#10;• Reversal Setup: Double bottom pattern with RSI divergence&#10;• Trend Following: Moving average crossover with MACD confirmation"
-                rows={10}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Pre-Trade Checklist</Label>
-              <p className="text-sm text-muted-foreground">
-                List of things to check before entering a trade
-              </p>
-              <Textarea
-                value={formData.checklist}
-                onChange={(e) => setFormData({ ...formData, checklist: e.target.value })}
-                placeholder="Example:&#10;☐ Setup is confirmed&#10;☐ Risk/reward ratio is at least 1:2&#10;☐ Stop loss is defined&#10;☐ Position size calculated&#10;☐ No conflicting signals&#10;☐ Market conditions are favorable"
-                rows={8}
-              />
             </div>
           </TabsContent>
 
@@ -318,21 +269,11 @@ export function PlanEditor({ plan, onSave, onCancel }: PlanEditorProps) {
         </Tabs>
 
         <div className="flex gap-2 mt-6">
-          <Button 
-            onClick={handleSave} 
-            disabled={isSaving || !user}
-            type="button" 
-            className="flex-1"
-          >
+          <Button onClick={handleSave} disabled={isSaving} className="flex-1">
             <Save className="h-4 w-4 mr-2" />
             {isSaving ? "Saving..." : "Save Plan"}
           </Button>
-          <Button 
-            variant="outline" 
-            onClick={onCancel}
-            type="button"
-            disabled={isSaving}
-          >
+          <Button variant="outline" onClick={onCancel}>
             Cancel
           </Button>
         </div>

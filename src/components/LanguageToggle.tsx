@@ -1,102 +1,91 @@
-// src/components/LanguageToggle.tsx
-// REVISED VERSION - Uses centralized changeLanguage only
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useTranslation } from "@/hooks/useTranslation";
+import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useNavigate, useLocation } from "react-router-dom";
+import { SupportedLanguage } from "@/utils/languageRouting";
 
-import { useState, useRef, useEffect } from 'react';
-import { Globe } from 'lucide-react';
-import { useTranslation } from '../hooks/useTranslation';
-import type { SupportedLanguage } from '../utils/languageRouting';
-
-interface Language {
-  code: SupportedLanguage;
-  name: string;
-  flag: string;
-}
-
-const languages: Language[] = [
+const languages = [
+  { code: 'pt', name: 'Português', flag: '🇧🇷' },
   { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
+  { code: 'ar', name: 'العربية', flag: '🇦🇪' },
+  { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
 ];
 
 export const LanguageToggle = () => {
-  const { language, changeLanguage, isLoading } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [isOpen]);
-
+  const { language, changeLanguage: i18nChangeLanguage } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
   const currentLanguage = languages.find(lang => lang.code === language) || languages[0];
 
-  // ===================================================================
-  // FIX: Use centralized changeLanguage ONLY
-  // Remove manual localStorage and navigation - let context handle it
-  // ===================================================================
-  const handleLanguageChange = async (langCode: SupportedLanguage) => {
-    if (langCode === language) {
-      setIsOpen(false);
-      return;
-    }
-
-    console.log(`[LanguageToggle] Changing language to: ${langCode}`);
+  const changeLanguage = (langCode: string) => {
+    i18nChangeLanguage(langCode as SupportedLanguage);
+    localStorage.setItem('app-language', langCode);
     
-    try {
-      // ✅ Call centralized changeLanguage with updateUrl=true
-      // This handles: state, i18n, localStorage, URL navigation, everything
-      await changeLanguage(langCode, true);
-      
-      setIsOpen(false);
-      console.log(`[LanguageToggle] ✅ Language changed successfully`);
-    } catch (error) {
-      console.error('[LanguageToggle] ❌ Language change failed:', error);
-    }
+    // Get current path without existing language prefix
+    const currentPath = location.pathname;
+    const pathParts = currentPath.split('/').filter(Boolean);
+    const isLangPath = ['en', 'pt', 'es', 'ar', 'vi'].includes(pathParts[0]);
+    
+    // Remove language prefix if it exists
+    const pathWithoutLang = isLangPath 
+      ? '/' + pathParts.slice(1).join('/') 
+      : currentPath;
+    
+    // Build new path with language prefix (except for 'en' which stays at root)
+    const basePath = pathWithoutLang || '/';
+    const newPath = langCode === 'en' ? basePath : `/${langCode}${basePath}`;
+    
+    navigate(newPath, { replace: true });
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        disabled={isLoading}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-800/50 hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        aria-label="Select language"
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button 
+          variant="ghost" 
+          size="icon"
+          className="h-9 w-9 hover:bg-accent/50 transition-colors"
+          aria-label="Select language"
+        >
+          <span className="text-xl" role="img" aria-label={currentLanguage.name}>
+            {currentLanguage.flag}
+          </span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent 
+        align="end" 
+        className="w-[180px] glass-strong backdrop-blur-xl border-border/50"
       >
-        <Globe className="w-4 h-4" />
-        <span className="text-lg">{currentLanguage.flag}</span>
-        <span className="text-sm font-medium">{currentLanguage.code.toUpperCase()}</span>
-      </button>
-
-      {isOpen && (
-        <div className="absolute top-full mt-2 right-0 bg-gray-800 rounded-lg shadow-xl border border-gray-700 overflow-hidden z-50 min-w-[200px]">
-          {languages.map((lang) => (
-            <button
-              key={lang.code}
-              onClick={() => handleLanguageChange(lang.code)}
-              disabled={isLoading}
-              className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-700 transition-colors disabled:opacity-50 ${
-                lang.code === language ? 'bg-gray-700/50' : ''
-              }`}
-            >
-              <span className="text-xl">{lang.flag}</span>
-              <div className="flex-1">
-                <div className="text-sm font-medium">{lang.name}</div>
-                <div className="text-xs text-gray-400">{lang.code.toUpperCase()}</div>
-              </div>
-              {lang.code === language && (
-                <div className="w-2 h-2 rounded-full bg-blue-500" />
-              )}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+      {languages.map((lang) => (
+        <DropdownMenuItem
+          key={lang.code}
+          onClick={() => changeLanguage(lang.code)}
+          className={cn(
+            "flex items-center justify-between cursor-pointer",
+            language === lang.code && "bg-accent/50"
+          )}
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-lg" role="img" aria-label={lang.name}>
+              {lang.flag}
+            </span>
+            <span>{lang.name}</span>
+          </div>
+          {language === lang.code && (
+            <Check className="h-4 w-4 text-primary" />
+          )}
+        </DropdownMenuItem>
+      ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };

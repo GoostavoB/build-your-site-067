@@ -34,44 +34,28 @@ export const useSpotWallet = () => {
   const queryClient = useQueryClient();
 
   const { data: holdings, isLoading } = useQuery({
-    queryKey: ['spot_holdings'],
+    queryKey: ['spot-holdings'],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('spot_holdings')
-          .select('*')
-          .order('created_at', { ascending: false });
-  
-        if (error) {
-          console.warn('useSpotWallet: holdings fetch error', error);
-          return [] as SpotHolding[];
-        }
-        return data as SpotHolding[];
-      } catch (e) {
-        console.warn('useSpotWallet: unexpected holdings error', e);
-        return [] as SpotHolding[];
-      }
+      const { data, error } = await supabase
+        .from('spot_holdings')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data as SpotHolding[];
     },
   });
 
   const { data: transactions } = useQuery({
-    queryKey: ['spot_transactions'],
+    queryKey: ['spot-transactions'],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('spot_transactions')
-          .select('*')
-          .order('transaction_date', { ascending: false });
-  
-        if (error) {
-          console.warn('useSpotWallet: transactions fetch error', error);
-          return [] as SpotTransaction[];
-        }
-        return data as SpotTransaction[];
-      } catch (e) {
-        console.warn('useSpotWallet: unexpected transactions error', e);
-        return [] as SpotTransaction[];
-      }
+      const { data, error } = await supabase
+        .from('spot_transactions')
+        .select('*')
+        .order('transaction_date', { ascending: false });
+
+      if (error) throw error;
+      return data as SpotTransaction[];
     },
   });
 
@@ -89,41 +73,18 @@ export const useSpotWallet = () => {
       if (error) throw error;
       return data;
     },
-    onMutate: async (newHolding) => {
-      await queryClient.cancelQueries({ queryKey: ['spot_holdings'] });
-      const prev = queryClient.getQueryData<SpotHolding[]>(['spot_holdings']) || [];
-      const optimistic: SpotHolding = {
-        id: 'temp-' + Date.now(),
-        token_symbol: newHolding.token_symbol,
-        token_name: newHolding.token_name,
-        quantity: newHolding.quantity,
-        purchase_price: newHolding.purchase_price,
-        purchase_date: newHolding.purchase_date,
-        exchange: newHolding.exchange,
-        notes: newHolding.notes,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      queryClient.setQueryData(['spot_holdings'], [optimistic, ...prev]);
-      return { prev };
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['spot-holdings'] });
+      toast({
+        title: 'Token Added',
+        description: 'Your token has been added to the spot wallet.',
+      });
     },
-    onError: (error: Error, _vars, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(['spot_holdings'], ctx.prev);
+    onError: (error: Error) => {
       toast({
         title: 'Error',
         description: error.message,
         variant: 'destructive',
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spot_holdings'] });
-      queryClient.invalidateQueries({ queryKey: ['spot_transactions'] });
-      // Backward-compat cleanup
-      queryClient.invalidateQueries({ queryKey: ['spot-holdings'] });
-      queryClient.invalidateQueries({ queryKey: ['spot-transactions'] });
-      toast({
-        title: 'Token Added',
-        description: 'Your token has been added to the spot wallet.',
       });
     },
   });
@@ -141,7 +102,6 @@ export const useSpotWallet = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spot_holdings'] });
       queryClient.invalidateQueries({ queryKey: ['spot-holdings'] });
       toast({
         title: 'Updated',
@@ -160,7 +120,6 @@ export const useSpotWallet = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spot_holdings'] });
       queryClient.invalidateQueries({ queryKey: ['spot-holdings'] });
       toast({
         title: 'Deleted',
@@ -184,7 +143,6 @@ export const useSpotWallet = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spot_transactions'] });
       queryClient.invalidateQueries({ queryKey: ['spot-transactions'] });
     },
   });

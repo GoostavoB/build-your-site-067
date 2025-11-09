@@ -6,7 +6,6 @@ import { Progress } from '@/components/ui/progress';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { uploadLogger } from '@/utils/uploadLogger';
 
 interface EnhancedFileUploadProps {
   onFileSelected: (file: File) => void;
@@ -32,74 +31,41 @@ export const EnhancedFileUpload = ({
   const [isDragging, setIsDragging] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [isValidating, setIsValidating] = useState(false);
-const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Human-friendly labels for accepted types (handles extensions and MIME types)
-  const getTypeLabels = useCallback((types: string[]) => {
-    const labels: string[] = [];
-    types.forEach((t) => {
-      if (t.startsWith('.')) {
-        labels.push(t.slice(1).toUpperCase());
-      } else if (t.includes('/')) {
-        const subtype = t.split('/')[1] || t;
-        if (subtype.includes('spreadsheetml')) labels.push('XLSX');
-        else if (subtype.includes('ms-excel')) labels.push('XLS');
-        else if (subtype.includes('csv')) labels.push('CSV');
-        else labels.push(subtype.toUpperCase());
-      }
-    });
-    return Array.from(new Set(labels)).join(', ');
-  }, []);
-
-  // For display: treat values >1024 as bytes, otherwise MB
-  const displayMaxMB = maxSize > 1024 ? Math.round(maxSize / (1024 * 1024)) : maxSize;
-
-  const validateFileLocal = useCallback((file: File): string | null => {
-    // Determine acceptance via MIME or file extension
-    const lowerName = file.name.toLowerCase();
-    const ext = lowerName.includes('.') ? lowerName.split('.').pop() || '' : '';
-    const mimeList = acceptedTypes.filter(t => t.includes('/')).map(t => t.toLowerCase());
-    const extList = acceptedTypes.filter(t => t.startsWith('.')).map(t => t.slice(1).toLowerCase());
-
-    const mimeOk = !!file.type && mimeList.includes(file.type.toLowerCase());
-    const extOk = !!ext && extList.includes(ext);
-
-    if (!(mimeOk || extOk)) {
-      return `Invalid file type. Please upload ${getTypeLabels(acceptedTypes)} files only.`;
+  const validateFile = useCallback((file: File): string | null => {
+    // Check file type
+    if (!acceptedTypes.includes(file.type)) {
+      return `Invalid file type. Please upload ${acceptedTypes.map(t => t.split('/')[1]).join(', ').toUpperCase()} files only.`;
     }
 
-    // Normalize size: values >1024 are bytes, otherwise MB
-    const maxBytes = maxSize > 1024 ? maxSize : maxSize * 1024 * 1024;
-    if (file.size > maxBytes) {
-      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
-      const limitMB = Math.round(maxBytes / (1024 * 1024));
-      return `File size (${sizeMB}MB) exceeds maximum allowed size (${limitMB}MB).`;
+    // Check file size
+    const fileSizeMB = file.size / (1024 * 1024);
+    if (fileSizeMB > maxSize) {
+      return `File size (${fileSizeMB.toFixed(1)}MB) exceeds maximum allowed size (${maxSize}MB).`;
     }
 
     return null;
-  }, [acceptedTypes, maxSize, getTypeLabels]);
+  }, [acceptedTypes, maxSize]);
 
   const handleFile = useCallback(async (file: File) => {
     setIsValidating(true);
     setValidationError(null);
-    uploadLogger.fileSelection('File selected', { fileName: file.name, fileSize: file.size });
 
     // Simulate validation delay for better UX
     await new Promise(resolve => setTimeout(resolve, 300));
 
-    const error = validateFileLocal(file);
+    const error = validateFile(file);
     setIsValidating(false);
 
     if (error) {
-      uploadLogger.validationError(`Validation failed: ${error}`, error);
       setValidationError(error);
       toast.error(error);
       return;
     }
 
-    uploadLogger.success('Validation', 'File validation passed', { fileName: file.name });
     onFileSelected(file);
-  }, [validateFileLocal, onFileSelected]);
+  }, [validateFile, onFileSelected]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -295,7 +261,7 @@ const fileInputRef = useRef<HTMLInputElement>(null);
                 Click to upload or drag and drop
               </p>
               <p className="text-sm text-muted-foreground mb-2">
-                {getTypeLabels(acceptedTypes)} up to {displayMaxMB}MB
+                {acceptedTypes.map(t => t.split('/')[1]).join(', ').toUpperCase()} up to {maxSize}MB
               </p>
               <div className="flex gap-2 mt-3">
                 <div className="px-3 py-1 rounded-full bg-muted text-xs font-medium">

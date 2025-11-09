@@ -4,8 +4,6 @@ import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { WidgetProps } from '@/types/widget';
 import { WidgetWrapper } from './WidgetWrapper';
 import { useTranslation } from '@/hooks/useTranslation';
-import { PinButton } from '@/components/widgets/PinButton';
-import { usePinnedWidgets } from '@/contexts/PinnedWidgetsContext';
 
 interface TotalTradesWidgetProps extends WidgetProps {
   totalTrades: number;
@@ -21,8 +19,6 @@ export const TotalTradesWidget = memo(({
   trend,
 }: TotalTradesWidgetProps) => {
   const { t } = useTranslation();
-  const { isPinned, togglePin } = usePinnedWidgets();
-  const pinnedId = 'totalTrades' as const;
   
   return (
     <WidgetWrapper
@@ -30,14 +26,6 @@ export const TotalTradesWidget = memo(({
       isEditMode={isEditMode}
       onRemove={onRemove}
       onExpand={onExpand}
-      headerActions={
-        !isEditMode && (
-          <PinButton
-            isPinned={isPinned(pinnedId)}
-            onToggle={() => togglePin(pinnedId)}
-          />
-        )
-      }
     >
       <div className="space-y-3">
         <div className="flex items-center justify-between">

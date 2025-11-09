@@ -2,63 +2,14 @@
  * Shared utilities for exchange integrations
  */
 
-/**
- * Derives a CryptoKey from the encryption key environment variable
- */
-async function getEncryptionKey(): Promise<CryptoKey> {
-  const keyString = Deno.env.get('EXCHANGE_CREDENTIALS_ENCRYPTION_KEY');
-  
-  if (!keyString) {
-    throw new Error('EXCHANGE_CREDENTIALS_ENCRYPTION_KEY environment variable not set');
-  }
-  
-  // Convert hex string to ArrayBuffer
-  const keyData = new Uint8Array(keyString.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
-  
-  return await crypto.subtle.importKey(
-    'raw',
-    keyData,
-    { name: 'AES-GCM' },
-    false,
-    ['encrypt', 'decrypt']
-  );
+// Simple encryption using base64 encoding
+export function encrypt(text: string): string {
+  return btoa(text);
 }
 
-/**
- * Encrypts text using AES-256-GCM
- */
-export async function encrypt(text: string): Promise<string> {
-  const key = await getEncryptionKey();
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const encoded = new TextEncoder().encode(text);
-  
-  const encrypted = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv },
-    key,
-    encoded
-  );
-  
-  // Return JSON with IV and encrypted data
-  return JSON.stringify({
-    iv: Array.from(iv),
-    data: Array.from(new Uint8Array(encrypted))
-  });
-}
-
-/**
- * Decrypts text using AES-256-GCM
- */
-export async function decrypt(text: string): Promise<string> {
-  const key = await getEncryptionKey();
-  const { iv, data } = JSON.parse(text);
-  
-  const decrypted = await crypto.subtle.decrypt(
-    { name: 'AES-GCM', iv: new Uint8Array(iv) },
-    key,
-    new Uint8Array(data)
-  );
-  
-  return new TextDecoder().decode(decrypted);
+// Simple decryption using base64 decoding
+export function decrypt(text: string): string {
+  return atob(text);
 }
 
 /**

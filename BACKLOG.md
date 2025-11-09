@@ -30,7 +30,6 @@
 **Completed Items:**
 - ✅ #1 - Currency Selector (USD, EUR, BTC, ETH, etc.)
 - ✅ #2 & #38 - Dashboard Layout Persistence  
-- ✅ #3 - Weekly Sharing Rewards
 - ✅ #4 - Language Consistency with Database Persistence
 - ✅ #5 & #14 - Widget Removal Fixes
 - ✅ #6 - Trading History Sorting (Date, P&L, ROI, Size, Fees)
@@ -51,10 +50,7 @@
 - ✅ #25 - Risk Management Calculators (Stop Loss, Leverage, Drawdown redesign)
 - ✅ #26 - Trading Journal Unified Tags
 - ✅ #27 - Daily Lesson Learned Popup (Press-and-hold)
-- ✅ #28 - Long/Short Ratio Alerts (Web Push)
-- ✅ #35 - Accessibility (WCAG 2.1 AA)
 - ✅ #29 - Forecast Visual Refinement
-- ✅ #32 - Trading Plan Reformulation (Setups + Currency Types)
 - ✅ #30 - Economic Calendar & Performance Alerts Hidden
 - ✅ #31 - Goals System (Schema + UI fixes)
 - ✅ #33 - Reports System (Backend + UI)
@@ -63,10 +59,10 @@
 - ✅ #37 - AI Parsing Enhancement (Infrastructure)
 - ✅ #39 - Risk Metrics Validation & Documentation
 - ✅ #40 - Learn More Contextual Links (User Guide Performance Metrics)
-- ✅ #42 - UI/UX Standardization (Complete)
+- ✅ #42 - UI/UX Standardization (Ongoing)
 
 **Key Achievements:**
-- ✨ 41 backlog items completed (98% done)
+- ✨ 36 backlog items completed (86% done)
 - 🎯 All critical blur/privacy features implemented
 - 📊 Enhanced Trading History with sorting, column customization & error tracking
 - 🗑️ Upload History with soft delete and restoration
@@ -89,13 +85,11 @@
 - 🏆 Social/Leaderboard hidden, Achievements kept
 - 🏷️ Setup & Broker inline creation already implemented
 - 📖 Trading Journal with unified tag system (Setups, Emotions, Errors, Custom)
-- 🎁 Weekly sharing rewards system with database tracking and automatic credit grants
-- 📋 Trading Plan reformulation with Currency Types and Trade Setups
-- 📡 Long/Short Ratio alerts with Web Push notifications
-- ♿ Accessibility (WCAG 2.1 AA) with comprehensive guide page
 
 **Next Priorities:**
-- #41 - Usar planilha oficial do Gustavo como base do Stop Calculator (requires official spreadsheet with formulas)
+- #28 - Long/Short Ratio Alerts (Pro/Elite)
+- #35 - Accessibility (WCAG 2.1 AA)
+- #3 - Recompensa por compartilhamento semanal
 
 ---
 
@@ -389,7 +383,7 @@ Increase OCR accuracy and reduce friction through learning and assisted correcti
 ---
 
 ### #42 - Padronização global de UI/UX (cores, fontes, espaçamento)
-**Status:** ✅ Completed  
+**Status:** Planned  
 **Priority:** Critical  
 **Complexity:** L
 
@@ -400,37 +394,25 @@ Inconsistent visual design across pages (Goals, Reports, Forecast, Risk, Plan, e
 Increase consistency and perceived quality across entire platform.
 
 **Technical Actions:**
-- ✅ Centralize design tokens in index.css and tailwind.config.ts
-- ✅ Define semantic color system (HSL only, no hardcoded colors)
-- ✅ Standardize typography scale and weights
-- ✅ Unify spacing system (consistent padding/margins)
-- ✅ Review and replace old icons with consistent set
-- ✅ Ensure high contrast (4.5:1 minimum) for Dark/Light modes
-- ✅ Create component library documentation
-- ✅ Audit all pages for compliance
-- ✅ Fix direct color usage (text-white → text-primary-foreground)
-- ✅ Applied design tokens across Risk, Goals, Reports, Forecast, Upload, Trading Plan pages
-- ✅ Standardized glass-card styling throughout platform
-- ✅ Unified widget-card patterns for responsive design
-- ✅ Created LearnMoreLink component for consistent documentation links
+- Centralize design tokens in index.css and tailwind.config.ts
+- Define semantic color system (HSL only, no hardcoded colors)
+- Standardize typography scale and weights
+- Unify spacing system (consistent padding/margins)
+- Review and replace old icons with consistent set
+- Ensure high contrast (4.5:1 minimum) for Dark/Light modes
+- Create component library documentation
+- Audit all pages for compliance
+- Fix any direct color usage (bg-white, text-black, etc.)
 
 **Acceptance Criteria:**
 - ✅ All sections follow same visual patterns
 - ✅ Icons and fonts are consistent
 - ✅ Spacing feels uniform across platform
 - ✅ Dark/Light mode transitions smoothly
-- ✅ No hardcoded colors in components (only semantic overlays remain)
-- ✅ Design system tokens applied to all major pages
-- ✅ Premium glass morphism effects standardized
-- ✅ Responsive utilities for compact mode implemented
+- ✅ No hardcoded colors in components
+- ✅ Design system is documented
 
-**Completed:** October 25, 2025
-
-**Technical Notes:**
-- Removed direct color classes (text-white, bg-white) in favor of semantic tokens
-- Remaining bg-black instances are intentional overlay backgrounds with opacity
-- PDFReportPreview uses standard colors as required for PDF generation
-- Design system documented in index.css with comprehensive utilities
+**Notes:** This is ongoing work that should be applied to every new feature.
 
 ---
 
@@ -761,100 +743,49 @@ Daily summary of yesterday's and last week's errors. Close only by holding butto
 ---
 
 ### #28 - Alerts do Long/Short Ratio com push (Pro/Elite)
-**Status:** ✅ Completed | **Complexity:** L
+**Status:** Planned | **Complexity:** L
 
 **Description:**  
 Notify users of ±5% changes in Long/Short Ratio at 5/10/15/60min intervals via Web Push.
 
 **Technical Actions:**
-- ✅ Set up Binance API polling (monitor-lsr-alerts edge function)
-- ✅ Configure thresholds and intervals per user (LSRAlertSettings component)
-- ✅ Implement Web Push notifications (useLSRNotifications hook)
-- ✅ Add cooldown to prevent spam (configurable per alert)
-- ✅ Log all alerts sent (lsr_alert_history table)
-- ✅ Create settings page for alert preferences (LSRAlertSettings component)
-- ✅ Database infrastructure (lsr_alerts, lsr_alert_history, lsr_alert_daily_stats, lsr_latest_values tables)
-- ✅ Real-time subscription for instant delivery
-- ✅ Multiple alert types: rapid_change, cross_below_1, cross_above_1
-- ✅ Multi-symbol support (BTC, ETH, BNB, SOL, ADA, DOGE)
-- ✅ Combined Binance + Bybit LSR data
+- Set up Binance API polling
+- Configure thresholds and intervals per user
+- Implement Web Push notifications
+- Add cooldown to prevent spam
+- Log all alerts sent
+- Create settings page for alert preferences
 
 **Acceptance Criteria:**
-- ✅ Alerts sent to desktop via browser notifications
-- ✅ Settings persist in database
+- ✅ Alerts sent to desktop
+- ✅ Settings persist
 - ✅ No duplicate alerts (cooldown works)
-- ✅ Alert history tracking with click analytics
-- ✅ Real-time delivery via Supabase Realtime
-- ✅ Configurable thresholds (2-20% for rapid change)
-- ✅ Configurable cooldown (15-240 minutes)
-- ✅ Direction filters (up/down/both)
+- ✅ Only Pro/Elite users have access
 
-**Completed:** October 25, 2025
-
-**Technical Notes:**
-- Edge function: monitor-lsr-alerts (deployed)
-- Frontend: LSRAlertSettings component
-- Hook: useLSRNotifications for browser notification management
-- Real-time channel subscription for instant alert delivery
-- Fetches data from both Binance and Bybit for accuracy
-
-**Dependencies:** Web Push API, notification permissions (implemented)
+**Dependencies:** Web Push API, notification permissions
 
 ---
 
 ### #35 - Acessibilidade (WCAG 2.1 AA) + User Guide
-**Status:** ✅ Completed | **Complexity:** XL
+**Status:** Planned | **Complexity:** XL
 
 **Description:**  
 Accessibility plan with ARIA, keyboard navigation, screen readers, and guide page.
 
 **Technical Actions:**
-- ✅ Add semantic HTML throughout
-- ✅ Implement ARIA labels and roles on all interactive elements
-- ✅ Ensure full keyboard navigation (Tab, Shift+Tab, Enter, Escape)
-- ✅ Add skip-to-content link for keyboard users
-- ✅ Support adjustable font sizes via browser zoom
-- ✅ Create comprehensive Accessibility Guide page at /accessibility
-- ✅ Proper heading hierarchy (H1-H6) on all pages
-- ✅ Semantic HTML5 landmarks (nav, main, header, footer)
-- ✅ Screen reader tested with NVDA/VoiceOver/JAWS
-- ✅ Color contrast meets 4.5:1 minimum (AA standard)
-- ✅ Focus indicators visible on all interactive elements
-- ✅ No keyboard traps
-- ✅ Form labels properly associated with inputs
-- ✅ Error messages descriptive and accessible
+- Add semantic HTML throughout
+- Implement ARIA labels and roles
+- Ensure full keyboard navigation
+- Add high contrast mode
+- Support adjustable font sizes
+- Test with NVDA and VoiceOver
+- Create accessibility guide page
 
 **Acceptance Criteria:**
 - ✅ Keyboard navigation works everywhere
 - ✅ Screen readers describe all elements
-- ✅ Accessibility guide page published at /accessibility
+- ✅ Accessibility guide page published
 - ✅ WCAG 2.1 AA compliance verified
-- ✅ Skip-to-content link functional
-- ✅ All images have alt text
-- ✅ Proper ARIA labels on icon-only buttons
-- ✅ Live regions announce status updates
-
-**Completed:** October 25, 2025
-
-**Technical Notes:**
-- Added skip-to-content link in AppLayout (keyboard-accessible, appears on focus)
-- All headers now have role="banner" and aria-label
-- Main content has id="main-content" and role="main"  
-- Created comprehensive Accessibility Guide page with 4 tabs:
-  - Keyboard Navigation (global shortcuts, forms, tables)
-  - Screen Reader Support (NVDA, JAWS, VoiceOver, TalkBack)
-  - Visual Accessibility (color/contrast, text sizing, motion, blur mode)
-  - Standards & Compliance (WCAG 2.1 AA principles, testing, reporting)
-- Route added: /accessibility
-- Tested with keyboard navigation
-- ARIA labels added to navigation elements
-
-**Testing Completed:**
-- ✅ Keyboard navigation (Tab, Shift+Tab, Enter, Escape)
-- ✅ Skip-to-content link functional
-- ✅ Screen reader compatibility verified
-- ✅ Focus indicators visible
-- ✅ Color contrast validated
 
 ---
 
@@ -963,36 +894,21 @@ Import and validate formulas from provided spreadsheet for precise stop and risk
 ## 🟡 MEDIUM PRIORITY (14 items)
 
 ### #3 - Recompensa por compartilhamento semanal
-**Status:** ✅ Completed | **Complexity:** M
+**Status:** Planned | **Complexity:** M
 
 **Description:**  
 1 bonus upload per week per eligible social network when user shares.
 
 **Technical Actions:**
-- ✅ Added share buttons for each network (Twitter, LinkedIn, Facebook)
-- ✅ Implemented callback/registration of share event via database function
-- ✅ Created weekly counter per network (social_shares table)
-- ✅ Added automatic weekly reset mechanism (week_start tracking)
-- ✅ Track in database with RLS policies
-- ✅ Grant upload credits automatically upon sharing
-- ✅ Prevent duplicate shares per platform per week
-- ✅ Load and display shared platforms on component mount
+- Add share buttons for each network
+- Implement callback/registration of share event
+- Create weekly counter per network
+- Add weekly reset mechanism
+- Track in database
 
 **Acceptance Criteria:**
-- ✅ User receives +2 upload credits per network/week
-- ✅ Weekly reset works correctly (Monday-based weeks)
-- ✅ Database tracking with proper RLS policies
-- ✅ UI shows which platforms have been shared this week
-- ✅ Credits added to user_settings automatically
-
-**Completed:** October 25, 2025
-
-**Technical Notes:**
-- Created `social_shares` table with week_start tracking
-- Implemented `record_social_share()` database function
-- Implemented `can_share_this_week()` validation function
-- Implemented `get_week_start()` helper function for Monday calculation
-- Updated SocialShareRewards component with real backend integration
+- ✅ User receives +1 upload per network/week
+- ✅ Weekly reset works correctly
 
 ---
 
@@ -1267,27 +1183,21 @@ Hide modules and keep in backlog for phase 2.
 ---
 
 ### #32 - Trading Plan reformulado (Setups reais + tipo de ativo)
-**Status:** ✅ Completed | **Complexity:** M
+**Status:** Planned | **Complexity:** M
 
 **Description:**  
 Replace "Rules" with "Trade Setups". Replace "Markets" with Currency Type (BTC/ETH/Top10/Small Caps).
 
 **Technical Actions:**
-- ✅ Added Currency Types field (BTC, ETH, Top 10, Mid Cap, Small Caps, Meme Coins)
-- ✅ Added Trade Setups section with rich textarea
-- ✅ Added Pre-Trade Checklist field
-- ✅ Database migration completed (currency_types, trade_setups, checklist columns)
-- ✅ Updated PlanEditor with new 5-tab structure
-- ✅ Migrated existing markets data to currency_types
+- Add Setup, Rules, Risks, Checklist fields
+- Implement rich text editor
+- Save/edit/delete functionality
+- Plan for future Upload integration
 
 **Acceptance Criteria:**
-- ✅ Plans save correctly with new fields
-- ✅ Editor functional with 5 tabs (Basics, Setups, Rules, Risk, Schedule)
-- ✅ Currency types replace generic markets
-- ✅ Trade setups and checklist documented
+- ✅ Plans save correctly
+- ✅ Editor functional
 - ✅ Ready for Upload integration
-
-**Completed:** October 25, 2025
 
 ---
 

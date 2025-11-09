@@ -8,9 +8,7 @@ import {
   SupportedLanguage, 
   DEFAULT_LANGUAGE,
   getLanguageFromPath,
-  getLocalizedPath,
-  isPublicRoute,
-  getPathWithoutLanguage
+  getLocalizedPath 
 } from '@/utils/languageRouting';
 
 interface LanguageContextType {
@@ -26,18 +24,22 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const user = authContext?.user ?? null;
   const navigate = useNavigate();
   const location = useLocation();
-  
-  // Initialize from i18n.language (already set by i18n.ts during initialization)
   const [language, setLanguage] = useState<SupportedLanguage>(() => {
-    const i18nLang = i18n.language as SupportedLanguage;
-    if (SUPPORTED_LANGUAGES.includes(i18nLang)) {
-      console.log(`[LanguageProvider] Initialized from i18n: ${i18nLang}`);
-      return i18nLang;
+    // Priority: URL path > localStorage > browser > default
+    const pathLang = getLanguageFromPath(location.pathname);
+    if (pathLang !== DEFAULT_LANGUAGE) return pathLang;
+    
+    const stored = localStorage.getItem('app-language');
+    if (stored) {
+      // Normalize to base language code (e.g., 'en-US' -> 'en')
+      const base = stored.split('-')[0];
+      if (SUPPORTED_LANGUAGES.includes(base as SupportedLanguage)) {
+        return base as SupportedLanguage;
+      }
     }
-    console.log('[LanguageProvider] Fallback to en');
+    
     return DEFAULT_LANGUAGE;
   });
-  
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -73,58 +75,52 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     loadUserLanguage();
   }, [user]);
 
-  // Cleanup: redirect protected routes with language prefix to base path
+  // Sync with URL path changes
   useEffect(() => {
     const pathLang = getLanguageFromPath(location.pathname);
-    const firstSegment = location.pathname.split('/')[1];
-    const hasLangPrefix = SUPPORTED_LANGUAGES.includes(firstSegment as SupportedLanguage);
-    
-    // If on protected route with language prefix, clean it up
-    if (!isPublicRoute(location.pathname) && hasLangPrefix) {
-      const basePath = getPathWithoutLanguage(location.pathname);
-      console.log(`Cleaning up language prefix from protected route: ${basePath}`);
-      
-      // Set the language from URL before redirecting
-      if (pathLang !== language) {
-        setLanguage(pathLang);
-        i18n.changeLanguage(pathLang);
-        localStorage.setItem('app-language', pathLang);
-      }
-      
-      navigate(basePath, { replace: true });
+    if (pathLang !== language && !isLoading) {
+      setLanguage(pathLang);
+      i18n.changeLanguage(pathLang);
+      localStorage.setItem('app-language', pathLang);
     }
-  }, [location.pathname, navigate, language]);
+  }, [location.pathname]);
 
   const changeLanguage = useCallback(async (newLang: SupportedLanguage, updateUrl: boolean = true) => {
-    // English-only: Always use 'en', no-op for other languages
-    if (newLang !== 'en') {
-      console.log('English-only mode: ignoring language change request');
+    if (!SUPPORTED_LANGUAGES.includes(newLang)) {
+      console.error('Unsupported language:', newLang);
       return;
     }
 
-    console.log(`Language set to: ${newLang}`);
+    // Update state and i18n
+    setLanguage(newLang);
+    await i18n.changeLanguage(newLang);
     
-    setIsLoading(true);
-    setLanguage('en');
-    await i18n.changeLanguage('en');
-    localStorage.setItem('app-language', 'en');
+    // Update localStorage
+    localStorage.setItem('app-language', newLang);
 
     // Update database for authenticated users
     if (user) {
       try {
         await supabase
           .from('user_settings')
-          .update({ language: 'en' })
+          .update({ language: newLang })
           .eq('user_id', user.id);
       } catch (error) {
         console.error('Error saving language to database:', error);
       }
     }
 
-    setIsLoading(false);
-  }, [user]);
-
-  // URL sync is no longer needed - i18n.ts handles initialization from URL
+    // Update URL if requested
+    if (updateUrl) {
+      const currentPath = location.pathname;
+      const pathWithoutLang = currentPath.replace(/^\/(en|pt|es|ar|vi)/, '') || '/';
+      const newPath = getLocalizedPath(pathWithoutLang, newLang);
+      
+      if (currentPath !== newPath) {
+        navigate(newPath, { replace: true });
+      }
+    }
+  }, [user, location.pathname, navigate]);
 
   return (
     <LanguageContext.Provider value={{ language, changeLanguage, isLoading }}>

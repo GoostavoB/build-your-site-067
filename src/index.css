@@ -90,9 +90,9 @@
     --popover: 210 18% 3%;
     --popover-foreground: 0 0% 95%;
     
-    /* Brand primary in dark mode */
-    --primary: var(--neon-blue); /* 210 90% 58% */
-    --primary-foreground: 0 0% 98%;
+    /* Muted metallic accents */
+    --primary: 200 15% 65%;
+    --primary-foreground: 210 20% 10%;
     --secondary: 210 10% 25%;
     --secondary-foreground: 0 0% 95%;
     --muted: 210 15% 15%;
@@ -141,18 +141,11 @@
   * {
     @apply border-border;
   }
-  
-  html,
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     /* Phase 1: System font fallback until web fonts load */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    /* Prevent horizontal overflow globally */
-    overflow-x: hidden;
-    max-width: 100vw;
-    /* Smooth scrolling for anchor links and JS scroll */
-    scroll-behavior: smooth;
   }
   
   body.fonts-loaded {
@@ -185,105 +178,6 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-  }
-
-  /* AI gradient for Smart Upload */
-  .gradient-ai {
-    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
-  }
-
-  .gradient-ai-border {
-    position: relative;
-    border: 2px solid transparent;
-    background: linear-gradient(hsl(var(--background)), hsl(var(--background))) padding-box,
-                linear-gradient(135deg, #8b5cf6, #3b82f6) border-box;
-  }
-
-  /* Shimmer effect for premium buttons */
-  .shimmer-button {
-    background: linear-gradient(135deg, #8b5cf6, #3b82f6);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .shimmer-button::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.3),
-      transparent
-    );
-    animation: shimmer-slide 3s infinite;
-  }
-
-  @keyframes shimmer-slide {
-    0% {
-      transform: translateX(-100%) translateY(-100%);
-    }
-    100% {
-      transform: translateX(100%) translateY(100%);
-    }
-  }
-
-  /* Premium drop zone */
-  .drop-zone-premium {
-    border: 2px dashed hsl(var(--border));
-    background: linear-gradient(
-      135deg,
-      rgba(139, 92, 246, 0.03) 0%,
-      rgba(59, 130, 246, 0.03) 100%
-    );
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .drop-zone-premium:hover {
-    border-color: hsl(var(--primary));
-    background: linear-gradient(
-      135deg,
-      rgba(139, 92, 246, 0.08) 0%,
-      rgba(59, 130, 246, 0.08) 100%
-    );
-    box-shadow: 0 0 30px rgba(139, 92, 246, 0.15);
-  }
-
-  .drop-zone-premium.dragging {
-    border-color: #8b5cf6;
-    background: linear-gradient(
-      135deg,
-      rgba(139, 92, 246, 0.12) 0%,
-      rgba(59, 130, 246, 0.12) 100%
-    );
-    box-shadow: 0 0 40px rgba(139, 92, 246, 0.25);
-    transform: scale(1.02);
-  }
-
-  /* Image preview cards */
-  .image-card-premium {
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.06) 0%,
-      rgba(255, 255, 255, 0.02) 100%
-    );
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .image-card-premium:hover {
-    border-color: rgba(139, 92, 246, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  }
-
-  /* Processing states */
-  .processing-pulse {
-    animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   /* Hero-specific gradient text (blue brand) */
@@ -523,31 +417,6 @@
     }
   }
 
-  /* Financial colors - Always green for profit, red for loss */
-  .text-profit {
-    color: hsl(142 76% 58%); /* Always neon green */
-  }
-  
-  .text-loss {
-    color: hsl(0 91% 61%); /* Always neon red */
-  }
-  
-  .bg-profit {
-    background-color: hsl(142 76% 58%);
-  }
-  
-  .bg-loss {
-    background-color: hsl(0 91% 61%);
-  }
-  
-  .border-profit {
-    border-color: hsl(142 76% 58%);
-  }
-  
-  .border-loss {
-    border-color: hsl(0 91% 61%);
-  }
-
   /* Animations */
   @keyframes fade-in {
     from {
@@ -690,11 +559,6 @@
     font-size: clamp(1.875rem, 5vw, 2.25rem);
   }
 
-  /* Radial gradient */
-  .bg-gradient-radial {
-    background: radial-gradient(circle at center, var(--tw-gradient-stops));
-  }
-
   /* Scrollbar styling */
   .custom-scrollbar::-webkit-scrollbar {
     width: 8px;
@@ -703,69 +567,8 @@
 
   .custom-scrollbar::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
   }
-}
-
-/* Premium Animations */
-@keyframes float-particle {
-  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
-  50% { transform: translate(var(--float-x), var(--float-y)) scale(1.2); opacity: 1; }
-}
-
-.particle-float {
-  position: absolute; width: 4px; height: 4px; border-radius: 50%;
-  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
-  animation: float-particle 6s ease-in-out infinite; filter: blur(1px);
-}
-
-.particle-1 { top: 10%; left: 20%; --float-x: 30px; --float-y: -40px; animation-delay: 0s; }
-.particle-2 { top: 60%; left: 80%; --float-x: -40px; --float-y: 30px; animation-delay: 1.5s; }
-.particle-3 { top: 30%; right: 15%; --float-x: 20px; --float-y: 50px; animation-delay: 3s; }
-.particle-4 { bottom: 20%; left: 40%; --float-x: -30px; --float-y: -20px; animation-delay: 4.5s; }
-
-@keyframes pulse-slow {
-  0%, 100% { opacity: 0.2; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(1.1); }
-}
-.animate-pulse-slow { animation: pulse-slow 4s ease-in-out infinite; }
-
-@keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-.animate-spin-slow { animation: spin-slow 20s linear infinite; }
-
-.shimmer-button-premium {
-  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
-  position: relative; overflow: hidden; box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
-}
-.shimmer-button-premium::before {
-  content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  animation: shimmer-premium 3s infinite;
-}
-@keyframes shimmer-premium {
-  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-}
-
-.quality-indicator {
-  display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.75rem;
-  border-radius: 9999px; font-size: 0.75rem; font-weight: 700;
-  transition: all 0.3s; backdrop-filter: blur(8px);
-}
-.quality-high {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.3));
-  color: rgb(34, 197, 94); border: 1px solid rgba(34, 197, 94, 0.4);
-  box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
-}
-.quality-medium {
-  background: linear-gradient(135deg, rgba(234, 179, 8, 0.2), rgba(234, 179, 8, 0.3));
-  color: rgb(234, 179, 8); border: 1px solid rgba(234, 179, 8, 0.4);
-  box-shadow: 0 0 10px rgba(234, 179, 8, 0.3);
-}
-.quality-low {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.3));
-  color: rgb(239, 68, 68); border: 1px solid rgba(239, 68, 68, 0.4);
-  box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
-}
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.15);
@@ -775,6 +578,7 @@
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.25);
   }
+}
 
 /* React Grid Layout overrides for mobile */
 @media (max-width: 768px) {
@@ -943,7 +747,7 @@ textarea:focus-visible {
 }
 
 .dashboard-grid > div {
-  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Clean spacing - no visible grid lines */
@@ -962,10 +766,13 @@ textarea:focus-visible {
   padding: 0;
   min-height: min-content;
   align-content: start;
-  /* Always respects user's column count preference - no mobile overrides */
 }
 
-/* Removed mobile override - respects user column count preference */
+@media (max-width: 768px) {
+  .dashboard-grid-free {
+    grid-template-columns: 1fr !important;
+  }
+}
 
 /* Column for free vertical stacking */
 .dashboard-column-free {

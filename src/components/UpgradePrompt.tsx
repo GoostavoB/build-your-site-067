@@ -6,102 +6,26 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Crown, Check, ArrowRight, Sparkles, Clock } from 'lucide-react';
-import { usePromoStatus } from '@/hooks/usePromoStatus';
-import { Badge } from '@/components/ui/badge';
-import { initiateStripeCheckout } from '@/utils/stripeCheckout';
-import { getSubscriptionProduct } from '@/config/stripe-products';
-import { toast } from 'sonner';
-import { checkoutErrorTracker } from '@/utils/checkoutErrorTracking';
-import { trackCheckoutFunnel } from '@/utils/checkoutAnalytics';
+import { Crown, Check, ArrowRight, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface UpgradePromptProps {
   open: boolean;
   onClose: () => void;
   feature?: string;
-  trigger?: 'daily_cap' | 'widget_lock' | 'upload_limit';
 }
 
-export function UpgradePrompt({ open, onClose, feature = 'this feature', trigger = 'widget_lock' }: UpgradePromptProps) {
-  const promoStatus = usePromoStatus();
+export function UpgradePrompt({ open, onClose, feature = 'this feature' }: UpgradePromptProps) {
+  const navigate = useNavigate();
 
-  const handleUpgrade = async () => {
-    let proProduct;
-    
-    try {
-      proProduct = getSubscriptionProduct('pro', 'monthly');
-      
-      await initiateStripeCheckout({
-        priceId: proProduct.priceId,
-        productType: 'subscription_monthly',
-      });
-      onClose();
-    } catch (error) {
-      console.error('Checkout error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to start checkout';
-      const priceId = proProduct?.priceId || 'unknown';
-      
-      // Track error
-      checkoutErrorTracker.trackCheckoutError({
-        step: 'validation',
-        errorType: 'validation_error',
-        errorMessage,
-        priceId,
-        productType: 'subscription_monthly',
-        browserContext: checkoutErrorTracker.getBrowserContext(),
-      });
-      
-      trackCheckoutFunnel.checkoutErrorOccurred('upgrade_prompt_error', errorMessage, 'subscription_monthly', priceId, 'validation');
-      
-      toast.error(errorMessage);
-    }
-  };
-
-  const getContent = () => {
-    switch (trigger) {
-      case 'daily_cap':
-        return {
-          title: 'Daily XP Limit Reached!',
-          description: "You've earned your maximum XP for today",
-          features: [
-            'Free: 750 XP per day',
-            'Pro: 1,500 XP per day (2x more)',
-            'Elite: Unlimited XP earning',
-            'Keep your progress momentum',
-            'Unlock faster tier progression',
-            'Priority support',
-          ]
-        };
-      case 'upload_limit':
-        return {
-          title: 'Upload Limit Reached',
-          description: 'Upgrade to upload more trades today',
-          features: [
-            'Free: 1 upload per day',
-            'Pro: 5 uploads per day',
-            'Elite: 20 uploads per day',
-            'Bulk CSV import',
-            'Advanced trade analysis',
-            'Priority support',
-          ]
-        };
-      default:
-        return {
-          title: 'Upgrade to Pro or Elite',
-          description: `Unlock ${feature} and many more premium features`,
-          features: [
-            'Fully customizable dashboard',
-            'Drag & drop widget placement',
-            'Access to all advanced widgets',
-            'Add widgets from Insights section',
-            'Save custom layouts',
-            'Priority support',
-          ]
-        };
-    }
-  };
-
-  const content = getContent();
+  const proFeatures = [
+    'Fully customizable dashboard',
+    'Drag & drop widget placement',
+    'Access to all advanced widgets',
+    'Add widgets from Insights section',
+    'Save custom layouts',
+    'Priority support',
+  ];
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -113,41 +37,16 @@ export function UpgradePrompt({ open, onClose, feature = 'this feature', trigger
             </div>
           </div>
           <DialogTitle className="text-center text-2xl">
-            {content.title}
+            Upgrade to Pro or Elite
           </DialogTitle>
           <DialogDescription className="text-center">
-            {content.description}
+            Unlock {feature} and many more premium features
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {promoStatus.isActive && (
-            <div className="p-4 rounded-lg bg-gradient-to-r from-amber-500/10 to-amber-600/10 border border-amber-500/30">
-              <div className="flex items-center justify-between mb-2">
-                <Badge variant="destructive" className="flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  Limited Time Offer
-                </Badge>
-                <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">
-                  {promoStatus.daysRemaining > 0 
-                    ? `${promoStatus.daysRemaining} days remaining`
-                    : `${promoStatus.hoursRemaining} hours remaining`
-                  }
-                </span>
-              </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold line-through text-muted-foreground">$15</span>
-                <span className="text-3xl font-bold text-primary">$12</span>
-                <span className="text-sm text-muted-foreground">/month</span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                🎉 Save 40% during launch offer
-              </p>
-            </div>
-          )}
-          
           <div className="space-y-2">
-            {content.features.map((feature, index) => (
+            {proFeatures.map((feature, index) => (
               <div key={index} className="flex items-start gap-3">
                 <div className="mt-0.5">
                   <div className="p-1 rounded-full bg-primary/10">
@@ -162,22 +61,18 @@ export function UpgradePrompt({ open, onClose, feature = 'this feature', trigger
           <div className="pt-4 space-y-2">
             <Button
               className="w-full gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-primary-foreground"
-              onClick={handleUpgrade}
-              aria-label="Upgrade to Pro plan"
-            >
-              <Sparkles className="w-4 h-4" />
-              Upgrade to Pro
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="w-full" 
               onClick={() => {
-                window.location.href = '/#pricing-section';
+                navigate('/pricing');
                 onClose();
               }}
+              aria-label="View pricing plans to upgrade account"
             >
-              View All Plans
+              <Sparkles className="w-4 h-4" />
+              View Pricing Plans
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" className="w-full" onClick={onClose}>
+              Maybe Later
             </Button>
           </div>
         </div>

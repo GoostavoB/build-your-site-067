@@ -20,15 +20,6 @@ export const AIAnalysisPanel = ({ tradeIds, onAnalysisComplete }: AIAnalysisPane
   const handleAnalyze = async () => {
     setLoading(true);
     try {
-      // Session guard
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData?.session?.access_token;
-      if (!token) {
-        toast.error('Session expired. Please sign in again.');
-        setLoading(false);
-        return;
-      }
-
       const { data, error } = await supabase.functions.invoke('ai-trade-analysis', {
         body: { trade_ids: tradeIds }
       });

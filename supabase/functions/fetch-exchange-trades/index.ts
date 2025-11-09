@@ -1,27 +1,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.75.0';
 import { ExchangeService } from '../_shared/adapters/ExchangeService.ts';
-import { decrypt } from '../_shared/exchangeUtils.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
-// Exchange display name mapping for reliable fallback
-const EXCHANGE_DISPLAY_NAMES: Record<string, string> = {
-  'binance': 'Binance',
-  'bybit': 'Bybit',
-  'okx': 'OKX',
-  'kucoin': 'KuCoin',
-  'gateio': 'Gate.io',
-  'mexc': 'MEXC',
-  'bingx': 'BingX',
-  'bitfinex': 'Bitfinex',
-  'kraken': 'Kraken',
-  'coinbase': 'Coinbase',
-  'bitstamp': 'Bitstamp',
-  'huobi': 'Huobi',
-  'bitget': 'Bitget',
 };
 
 interface FetchRequest {
@@ -30,7 +12,10 @@ interface FetchRequest {
   selectedTradeIds?: string[];
   startDate?: string;
   endDate?: string;
-  symbol?: string;
+}
+
+function decrypt(encryptedText: string): string {
+  return atob(encryptedText);
 }
 
 Deno.serve(async (req) => {
@@ -58,7 +43,7 @@ Deno.serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    const { connectionId, mode, selectedTradeIds, startDate, endDate, symbol }: FetchRequest = await req.json();
+    const { connectionId, mode, selectedTradeIds, startDate, endDate }: FetchRequest = await req.json();
 
     // Fetch connection
     const { data: connection, error: connectionError } = await supabaseClient
@@ -153,10 +138,10 @@ Deno.serve(async (req) => {
       .single();
 
     // Decrypt credentials
-    const apiKey = await decrypt(connection.api_key_encrypted);
-    const apiSecret = await decrypt(connection.api_secret_encrypted);
+    const apiKey = decrypt(connection.api_key_encrypted);
+    const apiSecret = decrypt(connection.api_secret_encrypted);
     const apiPassphrase = connection.api_passphrase_encrypted 
-      ? await decrypt(connection.api_passphrase_encrypted)
+      ? decrypt(connection.api_passphrase_encrypted)
       : undefined;
 
     // Calculate date range
@@ -189,149 +174,65 @@ Deno.serve(async (req) => {
       throw new Error(`Failed to connect to ${connection.exchange_name}. Please check your credentials.`);
     }
     
-    // BingX requires a symbol for spot and standard futures
-    if (connection.exchange_name.toLowerCase() === 'bingx' && !symbol) {
-      const errMsg = 'BingX requires a symbol (e.g., BTC-USDT) for spot and standard futures history.';
-      await supabaseClient
-        .from('exchange_connections')
-        .update({ sync_status: 'error', sync_error: errMsg })
-        .eq('id', connectionId);
-      
-      return new Response(
-        JSON.stringify({ error: errMsg }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-    
     console.log(`[${connection.exchange_name}] Connection successful`);
     
-    // Get exchange display name with guaranteed fallback
-    const exchangeName = exchangeService.getExchangeName(connection.exchange_name);
-    const displayName = exchangeName 
-      || EXCHANGE_DISPLAY_NAMES[connection.exchange_name.toLowerCase()] 
-      || connection.exchange_name.toUpperCase();
-    
-    // Log warning if adapter getName() failed
-    if (!exchangeName) {
-      console.warn(`[Warning] getExchangeName returned undefined for "${connection.exchange_name}", using fallback: "${displayName}"`);
-    }
-    
-    const tradingType = connection.trading_type || 'spot';
+    // Get display name for better logging
+    const displayName = exchangeService.getExchangeName(connection.exchange_name) || connection.exchange_name;
 
-    // Futures health check when applicable
-    if (tradingType === 'futures' || tradingType === 'both') {
-      const futHealth = await exchangeService.performFuturesHealthCheck(connection.exchange_name);
-      console.log(`[${displayName}] Futures health:`, futHealth);
-      if (futHealth && futHealth.status === 'down') {
-        const errMsg = `Futures permission check failed${futHealth.lastError ? `: ${futHealth.lastError}` : ''}`;
-        await supabaseClient
-          .from('exchange_connections')
-          .update({ sync_status: 'error', sync_error: errMsg })
-          .eq('id', connectionId);
-        if (syncHistory) {
-          await supabaseClient
-            .from('exchange_sync_history')
-            .update({ status: 'error', completed_at: new Date().toISOString() })
-            .eq('id', syncHistory.id);
-        }
-        return new Response(JSON.stringify({ error: errMsg }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      }
-    }
-
-    console.log(`[${displayName}] Fetching ${tradingType} trades from ${startTime.toISOString()} to ${endTime.toISOString()}...`);
+    // Fetch trades with 60 second timeout
+    console.log(`[${displayName}] Fetching trades from ${startTime.toISOString()} to ${endTime.toISOString()}...`);
     
-    let fetchedTrades: any[] = [];
-    
-    if (tradingType === 'spot' || tradingType === 'both') {
-      const spotResult = await exchangeService.syncExchange(connection.exchange_name, {
-        startDate: startTime,
-        endDate: endTime,
-        tradingType: 'spot',
-        symbol,
-      });
-      if (spotResult.trades) {
-        fetchedTrades.push(...spotResult.trades.map(t => ({ ...t, trading_type: 'spot' })));
-      }
-    }
-    
-    if (tradingType === 'futures' || tradingType === 'both') {
-      const futuresResult = await exchangeService.syncExchange(connection.exchange_name, {
-        startDate: startTime,
-        endDate: endTime,
-        tradingType: 'futures',
-        symbol,
-      });
-      if (futuresResult.trades) {
-        fetchedTrades.push(...futuresResult.trades.map(t => ({ ...t, trading_type: 'futures' })));
-      }
-    }
-
-  // Fallback: if user selected spot but nothing returned, try futures for exchanges that support it
-  const supportsFutures = ['bingx','binance','bybit','mexc','okx','gateio','kucoin'].includes(connection.exchange_name.toLowerCase());
-  if (tradingType === 'spot' && fetchedTrades.length === 0 && supportsFutures) {
-    console.log(`[${displayName}] Spot returned 0 trades, trying futures as fallback...`);
-    const futuresResult = await exchangeService.syncExchange(connection.exchange_name, {
+    const fetchPromise = exchangeService.syncExchange(connection.exchange_name, {
       startDate: startTime,
       endDate: endTime,
-      tradingType: 'futures',
-      symbol,
-    });
-    if (futuresResult.trades) {
-      fetchedTrades.push(...futuresResult.trades.map(t => ({ ...t, trading_type: 'futures' })));
-    }
-  }
-
-    // Filter to only executed fills within date range
-    const startMs = startTime.getTime();
-    const endMs = endTime.getTime();
-    const executedTrades = fetchedTrades.filter(t => {
-      if (!t || !t.symbol) return false;
-      const qty = Number(t.quantity) || 0;
-      if (qty <= 0) return false;
-      const ts = new Date(t.timestamp).getTime();
-      if (ts < startMs || ts > endMs) return false;
-      return true;
     });
 
-    console.log(`[${displayName}] Successfully fetched ${fetchedTrades.length} trades (${executedTrades.length} executed within date range)`);
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Sync timed out. Please try again with a smaller date range.')), 60000)
+    );
 
-    // Normalize trades for database using UI/DB schema
-    console.log(`[${displayName}] Normalizing ${executedTrades.length} trades for database...`);
-    
-    // Validate broker name before using it
-    const validBrokerName = EXCHANGE_DISPLAY_NAMES[connection.exchange_name.toLowerCase()] || displayName;
-    if (validBrokerName !== displayName) {
-      console.warn(`[Warning] Broker name mismatch. Using validated name: "${validBrokerName}" instead of "${displayName}"`);
+    const result = await Promise.race([fetchPromise, timeoutPromise]);
+
+    if (!result.success || !result.trades) {
+      const errorMessage = result.error || 'Failed to fetch trades. Please try again.';
+      console.error(`[${displayName}] Fetch failed:`, errorMessage);
+      
+      await supabaseClient
+        .from('exchange_connections')
+        .update({
+          sync_status: 'error',
+          sync_error: errorMessage,
+        })
+        .eq('id', connectionId);
+
+      throw new Error(errorMessage);
     }
     
-    const allTrades = executedTrades.map(trade => ({
+    console.log(`[${displayName}] Successfully fetched ${result.trades.length} trades`);
+
+    // Normalize trades for database
+    console.log(`[${displayName}] Normalizing ${result.trades.length} trades for database...`);
+    
+    const allTrades = result.trades.map(trade => ({
       user_id: user.id,
-      symbol: (trade.symbol || '').toUpperCase().replace('-', '/').replace('_', '/'),
-      side: trade.side === 'buy' ? 'long' : trade.side === 'sell' ? 'short' : null,
-      broker: validBrokerName,
-      entry_price: Number(trade.price) || 0,
-      exit_price: Number(trade.price) || 0,
-      position_size: Number(trade.quantity) || 0,
-      trading_fee: Number(trade.fee) || 0,
-      profit_loss: 0,
+      pair: trade.symbol,
+      side: trade.side === 'buy' ? 'long' : trade.side === 'sell' ? 'short' : trade.side,
+      type: 'spot' as const,
+      entry_price: trade.price,
+      exit_price: trade.price,
+      size: trade.quantity,
       pnl: 0,
-      roi: 0,
+      pnl_percentage: 0,
+      fee: trade.fee,
+      fee_currency: trade.feeCurrency || trade.feeAsset || 'USDT',
+      exchange: displayName,
       opened_at: new Date(trade.timestamp).toISOString(),
       closed_at: new Date(trade.timestamp).toISOString(),
-      trade_date: new Date(trade.timestamp).toISOString(),
-      notes: `Imported from ${validBrokerName}${trade.orderId ? ` (Order ${trade.orderId})` : ''}`,
+      notes: `Imported from ${displayName}. Order ID: ${trade.orderId}`,
+      broker_name: displayName,
     }));
 
-    // Only delete old pending trades if we have new trades to insert
-    if (allTrades.length > 0) {
-      const { count: deletedCount } = await supabaseClient
-        .from('exchange_pending_trades')
-        .delete({ count: 'exact' })
-        .eq('connection_id', connectionId);
-      
-      console.log(`[${displayName}] Deleted ${deletedCount || 0} old pending trades`);
-    }
-    
+    // Store trades in pending_trades table (preview mode)
     console.log(`[${displayName}] Storing ${allTrades.length} trades in pending_trades table...`);
     
     let stored = 0;
@@ -385,7 +286,6 @@ Deno.serve(async (req) => {
         success: true,
         tradesFetched: stored,
         exchangeName: displayName,
-        symbolUsed: symbol || null,
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

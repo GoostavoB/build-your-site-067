@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { useSubscription } from '@/contexts/SubscriptionContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,18 +9,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuGroup,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { User, LogOut, KeyRound, Coins, ChevronRight, Crown, Star, Zap } from 'lucide-react';
+import { User, LogOut, KeyRound } from 'lucide-react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useUploadCredits } from '@/hooks/useUploadCredits';
-import { useAccount } from '@/contexts/AccountContext';
-import { cn } from '@/lib/utils';
 
 const passwordChangeSchema = z.object({
   newPassword: z.string().min(6, 'Password must be at least 6 characters').max(128, 'Password is too long'),
@@ -35,83 +30,15 @@ export const UserMenu = () => {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const { balance, limit } = useUploadCredits();
-  const { accounts, activeAccount, switchAccount } = useAccount();
-  const { subscription } = useSubscription();
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [profileName, setProfileName] = useState<string | null>(null);
-  
-  // Get plan details
-  const planType = subscription?.plan_type || 'free';
-  const isPro = planType === 'pro';
-  const isElite = planType === 'elite';
-  
-  const getPlanBadge = () => {
-    if (isElite) {
-      return { label: 'Elite', color: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300', icon: Crown };
-    }
-    if (isPro) {
-      return { label: 'Pro', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300', icon: Star };
-    }
-    return { label: 'Free', color: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300', icon: null };
-  };
-  
-  const planBadge = getPlanBadge();
-  const PlanIcon = planBadge.icon;
-
-  // Fetch profile name from database
-  useEffect(() => {
-    if (!user) return;
-
-    const fetchProfile = async () => {
-      const { data } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', user.id)
-        .single();
-
-      if (data?.full_name) {
-        setProfileName(data.full_name);
-      }
-    };
-
-    fetchProfile();
-
-    // Listen for profile updates
-    const handleProfileUpdate = () => {
-      fetchProfile();
-    };
-
-    window.addEventListener('profileUpdated', handleProfileUpdate);
-
-    return () => {
-      window.removeEventListener('profileUpdated', handleProfileUpdate);
-    };
-  }, [user]);
 
   const handleLogout = async () => {
-    console.log('[UserMenu] Logout clicked');
-    try {
-      await signOut();
-      toast.success(t('auth.toast.signOutSuccess'));
-    } catch (error) {
-      console.error('Logout error:', error);
-      toast.error('Failed to logout');
-    }
-  };
-
-  const handleSwitchAccount = async (accountId: string) => {
-    if (accountId === activeAccount?.id) return;
-    
-    try {
-      await switchAccount(accountId);
-      toast.success('Account switched successfully');
-    } catch (error) {
-      toast.error('Failed to switch account');
-    }
+    await signOut();
+    navigate('/auth');
+    toast.success(t('auth.toast.signOutSuccess'));
   };
 
   const handleChangePassword = async (e: React.FormEvent) => {
@@ -178,8 +105,8 @@ export const UserMenu = () => {
 
   if (!user) return null;
 
-  // Get display name from profile, user metadata, or email
-  const displayName = profileName || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+  // Get display name from user metadata or email
+  const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
 
   return (
     <>
@@ -190,112 +117,18 @@ export const UserMenu = () => {
             <span className="hidden md:inline">{t('userMenu.hello')}, {displayName}</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-64">
+        <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>{t('userMenu.myAccount')}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          
-          {/* User Email & Plan Badge */}
-          <div className="px-2 py-2 space-y-2">
-            <div className="text-sm text-muted-foreground">
-              {user.email}
-            </div>
-            <div className={cn("inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-semibold", planBadge.color)}>
-              {PlanIcon && <PlanIcon className="w-3 h-3" />}
-              {planBadge.label} Plan
-            </div>
+          <div className="px-2 py-1.5 text-sm text-muted-foreground">
+            {user.email}
           </div>
-          
           <DropdownMenuSeparator />
-          
-          {/* Credits Display */}
-          <div className="px-2 py-2">
-            <div className="flex items-center justify-between p-2 rounded-md bg-muted/50">
-              <div className="flex items-center gap-2">
-                <Coins className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium">Upload Credits</span>
-              </div>
-              <span className="text-sm font-bold">{balance} / {limit}</span>
-            </div>
-            <div className="flex gap-1 mt-1">
-              <Button
-                variant="link"
-                size="sm"
-                className="flex-1 h-auto p-1 text-xs"
-                onClick={() => navigate('/credits/purchase')}
-              >
-                Buy Credits
-              </Button>
-              {!isElite && (
-                <Button
-                  variant="link"
-                  size="sm"
-                  className="flex-1 h-auto p-1 text-xs text-primary"
-                  onClick={() => navigate('/upgrade')}
-                >
-                  <Zap className="w-3 h-3 mr-1" />
-                  Upgrade
-                </Button>
-              )}
-            </div>
-          </div>
-          
-          <DropdownMenuSeparator />
-          
-          {/* Account Switcher Section */}
-          {accounts.length > 1 && (
-            <>
-              <DropdownMenuLabel className="text-xs text-muted-foreground">
-                Accounts ({accounts.length})
-              </DropdownMenuLabel>
-              <DropdownMenuGroup>
-                {accounts.map((account) => (
-                  <DropdownMenuItem
-                    key={account.id}
-                    onClick={() => handleSwitchAccount(account.id)}
-                    className="gap-2"
-                  >
-                    {account.color && (
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: account.color }}
-                      />
-                    )}
-                    <span className="flex-1 truncate">{account.name}</span>
-                    {account.id === activeAccount?.id && (
-                      <span className="text-xs text-primary">Active</span>
-                    )}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => navigate('/settings/accounts')}>
-                <ChevronRight className="w-4 h-4 mr-2" />
-                Manage Accounts
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-            </>
-          )}
-          
-          {/* Additional Options */}
-          {!isElite && (
-            <DropdownMenuItem onClick={() => navigate('/upgrade')}>
-              <Zap className="w-4 h-4 mr-2" />
-              Upgrade Plan
-            </DropdownMenuItem>
-          )}
-          
-          {/* Settings */}
-          <DropdownMenuItem onClick={() => navigate('/settings')}>
-            <User className="w-4 h-4 mr-2" />
-            Settings
-          </DropdownMenuItem>
-          
           <DropdownMenuItem onClick={() => setChangePasswordOpen(true)}>
             <KeyRound className="w-4 h-4 mr-2" />
             {t('userMenu.changePassword')}
           </DropdownMenuItem>
-          
-          {/* Logout */}
-          <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
+          <DropdownMenuItem onClick={handleLogout} className="text-destructive">
             <LogOut className="w-4 h-4 mr-2" />
             {t('userMenu.logout')}
           </DropdownMenuItem>

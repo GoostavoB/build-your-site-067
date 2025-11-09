@@ -90,22 +90,8 @@ const PerformanceAlerts = () => {
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
-      // Session guard
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData?.session?.access_token;
-      if (!token) {
-        throw new Error('Session expired. Please sign in again.');
-      }
-
-      const { error } = await supabase.from("performance_alerts").insert([data]).select().single();
-      if (error) {
-        const msg = error.message || 'Failed to create alert';
-        const code = error.code || '';
-        if (code === '42501' || msg.toLowerCase().includes('row-level security')) {
-          throw new Error('Permission denied. Please sign in again.');
-        }
-        throw error;
-      }
+      const { error } = await supabase.from("performance_alerts").insert([data]);
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["performance-alerts"] });
@@ -224,7 +210,8 @@ const PerformanceAlerts = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <AppLayout>
+      <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Performance Alerts</h1>
@@ -460,6 +447,7 @@ const PerformanceAlerts = () => {
           </TabsContent>
         </Tabs>
       </div>
+    </AppLayout>
   );
 };
 

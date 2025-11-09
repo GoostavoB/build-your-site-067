@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card';
 import { Link, useParams } from 'react-router-dom';
-import { PublicHeader } from '@/components/PublicHeader';
+import { MobileHeader } from '@/components/MobileHeader';
 import Footer from '@/components/Footer';
 import { SkipToContent } from '@/components/SkipToContent';
 import { Badge } from '@/components/ui/badge';
@@ -15,8 +15,6 @@ import { preloadImages } from '@/utils/preloadStrategies';
 import { useHreflang } from '@/hooks/useHreflang';
 import { SUPPORTED_LANGUAGES, getLocalizedPath, getLanguageFromPath, type SupportedLanguage } from '@/utils/languageRouting';
 import { useLocation } from 'react-router-dom';
-import MetaTags from "@/components/SEO/MetaTags";
-import SchemaMarkup, { createArticleSchema } from "@/components/SEO/SchemaMarkup";
 
 const Blog = () => {
   const { lang } = useParams();
@@ -90,18 +88,11 @@ const Blog = () => {
   }, [filteredArticles]);
   
   return (
-    <>
-      <MetaTags
-        title="Crypto Trading Blog | AI Tools, Strategies & Tips"
-        description="Expert insights on crypto trading, AI-powered tools, trading psychology, risk management, and data-driven strategies. Learn from proven trading techniques."
-        keywords="crypto trading blog, AI trading tools, trading journal, trading psychology, risk management"
-      />
-      <SchemaMarkup type="product" />
-      <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black">
+    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black">
       <SkipToContent />
-      <PublicHeader />
+      <MobileHeader />
       
-      <main id="main-content" className="pt-28 pb-16 px-4">
+      <main id="main-content" className="pt-20 pb-16 px-4">
         <div className="max-w-5xl mx-auto space-y-8">
         <div className="text-center space-y-3">
           <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
@@ -151,14 +142,9 @@ const Blog = () => {
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <Link 
-                        to={getLocalizedPath(`/blog/category/${encodeURIComponent(article.category)}`, currentLang)}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Badge variant="secondary" className="text-xs hover:bg-primary/20 transition-colors">
-                          {article.category}
-                        </Badge>
-                      </Link>
+                      <Badge variant="secondary" className="text-xs">
+                        {article.category}
+                      </Badge>
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
@@ -193,7 +179,6 @@ const Blog = () => {
       
       <Footer />
     </div>
-    </>
   );
 };
 

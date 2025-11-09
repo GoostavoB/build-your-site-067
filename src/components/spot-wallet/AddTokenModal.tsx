@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { CalendarIcon, ChevronsUpDown, Check, Loader2, TrendingUp, Plus } from 'lucide-react';
+import { CalendarIcon, ChevronsUpDown, Check, Loader2, TrendingUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useTokenSearch } from '@/hooks/useTokenSearch';
@@ -54,17 +54,23 @@ export const AddTokenModal = ({ open, onClose, onAdd }: AddTokenModalProps) => {
   const [tokenName, setTokenName] = useState('');
   const [quantity, setQuantity] = useState('');
   const [purchasePrice, setPurchasePrice] = useState('');
-  const [purchaseDate, setPurchaseDate] = useState<Date>(new Date()); // Auto-fill to today
+  const [purchaseDate, setPurchaseDate] = useState<Date>();
   const [exchange, setExchange] = useState('');
   const [notes, setNotes] = useState('');
   const [openExchange, setOpenExchange] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showTokenResults, setShowTokenResults] = useState(false);
   const [isManualPrice, setIsManualPrice] = useState(false);
-  const [exchangeInput, setExchangeInput] = useState('');
   
   const { results: tokenResults, loading: searchLoading } = useTokenSearch(searchQuery);
   const { data: priceData, isLoading: priceLoading } = useTokenPrice(tokenSymbol);
+
+  // Auto-fill purchase date to today when symbol is entered
+  useEffect(() => {
+    if (tokenSymbol && !purchaseDate) {
+      setPurchaseDate(new Date());
+    }
+  }, [tokenSymbol]);
 
   // Auto-fill purchase price from CoinGecko when available
   useEffect(() => {
@@ -91,33 +97,28 @@ export const AddTokenModal = ({ open, onClose, onAdd }: AddTokenModalProps) => {
     setTokenName('');
     setQuantity('');
     setPurchasePrice('');
-    setPurchaseDate(new Date()); // Reset to today's date
+    setPurchaseDate(undefined);
     setExchange('');
     setNotes('');
     setIsManualPrice(false);
     setSearchQuery('');
     setShowTokenResults(false);
-    setExchangeInput('');
     onClose();
   };
 
   const handleTokenSelect = (symbol: string, name: string) => {
     setTokenSymbol(symbol.toUpperCase());
     setTokenName(name);
-    setSearchQuery(symbol); // Keep search query in sync
+    setSearchQuery('');
     setShowTokenResults(false);
     setIsManualPrice(false); // Reset manual price flag when selecting new token
   };
 
   const handleSymbolChange = (value: string) => {
-    setSearchQuery(value); // Only update search query, not symbol
+    setTokenSymbol(value.toUpperCase());
+    setSearchQuery(value);
     setShowTokenResults(value.length >= 2);
     setIsManualPrice(false); // Reset when user changes symbol
-    
-    // If user types and doesn't select from dropdown, still set the symbol
-    if (value.length >= 2) {
-      setTokenSymbol(value.toUpperCase());
-    }
   };
 
   const handlePriceManualChange = (value: string) => {
@@ -140,14 +141,11 @@ export const AddTokenModal = ({ open, onClose, onAdd }: AddTokenModalProps) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2 relative">
-              <Label htmlFor="symbol" className="flex items-center gap-2">
-                Symbol *
-                {searchLoading && <Loader2 className="h-3 w-3 animate-spin" />}
-              </Label>
+              <Label htmlFor="symbol">Symbol *</Label>
               <Input
                 id="symbol"
                 placeholder="BTC"
-                value={searchQuery || tokenSymbol}
+                value={tokenSymbol}
                 onChange={(e) => handleSymbolChange(e.target.value)}
                 onFocus={() => setShowTokenResults(searchQuery.length >= 2)}
                 required
@@ -192,9 +190,9 @@ export const AddTokenModal = ({ open, onClose, onAdd }: AddTokenModalProps) => {
                 onChange={(e) => setTokenName(e.target.value)}
                 required
               />
-              {tokenName && tokenSymbol && (
-                <p className="text-xs text-success">
-                  ✓ Auto-filled from CoinGecko
+              {tokenName && (
+                <p className="text-xs text-muted-foreground">
+                  ✓ Auto-filled from search
                 </p>
               )}
             </div>
@@ -237,17 +235,12 @@ export const AddTokenModal = ({ open, onClose, onAdd }: AddTokenModalProps) => {
               />
               {priceData && !isManualPrice && (
                 <p className="text-xs text-success">
-                  ✓ Live price from CoinGecko
-                </p>
-              )}
-              {!priceData && !priceLoading && tokenSymbol && !isManualPrice && (
-                <p className="text-xs text-muted-foreground">
-                  Price not available - enter manually
+                  ✓ Current market price (live)
                 </p>
               )}
               {isManualPrice && (
                 <p className="text-xs text-muted-foreground">
-                  Manual entry
+                  Manual price entered
                 </p>
               )}
             </div>
@@ -301,23 +294,16 @@ export const AddTokenModal = ({ open, onClose, onAdd }: AddTokenModalProps) => {
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0 bg-popover z-50" align="start">
                   <Command>
-                    <CommandInput 
-                      placeholder="Search or type custom exchange..." 
-                      value={exchangeInput}
-                      onValueChange={setExchangeInput}
-                    />
+                    <CommandInput placeholder="Search exchanges..." />
                     <CommandList>
                       <CommandEmpty>No exchange found.</CommandEmpty>
                       <CommandGroup>
-                        {EXCHANGES.filter(ex => 
-                          ex.toLowerCase().includes(exchangeInput.toLowerCase())
-                        ).map((ex) => (
+                        {EXCHANGES.map((ex) => (
                           <CommandItem
                             key={ex}
                             value={ex}
                             onSelect={(currentValue) => {
                               setExchange(currentValue === exchange.toLowerCase() ? "" : ex);
-                              setExchangeInput('');
                               setOpenExchange(false);
                             }}
                           >
@@ -330,34 +316,12 @@ export const AddTokenModal = ({ open, onClose, onAdd }: AddTokenModalProps) => {
                             {ex}
                           </CommandItem>
                         ))}
-                        {exchangeInput.trim() && !EXCHANGES.some(ex => 
-                          ex.toLowerCase() === exchangeInput.trim().toLowerCase()
-                        ) && (
-                          <CommandItem
-                            key="custom-exchange"
-                            value={exchangeInput.trim()}
-                            onSelect={() => {
-                              setExchange(exchangeInput.trim());
-                              setExchangeInput('');
-                              setOpenExchange(false);
-                            }}
-                            className="text-primary"
-                          >
-                            <Plus className="mr-2 h-4 w-4" />
-                            Use custom: "{exchangeInput.trim()}"
-                          </CommandItem>
-                        )}
                       </CommandGroup>
                     </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-            {exchange && !EXCHANGES.includes(exchange) && (
-              <p className="text-xs text-muted-foreground mt-1">
-                Custom exchange
-              </p>
-            )}
-          </div>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
 
           <div className="space-y-2">

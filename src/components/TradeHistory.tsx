@@ -280,19 +280,7 @@ export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) =>
       if (error) {
         toast.error('Failed to delete trades');
       } else {
-        const count = selectedTradeIds.size;
-        toast.success(
-          <div className="space-y-2">
-            <div className="font-semibold">{count} trade{count > 1 ? 's' : ''} deleted</div>
-            <div className="text-sm opacity-90">
-              You have <strong>48 hours</strong> to recover {count > 1 ? 'them' : 'it'}
-            </div>
-            <div className="text-xs opacity-75 pt-1 border-t border-white/10">
-              💡 Go to <strong>Trade Analysis</strong> → Click <strong>⚙️ Settings</strong> → Enable <strong>"Show deleted trades"</strong>
-            </div>
-          </div>,
-          { duration: 8000 }
-        );
+        toast.success(`${selectedTradeIds.size} trade(s) deleted successfully`);
         setSelectedTradeIds(new Set());
         fetchTrades();
         onTradesChange?.();
@@ -393,18 +381,7 @@ export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) =>
       if (error) {
         toast.error('Failed to delete trade');
       } else {
-        toast.success(
-          <div className="space-y-2">
-            <div className="font-semibold">Trade deleted</div>
-            <div className="text-sm opacity-90">
-              You have <strong>48 hours</strong> to recover it
-            </div>
-            <div className="text-xs opacity-75 pt-1 border-t border-white/10">
-              💡 Go to <strong>Trade Analysis</strong> → Click <strong>⚙️ Settings</strong> → Enable <strong>"Show deleted trades"</strong>
-            </div>
-          </div>,
-          { duration: 8000 }
-        );
+        toast.success('Trade deleted');
         fetchTrades();
         onTradesChange?.();
       }
@@ -1124,7 +1101,7 @@ export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) =>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">P&L</p>
-                  <p className={`font-medium ${selectedTrade.pnl === 0 ? 'text-foreground' : selectedTrade.pnl > 0 ? 'text-profit' : 'text-loss'}`}>
+                  <p className={`font-medium ${selectedTrade.pnl === 0 ? 'text-foreground' : selectedTrade.pnl > 0 ? 'text-neon-green' : 'text-neon-red'}`}>
                     ${selectedTrade.pnl.toFixed(2)}
                   </p>
                 </div>

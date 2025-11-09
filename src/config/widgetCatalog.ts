@@ -24,23 +24,18 @@ import { TopMoversWidget } from '@/components/widgets/TopMoversWidget';
 import { AIInsightsWidget } from '@/components/widgets/AIInsightsWidget';
 import { RecentTransactionsWidget } from '@/components/widgets/RecentTransactionsWidget';
 import { QuickActionsWidget } from '@/components/widgets/QuickActionsWidget';
+import { PortfolioOverviewWidget } from '@/components/widgets/PortfolioOverviewWidget';
 import { AvgPnLPerTradeWidget } from '@/components/widgets/AvgPnLPerTradeWidget';
 import { AvgPnLPerDayWidget } from '@/components/widgets/AvgPnLPerDayWidget';
 import { CurrentROIWidget } from '@/components/widgets/CurrentROIWidget';
+import { AvgROIPerTradeWidget } from '@/components/widgets/AvgROIPerTradeWidget';
 import { CapitalGrowthWidget } from '@/components/widgets/CapitalGrowthWidget';
-import { AbsoluteProfitWidget } from '@/components/widgets/AbsoluteProfitWidget';
 import { BehaviorAnalytics } from '@/components/insights/BehaviorAnalytics';
 import { CostEfficiencyPanel } from '@/components/insights/CostEfficiencyPanel';
 import { PerformanceHighlights } from '@/components/insights/PerformanceHighlights';
 import { TradingQualityMetrics } from '@/components/insights/TradingQualityMetrics';
 import { TradingHeatmap } from '@/components/TradingHeatmap';
 import { GoalWidget } from '@/components/goals/GoalWidget';
-import { LSRWidget } from '@/components/widgets/LSRWidget';
-import { OpenInterestWidget } from '@/components/widgets/OpenInterestWidget';
-import { PersonalGoalsWidget } from '@/components/widgets/PersonalGoalsWidget';
-import { LeverageCalculatorWidget } from '@/components/widgets/LeverageCalculatorWidget';
-import { WeekPerformanceWidget } from '@/components/widgets/WeekPerformanceWidget';
-import { WeeklyPnLChartWidget } from '@/components/widgets/WeeklyPnLChartWidget';
 
 /**
  * Widget Catalog - Registry of all available dashboard widgets
@@ -56,13 +51,6 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
     defaultSize: 'small',
     component: TotalBalanceWidget,
     requiresData: ['stats'],
-    // Tier 0: Starter (0 XP, Free)
-    requiredTier: 0,
-    requiredPlan: 'free',
-    xpToUnlock: 0,
-    tierName: 'Starter',
-    educationalPurpose: 'Track your overall trading capital',
-    dopamineTrigger: 'micro',
   },
   
   winRate: {
@@ -74,12 +62,6 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
     defaultSize: 'small',
     component: WinRateWidget,
     requiresData: ['stats'],
-    requiredTier: 0,
-    requiredPlan: 'free',
-    xpToUnlock: 0,
-    tierName: 'Starter',
-    educationalPurpose: 'Monitor win/loss percentage',
-    dopamineTrigger: 'micro',
   },
   
   totalTrades: {
@@ -91,12 +73,6 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
     defaultSize: 'small',
     component: TotalTradesWidget,
     requiresData: ['stats'],
-    requiredTier: 0,
-    requiredPlan: 'free',
-    xpToUnlock: 0,
-    tierName: 'Starter',
-    educationalPurpose: 'Count your trading activity',
-    dopamineTrigger: 'micro',
   },
   
   spotWallet: {
@@ -108,29 +84,17 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
     defaultSize: 'small',
     component: SpotWalletWidget,
     requiresData: ['holdings'],
-    requiredTier: 1,
-    requiredPlan: 'free',
-    xpToUnlock: 1000,
-    tierName: 'Skilled',
-    educationalPurpose: 'Portfolio holdings overview',
-    dopamineTrigger: 'micro',
   },
   
-  absoluteProfit: {
-    id: 'absoluteProfit',
-    title: 'Total Trading Profit',
-    description: 'Pure trading profit excluding deposits/withdrawals',
-    category: 'performance',
-    icon: TrendingUp,
-    defaultSize: 'small',
-    component: AbsoluteProfitWidget,
-    requiresData: ['trades'],
-    requiredTier: 4,
-    requiredPlan: 'elite',
-    xpToUnlock: 25000,
-    tierName: 'Elite',
-    educationalPurpose: 'Pure trading profit metric',
-    dopamineTrigger: 'macro',
+  portfolioOverview: {
+    id: 'portfolioOverview',
+    title: 'Portfolio Overview',
+    description: 'Portfolio value chart over time',
+    category: 'portfolio',
+    icon: LineChart,
+    defaultSize: 'medium',
+    component: PortfolioOverviewWidget,
+    requiresData: ['stats', 'trades'],
   },
   
   topMovers: {
@@ -142,12 +106,6 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
     defaultSize: 'small',
     component: TopMoversWidget,
     requiresData: ['trades'],
-    requiredTier: 1,
-    requiredPlan: 'free',
-    xpToUnlock: 1000,
-    tierName: 'Skilled',
-    educationalPurpose: 'Best performing assets',
-    dopamineTrigger: 'micro',
   },
   
   aiInsights: {
@@ -159,12 +117,6 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
     defaultSize: 'small',
     component: AIInsightsWidget,
     isPremium: false,
-    requiredTier: 4,
-    requiredPlan: 'elite',
-    xpToUnlock: 25000,
-    tierName: 'Elite',
-    educationalPurpose: 'AI-powered trading recommendations',
-    dopamineTrigger: 'macro',
   },
   
   recentTransactions: {
@@ -176,12 +128,6 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
     defaultSize: 'medium',
     component: RecentTransactionsWidget,
     requiresData: ['trades'],
-    requiredTier: 2,
-    requiredPlan: 'free',
-    xpToUnlock: 4000,
-    tierName: 'Advanced',
-    educationalPurpose: 'Latest trade activity',
-    dopamineTrigger: 'micro',
   },
   
   quickActions: {
@@ -192,12 +138,6 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
     icon: Zap,
     defaultSize: 'small',
     component: QuickActionsWidget,
-    requiredTier: 0,
-    requiredPlan: 'free',
-    xpToUnlock: 0,
-    tierName: 'Starter',
-    educationalPurpose: 'Access common features quickly',
-    dopamineTrigger: 'micro',
   },
 
   avgPnLPerTrade: {
@@ -209,12 +149,6 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
     defaultSize: 'small',
     component: AvgPnLPerTradeWidget,
     requiresData: ['stats'],
-    requiredTier: 1,
-    requiredPlan: 'free',
-    xpToUnlock: 1000,
-    tierName: 'Skilled',
-    educationalPurpose: 'Average profit per trade',
-    dopamineTrigger: 'meso',
   },
 
   avgPnLPerDay: {
@@ -226,46 +160,39 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
     defaultSize: 'small',
     component: AvgPnLPerDayWidget,
     requiresData: ['stats'],
-    requiredTier: 0,
-    requiredPlan: 'free',
-    xpToUnlock: 0,
-    tierName: 'Starter',
-    educationalPurpose: 'Daily profit average',
-    dopamineTrigger: 'meso',
   },
 
   currentROI: {
     id: 'currentROI',
     title: 'Current ROI',
-    description: 'Total return on investment regardless of withdrawals',
+    description: 'Return on investment from initial capital',
     category: 'performance',
     icon: TrendingUp,
     defaultSize: 'small',
     component: CurrentROIWidget,
     requiresData: ['stats'],
-    requiredTier: 0,
-    requiredPlan: 'free',
-    xpToUnlock: 0,
-    tierName: 'Starter',
-    educationalPurpose: 'Return on investment metric',
-    dopamineTrigger: 'meso',
+  },
+
+  avgROIPerTrade: {
+    id: 'avgROIPerTrade',
+    title: 'Avg ROI Per Trade',
+    description: 'Average ROI across all trades',
+    category: 'performance',
+    icon: Percent,
+    defaultSize: 'small',
+    component: AvgROIPerTradeWidget,
+    requiresData: ['stats'],
   },
 
   capitalGrowth: {
     id: 'capitalGrowth',
     title: 'Capital Growth',
-    description: 'Track your capital including deposits, withdrawals, and trading P&L',
+    description: 'Visualize your capital growth over time',
     category: 'performance',
     icon: TrendingUp,
     defaultSize: 'large',
     component: CapitalGrowthWidget,
-    requiresData: [],
-    requiredTier: 0,
-    requiredPlan: 'free',
-    xpToUnlock: 450,
-    tierName: 'Starter',
-    educationalPurpose: 'Portfolio growth chart',
-    dopamineTrigger: 'meso',
+    requiresData: ['stats', 'trades'],
   },
 
   behaviorAnalytics: {
@@ -277,12 +204,6 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
     defaultSize: 'large',
     component: BehaviorAnalytics as any,
     requiresData: ['trades'],
-    requiredTier: 3,
-    requiredPlan: 'pro',
-    xpToUnlock: 10000,
-    tierName: 'Pro',
-    educationalPurpose: 'Trading behavior insights',
-    dopamineTrigger: 'macro',
   },
 
   costEfficiency: {
@@ -294,12 +215,6 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
     defaultSize: 'medium',
     component: CostEfficiencyPanel as any,
     requiresData: ['trades'],
-    requiredTier: 3,
-    requiredPlan: 'pro',
-    xpToUnlock: 10000,
-    tierName: 'Pro',
-    educationalPurpose: 'Fee analysis and optimization',
-    dopamineTrigger: 'meso',
   },
 
   performanceHighlights: {
@@ -311,12 +226,6 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
     defaultSize: 'medium',
     component: PerformanceHighlights as any,
     requiresData: ['trades'],
-    requiredTier: 3,
-    requiredPlan: 'pro',
-    xpToUnlock: 10000,
-    tierName: 'Pro',
-    educationalPurpose: 'Key performance metrics',
-    dopamineTrigger: 'macro',
   },
 
   tradingQuality: {
@@ -328,138 +237,51 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
     defaultSize: 'medium',
     component: TradingQualityMetrics as any,
     requiresData: ['stats'],
-    requiredTier: 0,
-    requiredPlan: 'free',
-    xpToUnlock: 250,
-    tierName: 'Starter',
-    educationalPurpose: 'Advanced quality metrics',
-    dopamineTrigger: 'macro',
   },
 
   heatmap: {
     id: 'heatmap',
-    title: 'Weekly Heatmap',
+    title: 'Trading Heatmap',
     description: 'Visualize trading performance by day and hour',
     category: 'insights',
     icon: Grid3x3,
     defaultSize: 'large',
     component: TradingHeatmap as any,
     requiresData: ['trades'],
-    requiredTier: 0,
-    requiredPlan: 'free',
-    xpToUnlock: 150,
-    tierName: 'Starter',
-    educationalPurpose: 'Time-based performance visualization',
-    dopamineTrigger: 'macro',
   },
 
   goals: {
     id: 'goals',
-    title: 'Personal Goals',
-    description: 'Track your active trading goal with progress',
+    title: 'Active Goals',
+    description: 'Track progress on your trading goals with projections',
     category: 'trading',
     icon: Target,
-    defaultSize: 'small',
-    component: PersonalGoalsWidget as any,
-    requiresData: [],
-    requiredTier: 0,
-    requiredPlan: 'free',
-    xpToUnlock: 0,
-    tierName: 'Starter',
-    educationalPurpose: 'Set and track trading objectives',
-    dopamineTrigger: 'meso',
-  },
-  lsrMarketData: {
-    id: 'lsrMarketData',
-    title: 'Market Sentiment',
-    description: 'Real-time Long/Short Ratio and Open Interest for BTCUSDT',
-    category: 'market',
-    icon: Activity,
-    defaultSize: 'small',
-    component: LSRWidget as any,
-    requiresData: [],
-    requiredTier: 2,
-    requiredPlan: 'free',
-    xpToUnlock: 4000,
-    tierName: 'Advanced',
-    educationalPurpose: 'Long/short ratio analysis',
-    dopamineTrigger: 'micro',
-  },
-  openInterestChart: {
-    id: 'openInterestChart',
-    title: 'Open Interest Chart',
-    description: 'Historical open interest trends with customizable symbols',
-    category: 'market',
-    icon: TrendingUp,
     defaultSize: 'large',
-    component: OpenInterestWidget as any,
+    component: GoalWidget as any,
     requiresData: [],
-    requiredTier: 4,
-    requiredPlan: 'elite',
-    xpToUnlock: 25000,
-    tierName: 'Elite',
-    educationalPurpose: 'Market open interest data',
-    dopamineTrigger: 'meso',
-  },
-  leverageCalculator: {
-    id: 'leverageCalculator',
-    title: 'Leverage Calculator',
-    description: 'Calculate safe position sizes based on your stop loss distance',
-    category: 'trading',
-    icon: Activity,
-    defaultSize: 'large',
-    component: LeverageCalculatorWidget as any,
-    requiresData: [],
-    requiredTier: 0,
-    requiredPlan: 'free',
-    xpToUnlock: 50,
-    tierName: 'Starter',
-    educationalPurpose: 'Learn proper position sizing and risk management',
-    dopamineTrigger: 'micro',
-  },
-  weekPerformance: {
-    id: 'weekPerformance',
-    title: 'Week Performance',
-    description: 'Current week P&L (Monday to Sunday) - resets every Monday',
-    category: 'performance',
-    icon: Calendar,
-    defaultSize: 'small',
-    component: WeekPerformanceWidget as any,
-    requiresData: ['trades'],
-    requiredTier: 0,
-    requiredPlan: 'free',
-    xpToUnlock: 350,
-    tierName: 'Starter',
-    educationalPurpose: 'Weekly profit/loss summary',
-    dopamineTrigger: 'micro',
-  },
-  weeklyPnLChart: {
-    id: 'weeklyPnLChart',
-    title: 'Weekly P&L - Last 8 Weeks',
-    description: 'Historical weekly P&L chart - 8 weeks (24 when expanded)',
-    category: 'performance',
-    icon: LineChart,
-    defaultSize: 'large',
-    component: WeeklyPnLChartWidget as any,
-    requiresData: [],
-    requiredTier: 0,
-    requiredPlan: 'free',
-    xpToUnlock: 550,
-    tierName: 'Starter',
-    educationalPurpose: 'Weekly profit/loss trends',
-    dopamineTrigger: 'meso',
   },
 };
 
 /**
- * Default dashboard layout for new users - Only 4 starter widgets
+ * Default dashboard layout for new users - simplified to just widget IDs in order
  */
 export const DEFAULT_DASHBOARD_LAYOUT = [
-  // Starter Pack - Only 4 core metrics (always unlocked)
-  'currentROI',
+  'totalBalance',
+  'spotWallet',
   'winRate',
-  'avgPnLPerDay',
   'totalTrades',
+  'goals',
+  'avgPnLPerTrade',
+  'avgPnLPerDay',
+  'currentROI',
+  'avgROIPerTrade',
+  'capitalGrowth',
+  'portfolioOverview',
+  'heatmap',
+  'recentTransactions',
+  'topMovers',
+  'aiInsights',
+  'quickActions',
 ];
 
 /**

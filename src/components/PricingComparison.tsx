@@ -14,71 +14,59 @@ const PricingComparison = () => {
 
   const features = [
     {
-      category: t('pricing.comparison.categories.uploads'),
+      category: t('pricing.comparison.categories.aiAnalytics'),
       items: [
-        { name: t('pricing.comparison.features.imageUploads'), basic: "5 total (starter gift)", pro: "30/month", elite: "150/month" },
-        { name: t('pricing.comparison.features.tradesPerUpload'), basic: "10", pro: "10", elite: "10" },
-        { name: t('pricing.comparison.features.extraUploadCost'), basic: "$5 per 10", pro: "$2 per 10", elite: "$1 per 10 (50% off)" },
-        { name: t('pricing.comparison.features.manualEntry'), basic: true, pro: true, elite: true },
-        { name: t('pricing.comparison.features.csvExport'), basic: true, pro: true, elite: true },
+        { name: t('pricing.comparison.features.aiUploads'), basic: "50/mo", pro: "100/mo", elite: "300/mo" },
+        { name: t('pricing.comparison.features.manualUploads'), basic: true, pro: true, elite: true },
+        { name: t('pricing.comparison.features.aiAnalysis'), basic: false, pro: "1/week", elite: "5/week" },
+        { name: t('pricing.comparison.features.customWidgets'), basic: "15+", pro: "3", elite: "10" },
+        { name: t('pricing.comparison.features.advancedCharts'), basic: true, pro: true, elite: true },
       ]
     },
     {
-      category: t('pricing.comparison.categories.accounts'),
+      category: t('pricing.comparison.categories.tradingTools'),
       items: [
-        { name: t('pricing.comparison.features.connectedAccounts'), basic: "1", pro: "Unlimited", elite: "Unlimited" },
-      ]
-    },
-    {
-      category: "XP & Widgets",
-      items: [
-        { name: "XP System", basic: "Unlimited", pro: "Unlimited", elite: "Unlimited" },
-        { name: "Widget Access", basic: "Tiers 1-2", pro: "Tiers 1-4", elite: "All Widgets" },
-      ]
-    },
-    {
-      category: "Customization",
-      items: [
-        { name: "Color Themes", basic: "Default (light/dark)", pro: "Primary, Secondary, Accent", elite: "Full color + background" },
-      ]
-    },
-    {
-      category: t('pricing.comparison.categories.features'),
-      items: [
-        { name: t('pricing.comparison.features.aiInsights'), basic: true, pro: true, elite: true },
-        { name: t('pricing.comparison.features.customDashboard'), basic: true, pro: true, elite: true },
-        { name: t('pricing.comparison.features.tradingHistory'), basic: true, pro: true, elite: true },
-        { name: t('pricing.comparison.features.journal'), basic: true, pro: true, elite: true },
-        { name: t('pricing.comparison.features.drawdownAnalysis'), basic: true, pro: true, elite: true },
-        { name: t('pricing.comparison.features.leverageCalculator'), basic: true, pro: true, elite: true },
-        { name: t('pricing.comparison.features.marketData'), basic: true, pro: true, elite: true },
-        { name: t('pricing.comparison.features.equityForecast'), basic: true, pro: true, elite: true },
-        { name: t('pricing.comparison.features.feeAnalysis'), basic: false, pro: true, elite: true },
         { name: t('pricing.comparison.features.tradingPlan'), basic: false, pro: true, elite: true },
-        { name: t('pricing.comparison.features.goals'), basic: false, pro: true, elite: true },
-        { name: t('pricing.comparison.features.psychology'), basic: false, pro: true, elite: true },
-        { name: t('pricing.comparison.features.reports'), basic: false, pro: true, elite: true },
-        { name: t('pricing.comparison.features.taxReports'), basic: false, pro: true, elite: true },
+        { name: t('pricing.comparison.features.preTradeChecklist'), basic: false, pro: true, elite: true },
+        { name: t('pricing.comparison.features.goalsTracking'), basic: false, pro: true, elite: true },
+        { name: t('pricing.comparison.features.tradeReplay'), basic: false, pro: false, elite: true },
+        { name: t('pricing.comparison.features.positionCalculator'), basic: false, pro: false, elite: true },
       ]
     },
     {
-      category: t('pricing.comparison.categories.aiMetrics'),
+      category: t('pricing.comparison.categories.journaling'),
       items: [
-        { name: t('pricing.comparison.features.customMetrics'), basic: false, pro: "3/mo", elite: "10/mo" },
+        { name: t('pricing.comparison.features.basicJournal'), basic: true, pro: true, elite: true },
+        { name: t('pricing.comparison.features.emotionalTimeline'), basic: true, pro: true, elite: true },
+        { name: t('pricing.comparison.features.richJournal'), basic: false, pro: true, elite: true },
+        { name: t('pricing.comparison.features.patternAnalysis'), basic: false, pro: true, elite: true },
       ]
     },
     {
-      category: t('pricing.comparison.categories.support'),
+      category: t('pricing.comparison.categories.riskManagement'),
       items: [
-        { name: t('pricing.comparison.features.emailSupport'), basic: true, pro: true, elite: true },
-        { name: t('pricing.comparison.features.prioritySupport'), basic: false, pro: false, elite: true },
-        { name: t('pricing.comparison.features.earlyAccess'), basic: false, pro: false, elite: true },
+        { name: t('pricing.comparison.features.feeAnalytics'), basic: true, pro: true, elite: true },
+        { name: t('pricing.comparison.features.riskDashboard'), basic: false, pro: false, elite: true },
+        { name: t('pricing.comparison.features.drawdownAnalysis'), basic: false, pro: false, elite: true },
+        { name: t('pricing.comparison.features.performanceAlerts'), basic: false, pro: false, elite: true },
       ]
     },
     {
-      category: t('pricing.comparison.categories.extras'),
+      category: t('pricing.comparison.categories.integrations'),
       items: [
-        { name: t('pricing.comparison.features.extraCredits'), basic: "$2/10", pro: "$2/10", elite: "$1/10 (50% off)" },
+        { name: t('pricing.comparison.features.csvImport'), basic: true, pro: true, elite: true },
+        { name: t('pricing.comparison.features.exchangeConnections'), basic: true, pro: true, elite: true },
+        { name: t('pricing.comparison.features.autoRefresh'), basic: false, pro: true, elite: true },
+      ]
+    },
+    {
+      category: t('pricing.comparison.categories.social'),
+      items: [
+        { name: t('pricing.comparison.features.viewFeed'), basic: true, pro: true, elite: true },
+        { name: t('pricing.comparison.features.createPosts'), basic: false, pro: true, elite: true },
+        { name: t('pricing.comparison.features.leaderboard'), basic: true, pro: true, elite: true },
+        { name: t('pricing.comparison.features.xpBadges'), basic: false, pro: true, elite: true },
+        { name: t('pricing.comparison.features.challenges'), basic: false, pro: true, elite: true },
       ]
     },
   ];
@@ -204,44 +192,27 @@ const PricingComparison = () => {
           <div className="inline-flex items-center gap-2 px-6 py-3 bg-primary/5 backdrop-blur-sm border border-primary/20 rounded-full">
             <Check className="w-5 h-5 text-primary" />
             <span className="text-sm font-medium">
-              No credit card required • Upgrade anytime • Offer ending soon
+              {t('pricing.guaranteeNote')}
             </span>
           </div>
         </motion.div>
 
         {/* Comparison Grid */}
         <div className="space-y-8">
-          {/* Sticky Header - Desktop */}
-          <div className="hidden md:block sticky top-20 z-20 backdrop-blur-xl bg-background/80 rounded-2xl border border-border/50 p-6 mb-6">
+          {/* Sticky Header */}
+          <div className="sticky top-20 z-20 backdrop-blur-xl bg-background/80 rounded-2xl border border-border/50 p-6 mb-6">
             <div className="grid grid-cols-4 gap-4">
               <div className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                Feature
+                {t('pricing.comparison.feature')}
               </div>
-              <div className="text-center text-sm font-bold">Free</div>
+              <div className="text-center text-sm font-bold">Basic</div>
               <div className="text-center text-sm font-bold relative">
-                <div className="absolute -top-6 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-primary text-primary-foreground text-[10px] font-medium rounded-full whitespace-nowrap">
+                <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-primary text-primary-foreground text-[10px] font-medium rounded-full whitespace-nowrap">
                   Most Popular
                 </div>
                 Pro
               </div>
               <div className="text-center text-sm font-bold">Elite</div>
-            </div>
-          </div>
-          
-          {/* Mobile: Scrollable Header */}
-          <div className="md:hidden sticky top-20 z-20 backdrop-blur-xl bg-background/80 rounded-2xl border border-border/50 p-4 mb-6 overflow-x-auto">
-            <div className="grid grid-cols-4 gap-4 min-w-[600px]">
-              <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Feature
-              </div>
-              <div className="text-center text-xs font-bold">Free</div>
-              <div className="text-center text-xs font-bold relative">
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-primary text-primary-foreground text-[8px] font-medium rounded-full whitespace-nowrap">
-                  Popular
-                </div>
-                Pro
-              </div>
-              <div className="text-center text-xs font-bold">Elite</div>
             </div>
           </div>
 
@@ -259,22 +230,13 @@ const PricingComparison = () => {
               {category.items.map((item, itemIdx) => (
                 <div 
                   key={itemIdx}
-                  className="comparison-row backdrop-blur-md bg-card/40 rounded-xl border border-border/50 p-3 md:p-5 hover:border-primary/30 hover:bg-card/60 transition-all duration-300 group overflow-x-auto"
+                  className="comparison-row backdrop-blur-md bg-card/40 rounded-xl border border-border/50 p-5 hover:border-primary/30 hover:bg-card/60 transition-all duration-300 group"
                 >
-                  {/* Desktop layout */}
-                  <div className="hidden md:grid grid-cols-4 gap-4 items-center">
+                  <div className="grid grid-cols-4 gap-4 items-center">
                     <div className="font-medium text-sm">{item.name}</div>
                     <div className="text-center group-hover:scale-105 transition-transform">{renderCell(item.basic)}</div>
                     <div className="text-center bg-primary/5 rounded-lg py-2 group-hover:bg-primary/10 group-hover:scale-105 transition-all">{renderCell(item.pro)}</div>
                     <div className="text-center group-hover:scale-105 transition-transform">{renderCell(item.elite)}</div>
-                  </div>
-                  
-                  {/* Mobile: Horizontal scroll layout */}
-                  <div className="md:hidden grid grid-cols-4 gap-3 items-center min-w-[600px]">
-                    <div className="font-medium text-xs pr-2">{item.name}</div>
-                    <div className="text-center">{renderCell(item.basic)}</div>
-                    <div className="text-center bg-primary/5 rounded-lg py-1.5">{renderCell(item.pro)}</div>
-                    <div className="text-center">{renderCell(item.elite)}</div>
                   </div>
                 </div>
               ))}

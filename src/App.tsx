@@ -2,48 +2,36 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { PublicOnlyGuard } from "@/guards/PublicOnlyGuard";
-import { AuthRequiredGuard } from "@/guards/AuthRequiredGuard";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
-import { AccountProvider } from "@/contexts/AccountContext";
 import { AIAssistantProvider } from "@/contexts/AIAssistantContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { BlurProvider } from "@/contexts/BlurContext";
 import { CalmModeProvider } from "@/contexts/CalmModeContext";
 import { DateRangeProvider } from "@/contexts/DateRangeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
-import { WidgetStyleProvider } from "@/contexts/WidgetStyleContext";
 import { ThemeProvider } from "next-themes";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { PinnedWidgetsProvider } from "@/contexts/PinnedWidgetsContext";
-import { lazy, Suspense, useState, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import { Card } from "@/components/ui/card";
-import i18n from "@/i18n";
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { InstallPrompt } from "@/components/mobile/InstallPrompt";
-import { DebugHUD } from "@/components/debug/DebugHUD";
 import { ThemeInitializer } from "@/components/ThemeInitializer";
 import { PublicPageThemeWrapper } from "@/components/PublicPageThemeWrapper";
 import { usePageTracking } from "@/hooks/usePageTracking";
 import { ConversionTracking } from "@/components/ConversionTracking";
 import { LanguageSync } from "@/components/LanguageSync";
-import { WelcomeBackToast } from "@/components/gamification/WelcomeBackToast";
-import { OnboardingWrapper } from "@/components/onboarding/OnboardingWrapper";
-import { DailyRewardModal } from "@/components/rewards/DailyRewardModal";
-import { DailyRewardIndicator } from "@/components/rewards/DailyRewardIndicator";
-import { useDailyRewards } from "@/hooks/useDailyRewards";
-import { AppShell } from "@/layouts/AppShell";
-import { ModuleLoadErrorBanner } from "@/components/upload/ModuleLoadErrorBanner";
-import { CacheBootstrap } from "@/components/infra/CacheBootstrap";
 
-// Eagerly load critical pages (landing, auth, and checkout)
+// Eagerly load critical pages (landing and auth)
 import Index from "./pages/Index";
+import IndexPt from "./pages/IndexPt";
+import IndexEs from "./pages/IndexEs";
+import IndexAr from "./pages/IndexAr";
+import IndexVi from "./pages/IndexVi";
 import Auth from "./pages/Auth";
-import CheckoutRedirect from "./pages/CheckoutRedirect";
 
 // Lazy load all other pages for better performance
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -51,7 +39,8 @@ const Upload = lazy(() => import("./pages/Upload"));
 const Analytics = lazy(() => import("./pages/Analytics"));
 const Forecast = lazy(() => import("./pages/Forecast"));
 const Achievements = lazy(() => import("./pages/Achievements"));
-const Gamification = lazy(() => import("./pages/Gamification"));
+// Gamification page temporarily disabled - XP/Level/Challenges hidden, badges kept in Achievements
+// const Gamification = lazy(() => import("./pages/Gamification"));
 const MarketData = lazy(() => import("./pages/MarketData"));
 const Settings = lazy(() => import("./pages/Settings"));
 const Blog = lazy(() => import("./pages/Blog"));
@@ -71,18 +60,16 @@ const Psychology = lazy(() => import("./pages/Psychology"));
 const TradingPlan = lazy(() => import("./pages/TradingPlan"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const CustomPage = lazy(() => import("./pages/CustomPage"));
+const ExchangeConnections = lazy(() => import("./pages/ExchangeConnections"));
 const SpotWallet = lazy(() => import("./pages/SpotWallet"));
-const TrackCapital = lazy(() => import("./pages/TrackCapital"));
 const FeeAnalysis = lazy(() => import("./pages/FeeAnalysis"));
 const LogoDownload = lazy(() => import("./pages/LogoDownload"));
 const LogoGenerator = lazy(() => import("./pages/LogoGenerator"));
-const Calculators = lazy(() => import("./pages/Calculators"));
-const Leaderboard = lazy(() => import("./pages/Leaderboard"));
-const FriendLeaderboard = lazy(() => import("./pages/FriendLeaderboard"));
+// Phase 2: Leaderboard feature - temporarily disabled for backlog #34
+// const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const LongShortRatio = lazy(() => import("./pages/LongShortRatio"));
 const EconomicCalendar = lazy(() => import("./pages/EconomicCalendar"));
 const TaxReports = lazy(() => import("./pages/TaxReports"));
-const Withdrawals = lazy(() => import("./pages/Withdrawals"));
 // Phase 2: Trading Accounts module - temporarily disabled for backlog #18 (incomplete form)
 // const Accounts = lazy(() => import("./pages/Accounts"));
 const PerformanceAlerts = lazy(() => import("./pages/PerformanceAlerts"));
@@ -90,24 +77,18 @@ const PerformanceAlerts = lazy(() => import("./pages/PerformanceAlerts"));
 // const ProgressAnalytics = lazy(() => import("./pages/ProgressAnalytics"));
 const MyMetrics = lazy(() => import("./pages/MyMetrics"));
 const UserGuide = lazy(() => import("./pages/UserGuide"));
-const AccessibilityGuide = lazy(() => import("./pages/AccessibilityGuide"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Support = lazy(() => import("./pages/Support"));
 const Legal = lazy(() => import("./pages/Legal"));
 const Sitemap = lazy(() => import("./pages/Sitemap"));
 const About = lazy(() => import("./pages/About"));
 const SEODashboard = lazy(() => import("./pages/SEODashboard"));
-
+const PricingPage = lazy(() => import("./pages/PricingPage"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 const BlogArticle = lazy(() => import("./pages/BlogArticle"));
-const BlogCategory = lazy(() => import("./pages/BlogCategory"));
-const SelectPlan = lazy(() => import("./pages/SelectPlan"));
-const Upgrade = lazy(() => import("./pages/Upgrade"));
-const CreditsPurchase = lazy(() => import("./pages/CreditsPurchase"));
 const Learn = lazy(() => import("./pages/Learn"));
-const FAQPage = lazy(() => import("./pages/FAQPage"));
 const ApiDocs = lazy(() => import("./pages/ApiDocs"));
 const AdvancedAnalytics = lazy(() => import("./pages/AdvancedAnalytics"));
 // Phase 2: Social Feed - temporarily disabled for backlog #34
@@ -116,18 +97,6 @@ const Testimonials = lazy(() => import("./pages/Testimonials"));
 const ChangelogPage = lazy(() => import("./pages/ChangelogPage"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const FeaturesPage = lazy(() => import("./pages/FeaturesPage"));
-const TierPreview = lazy(() => import("./pages/TierPreview"));
-const PremiumFeatures = lazy(() => import("./pages/PremiumFeatures"));
-const CheckoutSuccess = lazy(() => import("./pages/CheckoutSuccess"));
-const CheckoutCancel = lazy(() => import("./pages/CheckoutCancel"));
-const OrderHistory = lazy(() => import("./pages/OrderHistory"));
-
-// SEO Landing Pages
-const BestCryptoTradingJournal = lazy(() => import("./pages/BestCryptoTradingJournal"));
-const FreeCryptoTradingJournal = lazy(() => import("./pages/FreeCryptoTradingJournal"));
-const MultiExchangeTradingJournal = lazy(() => import("./pages/MultiExchangeTradingJournal"));
-const TradingJournalVsSpreadsheet = lazy(() => import("./pages/TradingJournalVsSpreadsheet"));
-const HowToTrackCryptoTrades = lazy(() => import("./pages/HowToTrackCryptoTrades"));
 
 // Loading fallback
 const PageLoader = () => (
@@ -143,8 +112,6 @@ const PageLoader = () => (
 
 const queryClient = new QueryClient();
 
-// Legacy ProtectedRoute wrapper - kept for backward compatibility
-// New routes should use AuthRequiredGuard instead
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   
@@ -161,176 +128,107 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const AppRoutes = () => {
   usePageTracking(); // Automatically track page views
-  const { user } = useAuth();
-  
-  // Always call hooks - React requires consistent hook order
-  const dailyRewards = useDailyRewards();
-  
-  // Define public pages where rewards should not show
-  const location = useLocation();
-  const isPublicPage =
-    location.pathname === '/' ||
-    location.pathname.startsWith('/blog') ||
-    
-    location.pathname.startsWith('/legal') ||
-    location.pathname.startsWith('/terms') ||
-    location.pathname.startsWith('/privacy');
   
   return (
     <>
-      <CacheBootstrap />
-      <ModuleLoadErrorBanner />
       <LanguageSync />
-      {user && !isPublicPage && <WelcomeBackToast />}
-      {user && !isPublicPage && <OnboardingWrapper />}
-
-      {user && dailyRewards && !isPublicPage && (
-        <DailyRewardIndicator 
-          reward={dailyRewards.reward}
-          loading={false}
-          setShowRewardModal={dailyRewards.setShowRewardModal}
-        />
-      )}
-      {user && dailyRewards && !isPublicPage && (
-        <DailyRewardModal
-          open={dailyRewards.showRewardModal}
-          onClose={() => dailyRewards.setShowRewardModal(false)}
-          reward={dailyRewards.reward}
-          onClaim={dailyRewards.claimReward}
-        />
-      )}
       <Suspense fallback={<PageLoader />}>
         <Routes>
-        {/* Public routes - redirect to /dashboard if logged in */}
-        <Route element={<PublicOnlyGuard />}>
-          {/* Landing page (English only) */}
-          <Route path="/" element={<PublicPageThemeWrapper><Index /></PublicPageThemeWrapper>} />
-          
-          {/* Redirect all language-prefixed routes to English */}
-          <Route path="/vi" element={<Navigate to="/" replace />} />
-          <Route path="/vi/*" element={<Navigate to="/" replace />} />
-          <Route path="/pt" element={<Navigate to="/" replace />} />
-          <Route path="/pt/*" element={<Navigate to="/" replace />} />
-          <Route path="/es" element={<Navigate to="/" replace />} />
-          <Route path="/es/*" element={<Navigate to="/" replace />} />
-          <Route path="/ar" element={<Navigate to="/" replace />} />
-          <Route path="/ar/*" element={<Navigate to="/" replace />} />
-          
-          {/* Auth routes - wrapped with default theme */}
-          <Route path="/auth" element={<PublicPageThemeWrapper><Auth /></PublicPageThemeWrapper>} />
-          
-          {/* Public pages - wrapped with default theme */}
-          <Route path="/contact" element={<PublicPageThemeWrapper><Contact /></PublicPageThemeWrapper>} />
+        {/* Landing pages by language - wrapped with default theme */}
+        <Route path="/" element={<PublicPageThemeWrapper><Index /></PublicPageThemeWrapper>} />
+        <Route path="/pt" element={<PublicPageThemeWrapper><IndexPt /></PublicPageThemeWrapper>} />
+        <Route path="/es" element={<PublicPageThemeWrapper><IndexEs /></PublicPageThemeWrapper>} />
+        <Route path="/ar" element={<PublicPageThemeWrapper><IndexAr /></PublicPageThemeWrapper>} />
+        <Route path="/vi" element={<PublicPageThemeWrapper><IndexVi /></PublicPageThemeWrapper>} />
+        
+        {/* Auth routes - wrapped with default theme */}
+        <Route path="/auth" element={<PublicPageThemeWrapper><Auth /></PublicPageThemeWrapper>} />
+        <Route path="/:lang/auth" element={<PublicPageThemeWrapper><Auth /></PublicPageThemeWrapper>} />
+        
+        {/* Public pages with language support - wrapped with default theme */}
+        <Route path="/pricing" element={<PublicPageThemeWrapper><PricingPage /></PublicPageThemeWrapper>} />
+        <Route path="/:lang/pricing" element={<PublicPageThemeWrapper><PricingPage /></PublicPageThemeWrapper>} />
+        
+        <Route path="/contact" element={<PublicPageThemeWrapper><Contact /></PublicPageThemeWrapper>} />
+        <Route path="/:lang/contact" element={<PublicPageThemeWrapper><Contact /></PublicPageThemeWrapper>} />
         
         <Route path="/legal" element={<PublicPageThemeWrapper><Legal /></PublicPageThemeWrapper>} />
+        <Route path="/:lang/legal" element={<PublicPageThemeWrapper><Legal /></PublicPageThemeWrapper>} />
         
         <Route path="/terms" element={<PublicPageThemeWrapper><Terms /></PublicPageThemeWrapper>} />
+        <Route path="/:lang/terms" element={<PublicPageThemeWrapper><Terms /></PublicPageThemeWrapper>} />
         
         <Route path="/privacy" element={<PublicPageThemeWrapper><Privacy /></PublicPageThemeWrapper>} />
+        <Route path="/:lang/privacy" element={<PublicPageThemeWrapper><Privacy /></PublicPageThemeWrapper>} />
         
-        {/* Blog routes - wrapped with default theme */}
+        {/* Blog routes with language support - wrapped with default theme */}
         <Route path="/blog" element={<PublicPageThemeWrapper><Blog /></PublicPageThemeWrapper>} />
+        <Route path="/:lang/blog" element={<PublicPageThemeWrapper><Blog /></PublicPageThemeWrapper>} />
         <Route path="/blog/:slug" element={<PublicPageThemeWrapper><BlogPost /></PublicPageThemeWrapper>} />
+        <Route path="/:lang/blog/:slug" element={<PublicPageThemeWrapper><BlogPost /></PublicPageThemeWrapper>} />
         <Route path="/author/:authorSlug" element={<PublicPageThemeWrapper><Author /></PublicPageThemeWrapper>} />
-        
-        {/* SEO Landing Pages - wrapped with default theme */}
-        <Route path="/best-crypto-trading-journal" element={<PublicPageThemeWrapper><BestCryptoTradingJournal /></PublicPageThemeWrapper>} />
-        <Route path="/free-crypto-trading-journal" element={<PublicPageThemeWrapper><FreeCryptoTradingJournal /></PublicPageThemeWrapper>} />
-        <Route path="/multi-exchange-trading-journal" element={<PublicPageThemeWrapper><MultiExchangeTradingJournal /></PublicPageThemeWrapper>} />
-        <Route path="/trading-journal-vs-spreadsheet" element={<PublicPageThemeWrapper><TradingJournalVsSpreadsheet /></PublicPageThemeWrapper>} />
-        <Route path="/how-to-track-crypto-trades" element={<PublicPageThemeWrapper><HowToTrackCryptoTrades /></PublicPageThemeWrapper>} />
         
         {/* Other public pages - wrapped with default theme */}
         <Route path="/logo-download" element={<PublicPageThemeWrapper><LogoDownload /></PublicPageThemeWrapper>} />
         <Route path="/logo-generator" element={<PublicPageThemeWrapper><LogoGenerator /></PublicPageThemeWrapper>} />
         <Route path="/crypto-trading-faq" element={<PublicPageThemeWrapper><CryptoTradingFAQ /></PublicPageThemeWrapper>} />
-        <Route path="/faq" element={<PublicPageThemeWrapper><FAQPage /></PublicPageThemeWrapper>} />
         <Route path="/sitemap" element={<PublicPageThemeWrapper><Sitemap /></PublicPageThemeWrapper>} />
         <Route path="/about" element={<PublicPageThemeWrapper><About /></PublicPageThemeWrapper>} />
+        <Route path="/:lang/about" element={<PublicPageThemeWrapper><About /></PublicPageThemeWrapper>} />
         <Route path="/seo-dashboard" element={<PublicPageThemeWrapper><SEODashboard /></PublicPageThemeWrapper>} />
         
-        {/* Checkout route */}
-        <Route path="/checkout" element={<CheckoutRedirect />} />
-        </Route>
-        
-        {/* Authenticated routes - redirect to /auth if logged out */}
-        <Route element={<AuthRequiredGuard />}>
-          {/* App Shell - Persistent sidebar and header */}
-          <Route element={<AppShell />}>
-            {/* Upgrade routes */}
-            <Route path="/upgrade" element={<Upgrade />} />
-            <Route path="/credits/purchase" element={<CreditsPurchase />} />
-            
-            {/* Core app routes */}
-            <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/upload" element={<Upload />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/forecast" element={<Forecast />} />
-          <Route path="/achievements" element={<Achievements />} />
-          <Route path="/gamification" element={<Gamification />} />
-          <Route path="/tier-preview" element={<TierPreview />} />
-          <Route path="/premium-features" element={<PremiumFeatures />} />
-          <Route path="/checkout-success" element={<CheckoutSuccess />} />
-          <Route path="/checkout-cancel" element={<CheckoutCancel />} />
-          <Route path="/orders" element={<OrderHistory />} />
-          <Route path="/market-data" element={<MarketData />} />
-          <Route path="/settings" element={<Settings />} />
-          {/* Phase 2: Social features - temporarily disabled for backlog #34 */}
-          {/* <Route path="/social" element={<Social />} /> */}
-          <Route path="/ai-tools" element={<AITools />} />
-          <Route path="/journal" element={<Journal />} />
-          {/* Trade Analysis temporarily disabled - incomplete module */}
-          {/* <Route path="/trade-analysis" element={<TradeAnalysis />} /> */}
-          <Route path="/goals" element={<Goals />} />
-          <Route path="/risk-management" element={<RiskManagement />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/psychology" element={<Psychology />} />
-          <Route path="/trading-plan" element={<TradingPlan />} />
-          {/* Exchange connections temporarily hidden for future use */}
-          {/* <Route path="/exchanges" element={<ExchangeConnections />} /> */}
-          <Route path="/spot-wallet" element={<SpotWallet />} />
-          <Route path="/track-capital" element={<TrackCapital />} />
-          <Route path="/fee-analysis" element={<FeeAnalysis />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/friend-leaderboard" element={<FriendLeaderboard />} />
-          <Route path="/long-short-ratio" element={<LongShortRatio />} />
-          {/* Phase 2: Economic Calendar and Performance Alerts - temporarily disabled for backlog #30 */}
-          {/* <Route path="/economic-calendar" element={<EconomicCalendar />} /> */}
-          <Route path="/tax-reports" element={<TaxReports />} />
-          <Route path="/withdrawals" element={<Withdrawals />} />
-          {/* Phase 2: Trading Accounts - temporarily disabled for backlog #18 */}
-          {/* <Route path="/accounts" element={<Accounts />} /> */}
-          {/* <Route path="/performance-alerts" element={<PerformanceAlerts />} /> */}
-          {/* Exchange connections temporarily hidden for future use */}
-          {/* <Route path="/exchange-connections" element={<ExchangeConnections />} /> */}
-          {/* Phase 2: Progress Analytics (IXP/XP) - temporarily disabled for backlog #36 */}
-          {/* <Route path="/progress-analytics" element={<ProgressAnalytics />} /> */}
-          <Route path="/my-metrics" element={<MyMetrics />} />
-          <Route path="/user-guide" element={<UserGuide />} />
-          <Route path="/accessibility" element={<AccessibilityGuide />} />
-          <Route path="/support" element={<Support />} />
-          <Route path="/calculators" element={<Calculators />} />
-          <Route path="/learn" element={<Learn />} />
-          <Route path="/api-docs" element={<ApiDocs />} />
-          <Route path="/advanced-analytics" element={<AdvancedAnalytics />} />
-          <Route path="/custom/:pageId" element={<CustomPage />} />
-          </Route>
-        </Route>
-        
-        {/* Public content pages - no auth required */}
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/upload" element={<ProtectedRoute><Upload /></ProtectedRoute>} />
+        <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+        <Route path="/forecast" element={<ProtectedRoute><Forecast /></ProtectedRoute>} />
+        <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
+        {/* Gamification route temporarily disabled - XP/Level/Challenges hidden */}
+        {/* <Route path="/gamification" element={<ProtectedRoute><Gamification /></ProtectedRoute>} /> */}
+        <Route path="/market-data" element={<ProtectedRoute><MarketData /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        {/* Phase 2: Social features - temporarily disabled for backlog #34 */}
+        {/* <Route path="/social" element={<ProtectedRoute><Social /></ProtectedRoute>} /> */}
+        <Route path="/ai-tools" element={<ProtectedRoute><AITools /></ProtectedRoute>} />
+        <Route path="/journal" element={<ProtectedRoute><Journal /></ProtectedRoute>} />
+        {/* Trade Analysis temporarily disabled - incomplete module */}
+        {/* <Route path="/trade-analysis" element={<ProtectedRoute><TradeAnalysis /></ProtectedRoute>} /> */}
+        <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
+        <Route path="/risk-management" element={<ProtectedRoute><RiskManagement /></ProtectedRoute>} />
+        <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+        <Route path="/psychology" element={<ProtectedRoute><Psychology /></ProtectedRoute>} />
+        <Route path="/trading-plan" element={<ProtectedRoute><TradingPlan /></ProtectedRoute>} />
+        <Route path="/exchanges" element={<ProtectedRoute><ExchangeConnections /></ProtectedRoute>} />
+        <Route path="/spot-wallet" element={<ProtectedRoute><SpotWallet /></ProtectedRoute>} />
+        <Route path="/fee-analysis" element={<ProtectedRoute><FeeAnalysis /></ProtectedRoute>} />
+        <Route path="/faq" element={<ProtectedRoute><FAQ /></ProtectedRoute>} />
+        {/* Phase 2: Leaderboard - temporarily disabled for backlog #34 */}
+        {/* <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} /> */}
+        <Route path="/long-short-ratio" element={<ProtectedRoute><LongShortRatio /></ProtectedRoute>} />
+        {/* Phase 2: Economic Calendar and Performance Alerts - temporarily disabled for backlog #30 */}
+        {/* <Route path="/economic-calendar" element={<ProtectedRoute><EconomicCalendar /></ProtectedRoute>} /> */}
+        <Route path="/tax-reports" element={<ProtectedRoute><TaxReports /></ProtectedRoute>} />
+        {/* Phase 2: Trading Accounts - temporarily disabled for backlog #18 */}
+        {/* <Route path="/accounts" element={<ProtectedRoute><Accounts /></ProtectedRoute>} /> */}
+        {/* <Route path="/performance-alerts" element={<ProtectedRoute><PerformanceAlerts /></ProtectedRoute>} /> */}
+        <Route path="/exchange-connections" element={<ProtectedRoute><ExchangeConnections /></ProtectedRoute>} />
+        {/* Phase 2: Progress Analytics (IXP/XP) - temporarily disabled for backlog #36 */}
+        {/* <Route path="/progress-analytics" element={<ProtectedRoute><ProgressAnalytics /></ProtectedRoute>} /> */}
+        <Route path="/my-metrics" element={<ProtectedRoute><MyMetrics /></ProtectedRoute>} />
+        <Route path="/user-guide" element={<ProtectedRoute><UserGuide /></ProtectedRoute>} />
+        <Route path="/support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
         <Route path="/cookie-policy" element={<PublicPageThemeWrapper><CookiePolicy /></PublicPageThemeWrapper>} />
-        <Route path="/blog/:slug" element={<PublicPageThemeWrapper><BlogArticle /></PublicPageThemeWrapper>} />
-        <Route path="/:lang/blog/:slug" element={<PublicPageThemeWrapper><BlogArticle /></PublicPageThemeWrapper>} />
-        <Route path="/blog/category/:category" element={<PublicPageThemeWrapper><BlogCategory /></PublicPageThemeWrapper>} />
-        <Route path="/:lang/blog/category/:category" element={<PublicPageThemeWrapper><BlogCategory /></PublicPageThemeWrapper>} />
+        <Route path="/:lang/cookie-policy" element={<PublicPageThemeWrapper><CookiePolicy /></PublicPageThemeWrapper>} />
+        <Route path="/blog/article/:slug" element={<PublicPageThemeWrapper><BlogArticle /></PublicPageThemeWrapper>} />
+        <Route path="/learn" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
+        <Route path="/api-docs" element={<ProtectedRoute><ApiDocs /></ProtectedRoute>} />
+        <Route path="/advanced-analytics" element={<ProtectedRoute><AdvancedAnalytics /></ProtectedRoute>} />
         {/* Phase 2: Social Feed - temporarily disabled for backlog #34 */}
-        {/* <Route path="/social-feed" element={<SocialFeed />} /> */}
+        {/* <Route path="/social-feed" element={<ProtectedRoute><SocialFeed /></ProtectedRoute>} /> */}
         <Route path="/testimonials" element={<PublicPageThemeWrapper><Testimonials /></PublicPageThemeWrapper>} />
         <Route path="/changelog" element={<PublicPageThemeWrapper><ChangelogPage /></PublicPageThemeWrapper>} />
         <Route path="/how-it-works" element={<PublicPageThemeWrapper><HowItWorks /></PublicPageThemeWrapper>} />
         <Route path="/features" element={<PublicPageThemeWrapper><FeaturesPage /></PublicPageThemeWrapper>} />
-        
+        <Route path="/custom/:pageId" element={<ProtectedRoute><CustomPage /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       </Suspense>
@@ -338,80 +236,42 @@ const AppRoutes = () => {
   );
 };
 
-const App = () => {
-  const [i18nReady, setI18nReady] = useState(i18n.isInitialized);
-
-  useEffect(() => {
-    // Wait for i18n to be initialized before rendering
-    const checkInitialized = () => {
-      if (i18n.isInitialized) {
-        setI18nReady(true);
-      }
-    };
-
-    checkInitialized();
-
-    // Listen for initialization event
-    i18n.on('initialized', checkInitialized);
-
-    return () => {
-      i18n.off('initialized', checkInitialized);
-    };
-  }, []);
-
-  // Show loading spinner while i18n initializes
-  if (!i18nReady) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true} storageKey="app-theme">
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <LanguageProvider>
-                <ThemeInitializer />
-                <AuthProvider>
-                  <SubscriptionProvider>
-                  <AccountProvider>
-                  <PinnedWidgetsProvider>
-                  <CalmModeProvider>
-                    <WidgetStyleProvider>
-                      <CurrencyProvider>
-                        <BlurProvider>
-                          <AIAssistantProvider>
-                            <DateRangeProvider>
-                              <AppRoutes />
-                              <ConversionTracking />
-                              <PerformanceMonitor />
-                              <GlobalSearch />
-                              <OfflineIndicator />
-                              <InstallPrompt />
-                              <DebugHUD />
-                            </DateRangeProvider>
-                          </AIAssistantProvider>
-                        </BlurProvider>
-                      </CurrencyProvider>
-                    </WidgetStyleProvider>
-                  </CalmModeProvider>
-                  </PinnedWidgetsProvider>
-                  </AccountProvider>
-                  </SubscriptionProvider>
-                </AuthProvider>
-              </LanguageProvider>
-            </BrowserRouter>
-          </TooltipProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
-  );
-};
+const App = () => (
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true} storageKey="app-theme">
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <LanguageProvider>
+              <ThemeInitializer />
+              <AuthProvider>
+                <SubscriptionProvider>
+                <CalmModeProvider>
+                  <CurrencyProvider>
+                    <BlurProvider>
+                      <AIAssistantProvider>
+                        <DateRangeProvider>
+                          <AppRoutes />
+                          <ConversionTracking />
+                          <PerformanceMonitor />
+                          <GlobalSearch />
+                          <OfflineIndicator />
+                          <InstallPrompt />
+                        </DateRangeProvider>
+                      </AIAssistantProvider>
+                    </BlurProvider>
+                  </CurrencyProvider>
+                </CalmModeProvider>
+                </SubscriptionProvider>
+              </AuthProvider>
+            </LanguageProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
+);
 
 export default App;

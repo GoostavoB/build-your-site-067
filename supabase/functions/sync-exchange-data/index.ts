@@ -1,6 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.75.0';
 import { ExchangeService } from '../_shared/adapters/ExchangeService.ts';
-import { decrypt } from '../_shared/exchangeUtils.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,6 +11,10 @@ interface SyncRequest {
   syncTypes?: Array<'trades' | 'orders' | 'deposits' | 'withdrawals'>;
   startDate?: string;
   endDate?: string;
+}
+
+function decrypt(encryptedText: string): string {
+  return atob(encryptedText);
 }
 
 Deno.serve(async (req) => {
@@ -60,10 +63,10 @@ Deno.serve(async (req) => {
       .eq('id', connectionId);
 
     // Decrypt credentials
-    const apiKey = await decrypt(connection.api_key_encrypted);
-    const apiSecret = await decrypt(connection.api_secret_encrypted);
+    const apiKey = decrypt(connection.api_key_encrypted);
+    const apiSecret = decrypt(connection.api_secret_encrypted);
     const apiPassphrase = connection.api_passphrase_encrypted 
-      ? await decrypt(connection.api_passphrase_encrypted)
+      ? decrypt(connection.api_passphrase_encrypted)
       : undefined;
 
     // Calculate date range

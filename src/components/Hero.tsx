@@ -2,132 +2,134 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useMobileOptimization } from "@/hooks/useMobileOptimization";
-import { AnimatedCandlestickBackground } from "./landing/AnimatedCandlestickBackground";
-import { GlowingLogo } from "./landing/GlowingLogo";
-import MobileHero from "./landing/MobileHero";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Expand } from "lucide-react";
+import dashboardScreenshot from "@/assets/dashboard-screenshot-new.png";
+import { useState } from "react";
+
+
 const Hero = () => {
   const navigate = useNavigate();
-  const {
-    t,
-    isLoading
-  } = useTranslation();
-  const {
-    isMobile
-  } = useMobileOptimization();
+  const { t, isLoading } = useTranslation();
+  const [isImageOpen, setIsImageOpen] = useState(false);
 
   // Avoid rendering while language is switching
   if (isLoading) {
     return null;
   }
 
-  // Show mobile hero for mobile devices
-  if (isMobile) {
-    return <MobileHero />;
-  }
-  return <section className="relative h-screen flex items-center justify-center px-4 sm:px-6 overflow-hidden" aria-labelledby="hero-title">
-      {/* Animated Candlestick Background */}
-      <div className="absolute inset-0">
-        <AnimatedCandlestickBackground />
-      </div>
+  return (
+    <section className="relative min-h-screen flex items-center px-6 pt-24 pb-32" aria-labelledby="hero-title">
+      {/* Subtle ambient glow effects - no solid background */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px]"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-[120px]"></div>
 
-      {/* Radial gradient overlay for depth */}
-      <div className="absolute inset-0 pointer-events-none" style={{
-      background: 'radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.8) 100%)'
-    }} />
+      <div className="container mx-auto max-w-7xl relative z-10">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* LEFT SIDE - Text Content */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="space-y-8"
+          >
+            {/* Hero Title - Left Aligned */}
+            <h1 
+              id="hero-title"
+              className="text-[clamp(40px,6vw,68px)] font-bold leading-[1.1] tracking-tight"
+            >
+              {t('landing.hero.mainTitle', 'The #1 Crypto Trading Journal')}
+            </h1>
 
-      {/* Content */}
-      <div className="container mx-auto max-w-6xl relative z-10">
-        <div className="flex flex-col items-center justify-center text-center space-y-[33px]" style={{ willChange: 'auto' }}>
-          
-          {/* Text Above Logo */}
-          <motion.div className="space-y-4" layout={false} initial={{
-          opacity: 0,
-          y: -30
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          duration: 0.8,
-          delay: 0.3
-        }}>
-            <motion.h1 id="hero-title" className="text-5xl md:text-7xl font-bold leading-tight" style={{
-            background: 'linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
-          }}>
-              Transform your Trading
-            </motion.h1>
-            
-            <motion.h2 className="text-4xl md:text-6xl font-bold" style={{
-            background: 'linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
-          }}>
-              Journey with
-            </motion.h2>
-          </motion.div>
-
-          {/* Glowing Logo */}
-          <GlowingLogo />
-
-          {/* Subtitle */}
-          <motion.div className="space-y-6 max-w-2xl" layout={false} initial={{
-          opacity: 0,
-          y: 30
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          duration: 0.8,
-          delay: 0.5
-        }}>
-            <p className="text-lg leading-relaxed md:text-2xl text-blue-50 font-normal text-center">Visualize performance, track progress, and level up 
-your trading game with gamified analytics</p>
+            {/* Subtitle - Left Aligned */}
+            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl">
+              {t('landing.hero.subtitle', 'Track, analyze, and review every crypto trade with AI. Built exclusively for crypto traders.')}
+            </p>
 
             {/* CTA Button */}
             <div className="pt-4">
-              <Button onClick={() => navigate('/auth')} size="lg" className="h-14 px-10 text-lg font-semibold rounded-full relative overflow-hidden group" style={{
-              background: 'linear-gradient(135deg, hsl(210, 90%, 58%) 0%, hsl(200, 80%, 65%) 100%)',
-              boxShadow: '0 10px 40px rgba(59, 130, 246, 0.3)'
-            }}>
-                <span className="relative z-10">Start Your Journey</span>
-                <motion.div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-600" initial={{
-                x: '-100%'
-              }} whileHover={{
-                x: '100%'
-              }} transition={{
-                duration: 0.6
-              }} style={{
-                opacity: 0.5
-              }} />
+              <Button 
+                onClick={() => navigate('/auth')}
+                size="lg"
+                className="h-14 px-10 text-base font-semibold rounded-xl bg-primary hover:bg-primary/90 transition-all duration-300"
+                aria-label="Start using The Trading Diary for free"
+              >
+                {t('landing.hero.ctaPrimary', 'Get Started Free')}
               </Button>
-            </div>
-
-            {/* Trust indicators */}
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-400 pt-6">
-              <span className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-primary" />
-                10,000+ traders
-              </span>
-              <span className="text-gray-600">•</span>
-              <span className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-primary" />
-                500,000+ trades tracked
-              </span>
-              <span className="text-gray-600">•</span>
-              <span className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-primary" />
-                4.8★ rating
-              </span>
             </div>
           </motion.div>
 
+          {/* RIGHT SIDE - Dashboard Preview */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="relative"
+          >
+            {/* Browser-like mockup frame */}
+            <div className="relative glass-strong rounded-2xl overflow-hidden shadow-2xl border border-primary/20">
+              {/* Browser chrome */}
+              <div className="bg-gray-800/50 px-4 py-3 flex items-center gap-2 border-b border-primary/10">
+                <div className="flex gap-2">
+                  <div className="w-3 h-3 rounded-full bg-red-500/60"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/60"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-500/60"></div>
+                </div>
+                <div className="flex-1 mx-4 bg-background/30 rounded px-3 py-1 text-xs text-muted-foreground">
+                  thetradingdiary.com/dashboard
+                </div>
+              </div>
+              
+              {/* Dashboard content - Real Screenshot */}
+              <Dialog open={isImageOpen} onOpenChange={setIsImageOpen}>
+                <DialogTrigger asChild>
+                  <button 
+                    className="aspect-[16/10] bg-background relative overflow-hidden cursor-pointer group w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    aria-label="View full dashboard screenshot"
+                  >
+                    <img 
+                      src={dashboardScreenshot}
+                      alt="Trading Dashboard showing real-time analytics, win rate, ROI, and capital growth charts"
+                      className="w-full h-full object-contain object-center"
+                      width={1920}
+                      height={1200}
+                      loading="eager"
+                    />
+                    
+                    {/* Centered expand icon - hidden by default, shows on hover/focus */}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                      <div className="p-4 rounded-full bg-primary backdrop-blur-sm">
+                        <Expand className="h-6 w-6 text-primary-foreground" aria-hidden="true" />
+                      </div>
+                    </div>
+                    
+                    {/* Subtle glow overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-transparent pointer-events-none"></div>
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden">
+                  <div className="relative w-full h-full flex items-center justify-center bg-background/95 backdrop-blur-xl p-4">
+                    <img 
+                      src={dashboardScreenshot}
+                      alt="Full Trading Dashboard with detailed analytics and performance metrics"
+                      className="max-w-full max-h-[90vh] object-contain rounded-lg"
+                      width={1920}
+                      height={1200}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            {/* Decorative glow */}
+            <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 to-accent/10 rounded-3xl blur-2xl -z-10 opacity-50"></div>
+          </motion.div>
         </div>
       </div>
-
-    </section>;
+    </section>
+  );
 };
+
 export default Hero;

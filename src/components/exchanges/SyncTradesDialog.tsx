@@ -19,7 +19,6 @@ import { CalendarIcon, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
 
 interface SyncTradesDialogProps {
   connectionId: string | null;
@@ -42,7 +41,6 @@ export function SyncTradesDialog({
   const [preset, setPreset] = useState<DateRangePreset>('last30days');
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
-  const [symbol, setSymbol] = useState<string>('');
   const queryClient = useQueryClient();
 
   const fetchMutation = useMutation({
@@ -82,7 +80,6 @@ export function SyncTradesDialog({
             mode: 'preview',
             startDate: start,
             endDate: end,
-            symbol: symbol.trim() || undefined,
           }),
         }
       );
@@ -114,11 +111,6 @@ export function SyncTradesDialog({
     
     if (preset === 'custom' && startDate && endDate && startDate > endDate) {
       toast.error(t('exchanges.sync.startBeforeEnd'));
-      return;
-    }
-    
-    if (exchangeName.toLowerCase() === 'bingx' && !symbol.trim()) {
-      toast.error('BingX requires a symbol (e.g., BTC-USDT)');
       return;
     }
 
@@ -242,29 +234,13 @@ export function SyncTradesDialog({
 
           {/* Summary */}
           <div className="rounded-lg bg-muted p-4 space-y-2">
-            <div className="grid gap-3">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">{t('exchanges.sync.selectedRange')}:</span>
-                <span className="font-medium">{getDateRangeLabel()}</span>
-              </div>
-              <div className="grid gap-1">
-                <Label>
-                  {exchangeName.toLowerCase() === 'bingx' ? 'Symbol (required)' : t('exchanges.sync.symbolOptional') || 'Symbol (optional)'}
-                </Label>
-                <Input
-                  placeholder={exchangeName.toLowerCase() === 'bingx' ? 'BTC-USDT (required)' : 'e.g. BTC-USDT'}
-                  value={symbol}
-                  onChange={(e) => setSymbol(e.target.value.toUpperCase())}
-                  required={exchangeName.toLowerCase() === 'bingx'}
-                />
-                <p className="text-xs text-muted-foreground">
-                  {exchangeName.toLowerCase() === 'bingx' 
-                    ? 'Format: BTC-USDT. Required by BingX.'
-                    : t('exchanges.sync.symbolHint') || 'Optional filter for specific trading pair.'
-                  }
-                </p>
-              </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">{t('exchanges.sync.selectedRange')}:</span>
+              <span className="font-medium">{getDateRangeLabel()}</span>
             </div>
+            <p className="text-xs text-muted-foreground">
+              {t('exchanges.sync.reviewNote')}
+            </p>
           </div>
         </div>
 
@@ -272,10 +248,7 @@ export function SyncTradesDialog({
           <Button variant="outline" onClick={onClose} disabled={fetchMutation.isPending}>
             {t('common.cancel')}
           </Button>
-          <Button 
-            onClick={handleFetch} 
-            disabled={fetchMutation.isPending || (exchangeName.toLowerCase() === 'bingx' && !symbol.trim())}
-          >
+          <Button onClick={handleFetch} disabled={fetchMutation.isPending}>
             {fetchMutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -40,113 +40,6 @@ export const UploadHistory = () => {
   const [visibleCount, setVisibleCount] = useState(5);
   const [showDeleted, setShowDeleted] = useState(false);
 
-  const fetchBatches = useCallback(async () => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    const safetyTimeout = setTimeout(() => {
-      console.warn('UploadHistory fetch timed out, forcing loading to false');
-      setLoading(false);
-    }, 5000);
-
-    try {
-      let query = supabase
-        .from('upload_batches')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(50);
-
-      // Filter by deleted status
-      if (showDeleted) {
-        query = query.not('deleted_at', 'is', null);
-      } else {
-        query = query.is('deleted_at', null);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error('Error fetching batches:', error);
-        setBatches([]);
-        setLoading(false);
-        return;
-      }
-
-      if (!data) {
-        setBatches([]);
-        setLoading(false);
-        return;
-      }
-
-      // Set basic batches immediately to avoid long loading
-      const baseBatches = data.map((b) => ({
-        ...b,
-        most_recent_trade_date: b.created_at,
-        position_types: [],
-        brokers: [],
-        total_pnl: 0,
-      }));
-
-      setBatches(baseBatches.slice(0, 20));
-      setLoading(false);
-
-      // Enrich asynchronously (do not block UI)
-      Promise.all(
-        baseBatches.map(async (batch) => {
-          try {
-            const { data: trades } = await supabase
-              .from('trades')
-              .select('trade_date, side, broker, profit_loss')
-              .eq('user_id', user.id)
-              .gte('created_at', new Date(new Date(batch.created_at).getTime() - 5000).toISOString())
-              .lte('created_at', new Date(new Date(batch.created_at).getTime() + 5000).toISOString())
-              .order('trade_date', { ascending: false });
-
-            const positionTypes = trades ? [...new Set(trades.map(t => t.side).filter(Boolean))] : [];
-            const brokers = trades ? [...new Set(trades.map(t => t.broker).filter(Boolean))] : [];
-            const totalPnl = trades ? trades.reduce((sum, t) => sum + (t.profit_loss || 0), 0) : 0;
-            const mostRecentTradeDate = trades && trades.length > 0 ? trades[0].trade_date : batch.created_at;
-
-            return {
-              ...batch,
-              most_recent_trade_date: mostRecentTradeDate,
-              position_types: positionTypes as string[],
-              brokers: brokers as string[],
-              total_pnl: totalPnl,
-            } as UploadBatch;
-          } catch (err) {
-            console.error('Error enriching batch:', err);
-            return {
-              ...batch,
-              most_recent_trade_date: batch.created_at,
-              position_types: [],
-              brokers: [],
-              total_pnl: 0,
-            } as UploadBatch;
-          }
-        })
-      )
-        .then((enrichedBatches) => {
-          enrichedBatches.sort((a, b) => new Date(b.most_recent_trade_date!).getTime() - new Date(a.most_recent_trade_date!).getTime());
-          setBatches(enrichedBatches.slice(0, 20));
-        })
-        .catch((e) => {
-          console.error('Enrichment error:', e);
-        })
-        .finally(() => {
-          clearTimeout(safetyTimeout);
-        });
-    } catch (e) {
-      console.error('fetchBatches error:', e);
-      setLoading(false);
-      clearTimeout(safetyTimeout);
-    }
-  }, [user, showDeleted]);
-
   useEffect(() => {
     if (user) {
       fetchBatches();
@@ -179,14 +72,81 @@ export const UploadHistory = () => {
         supabase.removeChannel(channel);
       };
     }
-  }, [user, fetchBatches]);
+  }, [user]);
 
-  // Re-fetch batches when showDeleted changes
-  useEffect(() => {
-    if (user) {
-      fetchBatches();
+  const fetchBatches = async () => {
+    if (!user) return;
+
+    setLoading(true);
+    
+    let query = supabase
+      .from('upload_batches')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    // Filter by deleted status
+    if (showDeleted) {
+      query = query.not('deleted_at', 'is', null);
+    } else {
+      query = query.is('deleted_at', null);
     }
-  }, [showDeleted]);
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching batches:', error);
+      setLoading(false);
+      return;
+    }
+
+    if (!data) {
+      setBatches([]);
+      setLoading(false);
+      return;
+    }
+
+    // Fetch additional info for each batch
+    const enrichedBatches = await Promise.all(
+      data.map(async (batch) => {
+        // Fetch trades for this batch (within 5 seconds of batch creation)
+        const { data: trades } = await supabase
+          .from('trades')
+          .select('trade_date, side, broker, profit_loss')
+          .eq('user_id', user.id)
+          .gte('created_at', new Date(new Date(batch.created_at).getTime() - 5000).toISOString())
+          .lte('created_at', new Date(new Date(batch.created_at).getTime() + 5000).toISOString())
+          .order('trade_date', { ascending: false });
+
+        // Get unique position types and brokers
+        const positionTypes = trades ? [...new Set(trades.map(t => t.side).filter(Boolean))] : [];
+        const brokers = trades ? [...new Set(trades.map(t => t.broker).filter(Boolean))] : [];
+        
+        // Calculate total P&L
+        const totalPnl = trades ? trades.reduce((sum, t) => sum + (t.profit_loss || 0), 0) : 0;
+        
+        // Get most recent trade date
+        const mostRecentTradeDate = trades && trades.length > 0 ? trades[0].trade_date : batch.created_at;
+
+        return {
+          ...batch,
+          most_recent_trade_date: mostRecentTradeDate,
+          position_types: positionTypes as string[],
+          brokers: brokers as string[],
+          total_pnl: totalPnl
+        };
+      })
+    );
+
+    // Sort by most recent trade date
+    enrichedBatches.sort((a, b) => 
+      new Date(b.most_recent_trade_date).getTime() - new Date(a.most_recent_trade_date).getTime()
+    );
+
+    setBatches(enrichedBatches.slice(0, 20));
+    setLoading(false);
+  };
 
   const fetchBatchTrades = async (batchId: string, createdAt: string) => {
     if (!user || batchTrades[batchId]) return;
@@ -456,7 +416,7 @@ export const UploadHistory = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-3 mt-3 border-t border-border/30">
                   <div>
                     <span className="text-xs text-muted-foreground">Total P&L: </span>
-                    <span className={`text-lg font-bold ${(batch.total_pnl || 0) >= 0 ? 'text-profit' : 'text-loss'}`}>
+                    <span className={`text-lg font-bold ${(batch.total_pnl || 0) >= 0 ? 'text-neon-green' : 'text-neon-red'}`}>
                       ${(batch.total_pnl || 0).toFixed(2)}
                     </span>
                   </div>
@@ -614,7 +574,7 @@ export const UploadHistory = () => {
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-3 mt-3 border-t border-border/30">
                         <div>
                           <span className="text-xs text-muted-foreground">Total P&L: </span>
-                          <span className={`text-lg font-bold ${(batch.total_pnl || 0) >= 0 ? 'text-profit' : 'text-loss'}`}>
+                          <span className={`text-lg font-bold ${(batch.total_pnl || 0) >= 0 ? 'text-neon-green' : 'text-neon-red'}`}>
                             ${(batch.total_pnl || 0).toFixed(2)}
                           </span>
                         </div>

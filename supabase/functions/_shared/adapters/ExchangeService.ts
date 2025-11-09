@@ -94,8 +94,6 @@ export class ExchangeService {
     options?: {
       startDate?: Date;
       endDate?: Date;
-      tradingType?: 'spot' | 'futures' | 'both';
-      symbol?: string;
     }
   ): Promise<{
     success: boolean;
@@ -112,21 +110,10 @@ export class ExchangeService {
     }
 
     try {
-      let trades: Trade[] = [];
-
-      if (options?.tradingType === 'futures' && typeof (adapter as any).fetchFuturesTrades === 'function') {
-        trades = await (adapter as any).fetchFuturesTrades({
-          startTime: options?.startDate,
-          endTime: options?.endDate,
-          symbol: options?.symbol,
-        });
-      } else {
-        trades = await adapter.fetchTrades({
-          startTime: options?.startDate,
-          endTime: options?.endDate,
-          symbol: options?.symbol,
-        });
-      }
+      const trades = await adapter.fetchTrades({
+        startTime: options?.startDate,
+        endTime: options?.endDate,
+      });
 
       return { success: true, trades };
     } catch (error) {
@@ -258,36 +245,5 @@ export class ExchangeService {
     }
 
     return await adapter.healthCheck();
-  }
-
-  async performFuturesHealthCheck(exchange: string): Promise<{
-    status: 'healthy' | 'degraded' | 'down';
-    latency: number;
-    lastError?: string;
-  } | null> {
-    const adapter = this.getAdapter(exchange);
-    if (!adapter) return null;
-
-    const start = Date.now();
-    try {
-      if (typeof (adapter as any).testFuturesConnection === 'function') {
-        const ok = await (adapter as any).testFuturesConnection();
-        const latency = Date.now() - start;
-        return { status: ok ? (latency > 3000 ? 'degraded' : 'healthy') : 'down', latency };
-      }
-      if (typeof (adapter as any).fetchFuturesTrades === 'function') {
-        // Minimal probe over last 24h
-        await (adapter as any).fetchFuturesTrades({ startTime: new Date(Date.now() - 24*60*60*1000), limit: 1 });
-        const latency = Date.now() - start;
-        return { status: latency > 3000 ? 'degraded' : 'healthy', latency };
-      }
-      return { status: 'down', latency: Date.now() - start, lastError: 'Futures not supported by adapter' };
-    } catch (e) {
-      return {
-        status: 'down',
-        latency: Date.now() - start,
-        lastError: e instanceof Error ? e.message : String(e),
-      };
-    }
   }
 }

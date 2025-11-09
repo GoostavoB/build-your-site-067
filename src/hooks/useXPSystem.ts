@@ -1,12 +1,8 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getStreakMultiplier, calculateTier, getTierName, getDailyXPCap } from '@/utils/xpEngine';
-import { trackStreakEvents } from '@/utils/analyticsEvents';
-import { analytics } from '@/utils/analytics';
-import { WIDGET_CATALOG } from '@/config/widgetCatalog';
 
 interface XPData {
   currentXP: number;
@@ -41,9 +37,7 @@ export const useXPSystem = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [showLevelUp, setShowLevelUp] = useState(false);
-  const [showTier3Preview, setShowTier3Preview] = useState(false);
-  const [pendingWidgetUnlocks, setPendingWidgetUnlocks] = useState<string[]>([]);
-  const newLevelRef = useRef<number | null>(null);
+  const [newLevelRef, setNewLevelRef] = useState<number | null>(null);
 
   const { data: xpData = {
     currentXP: 0,
@@ -100,116 +94,31 @@ export const useXPSystem = () => {
   const addXP = useCallback(async (
     amount: number, 
     activityType: string, 
-    description?: string,
-    skipMultiplier: boolean = false
+    description?: string
   ) => {
     if (!user || amount <= 0) return;
 
     try {
-      // Check daily XP cap before awarding XP
-      const { data: tierData } = await supabase
-        .from('user_xp_tiers')
-        .select('daily_xp_earned, daily_xp_cap, current_tier, last_reset_at')
+      // Check for streak multiplier
+      const { data: progression } = await supabase
+        .from('user_progression')
+        .select('daily_streak')
         .eq('user_id', user.id)
         .single();
 
-      let dailyXPEarned = tierData?.daily_xp_earned || 0;
-      const dailyXPCap = tierData?.daily_xp_cap || 750;
-      const currentTier = tierData?.current_tier || 0;
-      const lastResetAt = tierData?.last_reset_at;
-
-      // Edge case: Auto-reset if last reset was before today (missed cron)
-      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-      const lastResetDate = lastResetAt ? new Date(lastResetAt).toISOString().split('T')[0] : null;
-      
-      if (lastResetDate && lastResetDate < today) {
-        console.debug('[XPSystem] Auto-resetting daily XP (missed cron)', { lastResetDate, today });
-        
-        // Reset daily counters
-        await supabase
-          .from('user_xp_tiers')
-          .update({
-            daily_xp_earned: 0,
-            daily_upload_count: 0,
-            last_reset_at: new Date().toISOString()
-          })
-          .eq('user_id', user.id);
-        
-        dailyXPEarned = 0; // Start fresh for today
-      }
-
-      // Enforce cap based on calculated tier level (not DB sentinel)
-      const tierLevel = calculateTier(xpData.totalXPEarned);
-      const resolvedCap = getDailyXPCap(tierLevel);
-
-      // Check if user has hit daily cap
-      if (dailyXPEarned >= resolvedCap) {
-        toast.error('Daily XP limit reached!', {
-          description: 'Upgrade to Pro/Elite to keep earning XP',
-          duration: 5000
-        });
-        
-        analytics.trackDailyXPCapReached({
-          dailyXP: dailyXPEarned,
-          capLimit: resolvedCap,
-          planType: currentTier === 0 ? 'free' : currentTier === 1 ? 'bronze' : currentTier === 2 ? 'silver' : 'gold'
-        });
-        
-        return; // Stop XP award
-      }
-
       let multiplier = 1;
-      let finalAmount = amount;
-
-      // Only apply streak multiplier if not skipped (for dev/testing)
-      if (!skipMultiplier) {
-        // Check for streak multiplier using centralized XP engine
-        const { data: progression } = await supabase
-          .from('user_progression')
-          .select('login_streak, trade_streak')
-          .eq('user_id', user.id)
-          .single();
-
-        // Use the higher streak for multiplier (rewards consistency)
-        const loginStreak = progression?.login_streak || 0;
-        const tradeStreak = progression?.trade_streak || 0;
-        const bestStreak = Math.max(loginStreak, tradeStreak);
-        
-        // Determine multiplier type based on activity
-        const streakType = activityType.includes('trade') ? 'trade' : 'login';
-        multiplier = getStreakMultiplier(streakType, bestStreak);
-        finalAmount = Math.floor(amount * multiplier);
-      }
+      const streak = progression?.daily_streak || 0;
       
-      // Cap the XP amount if it would exceed daily cap
-      const remainingDailyXP = resolvedCap - dailyXPEarned;
-      if (finalAmount > remainingDailyXP) {
-        finalAmount = remainingDailyXP;
-        toast.warning('XP capped', {
-          description: `Only ${remainingDailyXP} XP remaining today`,
-          duration: 3000
-        });
-      }
+      if (streak >= 30) multiplier = 2.0;
+      else if (streak >= 14) multiplier = 1.5;
+      else if (streak >= 7) multiplier = 1.25;
+      else if (streak >= 3) multiplier = 1.1;
+
+      const finalAmount = Math.floor(amount * multiplier);
 
       const newTotalXP = xpData.totalXPEarned + finalAmount;
       const { level: newLevel, currentXP: newCurrentXP } = calculateLevelFromXP(newTotalXP);
       const didLevelUp = newLevel > xpData.currentLevel;
-
-      // Check for newly unlocked widgets
-      const oldTotalXP = xpData.totalXPEarned;
-      const newlyUnlockedWidgets = Object.values(WIDGET_CATALOG)
-        .filter(widget => 
-          widget.xpToUnlock && 
-          widget.xpToUnlock > oldTotalXP && 
-          widget.xpToUnlock <= newTotalXP
-        )
-        .sort((a, b) => (a.xpToUnlock || 0) - (b.xpToUnlock || 0))
-        .map(widget => widget.id);
-
-      if (newlyUnlockedWidgets.length > 0) {
-        console.log('[XPSystem] Widgets unlocked:', newlyUnlockedWidgets);
-        setPendingWidgetUnlocks(prev => [...prev, ...newlyUnlockedWidgets]);
-      }
 
       // Update XP data
       const { error: updateError } = await supabase
@@ -224,21 +133,6 @@ export const useXPSystem = () => {
         .eq('user_id', user.id);
 
       if (updateError) throw updateError;
-
-      // Update daily XP earned in user_xp_tiers (upsert to create row if missing)
-      await supabase
-        .from('user_xp_tiers')
-        .upsert(
-          { 
-            user_id: user.id, 
-            daily_xp_earned: dailyXPEarned + finalAmount,
-            last_reset_at: lastResetAt || new Date().toISOString() // Preserve or set reset date
-          },
-          { onConflict: 'user_id' }
-        );
-
-      // Invalidate user-tier cache to trigger DailyMissionBar refresh
-      queryClient.invalidateQueries({ queryKey: ['user-tier', user.id] });
 
       // Log activity
       const { error: logError } = await supabase
@@ -260,62 +154,9 @@ export const useXPSystem = () => {
         levelUpCount: didLevelUp ? xpData.levelUpCount + 1 : xpData.levelUpCount
       });
 
-      // Track XP award in analytics
-      analytics.trackXPAwarded(finalAmount, activityType, {
-        description,
-        multiplier,
-        totalXP: newTotalXP,
-        currentLevel: newLevel,
-      });
-
-      // Check for tier unlock after XP award
-      const oldTier = calculateTier(xpData.totalXPEarned);
-      const newTier = calculateTier(newTotalXP);
-
-      if (newTier > oldTier) {
-        analytics.trackTierUnlocked(newTier, {
-          totalXP: newTotalXP,
-          previousTier: oldTier,
-        });
-        
-        toast.success(`🎉 Tier Unlocked: ${getTierName(newTier)}!`, {
-          description: `You've reached Tier ${newTier}!`,
-          duration: 5000,
-        });
-      }
-
-      // Check for Tier 3 preview trigger (2K XP milestone)
-      if (newTotalXP >= 2000 && xpData.totalXPEarned < 2000) {
-        // Check if user has already seen the preview
-        const { data: existingPreview } = await supabase
-          .from('tier_preview_unlocks')
-          .select('id')
-          .eq('user_id', user.id)
-          .eq('tier_previewed', 3)
-          .single();
-
-        if (!existingPreview) {
-          // Show modal and record in database
-          setShowTier3Preview(true);
-          
-          await supabase
-            .from('tier_preview_unlocks')
-            .insert({
-              user_id: user.id,
-              tier_previewed: 3,
-              previewed_at: new Date().toISOString(),
-            });
-
-          analytics.trackTier3PreviewOpened({
-            totalXP: newTotalXP,
-            currentTier: calculateTier(newTotalXP),
-          });
-        }
-      }
-
       // Show notifications
       if (didLevelUp) {
-        newLevelRef.current = newLevel;
+        setNewLevelRef(newLevel);
         setShowLevelUp(true);
         
         toast.success(`🎉 Level Up! You're now level ${newLevel}!`, {
@@ -361,9 +202,6 @@ export const useXPSystem = () => {
           icon: '⚡'
         });
       }
-
-      // Invalidate theme unlock queries to check for new unlocks
-      queryClient.invalidateQueries({ queryKey: ['theme-unlocks'] });
     } catch (error) {
       console.error('Error adding XP:', error);
       toast.error('Failed to award XP');
@@ -386,10 +224,6 @@ export const useXPSystem = () => {
     showLevelUp,
     setShowLevelUp,
     newLevel: newLevelRef,
-    refresh,
-    showTier3Preview,
-    setShowTier3Preview,
-    pendingWidgetUnlocks,
-    setPendingWidgetUnlocks,
+    refresh
   };
 };

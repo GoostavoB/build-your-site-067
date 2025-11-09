@@ -1,28 +1,43 @@
-// src/components/LanguageSync.tsx
-// REVISED VERSION - Only handles RTL direction, NO language changes
-
 import { useEffect } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from '@/hooks/useTranslation';
+import { getLanguageFromPath, getPathWithoutLanguage, getLocalizedPath } from '@/utils/languageRouting';
 
 /**
- * LanguageSync Component
- * 
- * REVISED: This component ONLY handles document direction (RTL for Arabic).
- * It does NOT call changeLanguage() - that's handled by LanguageProvider only.
- * 
- * This eliminates duplicate language synchronization and race conditions.
+ * Component to sync i18n language with URL path
+ * Ensures that the language state stays in sync with the current route
+ * Prevents 404 errors when switching languages
  */
 export const LanguageSync = () => {
-  const { language } = useLanguage();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { language, changeLanguage } = useTranslation();
 
-  // ===================================================================
-  // ONLY responsibility: Set document direction
-  // NOTE: With Arabic hidden, direction is always LTR
-  // ===================================================================
   useEffect(() => {
-    document.documentElement.dir = 'ltr';
-    console.log(`[LanguageSync] Set direction: ltr for language: ${language}`);
+    const pathLanguage = getLanguageFromPath(location.pathname);
+    
+    // Only change if different from current language
+    if (pathLanguage !== language) {
+      console.log(`Syncing language from ${language} to ${pathLanguage}`);
+      // Avoid URL update here to prevent redirect loops; URL handled below
+      changeLanguage(pathLanguage, false);
+    }
+  }, [location.pathname, language, changeLanguage]);
+
+  // Ensure the current path is valid for the selected language
+  useEffect(() => {
+    const pathLanguage = getLanguageFromPath(location.pathname);
+    
+    // If path doesn't match current language, update the URL
+    if (pathLanguage !== language) {
+      const basePath = getPathWithoutLanguage(location.pathname);
+      const newPath = getLocalizedPath(basePath, language);
+      
+      console.log(`Redirecting to localized path: ${newPath}`);
+      // Use replace to avoid adding to history
+      navigate(newPath, { replace: true });
+    }
   }, [language]);
 
-  return null;
+  return null; // This component doesn't render anything
 };

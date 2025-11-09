@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import AppLayout from '@/components/layout/AppLayout';
 import { Plus, Columns } from 'lucide-react';
 import { DndContext, rectIntersection, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent, DragStartEvent, MeasuringStrategy } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
@@ -15,10 +16,6 @@ import { CostEfficiencyPanel } from '@/components/insights/CostEfficiencyPanel';
 import { BehaviorAnalytics } from '@/components/insights/BehaviorAnalytics';
 import { DashboardSkeleton } from '@/components/DashboardSkeleton';
 import { ExportTradesDialog } from '@/components/ExportTradesDialog';
-import { PinnedWidgetsArea } from '@/components/PinnedWidgetsArea';
-import { usePinnedWidgets, CATALOG_TO_PINNED_MAP } from '@/contexts/PinnedWidgetsContext';
-import { AITrainingQuestionnaire } from '@/components/ai-training/AITrainingQuestionnaire';
-import { useAITrainingProfile } from '@/hooks/useAITrainingProfile';
 import { LevelUpModal } from '@/components/gamification/LevelUpModal';
 import { FloatingXP } from '@/components/gamification/FloatingXP';
 import { MicroFeedbackOverlay } from '@/components/gamification/MicroFeedbackOverlay';
@@ -26,11 +23,11 @@ import { WeeklySummaryRecap } from '@/components/WeeklySummaryRecap';
 import { useXPSystem } from '@/hooks/useXPSystem';
 import { useDailyChallenges } from '@/hooks/useDailyChallenges';
 import { useTradeXPRewards } from '@/hooks/useTradeXPRewards';
-import { useProfitMilestoneBadges } from '@/hooks/useProfitMilestoneBadges';
 import { TradingStreaks } from '@/components/TradingStreaks';
 import { DateRangeFilter } from '@/components/DateRangeFilter';
 import { useDateRange } from '@/contexts/DateRangeContext';
 import { CustomizeDashboardControls } from '@/components/CustomizeDashboardControls';
+import { useWidgetLayout } from '@/hooks/useWidgetLayout';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { LessonLearnedPopup } from '@/components/lessons/LessonLearnedPopup';
@@ -48,12 +45,10 @@ import { toast } from 'sonner';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useGridLayout, WidgetPosition } from '@/hooks/useGridLayout';
 import { DropZone } from '@/components/widgets/DropZone';
+import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow';
+import { useOnboarding } from '@/hooks/useOnboarding';
 import { useUserTier } from '@/hooks/useUserTier';
 import { UpgradePrompt } from '@/components/UpgradePrompt';
-import { DailyMissionBar } from '@/components/dashboard/DailyMissionBar';
-import { Tier3PreviewModal } from '@/components/tier/Tier3PreviewModal';
-import { useSearchParams } from 'react-router-dom';
-import { ProgressTrigger } from '@/components/progress/ProgressTrigger';
 
 // Lazy load heavy components
 const TradeHistory = lazy(() => import('@/components/TradeHistory').then(m => ({ default: m.TradeHistory })));
@@ -74,18 +69,6 @@ import { ChevronLeft } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { pageMeta } from '@/utils/seoHelpers';
-import { DailyStreakFlame } from '@/components/DailyStreakFlame';
-import { QuickShareButtons } from '@/components/social/QuickShareButtons';
-import { GamificationHub } from '@/components/gamification/GamificationHub';
-import { XPBoostIndicator } from '@/components/gamification/XPBoostIndicator';
-import { ComebackModal } from '@/components/gamification/ComebackModal';
-import { useComebackRewards } from '@/hooks/useComebackRewards';
-import { WelcomeOnboardingModal } from '@/components/onboarding/WelcomeOnboardingModal';
-import { XPRewardAnimation } from '@/components/onboarding/XPRewardAnimation';
-import { NextMissionCard } from '@/components/dashboard/NextMissionCard';
-import { WelcomeBackToast } from '@/components/onboarding/WelcomeBackToast';
-import { useOnboardingState } from '@/hooks/useOnboardingState';
-import { WidgetUnlockCelebration } from '@/components/gamification/WidgetUnlockCelebration';
 
 interface TradeStats {
   total_pnl: number;
@@ -96,6 +79,7 @@ interface TradeStats {
   avg_pnl_per_day: number;
   trading_days: number;
   current_roi: number;
+  avg_roi_per_trade: number;
 }
 
 function calculateCurrentStreak(trades: Trade[]): number {
@@ -119,22 +103,20 @@ const Dashboard = () => {
   usePageMeta(pageMeta.dashboard);
   const { user } = useAuth();
   const { t } = useTranslation();
-  const { pinnedWidgets } = usePinnedWidgets();
-  const [searchParams, setSearchParams] = useSearchParams();
   const [stats, setStats] = useState<TradeStats | null>(null);
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(true);
-  const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
-  const { hasProfile, loading: profileLoading, refetch: refetchProfile } = useAITrainingProfile();
   const [initialInvestment, setInitialInvestment] = useState(0);
   const [capitalLog, setCapitalLog] = useState<any[]>([]);
-  const [withdrawalLog, setWithdrawalLog] = useState<any[]>([]);
   const [includeFeesInPnL, setIncludeFeesInPnL] = useState(true);
   const { dateRange, setDateRange, clearDateRange, isToday } = useDateRange();
   const [filteredTrades, setFilteredTrades] = useState<Trade[]>([]);
-  const [activeTab, setActiveTab] = useState<string>(searchParams.get('tab') || 'overview');
+  const [activeTab, setActiveTab] = useState<string>('overview');
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const [customWidgets, setCustomWidgets] = useState<any[]>([]);
+  
+  // Onboarding flow
+  const { showOnboarding, loading: onboardingLoading, completeOnboarding } = useOnboarding();
   
   // Memoize processed trades to prevent unnecessary recalculations
   const processedTrades = useMemo(() => 
@@ -161,13 +143,11 @@ const Dashboard = () => {
     const container = tabsContainerRef.current?.closest('main') as HTMLElement | null;
     const prevScrollTop = container ? container.scrollTop : window.scrollY;
     setActiveTab(val);
-    // Update URL with new tab
-    setSearchParams({ tab: val });
     requestAnimationFrame(() => {
       if (container) container.scrollTop = prevScrollTop;
       else window.scrollTo({ top: prevScrollTop });
     });
-  }, [setSearchParams]);
+  }, []);
   
   // Fix positions state management
   const [positions, setPositions] = useState<WidgetPosition[]>([]);
@@ -223,64 +203,36 @@ const Dashboard = () => {
   }, [isCustomizing, positions, originalPositions]);
 
   // Gamification system
-  const { xpData, showLevelUp, setShowLevelUp, showTier3Preview, setShowTier3Preview, pendingWidgetUnlocks, setPendingWidgetUnlocks } = useXPSystem();
+  const { xpData, showLevelUp, setShowLevelUp } = useXPSystem();
   const { updateChallengeProgress } = useDailyChallenges();
-  const { showComebackModal, setShowComebackModal, comebackReward } = useComebackRewards();
-  
-  // Widget unlock celebration state
-  const [showWidgetUnlock, setShowWidgetUnlock] = useState(false);
-  const [currentUnlockedWidget, setCurrentUnlockedWidget] = useState<string | null>(null);
-  
-  // Onboarding state
-  const { 
-    shouldShowWelcome, 
-    shouldShowFirstUploadReward,
-    markWelcomeSeen, 
-    markFirstUploadComplete,
-    markInsightsViewed,
-    hasCompletedFirstUpload
-  } = useOnboardingState();
   
   // Award XP for trades
   useTradeXPRewards(trades);
-  
-  // Check profit milestone badges
-  const totalTradingProfit = useMemo(() => 
-    trades.reduce((sum, t) => sum + (t.profit_loss || 0), 0),
-    [trades]
-  );
-  useProfitMilestoneBadges(totalTradingProfit, user?.id);
 
   const gridRef = useRef<HTMLDivElement>(null);
   const [columnCount, setColumnCount] = useState(3);
 
-  // Track column count from saved settings only; mobile handled by CSS media query
+  // Track column count based on user selection and viewport - only restore once on mount
   useEffect(() => {
-    const clamped = Math.min(4, Math.max(1, savedColumnCount || 4));
-    setColumnCount(clamped);
-    console.log('[Dashboard] Column count set from saved settings:', {
-      saved: savedColumnCount,
-      clamped,
-    });
-  }, [savedColumnCount]);
-
-
-  // Safety: ensure the dashboard never gets stuck in loading (3s guard)
-  useEffect(() => {
-    const id = setTimeout(() => {
-      setLoading(false);
-    }, 3000);
-    return () => clearTimeout(id);
-  }, []);
-
-  // Handle widget unlock celebrations
-  useEffect(() => {
-    if (pendingWidgetUnlocks.length > 0 && !showWidgetUnlock) {
-      const nextWidget = pendingWidgetUnlocks[0];
-      setCurrentUnlockedWidget(nextWidget);
-      setShowWidgetUnlock(true);
-    }
-  }, [pendingWidgetUnlocks, showWidgetUnlock]);
+    const el = gridRef.current;
+    if (!el) return;
+    
+    const updateCols = () => {
+      const width = el.clientWidth;
+      // On mobile, always use 1 column
+      if (width < 768) {
+        setColumnCount(1);
+      } else {
+        // Use user's selected column count (from saved settings)
+        setColumnCount(selectedColumnCount);
+      }
+    };
+    
+    updateCols();
+    const ro = new ResizeObserver(updateCols);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [selectedColumnCount]);
 
   // Save column count to backend when user changes it
   const handleColumnCountChange = useCallback((newCount: number) => {
@@ -288,54 +240,20 @@ const Dashboard = () => {
     updateColumnCount(newCount);
   }, [updateColumnCount]);
 
-  // Local handlers for immediate UI feedback during customization
-  const handleRemoveWidget = useCallback((widgetId: string) => {
-    if (isCustomizing) {
-      // During customization: update local state immediately, don't persist yet
-      const newPositions = positions.filter(p => p.id !== widgetId);
-      setPositions(newPositions);
-      toast.success('Widget removed');
-    } else {
-      // Outside customization: persist immediately
-      removeWidget(widgetId);
-    }
-  }, [isCustomizing, positions, removeWidget]);
-
-  const handleAddWidget = useCallback((widgetId: string) => {
-    if (isCustomizing) {
-      // During customization: update local state immediately, don't persist yet
-      if (positions.find(p => p.id === widgetId)) {
-        toast.info('Widget already added');
-        return;
-      }
-      const maxRow = Math.max(0, ...positions.map(p => p.row));
-      const newPositions = [...positions, { id: widgetId, column: 0, row: maxRow + 1 }];
-      setPositions(newPositions);
-      toast.success('Widget added');
-    } else {
-      // Outside customization: persist immediately
-      addWidget(widgetId);
-    }
-  }, [isCustomizing, positions, addWidget]);
-
-  // Organize widgets by column and row, filtering out pinned widgets
+  // Organize widgets by column and row
   const grid = useMemo(() => {
     const result: { [col: number]: { [row: number]: string } } = {};
     
-    // Filter to show only unpinned widgets from saved positions
-    const filteredPositions = positions.filter(pos => {
-      const pinnedId = CATALOG_TO_PINNED_MAP[pos.id];
-      const isPinned = pinnedId && pinnedWidgets.includes(pinnedId);
-      return !isPinned;
-    });
+    console.log('Building grid from positions:', positions);
     
-    filteredPositions.forEach(pos => {
+    positions.forEach(pos => {
       if (!result[pos.column]) result[pos.column] = {};
       result[pos.column][pos.row] = pos.id;
     });
     
+    console.log('Grid structure:', result);
     return result;
-  }, [positions, pinnedWidgets]);
+  }, [positions]);
 
   const activeWidgets = useMemo(() => {
     const widgets = positions.map(p => p.id);
@@ -367,27 +285,9 @@ const Dashboard = () => {
       .order('log_date', { ascending: true });
 
     if (error) {
-      console.warn('Error fetching capital log:', error);
-      setCapitalLog([]); // ensure state updates to trigger stats fetch
+      console.error('Error fetching capital log:', error);
     } else {
       setCapitalLog(data || []);
-    }
-  };
-
-  const fetchWithdrawalLog = async () => {
-    if (!user) return;
-
-    const { data, error } = await supabase
-      .from('withdrawal_log')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('withdrawal_date', { ascending: true });
-
-    if (error) {
-      console.warn('Error fetching withdrawal log:', error);
-      setWithdrawalLog([]);
-    } else {
-      setWithdrawalLog(data || []);
     }
   };
 
@@ -410,11 +310,8 @@ const Dashboard = () => {
   useEffect(() => {
     if (user) {
       fetchCapitalLog(); // Fetch capital log first
-      fetchWithdrawalLog(); // Fetch withdrawal log
       fetchInitialInvestment();
       fetchCustomWidgets();
-      // Kick off stats immediately so UI doesn't block on the above
-      fetchStats();
     }
     
     // Set up realtime subscription for trades and capital changes
@@ -438,20 +335,9 @@ const Dashboard = () => {
       )
       .subscribe();
     
-    const withdrawalChannel = supabase
-      .channel('withdrawal-changes-dashboard')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'withdrawal_log', filter: `user_id=eq.${user?.id}` },
-        () => {
-          fetchWithdrawalLog().then(() => fetchStats());
-        }
-      )
-      .subscribe();
-    
     return () => {
       supabase.removeChannel(tradesChannel);
       supabase.removeChannel(capitalChannel);
-      supabase.removeChannel(withdrawalChannel);
     };
   }, [user, includeFeesInPnL, initialInvestment]);
 
@@ -510,113 +396,87 @@ const Dashboard = () => {
       }
       updateChallengeProgress('win_rate', winStreak);
 
-      const todayProfit = todayTrades.reduce((sum, t) => sum + (t.profit_loss || 0), 0);
+      const todayProfit = todayTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
       updateChallengeProgress('profit_target', Math.floor(todayProfit));
     }
   }, [trades, updateChallengeProgress]);
 
   const fetchStats = async () => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+    if (!user) return;
 
-    setHasAttemptedFetch(true);
+    const { data: trades } = await supabase
+      .from('trades')
+      .select('*')
+      .eq('user_id', user.id)
+      .is('deleted_at', null);
 
-    try {
-      const { data: trades, error } = await supabase
-        .from('trades')
-        .select('*')
-        .eq('user_id', user.id)
-        .is('deleted_at', null)
-        .not('closed_at', 'is', null); // Only count closed trades for accurate P&L
+    if (trades) {
+      setTrades(trades.map(trade => ({
+        ...trade,
+        side: trade.side as 'long' | 'short' | null
+      })));
+      
+      // Calculate P&L without fees
+      const totalPnlWithoutFees = trades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+      
+      // Calculate P&L with fees (subtract fees from profit)
+      const totalPnlWithFees = trades.reduce((sum, t) => {
+        const pnl = t.pnl || 0;
+        const fundingFee = t.funding_fee || 0;
+        const tradingFee = t.trading_fee || 0;
+        return sum + (pnl - Math.abs(fundingFee) - Math.abs(tradingFee));
+      }, 0);
+      
+      const winningTrades = trades.filter(t => (t.pnl || 0) > 0).length;
+      const avgDuration = trades.reduce((sum, t) => sum + (t.duration_minutes || 0), 0) / (trades.length || 1);
 
-      if (error) {
-        console.warn('Error fetching trades for stats:', error);
-        setTrades([]);
-        setStats({
-          total_pnl: 0,
-          win_rate: 0,
-          total_trades: 0,
-          avg_duration: 0,
-          avg_pnl_per_trade: 0,
-          avg_pnl_per_day: 0,
-          trading_days: 0,
-          current_roi: 0,
-        });
-        return;
+      // Calculate unique trading days
+      const uniqueDays = new Set(trades.map(t => new Date(t.trade_date).toDateString())).size;
+      
+      // Calculate average P&L per trade
+      const avgPnLPerTrade = trades.length > 0 
+        ? (includeFeesInPnL ? totalPnlWithFees : totalPnlWithoutFees) / trades.length 
+        : 0;
+      
+      // Calculate average P&L per day
+      const avgPnLPerDay = uniqueDays > 0 
+        ? (includeFeesInPnL ? totalPnlWithFees : totalPnlWithoutFees) / uniqueDays 
+        : 0;
+      
+      // Calculate total added capital from capital_log (sum of all additions)
+      const totalAddedCapital = capitalLog.reduce((sum, entry) => sum + (entry.amount_added || 0), 0);
+      
+      // Use total added capital as the "initial investment" for ROI calculation
+      // If no capital log exists, fallback to initialInvestment from settings
+      const baseCapital = totalAddedCapital > 0 ? totalAddedCapital : initialInvestment;
+      
+      // Calculate current balance
+      const currentBalance = baseCapital + (includeFeesInPnL ? totalPnlWithFees : totalPnlWithoutFees);
+      
+      // Calculate current ROI based on total invested capital
+      let currentROI = 0;
+      if (baseCapital > 0) {
+        currentROI = ((currentBalance - baseCapital) / baseCapital) * 100;
       }
+      
+      // Calculate average ROI per trade
+      const avgROIPerTrade = trades.length > 0 
+        ? trades.reduce((sum, t) => sum + (t.roi || 0), 0) / trades.length 
+        : 0;
 
-      if (trades) {
-        // Deduplicate trades based on closed_at + profit_loss combination
-        const uniqueTradesMap = trades.reduce((acc, trade) => {
-          const key = `${trade.closed_at}_${trade.profit_loss}`;
-          if (!acc.has(key)) {
-            acc.set(key, trade);
-          }
-          return acc;
-        }, new Map());
-        const deduplicatedTrades = Array.from(uniqueTradesMap.values());
-        
-        setTrades(deduplicatedTrades.map(trade => ({
-          ...trade,
-          side: trade.side as 'long' | 'short' | null
-        })));
-        
-        // Calculate total P&L using profit_loss from deduplicated trades
-        const totalPnL = deduplicatedTrades.reduce((sum, t) => sum + (t.profit_loss || 0), 0);
-        
-        const winningTrades = deduplicatedTrades.filter(t => (t.profit_loss || 0) > 0).length;
-        const avgDuration = deduplicatedTrades.reduce((sum, t) => sum + (t.duration_minutes || 0), 0) / (deduplicatedTrades.length || 1);
-
-        // Calculate unique trading days
-        const uniqueDays = new Set(deduplicatedTrades.map(t => new Date(t.trade_date).toDateString())).size;
-        
-        // Calculate average P&L per trade
-        const avgPnLPerTrade = deduplicatedTrades.length > 0
-          ? totalPnL / deduplicatedTrades.length
-          : 0;
-        
-        // Calculate average P&L per day
-        const avgPnLPerDay = uniqueDays > 0 
-          ? totalPnL / uniqueDays 
-          : 0;
-        
-        // Calculate total added capital from capital_log (sum of all additions)
-        const totalAddedCapital = capitalLog.reduce((sum, entry) => sum + (entry.amount_added || 0), 0);
-        
-        // Use total added capital as the "initial investment" for ROI calculation
-        // If no capital log exists, fallback to initialInvestment from settings
-        const baseCapital = totalAddedCapital > 0 ? totalAddedCapital : initialInvestment;
-        
-        // Calculate total withdrawals
-        const totalWithdrawals = withdrawalLog.reduce((sum, entry) => sum + (entry.amount_withdrawn || 0), 0);
-        
-        // Calculate current balance (subtract withdrawals)
-        const currentBalance = baseCapital + totalPnL - totalWithdrawals;
-        
-        // Calculate current ROI: Total profit regardless of withdrawals
-        let currentROI = 0;
-        if (baseCapital > 0) {
-          currentROI = (totalPnL / baseCapital) * 100;
-        }
-
-        setStats({
-          total_pnl: totalPnL,
-          win_rate: deduplicatedTrades.length > 0 ? (winningTrades / deduplicatedTrades.length) * 100 : 0,
-          total_trades: deduplicatedTrades.length,
-          avg_duration: avgDuration,
-          avg_pnl_per_trade: avgPnLPerTrade,
-          avg_pnl_per_day: avgPnLPerDay,
-          trading_days: uniqueDays,
-          current_roi: currentROI,
-        });
-      }
-    } catch (err) {
-      console.error('Unexpected error in fetchStats:', err);
-    } finally {
-      setLoading(false);
+      setStats({
+        total_pnl: includeFeesInPnL ? totalPnlWithFees : totalPnlWithoutFees,
+        win_rate: trades.length > 0 ? (winningTrades / trades.length) * 100 : 0,
+        total_trades: trades.length,
+        avg_duration: avgDuration,
+        avg_pnl_per_trade: avgPnLPerTrade,
+        avg_pnl_per_day: avgPnLPerDay,
+        trading_days: uniqueDays,
+        current_roi: currentROI,
+        avg_roi_per_trade: avgROIPerTrade,
+      });
     }
+    setLoading(false);
   };
 
   const fetchInitialInvestment = async () => {
@@ -646,7 +506,7 @@ const Dashboard = () => {
     const assetPnL: Record<string, number> = {};
     trades.forEach(t => {
       const symbol = t.symbol || 'Unknown';
-      assetPnL[symbol] = (assetPnL[symbol] || 0) + (t.profit_loss || 0);
+      assetPnL[symbol] = (assetPnL[symbol] || 0) + (t.pnl || 0);
     });
     const best = Object.entries(assetPnL).sort((a, b) => b[1] - a[1])[0];
     return best ? best[0] : 'N/A';
@@ -658,9 +518,6 @@ const Dashboard = () => {
   }, [setDateRange]);
 
   const handleStartCustomize = useCallback(() => {
-    // Wait for tier data to load before checking permissions
-    if (tierLoading) return;
-    
     // Check if user has permission to customize
     if (!canCustomizeDashboard) {
       setShowUpgradePrompt(true);
@@ -669,7 +526,7 @@ const Dashboard = () => {
     
     setOriginalPositions([...positions]);
     setIsCustomizing(true);
-  }, [positions, canCustomizeDashboard, tierLoading]);
+  }, [positions, canCustomizeDashboard]);
 
   const handleSaveLayout = useCallback(() => {
     saveGridLayout(positions);
@@ -706,46 +563,28 @@ const Dashboard = () => {
 
     let updatedPositions: WidgetPosition[];
 
-    // Rule 1: Direct Swap - swap positions with another widget
+    // Handle drop on another widget - swap positions
     const overPos = positions.find(p => p.id === overId);
-    if (overPos && overId !== activeId) {
+    if (overPos) {
+      // Simply swap positions - no shifting needed
       updatedPositions = positions.map(p => {
         if (p.id === activeId) {
-          return { id: p.id, column: overPos.column, row: overPos.row };
+          return { ...p, column: overPos.column, row: overPos.row };
         }
         if (p.id === overId) {
-          return { id: p.id, column: activePos.column, row: activePos.row };
+          return { ...p, column: activePos.column, row: activePos.row };
         }
         return p;
       });
-
-      // Validate: Ensure no position duplicates after swap
-      const positionKeys = updatedPositions.map(p => `${p.column}-${p.row}`);
-      const uniquePositions = new Set(positionKeys);
-      
-      if (uniquePositions.size !== positionKeys.length) {
-        console.error('Position conflict detected after swap');
-        toast.error('Cannot swap: position conflict detected');
-        setActiveId(null);
-        return;
-      }
     }
-    // Rule 3: Move to Dropzone - move to empty space
+    // Handle drop on dropzone
     else if (overId.startsWith('dropzone-')) {
       const [, colStr, rowStr] = overId.split('-');
       const targetCol = parseInt(colStr, 10);
       const targetRow = parseInt(rowStr, 10);
       
-      // Check if position is truly empty
-      const occupied = positions.find(p => p.column === targetCol && p.row === targetRow && p.id !== activeId);
-      if (occupied) {
-        toast.error('Position already occupied');
-        setActiveId(null);
-        return;
-      }
-      
       updatedPositions = positions.map(p =>
-        p.id === activeId ? { id: p.id, column: targetCol, row: targetRow } : p
+        p.id === activeId ? { ...p, column: targetCol, row: targetRow } : p
       );
     }
     else {
@@ -803,11 +642,6 @@ const Dashboard = () => {
     return capitalLog.reduce((sum, log) => sum + (log.amount_added || 0), 0);
   }, [capitalLog]);
 
-  // Calculate total withdrawals from withdrawal log
-  const totalWithdrawals = useMemo(() => {
-    return withdrawalLog.reduce((sum, log) => sum + (log.amount_withdrawn || 0), 0);
-  }, [withdrawalLog]);
-
   const portfolioChartData = useMemo(() => {
     // Start with initial investment as the first data point
     const startDate = new Date();
@@ -859,13 +693,12 @@ const Dashboard = () => {
           key={widgetId}
           id={widgetId}
           isEditMode={isCustomizing}
-          onRemove={() => handleRemoveWidget(widgetId)}
+          onRemove={() => removeWidget(widgetId)}
         >
           <CustomWidgetRenderer 
             widget={customWidget}
-            onDelete={async () => {
-              await supabase.from('custom_dashboard_widgets').delete().eq('id', widgetId);
-              handleRemoveWidget(widgetId);
+            onDelete={() => {
+              removeWidget(widgetId);
               fetchCustomWidgets();
             }}
           />
@@ -884,22 +717,22 @@ const Dashboard = () => {
       id: widgetId,
       isEditMode: isCustomizing,
       isCompact: false,
-      onRemove: () => handleRemoveWidget(widgetId),
+      onRemove: () => removeWidget(widgetId),
     };
 
     // Add widget-specific data
     switch (widgetId) {
       case 'totalBalance':
         const totalInvestedCapital = totalCapitalAdditions > 0 ? totalCapitalAdditions : initialInvestment;
-        widgetProps.totalBalance = totalInvestedCapital + (stats?.total_pnl || 0) - totalWithdrawals;
+        widgetProps.totalBalance = totalInvestedCapital + (stats?.total_pnl || 0);
         widgetProps.change24h = stats?.total_pnl || 0;
         widgetProps.changePercent24h = totalInvestedCapital > 0 
           ? ((stats?.total_pnl || 0) / totalInvestedCapital) * 100 
           : 0;
         break;
       case 'winRate':
-        const winningTrades = processedTrades.filter(t => t.profit_loss > 0).length;
-        const losingTrades = processedTrades.filter(t => t.profit_loss <= 0).length;
+        const winningTrades = processedTrades.filter(t => t.pnl > 0).length;
+        const losingTrades = processedTrades.filter(t => t.pnl <= 0).length;
         widgetProps.winRate = stats?.win_rate || 0;
         widgetProps.wins = winningTrades;
         widgetProps.losses = losingTrades;
@@ -916,7 +749,7 @@ const Dashboard = () => {
       case 'portfolioOverview':
         widgetProps.data = portfolioChartData;
         const totalInvestedForPortfolio = totalCapitalAdditions > 0 ? totalCapitalAdditions : initialInvestment;
-        widgetProps.totalValue = totalInvestedForPortfolio + (stats?.total_pnl || 0) - totalWithdrawals;
+        widgetProps.totalValue = totalInvestedForPortfolio + (stats?.total_pnl || 0);
         break;
       case 'topMovers':
       case 'aiInsights':
@@ -937,7 +770,7 @@ const Dashboard = () => {
         break;
       case 'tradingQuality':
         const minPnl = processedTrades.length > 0 
-          ? Math.min(...processedTrades.map(t => t.profit_loss || 0)) 
+          ? Math.min(...processedTrades.map(t => t.pnl || 0)) 
           : 0;
         widgetProps.avgWin = dashboardStats.avgWin;
         widgetProps.avgLoss = dashboardStats.avgLoss;
@@ -964,35 +797,23 @@ const Dashboard = () => {
         // Show total invested capital from capital_log as "initial investment"
         widgetProps.initialInvestment = totalCapitalAdditions > 0 ? totalCapitalAdditions : initialInvestment;
         widgetProps.currentBalance = totalCapitalAdditions > 0 
-          ? totalCapitalAdditions + (stats?.total_pnl || 0) - totalWithdrawals
-          : initialInvestment + (stats?.total_pnl || 0) - totalWithdrawals;
+          ? totalCapitalAdditions + (stats?.total_pnl || 0)
+          : initialInvestment + (stats?.total_pnl || 0);
         widgetProps.onInitialInvestmentUpdate = async (newValue: number) => {
           setInitialInvestment(newValue);
           // fetchStats will be automatically called via useEffect when initialInvestment changes
         };
         break;
-      case 'capitalGrowth':
-        // Capital Growth widget now self-fetches data via useCapitalGrowthData hook
+      case 'avgROIPerTrade':
+        widgetProps.avgROIPerTrade = stats?.avg_roi_per_trade || 0;
+        widgetProps.totalTrades = stats?.total_trades || 0;
         break;
-      case 'absoluteProfit':
-        const tradingPnL = processedTrades.reduce((sum, t) => sum + (t.profit_loss || 0), 0);
-        const cumulativeData: Array<{ date: string; value: number }> = [];
-        let cumulative = 0;
-        
-        [...processedTrades]
-          .sort((a, b) => new Date(a.closed_at || a.trade_date).getTime() - new Date(b.closed_at || b.trade_date).getTime())
-          .forEach(t => {
-            cumulative += t.profit_loss || 0;
-            const date = new Date(t.closed_at || t.trade_date);
-            cumulativeData.push({
-              date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-              value: cumulative,
-            });
-          });
-        
-        widgetProps.totalPnL = tradingPnL;
-        widgetProps.tradeCount = processedTrades.length;
-        widgetProps.chartData = cumulativeData;
+      case 'capitalGrowth':
+        widgetProps.chartData = portfolioChartData;
+        const baseCapitalForGrowth = totalCapitalAdditions > 0 ? totalCapitalAdditions : initialInvestment;
+        widgetProps.initialInvestment = baseCapitalForGrowth;
+        widgetProps.totalCapitalAdditions = totalCapitalAdditions;
+        widgetProps.currentBalance = baseCapitalForGrowth + (stats?.total_pnl || 0);
         break;
       case 'heatmap':
         widgetProps.trades = processedTrades;
@@ -1004,20 +825,21 @@ const Dashboard = () => {
         key={widgetId}
         id={widgetId}
         isEditMode={isCustomizing}
-        onRemove={() => handleRemoveWidget(widgetId)}
+        onRemove={() => removeWidget(widgetId)}
       >
         <WidgetComponent {...widgetProps} />
       </SortableWidget>
     );
-  }, [isCustomizing, handleRemoveWidget, stats, processedTrades, initialInvestment, spotWalletTotal, holdings, portfolioChartData, customWidgets, fetchCustomWidgets]);
-
-  // Show AI Training Questionnaire if user doesn't have a profile yet
-  if (hasProfile === false && !profileLoading) {
-    return <AITrainingQuestionnaire onComplete={refetchProfile} />;
-  }
+  }, [isCustomizing, removeWidget, stats, processedTrades, initialInvestment, spotWalletTotal, holdings, portfolioChartData, customWidgets, fetchCustomWidgets]);
 
   return (
     <>
+    <AppLayout>
+      {/* Onboarding Flow - shows for new users */}
+      {showOnboarding && !onboardingLoading && (
+        <OnboardingFlow onComplete={completeOnboarding} />
+      )}
+      
       <FloatingXP />
       <MicroFeedbackOverlay />
       <WeeklySummaryRecap />
@@ -1027,61 +849,6 @@ const Dashboard = () => {
         level={xpData.currentLevel} 
         onClose={() => setShowLevelUp(false)} 
       />
-      <WidgetUnlockCelebration
-        widgetId={currentUnlockedWidget || ''}
-        xpAwarded={currentUnlockedWidget ? (WIDGET_CATALOG[currentUnlockedWidget]?.xpToUnlock || 0) : 0}
-        isVisible={showWidgetUnlock}
-        onComplete={() => {
-          setShowWidgetUnlock(false);
-          // Remove the widget from queue after showing celebration
-          setPendingWidgetUnlocks(prev => prev.slice(1));
-          // Clear current widget after a short delay
-          setTimeout(() => setCurrentUnlockedWidget(null), 500);
-        }}
-        onTryWidget={() => {
-          // Close celebration and scroll to widget
-          setShowWidgetUnlock(false);
-          setPendingWidgetUnlocks(prev => prev.slice(1));
-          setTimeout(() => {
-            const widgetElement = document.getElementById(`widget-${currentUnlockedWidget}`);
-            if (widgetElement) {
-              widgetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              widgetElement.classList.add('ring-2', 'ring-primary', 'animate-pulse');
-              setTimeout(() => {
-                widgetElement.classList.remove('ring-2', 'ring-primary', 'animate-pulse');
-              }, 3000);
-            }
-            setCurrentUnlockedWidget(null);
-          }, 300);
-        }}
-      />
-      <Tier3PreviewModal
-        open={showTier3Preview}
-        onClose={() => setShowTier3Preview(false)}
-        totalXP={xpData.totalXPEarned}
-        currentTier={0}
-      />
-      
-      {/* Onboarding Modals */}
-      <WelcomeOnboardingModal
-        isOpen={shouldShowWelcome}
-        onClose={() => markWelcomeSeen()}
-        onComplete={() => {
-          markWelcomeSeen();
-          // Optionally scroll to upload section
-        }}
-      />
-      
-      <XPRewardAnimation
-        xpAmount={150}
-        message="Great start! You just unlocked your performance dashboard."
-        isVisible={shouldShowFirstUploadReward}
-        onComplete={markInsightsViewed}
-        type="milestone"
-      />
-      
-      {/* Welcome Back Toast */}
-      <WelcomeBackToast />
       
       {/* Skip to main content link for keyboard navigation */}
       <a 
@@ -1098,14 +865,9 @@ const Dashboard = () => {
 
       <div id="main-dashboard-content" className="space-y-6 mobile-safe animate-fade-in">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
-          <div className="flex items-center gap-3">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold mb-1 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                {t('dashboard.title')}
-              </h1>
-              <p className="text-sm text-muted-foreground/80">{t('dashboard.overview')}</p>
-            </div>
-            <DailyStreakFlame />
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold mb-1 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">{t('dashboard.title')}</h1>
+            <p className="text-sm text-muted-foreground/80">{t('dashboard.overview')}</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <DateRangeFilter dateRange={dateRange} onDateRangeChange={handleDateRangeChange} />
@@ -1121,8 +883,8 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Customize Dashboard Controls - Always show on Overview tab */}
-        {!loading && activeTab === 'overview' && (
+        {/* Customize Dashboard Controls - Only show on Overview tab */}
+        {!loading && stats && stats.total_trades > 0 && activeTab === 'overview' && (
           <div data-tour="dashboard-customization">
             <CustomizeDashboardControls
               isCustomizing={isCustomizing}
@@ -1132,9 +894,6 @@ const Dashboard = () => {
               onCancel={handleCancelCustomize}
               onReset={resetLayout}
               onAddWidget={() => {
-                // Wait for tier data to load before checking permissions
-                if (tierLoading) return;
-                
                 if (!canCustomizeDashboard) {
                   setShowUpgradePrompt(true);
                   return;
@@ -1148,7 +907,7 @@ const Dashboard = () => {
           </div>
         )}
 
-        {(loading && !hasAttemptedFetch) ? (
+        {loading ? (
           <DashboardSkeleton />
         ) : stats && stats.total_trades === 0 ? (
           <Card className="p-8 text-center glass">
@@ -1162,44 +921,6 @@ const Dashboard = () => {
           </Card>
         ) : (
           <>
-            {/* Progress Trigger */}
-            <ProgressTrigger />
-
-            {/* Daily Mission Bar */}
-            <div className="mb-6 animate-fade-in" style={{animationDelay: '0.3s'}}>
-              <DailyMissionBar />
-            </div>
-
-            {/* Next Mission Card - Onboarding */}
-            {!hasCompletedFirstUpload && (
-              <div className="mb-6 animate-fade-in" style={{animationDelay: '0.4s'}}>
-                <NextMissionCard />
-              </div>
-            )}
-
-            {/* Pinned Widgets Area */}
-            <PinnedWidgetsArea 
-              winRate={dashboardStats.winRate}
-              winCount={dashboardStats.winningTrades.length}
-              lossCount={dashboardStats.losingTrades.length}
-              totalProfit={dashboardStats.totalPnL}
-              currentROI={dashboardStats.avgRoi}
-              totalTrades={dashboardStats.totalTrades}
-              totalBalance={(totalCapitalAdditions > 0 ? totalCapitalAdditions : initialInvestment) + (stats?.total_pnl || 0) - totalWithdrawals}
-              change24h={stats?.total_pnl || 0}
-              changePercent24h={(totalCapitalAdditions > 0 ? totalCapitalAdditions : initialInvestment) > 0 
-                ? ((stats?.total_pnl || 0) / (totalCapitalAdditions > 0 ? totalCapitalAdditions : initialInvestment)) * 100 
-                : 0}
-              spotTotalValue={spotWalletTotal}
-              spotChange24h={0}
-              spotChangePercent24h={0}
-              tokenCount={holdings?.length || 0}
-              trades={trades}
-              avgPnLPerTrade={stats?.avg_pnl_per_trade || 0}
-              avgPnLPerDay={stats?.avg_pnl_per_day || 0}
-              tradingDays={stats?.trading_days || 0}
-            />
-
             {/* Main Content Tabs */}
             <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6 animate-fade-in" style={{animationDelay: '0.5s'}}>
               <TabsList className="glass rounded-2xl grid w-full grid-cols-3 h-auto p-1.5">
@@ -1220,43 +941,25 @@ const Dashboard = () => {
                     items={positions.map(p => p.id)}
                     strategy={rectSortingStrategy}
                   >
-                    <div className="relative">
-                      <div 
-                        ref={gridRef} 
-                        className="dashboard-grid-free"
-                        style={{ '--column-count': columnCount } as React.CSSProperties}
-                      >
-                        {Array.from({ length: columnCount }, (_, colIdx) => (
-                          <div key={`col-${colIdx}`} className="dashboard-column-free">
-                            {Object.entries(grid[colIdx] || {})
-                              .sort(([rowA], [rowB]) => parseInt(rowA) - parseInt(rowB))
-                              .map(([row, widgetId]) => (
-                                <div key={widgetId}>
-                                  {renderWidget(widgetId)}
-                                </div>
-                              ))}
-                            {isCustomizing && (
-                              <DropZone id={`dropzone-${colIdx}-${Object.keys(grid[colIdx] || {}).length}`} />
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                      
-                      {/* Empty state message when few widgets */}
-                      {positions.length <= 4 && !isCustomizing && (
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none mt-48">
-                          <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5, duration: 0.6 }}
-                            className="text-center"
-                          >
-                            <p className="text-muted-foreground/40 text-lg font-light tracking-wide">
-                              + Customize your dashboard
-                            </p>
-                          </motion.div>
+                    <div 
+                      ref={gridRef} 
+                      className="dashboard-grid-free"
+                      style={{ '--column-count': columnCount } as React.CSSProperties}
+                    >
+                      {Array.from({ length: columnCount }, (_, colIdx) => (
+                        <div key={`col-${colIdx}`} className="dashboard-column-free">
+                          {Object.entries(grid[colIdx] || {})
+                            .sort(([rowA], [rowB]) => parseInt(rowA) - parseInt(rowB))
+                            .map(([row, widgetId]) => (
+                              <div key={widgetId}>
+                                {renderWidget(widgetId)}
+                              </div>
+                            ))}
+                          {isCustomizing && (
+                            <DropZone id={`dropzone-${colIdx}-${Object.keys(grid[colIdx] || {}).length}`} />
+                          )}
                         </div>
-                      )}
+                      ))}
                     </div>
                   </SortableContext>
                 </DndContext>
@@ -1288,8 +991,8 @@ const Dashboard = () => {
                       avgLoss={dashboardStats.avgLoss}
                       winCount={dashboardStats.winningTrades.length}
                       lossCount={dashboardStats.losingTrades.length}
-                      maxDrawdownPercent={Math.abs((Math.min(...processedTrades.map(t => t.profit_loss || 0)) / initialInvestment) * 100)}
-                      maxDrawdownAmount={Math.min(...processedTrades.map(t => t.profit_loss || 0))}
+                      maxDrawdownPercent={Math.abs((Math.min(...processedTrades.map(t => t.pnl || 0)) / initialInvestment) * 100)}
+                      maxDrawdownAmount={Math.min(...processedTrades.map(t => t.pnl || 0))}
                       profitFactor={dashboardStats.profitFactor}
                     />
                   </div>
@@ -1318,23 +1021,6 @@ const Dashboard = () => {
                 </Suspense>
               </TabsContent>
             </Tabs>
-
-            {/* Social Share Section - Moved to bottom */}
-            <Card className="p-6 mb-6 animate-fade-in glass">
-              <h3 className="text-lg font-semibold mb-4">Share Your Trading Journey</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Share your progress on social media and earn XP rewards!
-              </p>
-              <QuickShareButtons 
-                text="Check out my trading progress! 📈 #TradingJournal #CryptoTrading"
-                contentType="general"
-              />
-            </Card>
-
-            {/* Gamification Hub - Moved to bottom */}
-            <div className="mb-6 animate-fade-in">
-              <GamificationHub />
-            </div>
           </>
         )}
         
@@ -1344,13 +1030,13 @@ const Dashboard = () => {
         </Suspense>
 
         {/* Widget Library Modal */}
-            <WidgetLibrary
-              open={showWidgetLibrary}
-              onClose={() => setShowWidgetLibrary(false)}
-              onAddWidget={handleAddWidget}
-              onRemoveWidget={handleRemoveWidget}
-              activeWidgets={activeWidgets}
-            />
+        <WidgetLibrary
+          open={showWidgetLibrary}
+          onClose={() => setShowWidgetLibrary(false)}
+          onAddWidget={addWidget}
+          onRemoveWidget={removeWidget}
+          activeWidgets={activeWidgets}
+        />
         
         {/* Tour CTA Button */}
         <TourCTAButton />
@@ -1362,19 +1048,7 @@ const Dashboard = () => {
           feature="dashboard customization"
         />
       </div>
-    
-    {/* XP Boost Indicator */}
-    <XPBoostIndicator />
-    
-    {/* Comeback Modal */}
-    {comebackReward && (
-      <ComebackModal
-        open={showComebackModal}
-        onClose={() => setShowComebackModal(false)}
-        xpReward={comebackReward.xp}
-        daysAway={comebackReward.daysAway}
-      />
-    )}
+    </AppLayout>
     
     {/* Glassmorphic Overlay Sidebar - Gamification temporarily disabled */}
     {/* <AnimatePresence>

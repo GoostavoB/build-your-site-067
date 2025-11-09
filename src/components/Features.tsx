@@ -13,39 +13,39 @@ const Features = () => {
 
   const features = [
     {
-      icon: <TrendingUp className="w-6 h-6" />,
-      title: t('landing.features.leverage.title', 'Leverage and position size by risk and stop'),
-      description: t('landing.features.leverage.description', 'Calculate the right position size for every trade based on your risk tolerance'),
-      action: t('landing.features.leverage.action', 'Set your risk parameters now'),
-      blogLink: "/blog/trading-journal-for-crypto"
-    },
-    {
-      icon: <Filter className="w-6 h-6" />,
-      title: t('landing.features.fees.title', 'Fees dashboard and maker vs taker simulation with funding'),
-      description: t('landing.features.fees.description', 'Understand your true trading costs and optimize fee structures'),
-      action: t('landing.features.fees.action', 'Cut costs by switching high fee pairs in one click'),
-      blogLink: "/blog/ai-tools-for-crypto-trading"
-    },
-    {
       icon: <Upload className="w-6 h-6" />,
-      title: t('landing.features.heatmap.title', 'Weekly heatmap, best assets and hours'),
-      description: t('landing.features.heatmap.description', 'Identify your most profitable trading patterns and timeframes'),
-      action: t('landing.features.heatmap.action', 'Find your edge with visual analytics'),
-      blogLink: "/blog/data-driven-trading"
+      titleKey: "landing.features.smartLogging.title",
+      descriptionKey: "landing.features.smartLogging.description",
+      blogLink: "/blog/trading-journal-for-crypto",
+      blogLinkTextKey: "landing.features.smartLogging.blogLinkText"
     },
     {
       icon: <Repeat className="w-6 h-6" />,
-      title: t('landing.features.mfeMae.title', 'MFE and MAE to tune target and stop'),
-      description: t('landing.features.mfeMae.description', 'Optimize your exit strategies with maximum favorable and adverse excursion analysis'),
-      action: t('landing.features.mfeMae.action', 'Improve your exits today'),
-      blogLink: "/blog/ai-powered-trading-journal"
+      titleKey: "landing.features.autoImports.title",
+      descriptionKey: "landing.features.autoImports.description",
+      blogLink: "/blog/ai-tools-for-crypto-trading",
+      blogLinkTextKey: "landing.features.autoImports.blogLinkText"
+    },
+    {
+      icon: <TrendingUp className="w-6 h-6" />,
+      titleKey: "landing.features.advancedAnalytics.title",
+      descriptionKey: "landing.features.advancedAnalytics.description",
+      blogLink: "/blog/data-driven-trading",
+      blogLinkTextKey: "landing.features.advancedAnalytics.blogLinkText"
+    },
+    {
+      icon: <Filter className="w-6 h-6" />,
+      titleKey: "landing.features.tagFilter.title",
+      descriptionKey: "landing.features.tagFilter.description",
+      blogLink: "/blog/ai-powered-trading-journal",
+      blogLinkTextKey: "landing.features.tagFilter.blogLinkText"
     },
     {
       icon: <Smartphone className="w-6 h-6" />,
-      title: t('landing.features.riskAlerts.title', 'Risk alerts and pre-trade checklist'),
-      description: t('landing.features.riskAlerts.description', 'Stay disciplined with automated warnings and systematic trade validation'),
-      action: t('landing.features.riskAlerts.action', 'Enable smart protection'),
-      blogLink: "/blog/trading-psychology-control-emotions"
+      titleKey: "landing.features.mobileFriendly.title",
+      descriptionKey: "landing.features.mobileFriendly.description",
+      blogLink: "/blog/trading-psychology-control-emotions",
+      blogLinkTextKey: "landing.features.mobileFriendly.blogLinkText"
     },
   ];
   return (
@@ -59,10 +59,11 @@ const Features = () => {
           className="text-center mb-16 space-y-4"
         >
           <h2 id="features-heading" className="text-3xl md:text-4xl font-bold leading-tight">
-            {t('landing.features.mainTitle', 'Features That Drive Results')}
+            {t('landing.features.title').split('Trade Better')[0]}
+            <span className="text-gradient-primary">Trade Better</span>
           </h2>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-            {t('landing.features.mainSubtitle', 'Tools designed to improve your trading performance')}
+            {t('landing.features.subtitle')}
           </p>
         </motion.header>
 
@@ -84,20 +85,17 @@ const Features = () => {
                  <div className="mb-3 inline-block p-2.5 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors" aria-hidden="true">
                   {feature.icon}
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                <h3 className="text-lg font-semibold mb-2">{t(feature.titleKey)}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                  {feature.description}
+                  {t(feature.descriptionKey)}
                 </p>
-                <div className="mt-auto">
-                  <p className="text-sm font-medium text-primary mb-2">{feature.action}</p>
-                  <Link 
-                    to={getLocalizedPath(feature.blogLink, currentLang)}
-                    className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                  >
-                    {t('landing.features.learnMore', 'Learn More')}
-                    <ArrowRight className="w-3 h-3" />
-                  </Link>
-                </div>
+                <Link 
+                  to={getLocalizedPath(feature.blogLink, currentLang)}
+                  className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                >
+                  {t(feature.blogLinkTextKey || 'landing.features.learnMore')}
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
               </GlassCard>
             </motion.article>
           ))}
@@ -120,20 +118,17 @@ const Features = () => {
                  <div className="mb-3 inline-block p-2.5 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors" aria-hidden="true">
                   {feature.icon}
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                <h3 className="text-lg font-semibold mb-2">{t(feature.titleKey)}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                  {feature.description}
+                  {t(feature.descriptionKey)}
                 </p>
-                <div className="mt-auto">
-                  <p className="text-sm font-medium text-primary mb-2">{feature.action}</p>
-                  <Link 
-                    to={getLocalizedPath(feature.blogLink, currentLang)}
-                    className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                  >
-                    {t('landing.features.learnMore', 'Learn More')}
-                    <ArrowRight className="w-3 h-3" />
-                  </Link>
-                </div>
+                <Link 
+                  to={getLocalizedPath(feature.blogLink, currentLang)}
+                  className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                >
+                  {t(feature.blogLinkTextKey || 'landing.features.learnMore')}
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
               </GlassCard>
             </motion.article>
           ))}

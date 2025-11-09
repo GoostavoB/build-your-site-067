@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,7 +27,6 @@ export default function SpotWallet() {
   const [viewType, setViewType] = useState<'value' | 'percent'>('value');
   const [activeView, setActiveView] = useState<'tokens' | 'categories'>('tokens');
   const [syncing, setSyncing] = useState(false);
-  const [loadingTimeout, setLoadingTimeout] = useState(false);
   const { toast } = useToast();
 
   const {
@@ -45,19 +44,7 @@ export default function SpotWallet() {
     settings,
   } = usePortfolio(selectedRange);
   
-  const { addHolding, deleteHolding, addTransaction } = useSpotWallet();
-
-  // Add loading timeout
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (isLoading) {
-        console.warn('SpotWallet: Loading timeout reached');
-        setLoadingTimeout(true);
-      }
-    }, 8000);
-    
-    return () => clearTimeout(timeoutId);
-  }, [isLoading]);
+  const { addHolding, deleteHolding } = useSpotWallet();
 
   const handleSyncCategories = async () => {
     setSyncing(true);
@@ -114,64 +101,13 @@ export default function SpotWallet() {
     settings?.category_split_mode || false
   );
 
-  // Show empty state only when truly empty
-  const showEmpty = !isLoading && (!holdings || holdings.length === 0);
-
-  if (showEmpty) {
+  if (isLoading) {
     return (
-      <>
-        <SkipToContent />
-        <main id="main-content" className="space-y-6 p-6">
-          <header className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold tracking-tight">Spot Wallet</h1>
-            <p className="text-muted-foreground">Track your portfolio with real-time P&L</p>
-          </header>
-          
-          {loadingTimeout && (
-            <Card className="p-4 mb-4 bg-warning/10 border-warning">
-              <p className="text-sm text-warning">
-                Loading is taking longer than usual. Your data may still appear.
-              </p>
-            </Card>
-          )}
-          
-          <Card className="p-8 text-center glass-subtle">
-            <Wallet className="w-16 h-16 mx-auto mb-4 text-muted-foreground/50" />
-            <h3 className="text-xl font-semibold mb-2">No Assets Yet</h3>
-            <p className="text-muted-foreground mb-4">
-              Start tracking your crypto portfolio by adding your first asset
-            </p>
-            <Button onClick={() => setShowAddModal(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Asset
-            </Button>
-          </Card>
-          
-          <AddTokenModal 
-            open={showAddModal} 
-            onClose={() => setShowAddModal(false)}
-            onAdd={(token) => {
-              addHolding.mutate(token, {
-                onSuccess: () => {
-                  const price = token.purchase_price ?? 0;
-                  const qty = token.quantity ?? 0;
-                  addTransaction.mutate({
-                    token_symbol: token.token_symbol,
-                    transaction_type: 'buy',
-                    quantity: qty,
-                    price,
-                    total_value: price * qty,
-                    exchange: token.exchange,
-                    transaction_date: token.purchase_date || new Date().toISOString(),
-                    notes: token.notes,
-                  });
-                }
-              });
-              setShowAddModal(false);
-            }}
-          />
-        </main>
-      </>
+      <AppLayout>
+        <div className="flex items-center justify-center h-96">
+          <div className="animate-pulse text-muted-foreground">Loading portfolio...</div>
+        </div>
+      </AppLayout>
     );
   }
 
@@ -184,7 +120,7 @@ export default function SpotWallet() {
   })) || [];
 
   return (
-    <>
+    <AppLayout>
       <SkipToContent />
       <main id="main-content" className="space-y-6 p-6">
         {/* Page Header */}
@@ -371,27 +307,12 @@ export default function SpotWallet() {
         open={showAddModal} 
         onClose={() => setShowAddModal(false)}
         onAdd={(token) => {
-          addHolding.mutate(token, {
-            onSuccess: () => {
-              const price = token.purchase_price ?? 0;
-              const qty = token.quantity ?? 0;
-              addTransaction.mutate({
-                token_symbol: token.token_symbol,
-                transaction_type: 'buy',
-                quantity: qty,
-                price,
-                total_value: price * qty,
-                exchange: token.exchange,
-                transaction_date: token.purchase_date || new Date().toISOString(),
-                notes: token.notes,
-              });
-            }
-          });
+          addHolding.mutate(token);
           setShowAddModal(false);
         }}
       />
       </main>
-    </>
+    </AppLayout>
   );
 };
 

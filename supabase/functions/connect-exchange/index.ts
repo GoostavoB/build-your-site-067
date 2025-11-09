@@ -11,7 +11,6 @@ interface ConnectRequest {
   apiKey: string;
   apiSecret: string;
   apiPassphrase?: string;
-  tradingType?: 'spot' | 'futures' | 'both';
 }
 
 Deno.serve(async (req) => {
@@ -40,7 +39,7 @@ Deno.serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    const { exchange, apiKey, apiSecret, apiPassphrase, tradingType }: ConnectRequest = await req.json();
+    const { exchange, apiKey, apiSecret, apiPassphrase }: ConnectRequest = await req.json();
 
     // Validate required fields
     if (!exchange || !apiKey || !apiSecret) {
@@ -70,9 +69,9 @@ Deno.serve(async (req) => {
     // We store the credentials now and test them when syncing trades
 
     // Encrypt credentials
-    const encryptedKey = await encrypt(apiKey);
-    const encryptedSecret = await encrypt(apiSecret);
-    const encryptedPassphrase = apiPassphrase ? await encrypt(apiPassphrase) : null;
+    const encryptedKey = encrypt(apiKey);
+    const encryptedSecret = encrypt(apiSecret);
+    const encryptedPassphrase = apiPassphrase ? encrypt(apiPassphrase) : null;
 
     // Store connection in database (upsert to handle reconnections)
     const { data: connection, error: dbError } = await supabaseClient
@@ -83,7 +82,6 @@ Deno.serve(async (req) => {
         api_key_encrypted: encryptedKey,
         api_secret_encrypted: encryptedSecret,
         api_passphrase_encrypted: encryptedPassphrase,
-        trading_type: tradingType || 'spot',
         is_active: true,
         sync_status: 'pending',
         sync_error: null,

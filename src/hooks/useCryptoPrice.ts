@@ -16,22 +16,13 @@ export const useCryptoPrice = (symbols: string[] = [
 
   useEffect(() => {
     const fetchPrices = async () => {
-      const fetchWithTimeout = async (url: string, timeout = 3000) => {
-        const controller = new AbortController();
-        const id = setTimeout(() => controller.abort(), timeout);
-        try {
-          return await fetch(url, { signal: controller.signal });
-        } finally {
-          clearTimeout(id);
-        }
-      };
       try {
         const results = await Promise.all(
           symbols.map(async (symbol) => {
             // Handle Bitcoin Dominance
             if (symbol === 'BTC.D') {
               try {
-                const response = await fetchWithTimeout('https://api.coingecko.com/api/v3/global');
+                const response = await fetch('https://api.coingecko.com/api/v3/global');
                 if (!response.ok) throw new Error('Failed to fetch BTC dominance');
                 const data = await response.json();
                 const btcDominance = data.data?.market_cap_percentage?.btc || 0;
@@ -42,8 +33,7 @@ export const useCryptoPrice = (symbols: string[] = [
                   priceChangePercent: 0 // CoinGecko doesn't provide 24h change for dominance
                 };
               } catch (err) {
-                // Downgrade to warn and continue without blocking UI
-                console.warn('BTC.D fetch error:', err);
+                console.error('BTC.D fetch error:', err);
                 return null;
               }
             }
@@ -62,7 +52,7 @@ export const useCryptoPrice = (symbols: string[] = [
             
             // Handle regular crypto pairs from Binance
             try {
-              const response = await fetchWithTimeout(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
+              const response = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
               if (!response.ok) throw new Error(`Failed to fetch price for ${symbol}`);
               const data = await response.json();
               return {

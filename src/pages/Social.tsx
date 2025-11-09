@@ -7,25 +7,17 @@ import { UserCard } from "@/components/social/UserCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import AppLayout from "@/components/layout/AppLayout";
 import { PremiumFeatureLock } from "@/components/PremiumFeatureLock";
-import { useSubscription } from "@/contexts/SubscriptionContext";
+import { usePremiumFeatures } from "@/hooks/usePremiumFeatures";
 
 export default function Social() {
-  const { isFeatureLocked, isLoading: subscriptionLoading } = useSubscription();
+  const { isFeatureLocked } = usePremiumFeatures();
+  const isPremiumLocked = isFeatureLocked('pro');
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [followingPosts, setFollowingPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
-  
-  if (subscriptionLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
-      </div>
-    );
-  }
-  
-  const isPremiumLocked = isFeatureLocked('pro');
 
   useEffect(() => {
     fetchPosts();
@@ -100,7 +92,8 @@ export default function Social() {
   const displayPosts = activeTab === "following" ? followingPosts : posts;
 
   return (
-    <PremiumFeatureLock requiredPlan="pro" isLocked={isPremiumLocked}>
+    <AppLayout>
+      <PremiumFeatureLock requiredPlan="pro" isLocked={isPremiumLocked}>
         <div className="max-w-4xl mx-auto space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Trading Community</h1>
@@ -149,5 +142,6 @@ export default function Social() {
         </Tabs>
       </div>
       </PremiumFeatureLock>
+    </AppLayout>
   );
 }

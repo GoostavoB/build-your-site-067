@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Trade } from '@/types/trade';
+import AppLayout from '@/components/layout/AppLayout';
 import { FeeOverviewCards } from '@/components/fee-analysis/FeeOverviewCards';
 import { ExchangeComparisonTable } from '@/components/fee-analysis/ExchangeComparisonTable';
 import { TradeDetailsTable } from '@/components/fee-analysis/TradeDetailsTable';
@@ -72,15 +73,20 @@ const FeeAnalysis = () => {
   }, [trades]);
 
   if (isLoading) {
-    return <DashboardSkeleton />;
+    return (
+      <AppLayout>
+        <DashboardSkeleton />
+      </AppLayout>
+    );
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <AppLayout>
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">{t('feeAnalysis.title')}</h1>
-            <p className="text-muted-foreground mt-1">{t('feeAnalysis.subtitle')}</p>
+            <h1 className="text-3xl font-bold">{t('feeAnalysis.title')}</h1>
+            <p className="text-muted-foreground">{t('feeAnalysis.subtitle')}</p>
           </div>
           <BlurToggleButton />
         </div>
@@ -88,24 +94,21 @@ const FeeAnalysis = () => {
         <FeeOverviewCards {...overviewData} />
 
         <Tabs defaultValue="comparison" className="space-y-4">
-          <TabsList className="glass rounded-xl">
-            <TabsTrigger value="comparison" className="data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10">
-              {t('feeAnalysis.exchangeComparison')}
-            </TabsTrigger>
-            <TabsTrigger value="details" className="data-[state=active]:bg-white/80 dark:data-[state=active]:bg-white/10">
-              {t('feeAnalysis.tradeDetails')}
-            </TabsTrigger>
+          <TabsList>
+            <TabsTrigger value="comparison">{t('feeAnalysis.exchangeComparison')}</TabsTrigger>
+            <TabsTrigger value="details">{t('feeAnalysis.tradeDetails')}</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="comparison" className="space-y-4 animate-fade-in">
+          <TabsContent value="comparison" className="space-y-4">
             <ExchangeComparisonTable exchangeStats={exchangeStats} />
           </TabsContent>
           
-          <TabsContent value="details" className="space-y-4 animate-fade-in">
+          <TabsContent value="details" className="space-y-4">
             <TradeDetailsTable trades={enhancedTrades} />
           </TabsContent>
         </Tabs>
       </div>
+    </AppLayout>
   );
 };
 

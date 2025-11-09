@@ -55,22 +55,12 @@ export class BingXAdapter extends BaseExchangeAdapter {
       },
     });
 
-    const data = await response.json();
-    const status = response.status;
-    const code = typeof data?.code === 'number' ? data.code : undefined;
-    const msg = data?.msg || data?.message || data?.error;
-
-    console.log('BingX Request', { endpoint, status, code, msg });
-
     if (!response.ok) {
-      throw new Error(`BingX HTTP Error [${status}]: ${response.statusText}`);
+      throw new Error(`BingX API Error: ${response.statusText}`);
     }
 
-    if (code !== undefined && code !== 0) {
-      throw new Error(`BingX API Error [${code}]: ${msg || 'Unknown error'}`);
-    }
-
-    return (data && data.data !== undefined ? data.data : data) as T;
+    const data = await response.json();
+    return data.data || data;
   }
 
   async testConnection(): Promise<boolean> {
@@ -99,37 +89,30 @@ export class BingXAdapter extends BaseExchangeAdapter {
         params.symbol = options.symbol.replace('/', '-');
       }
 
-      // BingX spot historical trades (v1)
-      const response = await this.makeRequest<any>(
-        '/openApi/spot/v1/trade/query',
+      // BingX uses /openApi/spot/v2/trade/query for historical trades
+      const response = await this.makeRequest<{ orders: any[] }>(
+        '/openApi/spot/v2/trade/query', 
         params
       );
-
-      const items = (response?.orders || response?.fills || response?.list || (Array.isArray(response) ? response : [])) as any[];
-      if (!Array.isArray(items) || items.length === 0) {
-        console.warn('BingX returned no spot trades or invalid format');
+      
+      if (!response.orders || !Array.isArray(response.orders)) {
+        console.warn('BingX returned no trades or invalid format');
         return [];
       }
 
-      return items
-        .filter(trade => {
-          if (!trade || !(trade.orderId || trade.tradeId || trade.id)) return false;
-          // Keep only rows with executed quantity
-          const executedQty = parseFloat(trade.executedQty || trade.qty || trade.quantity || trade.origQty || '0');
-          if (executedQty <= 0) return false;
-          return true;
-        })
+      return response.orders
+        .filter(trade => trade && trade.orderId)
         .map(trade => ({
-          id: (trade.orderId || trade.tradeId || trade.id || '').toString(),
+          id: trade.orderId?.toString() || trade.tradeId?.toString() || '',
           exchange: 'bingx',
-          symbol: (trade.symbol || options?.symbol?.replace('-', '/') || '').replace('-', '/'),
-          side: (trade.side || '').toLowerCase() as 'buy' | 'sell',
-          price: parseFloat(trade.price || trade.avgPrice || '0'),
-          quantity: parseFloat(trade.executedQty || trade.qty || trade.quantity || trade.origQty || '0'),
+          symbol: trade.symbol?.replace('-', '/') || '',
+          side: trade.side?.toLowerCase() as 'buy' | 'sell',
+          price: parseFloat(trade.price || '0'),
+          quantity: parseFloat(trade.executedQty || trade.quantity || trade.origQty || '0'),
           fee: parseFloat(trade.commission || trade.fee || '0'),
           feeCurrency: trade.commissionAsset || trade.feeAsset || 'USDT',
           timestamp: new Date(parseInt(trade.time || trade.transactTime) || Date.now()),
-          orderId: trade.orderId ? String(trade.orderId) : undefined,
+          orderId: trade.orderId?.toString(),
         }));
     } catch (error) {
       console.error('Error fetching BingX trades:', error);
@@ -165,167 +148,6 @@ export class BingXAdapter extends BaseExchangeAdapter {
 
   async fetchDeposits(options?: FetchOptions): Promise<Deposit[]> {
     return [];
-  }
-
-  async fetchFuturesTrades(options?: FetchOptions): Promise<Trade[]> {
-    try {
-      const baseParams: Record<string, any> = {
-        limit: Math.min(options?.limit || 500, 500),
-        recvWindow: 60000,
-      };
-
-      if (options?.startTime) baseParams.startTime = options.startTime.getTime();
-      if (options?.endTime) baseParams.endTime = options.endTime.getTime();
-      if (options?.symbol) baseParams.symbol = options.symbol.replace('/', '-');
-
-      // Prefer fills endpoint for executed trades
-      let items: any[] = [];
-      try {
-        const resp1 = await this.makeRequest<any>(
-          '/openApi/swap/v2/trade/allFillOrders',
-          baseParams
-        );
-        const list1 = resp1?.orders || resp1?.fills || resp1?.list || resp1;
-        if (Array.isArray(list1)) items = list1;
-      } catch (e) {
-        console.warn('BingX allFillOrders failed, will try fillHistory:', e instanceof Error ? e.message : e);
-      }
-
-      if (!Array.isArray(items) || items.length === 0) {
-        console.log('BingX futures returned 0 fills from allFillOrders, trying fillHistory...');
-        try {
-          const resp2 = await this.makeRequest<any>(
-            '/openApi/swap/v2/trade/fillHistory',
-            baseParams
-          );
-          const list2 = resp2?.orders || resp2?.fills || resp2?.list || resp2;
-          if (Array.isArray(list2)) items = list2;
-        } catch (e2) {
-          console.warn('BingX fillHistory failed:', e2 instanceof Error ? e2.message : e2);
-        }
-      }
-
-      // COIN-M fallback (cswap) if USDT-M endpoints returned nothing
-      if (!Array.isArray(items) || items.length === 0) {
-        console.log('BingX futures USDT-M empty; trying COIN-M endpoints (cswap)...');
-        try {
-          const resp3 = await this.makeRequest<any>(
-            '/openApi/cswap/v2/trade/allFillOrders',
-            baseParams
-          );
-          const list3 = resp3?.orders || resp3?.fills || resp3?.list || resp3;
-          if (Array.isArray(list3)) items = list3;
-        } catch (e3) {
-          console.warn('BingX cswap allFillOrders failed:', e3 instanceof Error ? e3.message : e3);
-        }
-
-        if (!Array.isArray(items) || items.length === 0) {
-          try {
-            const resp4 = await this.makeRequest<any>(
-              '/openApi/cswap/v2/trade/fillHistory',
-              baseParams
-            );
-            const list4 = resp4?.orders || resp4?.fills || resp4?.list || resp4;
-            if (Array.isArray(list4)) items = list4;
-          } catch (e4) {
-            console.warn('BingX cswap fillHistory failed:', e4 instanceof Error ? e4.message : e4);
-          }
-        }
-      }
-
-      // Standard contract (non-perp) fallback as last attempt
-      if (!Array.isArray(items) || items.length === 0) {
-        console.log('BingX futures empty on swap/cswap; trying standard contract endpoints...');
-        const contractParams: Record<string, any> = { ...baseParams };
-        // symbol may be required by contract API; include if available
-        if (options?.symbol) contractParams.symbol = options.symbol.replace('/', '-');
-        try {
-          const resp5 = await this.makeRequest<any>(
-            '/openApi/contract/v1/allOrders',
-            contractParams
-          );
-          const list5 = resp5?.orders || resp5?.list || (Array.isArray(resp5) ? resp5 : []);
-          if (Array.isArray(list5)) {
-            items = list5;
-            console.log(`BingX contract returned ${list5.length} items. Sample:`, list5[0] ? JSON.stringify(Object.keys(list5[0])) : 'none');
-          }
-        } catch (e5) {
-          console.warn('BingX contract allOrders failed:', e5 instanceof Error ? e5.message : e5);
-        }
-      }
-
-      if (!Array.isArray(items) || items.length === 0) {
-        console.warn('BingX futures returned no trades or invalid format');
-        return [];
-      }
-
-      return items
-        .filter((t: any) => {
-          if (!t || !(t.orderId || t.tradeId || t.id)) return false;
-          // Keep only rows with executed quantity
-          const executedQty = parseFloat(t.executedQty || t.executedVolume || t.dealVol || t.qty || '0');
-          if (executedQty <= 0) return false;
-          return true;
-        })
-        .map((t: any) => {
-          const price = parseFloat(
-            t.avgPrice || t.price || t.dealAvgPrice || t.dealPrice || '0'
-          );
-          const qty = parseFloat(
-            t.executedQty || t.qty || t.volume || t.dealVol || t.origQty || t.executedVolume || '0'
-          );
-          const fee = parseFloat(t.commission || t.fee || '0');
-          const tsRaw =
-            t.time || t.updateTime || t.updatedTime || t.fillTime || t.createTime || t.transactTime;
-          const ts = new Date(parseInt(tsRaw) || Date.now());
-
-          // Enhanced symbol extraction for different response formats
-          let symbol = t.symbol || t.pair || t.contractId || options?.symbol?.replace('-', '/') || '';
-          if (symbol) symbol = symbol.replace('-', '/').replace('_', '/');
-
-          // Enhanced side extraction
-          let side = (t.side || t.positionSide || '').toLowerCase();
-          if (!side && t.type) {
-            // Standard contract might use 'type' for side
-            side = t.type.toLowerCase();
-          }
-          // Map common variations
-          if (side === 'long') side = 'buy';
-          if (side === 'short') side = 'sell';
-
-          return {
-            id: (t.tradeId || t.id || t.orderId || '').toString(),
-            exchange: 'bingx',
-            symbol,
-            side: side as 'buy' | 'sell',
-            price,
-            quantity: qty,
-            fee,
-            feeCurrency: t.commissionAsset || t.feeAsset || 'USDT',
-            timestamp: ts,
-            orderId: t.orderId ? String(t.orderId) : undefined,
-            role: t.positionSide || t.role,
-          } as Trade;
-        });
-    } catch (error) {
-      console.error('Error fetching BingX futures trades:', error);
-      throw error;
-    }
-  }
-
-  // Optional futures-specific health check
-  async testFuturesConnection(): Promise<boolean> {
-    try {
-      await this.makeRequest('/openApi/swap/v3/user/balance');
-      return true;
-    } catch {
-      try {
-        await this.makeRequest('/openApi/contract/v1/balance');
-        return true;
-      } catch {
-        return false;
-      }
-    }
   }
 
   async fetchWithdrawals(options?: FetchOptions): Promise<Withdrawal[]> {

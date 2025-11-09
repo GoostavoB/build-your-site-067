@@ -4,6 +4,7 @@ import { classifyFee } from '@/utils/feeClassification';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { EfficiencyBadge } from './EfficiencyBadge';
+import { ExchangeBadge } from '@/components/exchanges/ExchangeBadge';
 import { ArrowUpDown } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/utils';
@@ -96,7 +97,10 @@ export const ExchangeComparisonTable = memo(({ exchangeStats }: ExchangeComparis
                 </Badge>
               </TableCell>
               <TableCell className="font-medium">
-                {stat.broker}
+                <div className="flex items-center gap-2">
+                  <ExchangeBadge source={stat.broker} />
+                  {stat.broker}
+                </div>
               </TableCell>
               <TableCell className="text-right">
                 <BlurredValue value={formatCurrency(stat.totalVolume)} />

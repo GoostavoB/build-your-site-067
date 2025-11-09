@@ -1,19 +1,9 @@
 import { motion } from 'framer-motion';
-import { Check, Sparkles } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { GlassCard } from './GlassCard';
 import { MagneticButton } from './MagneticButton';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { getSubscriptionProduct } from '@/config/stripe-products';
-import { initiateStripeCheckout } from '@/utils/stripeCheckout';
-import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { trackCheckoutFunnel } from '@/utils/checkoutAnalytics';
-import { AnnualUpgradeUpsell } from '@/components/checkout/AnnualUpgradeUpsell';
-import { checkoutErrorTracker } from '@/utils/checkoutErrorTracking';
 
 interface PricingPlan {
   id: string;
@@ -38,111 +28,12 @@ interface PremiumPricingCardProps {
 export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPricingCardProps) => {
   const navigate = useNavigate();
   const { i18n } = useTranslation();
-  const { user } = useAuth();
-  const { toast } = useToast();
   const currentLang = i18n.language;
-  const [loading, setLoading] = useState(false);
-  const [showUpsell, setShowUpsell] = useState(false);
-  const [pendingCheckout, setPendingCheckout] = useState<{
-    tier: 'pro' | 'elite';
-    stripeProduct: any;
-    price: number;
-  } | null>(null);
   
-  const handleCTA = async () => {
+  const handleCTA = () => {
     if (plan.comingSoon) return;
-    
-    // If not logged in, redirect to signup
-    if (!user) {
-      const authPath = currentLang === 'en' ? '/auth?mode=signup' : `/${currentLang}/auth?mode=signup`;
-      navigate(authPath);
-      return;
-    }
-
-    // User is logged in, initiate Stripe checkout
-    setLoading(true);
-    
-    try {
-      // Determine tier and get the correct product
-      const tier = plan.id.toLowerCase() as 'pro' | 'elite';
-      const stripeProduct = getSubscriptionProduct(tier, billingCycle);
-      
-      // Track plan selection
-      const price = billingCycle === 'monthly' ? plan.monthlyPrice : plan.annualPrice;
-      trackCheckoutFunnel.selectPlan(plan.nameKey, billingCycle, price || 0);
-      
-      // If annual plan and not free, show upsell modal
-      if (billingCycle === 'annual' && plan.id !== 'free') {
-        setPendingCheckout({ tier, stripeProduct, price: price || 0 });
-        setShowUpsell(true);
-        trackCheckoutFunnel.annualUpsellShown(plan.nameKey);
-        setLoading(false);
-        return;
-      }
-      
-      // Navigate to checkout interstitial
-      navigate(`/checkout?priceId=${stripeProduct.priceId}&productType=${stripeProduct.productType}`);
-    } catch (error) {
-      console.error('Checkout error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to start checkout';
-      const tier = plan.id.toLowerCase() as 'pro' | 'elite';
-      
-      let priceId = '';
-      let productType = '';
-      try {
-        const stripeProduct = getSubscriptionProduct(tier, billingCycle);
-        priceId = stripeProduct.priceId;
-        productType = stripeProduct.productType;
-      } catch {
-        // If we can't get the product, use fallback values
-        priceId = 'unknown';
-        productType = billingCycle === 'monthly' ? 'subscription_monthly' : 'subscription_annual';
-      }
-      
-      // Track error
-      checkoutErrorTracker.trackCheckoutError({
-        step: 'validation',
-        errorType: 'validation_error',
-        errorMessage,
-        priceId,
-        productType,
-        browserContext: checkoutErrorTracker.getBrowserContext(),
-      });
-      
-      trackCheckoutFunnel.checkoutErrorOccurred('pricing_card_error', errorMessage, productType, priceId, 'validation');
-      
-      toast({
-        title: 'Checkout Failed',
-        description: errorMessage,
-        variant: 'destructive',
-      });
-      setLoading(false);
-    }
-  };
-
-  const handleUpsellAccept = (quantity: number) => {
-    if (!pendingCheckout) return;
-    
-    const totalSavings = quantity * 1.00; // $1 saved per pack
-    trackCheckoutFunnel.annualUpsellAccepted(quantity, quantity * 1.00, totalSavings);
-    
-    // Navigate with upsell credits parameter
-    navigate(
-      `/checkout?priceId=${pendingCheckout.stripeProduct.priceId}&productType=${pendingCheckout.stripeProduct.productType}&upsellCredits=${quantity * 10}`
-    );
-    setShowUpsell(false);
-  };
-
-  const handleUpsellDecline = () => {
-    if (!pendingCheckout) return;
-    
-    trackCheckoutFunnel.annualUpsellDeclined(plan.nameKey);
-    
-    // Navigate without upsell
-    navigate(
-      `/checkout?priceId=${pendingCheckout.stripeProduct.priceId}&productType=${pendingCheckout.stripeProduct.productType}`
-    );
-    setShowUpsell(false);
+    const authPath = currentLang === 'en' ? '/auth?mode=signup' : `/${currentLang}/auth?mode=signup`;
+    navigate(authPath);
   };
   
   const getDisplayPrice = () => {
@@ -156,26 +47,17 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
   };
 
   return (
-    <>
-      <AnnualUpgradeUpsell
-        open={showUpsell}
-        onAccept={handleUpsellAccept}
-        onDecline={handleUpsellDecline}
-        planName={t(plan.nameKey)}
-        annualPrice={pendingCheckout?.price || 0}
-      />
-      
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ 
-          duration: 0.45,
-          delay: index * 0.09,
-          ease: [0.22, 1, 0.36, 1]
-        }}
-        className="h-full"
-      >
-        <GlassCard
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ 
+        duration: 0.45,
+        delay: index * 0.09,
+        ease: [0.22, 1, 0.36, 1]
+      }}
+      className="h-full"
+    >
+      <GlassCard 
         elevated={plan.popular}
         className={`group p-8 h-full flex flex-col relative ${plan.popular ? 'scale-105' : ''}`}
         style={plan.popular ? {
@@ -205,30 +87,13 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
         )}
 
         <div className="mb-6">
-          <h3 className="text-[22px] font-bold mb-2 tracking-tight" style={{ letterSpacing: '-0.01em' }}>
+          <h3 className="text-2xl font-bold mb-2 tracking-tight" style={{ letterSpacing: '-0.01em' }}>
             {plan.comingSoon ? plan.nameKey : t(plan.nameKey)}
           </h3>
-          <p className="text-[14px] text-muted-foreground dark:text-muted-foreground/70 leading-relaxed">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground/70 leading-relaxed">
             {plan.comingSoon ? plan.descriptionKey : t(plan.descriptionKey)}
           </p>
         </div>
-
-        {/* Annual Upgrade Promotion for Monthly Plans */}
-        {billingCycle === 'monthly' && !plan.comingSoon && plan.id !== 'free' && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            transition={{ duration: 0.3, delay: 0.2 }}
-            className="mb-6"
-          >
-            <Alert className="border-primary/30 bg-gradient-to-r from-primary/10 to-accent/10">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <AlertDescription className="text-sm">
-                <strong>Upgrade to Annual:</strong> Get 50% off all credit purchases - exclusive one-time offer!
-              </AlertDescription>
-            </Alert>
-          </motion.div>
-        )}
 
         <div className="mb-8">
           {getDisplayPrice() !== null ? (
@@ -239,7 +104,7 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="text-[38px] font-bold tracking-tight tabular-nums"
+                  className="text-5xl font-bold tracking-tight tabular-nums"
                   style={{ 
                     fontVariantNumeric: 'tabular-nums',
                     letterSpacing: '-0.02em'
@@ -247,7 +112,7 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
                 >
                   ${getDisplayPrice()}
                 </motion.span>
-                <span className="text-[14px] text-muted-foreground dark:text-muted-foreground/70">
+                <span className="text-sm text-muted-foreground dark:text-muted-foreground/70">
                   /{billingCycle === 'monthly' ? t('pricing.perMonth') : t('pricing.perMonthBilledAnnually')}
                 </span>
               </div>
@@ -265,7 +130,7 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
               )}
             </>
           ) : (
-            <div className="text-[32px] font-bold tracking-tight mb-2">
+            <div className="text-3xl font-bold tracking-tight mb-2">
               Custom Pricing
             </div>
           )}
@@ -274,16 +139,9 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
         <MagneticButton
           onClick={handleCTA}
           variant={plan.popular ? 'default' : 'outline'}
-          className={`w-full mb-8 py-6 text-[15px] font-semibold ${plan.comingSoon || loading ? 'opacity-60 cursor-not-allowed pointer-events-none' : ''}`}
+          className={`w-full mb-8 py-6 text-base font-medium ${plan.comingSoon ? 'opacity-60 cursor-not-allowed pointer-events-none' : ''}`}
         >
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Processing...
-            </>
-          ) : (
-            plan.comingSoon ? plan.ctaKey : t(plan.ctaKey)
-          )}
+          {plan.comingSoon ? plan.ctaKey : t(plan.ctaKey)}
         </MagneticButton>
 
         <ul className="space-y-4 flex-1">
@@ -302,7 +160,7 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
               <div className="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center group-hover:bg-accent/30 transition-all duration-280 ease-premium">
                 <Check size={14} className="text-accent" />
               </div>
-              <span className="text-[14px] text-muted-foreground dark:text-muted-foreground/70 leading-relaxed group-hover:text-foreground transition-colors duration-280 ease-premium">
+              <span className="text-sm text-muted-foreground dark:text-muted-foreground/70 leading-relaxed group-hover:text-foreground transition-colors duration-280 ease-premium">
                 {plan.comingSoon ? featureKey : t(featureKey)}
               </span>
             </motion.li>
@@ -310,6 +168,5 @@ export const PremiumPricingCard = ({ plan, billingCycle, index, t }: PremiumPric
         </ul>
       </GlassCard>
     </motion.div>
-    </>
   );
 };

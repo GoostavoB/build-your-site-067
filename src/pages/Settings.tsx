@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import AppLayout from '@/components/layout/AppLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { X, Plus, Edit2, Check, Upload, Download, User, Bell, TrendingUp, Gift, Sparkles } from 'lucide-react';
+import { X, Plus, Edit2, Check, Upload, Download, User, Bell, TrendingUp, Gift } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { NotificationPreferences } from '@/components/NotificationPreferences';
 import { DataManagement } from '@/components/DataManagement';
 import { CapitalManagement } from '@/components/CapitalManagement';
@@ -21,11 +21,6 @@ import { SocialShareRewards } from '@/components/SocialShareRewards';
 import { ReferralProgram } from '@/components/ReferralProgram';
 import { useCalmMode } from '@/contexts/CalmModeContext';
 import { SkipToContent } from '@/components/SkipToContent';
-import { ProfileFrameSelector } from '@/components/settings/ProfileFrameSelector';
-import { WidgetStyleCustomizer } from '@/components/settings/WidgetStyleCustomizer';
-import { ColorCustomizer } from '@/components/settings/ColorCustomizer';
-import { posthog } from '@/lib/posthog';
-import { Palette } from 'lucide-react';
 
 const Settings = () => {
   const { user } = useAuth();
@@ -33,7 +28,6 @@ const Settings = () => {
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({ full_name: '', email: '' });
   const [settings, setSettings] = useState({ blur_enabled: false, sidebar_style: 'matte' });
-  const [reminderIntensity, setReminderIntensity] = useState('normal');
   const [setups, setSetups] = useState<{ id: string; name: string; color?: string }[]>([]);
   const [newSetupName, setNewSetupName] = useState('');
   const [newSetupColor, setNewSetupColor] = useState('#A18CFF');
@@ -84,17 +78,6 @@ const Settings = () => {
         sidebar_style: data.sidebar_style
       });
     }
-
-    // Fetch reminder preferences
-    const { data: xpData } = await supabase
-      .from('user_xp_tiers')
-      .select('reminder_intensity')
-      .eq('user_id', user.id)
-      .single();
-    
-    if (xpData) {
-      setReminderIntensity(xpData.reminder_intensity || 'normal');
-    }
   };
 
   const handleSaveProfile = async (e: React.FormEvent) => {
@@ -113,8 +96,6 @@ const Settings = () => {
       toast.error('Failed to update profile');
     } else {
       toast.success('Profile updated!');
-      // Trigger profile update event to refresh UserMenu
-      window.dispatchEvent(new Event('profileUpdated'));
     }
   };
 
@@ -298,35 +279,8 @@ const Settings = () => {
     setEditingSetupColor(color || '#A18CFF');
   };
 
-  const handleUpdateReminderIntensity = async (intensity: string) => {
-    if (!user?.id) return;
-
-    const { error } = await supabase
-      .from('user_xp_tiers')
-      .update({ reminder_intensity: intensity })
-      .eq('user_id', user.id);
-
-    if (error) {
-      toast.error('Failed to update reminder settings');
-      console.error('Error updating reminder intensity:', error);
-    } else {
-      setReminderIntensity(intensity);
-      
-      // Clear cache to force refetch in useEngagementReminders
-      sessionStorage.removeItem('daily_activity_cache');
-      
-      toast.success('Reminder settings updated!', {
-        description: intensity === 'minimal' 
-          ? 'You\'ll only see reminders if inactive for 2+ days' 
-          : intensity === 'normal'
-          ? 'You\'ll see welcome back toasts once per day'
-          : 'You\'ll receive more frequent reminders'
-      });
-    }
-  };
-
   return (
-    <>
+    <AppLayout>
       <SkipToContent />
       <main id="main-content" className="max-w-4xl mx-auto space-y-6">
         <header>
@@ -335,7 +289,7 @@ const Settings = () => {
         </header>
 
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="profile">
               <User className="w-4 h-4 mr-2" aria-hidden="true" />
               Profile
@@ -348,13 +302,17 @@ const Settings = () => {
               <Edit2 className="w-4 h-4 mr-2" aria-hidden="true" />
               Setups
             </TabsTrigger>
-            <TabsTrigger value="rewards" onClick={() => posthog.capture('customization_tab_viewed')}>
-              <Sparkles className="w-4 h-4 mr-2" aria-hidden="true" />
-              Rewards
+            <TabsTrigger value="appearance">
+              <Badge className="w-4 h-4 mr-2" />
+              Appearance
             </TabsTrigger>
             <TabsTrigger value="notifications">
               <Bell className="w-4 h-4 mr-2" />
               Notifications
+            </TabsTrigger>
+            <TabsTrigger value="rewards">
+              <Gift className="w-4 h-4 mr-2" />
+              Rewards
             </TabsTrigger>
             <TabsTrigger value="data">
               <Download className="w-4 h-4 mr-2" />
@@ -540,26 +498,46 @@ const Settings = () => {
                 )}
               </div>
             </Card>
+          </TabsContent>
 
-            {/* Theme Colors Section */}
+          <TabsContent value="appearance" className="space-y-6">
             <Card className="p-6 glass">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">Theme Colors</h2>
-                <Badge variant="secondary">
-                  <Palette className="w-3 h-3 mr-1" />
-                  Customizable
-                </Badge>
+              <h2 className="text-xl font-semibold mb-4">Theme Preferences</h2>
+              <ThemeSelector />
+            </Card>
+
+            <CurrencySelector />
+
+            <BlurSettings />
+
+            <Card className="p-6 glass">
+              <h2 className="text-xl font-semibold mb-4">Animation & Sound</h2>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Calm Mode</p>
+                    <p className="text-sm text-muted-foreground">Reduce animations for a more focused experience</p>
+                  </div>
+                  <Switch
+                    checked={calmModeEnabled}
+                    onCheckedChange={toggleCalmMode}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Sound Effects</p>
+                    <p className="text-sm text-muted-foreground">Play sounds for achievements and rewards</p>
+                  </div>
+                  <Switch
+                    checked={soundEnabled}
+                    onCheckedChange={toggleSound}
+                  />
+                </div>
               </div>
-              <p className="text-sm text-muted-foreground mb-6">
-                Personalize your dashboard with custom colors. 
-                Free users unlock primary color at <strong>Tier 5 + 30-day streak</strong>. 
-                Pro unlocks 3 colors. Elite unlocks all colors.
-              </p>
-              <ColorCustomizer />
             </Card>
           </TabsContent>
 
-          <TabsContent value="notifications" className="space-y-6">
+      <TabsContent value="notifications" className="space-y-6">
         <Card className="p-6 glass">
           <h2 className="text-xl font-semibold mb-4">Notification Preferences</h2>
           <p className="text-sm text-muted-foreground mb-6">Choose what updates you want to receive</p>
@@ -600,78 +578,15 @@ const Settings = () => {
                 }
               />
             </div>
-
-            <div className="pt-6 border-t border-border">
-              <h3 className="font-medium mb-2">Daily Engagement Reminders</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Control how often we remind you about incomplete daily goals
-              </p>
-              
-              <Select value={reminderIntensity} onValueChange={handleUpdateReminderIntensity}>
-                <SelectTrigger className="w-full max-w-md">
-                  <SelectValue placeholder="Select reminder frequency" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="minimal">
-                    <div className="flex flex-col items-start">
-                      <span className="font-medium">Minimal</span>
-                      <span className="text-xs text-muted-foreground">
-                        Only if inactive for 2+ days
-                      </span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="normal">
-                    <div className="flex flex-col items-start">
-                      <span className="font-medium">Normal (Recommended)</span>
-                      <span className="text-xs text-muted-foreground">
-                        Welcome back toast once per day
-                      </span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="aggressive">
-                    <div className="flex flex-col items-start">
-                      <span className="font-medium">Aggressive</span>
-                      <span className="text-xs text-muted-foreground">
-                        Multiple reminders if goals incomplete
-                      </span>
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                <p className="text-xs text-muted-foreground">
-                  💡 <strong>Current setting:</strong> {reminderIntensity === 'minimal' ? 'You\'ll only see reminders if inactive' : reminderIntensity === 'normal' ? 'You\'ll see one reminder per day' : 'You\'ll see multiple reminders throughout the day'}
-                </p>
-              </div>
-            </div>
           </div>
           </Card>
         </TabsContent>
 
-
         <TabsContent value="rewards" className="space-y-6">
-          <Card className="p-6 glass">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-semibold">Profile Frames</h2>
-            </div>
-            <p className="text-sm text-muted-foreground mb-6">
-              Unlock and customize your profile frame by leveling up and earning badges
-            </p>
-            <ProfileFrameSelector />
-          </Card>
-
-          <Card className="p-6 glass">
-            <div className="flex items-center gap-2 mb-2">
-              <Gift className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-semibold">Widget Styles</h2>
-            </div>
-            <p className="text-sm text-muted-foreground mb-6">
-              Customize the appearance of your dashboard widgets
-            </p>
-            <WidgetStyleCustomizer />
-          </Card>
+          <div className="grid gap-6 md:grid-cols-2">
+            <SocialShareRewards />
+            <ReferralProgram />
+          </div>
         </TabsContent>
 
         <TabsContent value="data" className="space-y-6">
@@ -704,9 +619,9 @@ const Settings = () => {
           </div>
         </Card>
       </TabsContent>
-      </Tabs>
-    </main>
-    </>
+    </Tabs>
+  </main>
+    </AppLayout>
   );
 };
 

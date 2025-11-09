@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AppLayout from "@/components/layout/AppLayout";
 import { RichTradingJournal } from "@/components/journal/RichTradingJournal";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -44,7 +45,7 @@ export default function Journal() {
   };
 
   return (
-    <>
+    <AppLayout>
       <SkipToContent />
       <main id="main-content" className="container mx-auto p-6 max-w-7xl">
         <header className="flex items-center justify-between mb-6">
@@ -239,6 +240,6 @@ export default function Journal() {
           </section>
         </div>
       </main>
-    </>
+    </AppLayout>
   );
 }

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { useTriggerConfetti } from './useTriggerConfetti';
 
 interface Trade {
   pnl?: number;
@@ -10,6 +11,7 @@ interface Trade {
 
 export const useHiddenRewards = (trades: Trade[]) => {
   const { user } = useAuth();
+  const { triggerConfetti } = useTriggerConfetti();
 
   useEffect(() => {
     if (!user || !trades || trades.length === 0) return;
@@ -71,35 +73,33 @@ export const useHiddenRewards = (trades: Trade[]) => {
           .from('user_xp_levels')
           .select('total_xp_earned')
           .eq('user_id', user.id)
-          .maybeSingle();
+          .single();
 
-        const totalXP = currentXP?.total_xp_earned || 0;
+        if (currentXP) {
+          await supabase
+            .from('user_xp_levels')
+            .update({
+              total_xp_earned: currentXP.total_xp_earned + xpReward,
+            })
+            .eq('user_id', user.id);
 
-        // Upsert XP record
-        await supabase
-          .from('user_xp_levels')
-          .upsert({
+          await supabase.from('xp_activity_log').insert({
             user_id: user.id,
-            total_xp_earned: totalXP + xpReward,
-            current_xp: totalXP + xpReward,
-            current_level: 1
-          }, { onConflict: 'user_id' });
+            activity_type: 'hidden_threshold_reward',
+            xp_earned: xpReward,
+            description: message,
+          });
+        }
 
-        await supabase.from('xp_activity_log').insert({
-          user_id: user.id,
-          activity_type: 'hidden_threshold_reward',
-          xp_earned: xpReward,
-          description: message,
-        });
-
-        // Show notification
-        toast.success(`Milestone Reached: ${message}`, {
-          description: `+${xpReward} points`,
+        // Show notification with confetti
+        triggerConfetti();
+        toast.success(`🎁 Hidden Reward Unlocked! ${message}`, {
+          description: `+${xpReward} XP`,
           duration: 5000,
         });
       }
     };
 
     checkHiddenThresholds();
-  }, [user, trades]);
+  }, [user, trades, triggerConfetti]);
 };

@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import AppLayout from '@/components/layout/AppLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,7 @@ const steps = [
     number: '01',
     icon: Upload,
     title: 'Import Your Trades',
-    description: 'Upload screenshots of your trades (up to 10 trades per image). Connect your exchange via API for automatic syncing. Export to CSV available.',
+    description: 'Connect your exchange via API or manually upload your trading history. We support CSV imports from all major brokers and exchanges.',
   },
   {
     number: '02',
@@ -131,10 +130,10 @@ export default function HowItWorks() {
           </p>
           <div className="flex gap-4 justify-center">
             <Button size="lg" asChild>
-              <Link to="/auth">Start Free Trial</Link>
+              <a href="/auth">Start Free Trial</a>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <a href="/#pricing-section">View Pricing</a>
+              <a href="/pricing">View Pricing</a>
             </Button>
           </div>
         </Card>

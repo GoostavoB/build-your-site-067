@@ -76,28 +76,15 @@ export default function Reports() {
       const result = await response.json();
 
       // Save to database
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData?.session?.access_token;
-      if (!token) {
-        throw new Error('Session expired. Please sign in again.');
-      }
-
       const { error } = await (supabase.from('generated_reports' as any).insert({
         report_type: reportType,
         period_start: format(dateRange.from, 'yyyy-MM-dd'),
         period_end: format(dateRange.to, 'yyyy-MM-dd'),
         report_data: result.report,
         trade_count: trades.length
-      }).select().single() as any);
+      }) as any);
 
-      if (error) {
-        const msg = error.message || 'Failed to save report';
-        const code = error.code || '';
-        if (code === '42501' || msg.toLowerCase().includes('row-level security')) {
-          throw new Error('Permission denied. Please sign in again.');
-        }
-        throw error;
-      }
+      if (error) throw error;
       return result;
     },
     onSuccess: () => {
@@ -144,7 +131,7 @@ ${JSON.stringify(report.report_data, null, 2)}
   };
 
   return (
-    <>
+    <AppLayout>
       <SkipToContent />
       <main id="main-content" className={layout.container}>
         <div className={spacing.section}>
@@ -263,6 +250,6 @@ ${JSON.stringify(report.report_data, null, 2)}
       </Card>
         </div>
       </main>
-    </>
+    </AppLayout>
   );
 }

@@ -174,7 +174,7 @@ const TradingHeatmapComponent = ({ trades }: TradingHeatmapProps) => {
                                 </div>
                                 <div className="flex justify-between">
                                   <span className="text-muted-foreground">Total P&L:</span>
-                                  <span className={`font-semibold ${cell.pnl >= 0 ? 'text-profit' : 'text-loss'}`}>
+                                  <span className={`font-semibold ${cell.pnl >= 0 ? 'text-neon-green' : 'text-neon-red'}`}>
                                     ${cell.pnl.toFixed(2)}
                                   </span>
                                 </div>

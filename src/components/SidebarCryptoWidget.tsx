@@ -17,6 +17,7 @@ const AVAILABLE_TICKERS = [
   { symbol: 'SOLUSDT', display: 'SOL' },
   { symbol: 'XRPUSDT', display: 'XRP' },
   { symbol: 'SPX', display: 'S&P 500', isIndex: true },
+  { symbol: 'BTC.D', display: 'BTC.D', isIndex: true },
 ];
 
 export function SidebarCryptoWidget() {
@@ -34,15 +35,6 @@ export function SidebarCryptoWidget() {
   useEffect(() => {
     localStorage.setItem('selectedCryptoTickers', JSON.stringify(selectedTickers));
   }, [selectedTickers]);
-
-  // Sanitize any legacy selections (e.g., BTC.D) from storage on first mount
-  useEffect(() => {
-    if (selectedTickers.some((s) => s.includes('.'))) {
-      setSelectedTickers((prev) => prev.filter((s) => !s.includes('.')));
-    }
-    // run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const toggleTicker = (symbol: string) => {
     setSelectedTickers(prev => 

@@ -18,69 +18,8 @@
     <meta name="msapplication-TileImage" content="/logo-192.png" />
     <meta name="format-detection" content="telephone=no, date=no, email=no, address=no" />
     <meta name="mobile-web-app-capable" content="yes" />
-    
-    <!-- HTTPS enforcement (production only) -->
-    <script>
-      // Only redirect on production domain - allows preview/localhost to work
-      if (location.hostname.endsWith('thetradingdiary.com')) {
-        if (location.protocol !== 'https:' || location.hostname !== 'www.thetradingdiary.com') {
-          location.replace('https://www.thetradingdiary.com' + location.pathname + location.search + location.hash);
-        }
-      }
-    </script>
-    
-    <!-- Universal Service Worker Kill Switch -->
-    <script>
-      // EMERGENCY: Unregister all service workers immediately
-      // This prevents module loading errors from broken service workers
-      (function() {
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            for (let registration of registrations) {
-              registration.unregister();
-              console.log('[SW Cleanup] Unregistered service worker');
-            }
-          });
-        }
-        
-        // Clear all caches to remove stale data
-        if ('caches' in window) {
-          caches.keys().then(function(names) {
-            for (let name of names) {
-              caches.delete(name);
-              console.log('[SW Cleanup] Deleted cache:', name);
-            }
-          });
-        }
-      })();
-      
-      // Force cleanup if ?no-sw=1 or #no-sw is in URL (support/debugging)
-      // This runs immediately, before any modules load
-      if (location.search.includes('no-sw=1') || location.hash.includes('no-sw')) {
-        try {
-          console.log('[Kill Switch] Forcing SW cleanup...');
-          if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations()
-              .then(regs => {
-                regs.forEach(reg => reg.unregister());
-                console.log('[Kill Switch] Unregistered', regs.length, 'service workers');
-              })
-              .catch(() => {});
-          }
-          if ('caches' in window) {
-            caches.keys()
-              .then(keys => {
-                Promise.all(keys.map(k => caches.delete(k)));
-                console.log('[Kill Switch] Cleared', keys.length, 'caches');
-              })
-              .catch(() => {});
-          }
-        } catch (_) {}
-      }
-    </script>
-    
-    <title>Best Crypto Trading Journal | Multi-Exchange Tracking</title>
-    <meta name="description" content="Screenshot your trades and upload. AI extracts data from images. Works with ANY exchange. No API needed. Track trades in 15 seconds.">
+    <title>The #1 Crypto Trading Journal | Track &amp; Analyze Every Trade</title>
+    <meta name="description" content="Track, analyze, and review every crypto trade with AI-powered insights. Built exclusively for crypto traders with advanced analytics, automated trade import, risk management tools, and real-time performance tracking. Free to start.">
     <meta name="author" content="The Trading Diary" />
     <meta name="keywords" content="crypto trading journal, cryptocurrency trading, crypto trade tracker, bitcoin trading journal, crypto analytics, trading performance, blockchain trading, crypto trading analysis">
     <link rel="canonical" href="https://www.thetradingdiary.com/" />
@@ -244,10 +183,10 @@
     <!-- RSS Feed -->
     <link rel="alternate" type="application/rss+xml" title="The Trading Diary Blog RSS" href="https://www.thetradingdiary.com/blog/rss.xml">
 
-  <meta property="og:title" content="The #1 Crypto Trading Journal | Track & Analyze Every Trade">
-  <meta name="twitter:title" content="The #1 Crypto Trading Journal | Track & Analyze Every Trade">
-  <meta property="og:description" content="Track, analyze, and review every crypto trade with AI. Advanced analytics, automated insights, and performance tracking for serious traders.">
-  <meta name="twitter:description" content="Track, analyze, and review every crypto trade with AI. Advanced analytics, automated insights, and performance tracking for serious traders.">
+    <meta property="og:title" content="The #1 Crypto Trading Journal | Track &amp; Analyze Every Trade">
+  <meta name="twitter:title" content="The #1 Crypto Trading Journal | Track &amp; Analyze Every Trade">
+  <meta property="og:description" content="Track, analyze, and review every crypto trade with AI-powered insights. Built exclusively for crypto traders with advanced analytics, automated trade import, risk management tools, and real-time performance tracking. Free to start.">
+  <meta name="twitter:description" content="Track, analyze, and review every crypto trade with AI-powered insights. Built exclusively for crypto traders with advanced analytics, automated trade import, risk management tools, and real-time performance tracking. Free to start.">
 </head>
 
   <body>

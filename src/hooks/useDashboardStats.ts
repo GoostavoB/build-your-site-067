@@ -52,10 +52,8 @@ export const useDashboardStats = (trades: Trade[], capitalLog?: CapitalLogEntry[
       avgRoi = roiData.weightedROI;
       currentCapital = getCurrentCapital(capitalLog);
     } else {
-      // Calculate weighted average ROI (accounts for different position sizes)
-      const totalProfit = trades.reduce((sum, t) => sum + (t.profit_loss || 0), 0);
-      const totalMargin = trades.reduce((sum, t) => sum + (t.margin || 0), 0);
-      avgRoi = totalMargin > 0 ? (totalProfit / totalMargin) * 100 : 0;
+      // Fallback to simple ROI if no capital log
+      avgRoi = trades.reduce((sum, t) => sum + (t.roi || 0), 0) / trades.length;
     }
     
     const bestTrade = trades.reduce((best, t) => 

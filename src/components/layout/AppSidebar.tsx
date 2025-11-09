@@ -3,8 +3,7 @@ import {
   BarChart3, Upload, TrendingUp, Target, Brain, Trophy, Settings2, BookOpen, HelpCircle, 
   LineChart, LogOut, Zap, RefreshCw, Wallet, Receipt, BookMarked, Users, GitCompare, 
   Shield, FileBarChart, ClipboardList, Calendar, Bell, FileText, ChevronDown, Search,
-  Plus, Archive, Star, Flame, Award, PieChart, Heart, Image, Download, Info, Accessibility, TrendingDown, DollarSign,
-  Loader2
+  Plus, Archive, Star, Flame, Award, PieChart, Heart, Image, Download, Info
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Logo } from '@/components/Logo';
@@ -28,7 +27,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useFavorites } from '@/hooks/useFavorites';
-import { usePrefetchRoute } from '@/hooks/usePrefetchRoute';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface MenuItem {
@@ -53,18 +51,16 @@ export function AppSidebar() {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [archivedGroups, setArchivedGroups] = useState<string[]>([]);
+  const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
   const [allExpanded, setAllExpanded] = useState(false);
-  const { favorites, isFavorite, toggleFavorite, isProcessing } = useFavorites();
-  const { prefetch } = usePrefetchRoute();
+  const { favorites, isFavorite, toggleFavorite } = useFavorites();
 
   const menuStructure: MenuGroup[] = [
     {
-      label: 'Main',
+      label: t('sidebar.groups.dashboard'),
       defaultOpen: true,
       items: [
         { title: t('navigation.dashboard'), url: '/dashboard', icon: BarChart3, iconName: 'BarChart3', keywords: ['home', 'overview', 'main', 'summary', 'stats', 'statistics', 'metrics', 'performance', 'snapshot', 'widgets', 'customize', 'view', 'monitor', 'landing', 'central', 'hub'] },
-        { title: 'Insights', url: '/dashboard?tab=insights', icon: Brain, iconName: 'Brain', keywords: ['insights', 'analytics', 'performance', 'analysis', 'metrics', 'quality', 'behavior', 'patterns', 'trends', 'deep dive', 'detailed', 'advanced'] },
-        { title: 'Trade History', url: '/dashboard?tab=history', icon: ClipboardList, iconName: 'ClipboardList', keywords: ['history', 'trades', 'past', 'records', 'transactions', 'log', 'list', 'archive', 'previous', 'all trades', 'complete', 'full'] },
       ],
     },
     {
@@ -73,9 +69,7 @@ export function AppSidebar() {
       dataTour: 'portfolio-group',
       items: [
         { title: t('navigation.spotWallet'), url: '/spot-wallet', icon: Wallet, iconName: 'Wallet', keywords: ['wallet', 'balance', 'tokens', 'holdings', 'assets', 'portfolio', 'allocation', 'distribution', 'coins', 'cryptocurrencies', 'btc', 'eth', 'total', 'value', 'net worth', 'funds', 'money', 'cash', 'crypto'] },
-        { title: 'Track Capital', url: '/track-capital', icon: DollarSign, iconName: 'DollarSign', keywords: ['capital', 'deposits', 'withdrawals', 'money', 'funds', 'track', 'manage', 'balance', 'add', 'withdraw', 'cash', 'flow', 'history', 'log', 'investment', 'invested'] },
-        // Exchange connections temporarily hidden for future use
-        // { title: t('navigation.exchanges'), url: '/exchanges', icon: RefreshCw, iconName: 'RefreshCw', keywords: ['binance', 'bybit', 'okx', 'api', 'connect', 'sync', 'integration', 'platform', 'broker', 'exchange', 'connection', 'link', 'import', 'automated', 'real-time', 'live'] },
+        { title: t('navigation.exchanges'), url: '/exchanges', icon: RefreshCw, iconName: 'RefreshCw', keywords: ['binance', 'bybit', 'okx', 'api', 'connect', 'sync', 'integration', 'platform', 'broker', 'exchange', 'connection', 'link', 'import', 'automated', 'real-time', 'live'] },
         // Phase 2: Trading Accounts - temporarily disabled for backlog #18
         // { title: t('navigation.tradingAccounts'), url: '/accounts', icon: PieChart, iconName: 'PieChart', keywords: ['accounts', 'bank', 'capital', 'balance', 'funds', 'money', 'deposits', 'withdrawals', 'transactions', 'history', 'management', 'initial', 'current', 'wallets', 'manage', 'profiles', 'multiple', 'organize'] },
       ],
@@ -120,8 +114,9 @@ export function AppSidebar() {
       defaultOpen: false,
       dataTour: 'reports-group',
       items: [
-        // { title: t('navigation.reports'), url: '/reports', icon: FileBarChart, iconName: 'FileBarChart', keywords: ['reports', 'documents', 'generate', 'export', 'monthly', 'weekly', 'custom', 'scheduled', 'automated', 'history', 'download', 'summary', 'kpi', 'metrics', 'analysis', 'period', 'excel', 'csv'] },
+        { title: t('navigation.reports'), url: '/reports', icon: FileBarChart, iconName: 'FileBarChart', keywords: ['reports', 'documents', 'generate', 'export', 'monthly', 'weekly', 'custom', 'scheduled', 'automated', 'history', 'download', 'summary', 'kpi', 'metrics', 'analysis', 'period', 'excel', 'csv'] },
         { title: t('navigation.taxReports'), url: '/tax-reports', icon: FileText, iconName: 'FileText', keywords: ['tax', 'taxes', 'irs', 'filings', 'legal', 'compliance', 'capital', 'gains', 'losses', 'year', 'end', 'accountant', 'documentation', 'fifo', 'lifo', 'accounting', 'fiscal', 'revenue', 'income'] },
+        { title: t('navigation.myMetrics'), url: '/my-metrics', icon: Star, iconName: 'Star', keywords: ['metrics', 'custom', 'kpi', 'benchmarks', 'personal', 'indicators', 'measure', 'track', 'performance', 'own', 'create', 'define', 'personalized'] },
       ],
     },
     {
@@ -134,58 +129,28 @@ export function AppSidebar() {
         // { title: 'Social Feed', url: '/social-feed', icon: Heart, iconName: 'Heart', keywords: ['feed', 'posts', 'community', 'share', 'social', 'network', 'connect', 'trading', 'ideas', 'discuss'] },
         // { title: t('navigation.leaderboard'), url: '/leaderboard', icon: Trophy, iconName: 'Trophy', keywords: ['leaderboard', 'ranking', 'top', 'competition', 'scores', 'traders', 'best', 'performers', 'elite', 'standings', 'positions', 'compare', 'leaders', 'winners', 'rank', 'compete'] },
         { title: t('navigation.achievements'), url: '/achievements', icon: Award, iconName: 'Award', keywords: ['achievements', 'badges', 'rewards', 'unlocks', 'milestones', 'trophies', 'accomplishments', 'goals', 'completed', 'earned', 'collection', 'showcase', 'awards', 'earn', 'win', 'accomplish'] },
-        { title: t('navigation.progressXP'), url: '/gamification', icon: Zap, iconName: 'Zap', keywords: ['progress', 'xp', 'experience', 'level', 'achievements', 'gamification', 'points', 'rewards', 'streaks', 'challenges', 'daily', 'weekly', 'missions', 'unlock', 'growth', 'rank', 'leveling'] },
+        // Gamification temporarily hidden - XP/Level/Challenges removed, badges kept in Achievements
+        // { title: t('navigation.progressXP'), url: '/progress-analytics', icon: Zap, iconName: 'Zap', keywords: ['progress', 'xp', 'experience', 'level', 'achievements', 'gamification', 'points', 'rewards', 'streaks', 'challenges', 'daily', 'weekly', 'missions', 'unlock', 'growth', 'rank', 'leveling'] },
+      ],
+    },
+    {
+      label: 'Learning',
+      defaultOpen: false,
+      items: [
+        { title: 'Trading Lessons', url: '/learn', icon: BookOpen, iconName: 'BookOpen', keywords: ['learn', 'education', 'lessons', 'courses', 'training', 'tutorials', 'knowledge', 'improve', 'study'] },
+        { title: 'API Documentation', url: '/api-docs', icon: FileText, iconName: 'FileText', keywords: ['api', 'docs', 'documentation', 'developer', 'integration', 'endpoints', 'technical'] },
+        { title: 'Advanced Analytics', url: '/advanced-analytics', icon: TrendingUp, iconName: 'TrendingUp', keywords: ['advanced', 'analytics', 'metrics', 'deep', 'analysis', 'statistics', 'insights'] },
+        { title: 'Logo Download', url: '/logo-download', icon: Download, iconName: 'Download', keywords: ['logo', 'brand', 'assets', 'download', 'branding', 'official', 'icon', 'graphics'] },
+        { title: 'Logo Generator', url: '/logo-generator', icon: Image, iconName: 'Image', keywords: ['logo', 'branding', 'design', 'icon', 'graphics', 'variations', 'download', 'png', 'assets', 'visual', 'identity', 'experimental', 'colors'] },
       ],
     },
   ];
 
-  // Enhanced active state detection for query params and nested routes
-  const isActive = (path: string): boolean => {
-    const currentPath = location.pathname;
-    const currentSearch = location.search;
-    
-    // Handle query params (e.g., /dashboard?tab=insights)
-    if (path.includes('?')) {
-      const [basePath, queryString] = path.split('?');
-      const isPathMatch = currentPath === basePath;
-      const isQueryMatch = currentSearch.includes(queryString);
-      return isPathMatch && isQueryMatch;
-    }
-    
-    // Exact match for routes without query params
-    if (currentPath === path) return true;
-    
-    // Match nested routes (e.g., /dashboard/something matches /dashboard)
-    if (currentPath.startsWith(`${path}/`)) return true;
-    
-    return false;
-  };
-
-  // Auto-expand groups that contain the active route
-  const getGroupsWithActiveRoute = (): string[] => {
-    const activeGroups: string[] = [];
-    menuStructure.forEach((group) => {
-      const hasActiveItem = group.items.some((item) => isActive(item.url));
-      if (hasActiveItem) {
-        activeGroups.push(group.label);
-      }
-    });
-    return activeGroups;
-  };
-
-  // Initialize expanded groups with groups containing active routes
-  const [expandedGroups, setExpandedGroups] = useState<string[]>(() => {
-    return getGroupsWithActiveRoute();
-  });
-
-
+  const isActive = (path: string) => location.pathname === path;
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    cn(
-      'transition-all relative',
-      isActive
-        ? 'bg-muted text-foreground font-medium border-l-2 border-primary'
-        : 'hover:bg-muted/50 text-muted-foreground hover:text-foreground border-l-2 border-transparent'
-    );
+    isActive
+      ? 'bg-muted text-foreground font-medium'
+      : 'hover:bg-muted/50 text-muted-foreground hover:text-foreground';
 
   const filteredMenuStructure = menuStructure
     .map(group => ({
@@ -226,7 +191,7 @@ export function AppSidebar() {
 
   const toggleExpandAll = () => {
     if (allExpanded) {
-      setExpandedGroups(getGroupsWithActiveRoute()); // Keep groups with active routes expanded
+      setExpandedGroups([]);
       setAllExpanded(false);
     } else {
       const allLabels = menuStructure.map(g => g.label);
@@ -237,25 +202,10 @@ export function AppSidebar() {
 
   const isGroupExpanded = (label: string) => {
     if (searchQuery !== '') return true; // Keep all expanded during search
-    
-    // Always keep groups with active routes expanded
-    const hasActiveRoute = menuStructure
-      .find(g => g.label === label)
-      ?.items.some(item => isActive(item.url));
-    
-    if (hasActiveRoute) return true;
-    
     return expandedGroups.includes(label);
   };
 
   const toggleGroup = (label: string) => {
-    // Don't allow collapsing groups with active routes
-    const hasActiveRoute = menuStructure
-      .find(g => g.label === label)
-      ?.items.some(item => isActive(item.url));
-    
-    if (hasActiveRoute) return;
-    
     setExpandedGroups(prev =>
       prev.includes(label)
         ? prev.filter(l => l !== label)
@@ -317,7 +267,6 @@ export function AppSidebar() {
                             <NavLink 
                               to={fav.page_url} 
                               end 
-                              onMouseEnter={() => prefetch(fav.page_url)}
                               className={getNavCls}
                             >
                               <Star className="h-4 w-4 fill-primary text-primary" />
@@ -407,7 +356,6 @@ export function AppSidebar() {
                               <NavLink 
                                 to={item.url} 
                                 end 
-                                onMouseEnter={() => prefetch(item.url)}
                                 className={cn(
                                   getNavCls,
                                   isHighlighted && "ring-2 ring-primary/50 bg-primary/10"
@@ -425,9 +373,8 @@ export function AppSidebar() {
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      disabled={isProcessing}
                                       className={cn(
-                                        "h-8 w-8 opacity-0 group-hover/item:opacity-100 transition-opacity disabled:opacity-50",
+                                        "h-8 w-8 opacity-0 group-hover/item:opacity-100 transition-opacity",
                                         itemIsFavorite && "opacity-100"
                                       )}
                                       onClick={(e) => {
@@ -437,18 +384,14 @@ export function AppSidebar() {
                                       }}
                                       aria-pressed={itemIsFavorite}
                                     >
-                                      {isProcessing ? (
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                      ) : (
-                                        <Heart 
-                                          className={cn(
-                                            "h-4 w-4 transition-all",
-                                            itemIsFavorite 
-                                              ? "fill-primary text-primary" 
-                                              : "text-muted-foreground hover:text-primary"
-                                          )}
-                                        />
-                                      )}
+                                      <Heart 
+                                        className={cn(
+                                          "h-4 w-4 transition-all",
+                                          itemIsFavorite 
+                                            ? "fill-primary text-primary" 
+                                            : "text-muted-foreground hover:text-primary"
+                                        )}
+                                      />
                                     </Button>
                                   </TooltipTrigger>
                   <TooltipContent side="right">
@@ -486,13 +429,15 @@ export function AppSidebar() {
                   <SidebarMenu>
                     {archivedMenu.map((group) => (
                       <SidebarMenuItem key={group.label}>
-                        <SidebarMenuButton
-                          onClick={() => toggleArchive(group.label)}
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           className="w-full justify-start text-muted-foreground hover:text-foreground"
+                          onClick={() => toggleArchive(group.label)}
                         >
                           <Archive className="mr-2 h-4 w-4" />
                           {t('sidebar.restore', { group: group.label })}
-                        </SidebarMenuButton>
+                        </Button>
                       </SidebarMenuItem>
                     ))}
                   </SidebarMenu>
@@ -511,14 +456,6 @@ export function AppSidebar() {
                   <NavLink to="/user-guide" end className={getNavCls}>
                     <BookOpen className="h-4 w-4" />
                     {open && <span>{t('navigation.userGuide')}</span>}
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Accessibility">
-                  <NavLink to="/accessibility" end className={getNavCls}>
-                    <Accessibility className="h-4 w-4" />
-                    {open && <span>Accessibility</span>}
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -551,14 +488,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  onClick={() => {
-                    console.log('[Sidebar] Logout button clicked');
-                    signOut();
-                  }} 
-                  tooltip={t('auth.signOut')} 
-                  className="text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                >
+                <SidebarMenuButton onClick={signOut} tooltip={t('auth.signOut')} className="text-muted-foreground hover:text-foreground hover:bg-muted/50">
                   <LogOut className="h-4 w-4" />
                   {open && <span>{t('auth.signOut')}</span>}
                 </SidebarMenuButton>

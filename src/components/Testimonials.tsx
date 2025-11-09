@@ -7,14 +7,16 @@ const Testimonials = () => {
 
   const testimonials = [
     {
-      quote: "Finally, a journal that is easy to build and keeps me engaged. Writing trades manually made me lose track, but now I upload them all at once and everything's there, simple and perfect.",
-      author: "Mark L.",
-      role: "Day Trader"
+      quote: t('landing.testimonials.testimonial1.quote'),
+      author: t('landing.testimonials.testimonial1.author'),
+      role: t('landing.testimonials.testimonial1.role'),
+      exchange: t('landing.testimonials.testimonial1.exchange'),
     },
     {
-      quote: "I stopped making emotional decisions and became more aware of my mistakes. My numbers simply improved. The gamification makes you want to stay consistent.",
-      author: "Gustavo B.",
-      role: "Day Trader"
+      quote: t('landing.testimonials.testimonial2.quote'),
+      author: t('landing.testimonials.testimonial2.author'),
+      role: t('landing.testimonials.testimonial2.role'),
+      exchange: t('landing.testimonials.testimonial2.exchange'),
     },
   ];
 
@@ -38,7 +40,7 @@ const Testimonials = () => {
           className="text-center mb-12"
         >
           <h2 id="testimonials-heading" className="text-2xl md:text-3xl font-bold mb-3">
-            Join thousands of traders mastering their craft.
+            {t('landing.testimonials.sectionTitle')}
           </h2>
           <div className="flex items-center justify-center gap-1 text-primary" aria-label="5 star rating">
             {[...Array(5)].map((_, i) => (
@@ -69,7 +71,7 @@ const Testimonials = () => {
 
                 <div className="flex-1 min-w-0">
                   {/* Quote */}
-                  <blockquote className="text-sm md:text-base text-foreground mb-4 italic leading-relaxed">
+                  <blockquote className="text-sm md:text-base text-foreground mb-4 italic leading-relaxed line-clamp-3">
                     "{testimonial.quote}"
                   </blockquote>
 
@@ -79,7 +81,7 @@ const Testimonials = () => {
                       {testimonial.author}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {testimonial.role}
+                      {testimonial.role} • {testimonial.exchange}
                     </div>
                   </div>
                 </div>

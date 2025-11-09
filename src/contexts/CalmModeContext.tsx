@@ -15,12 +15,9 @@ const CalmModeContext = createContext<CalmModeContextType | undefined>(undefined
 
 export const CalmModeProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
-  
-  // Mobile-first defaults
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  const [calmModeEnabled, setCalmModeEnabled] = useState(isMobile);
-  const [soundEnabled, setSoundEnabled] = useState(false);
-  const [animationSpeed, setAnimationSpeedState] = useState<'slow' | 'normal' | 'fast'>(isMobile ? 'slow' : 'normal');
+  const [calmModeEnabled, setCalmModeEnabled] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [animationSpeed, setAnimationSpeedState] = useState<'slow' | 'normal' | 'fast'>('normal');
 
   useEffect(() => {
     if (!user) return;
@@ -41,8 +38,17 @@ export const CalmModeProvider = ({ children }: { children: ReactNode }) => {
         setCalmModeEnabled(data.calm_mode_enabled);
         setSoundEnabled(data.sound_enabled);
         setAnimationSpeedState(data.animation_speed as 'slow' | 'normal' | 'fast');
+      } else {
+        // Initialize preferences for new user
+        await supabase
+          .from('user_customization_preferences')
+          .insert({
+            user_id: user.id,
+            calm_mode_enabled: false,
+            sound_enabled: true,
+            animation_speed: 'normal',
+          });
       }
-      // Note: Database defaults are now set via migration, no need to insert here
     };
 
     fetchPreferences();

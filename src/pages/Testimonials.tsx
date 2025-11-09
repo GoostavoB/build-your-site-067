@@ -1,7 +1,5 @@
-import { Link } from 'react-router-dom';
 import AppLayout from '@/components/layout/AppLayout';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Star } from 'lucide-react';
 
@@ -148,9 +146,9 @@ export default function Testimonials() {
           <p className="text-muted-foreground mb-6">
             Join thousands of traders who are already improving their performance
           </p>
-          <Button asChild>
-            <Link to="/auth">Start Free Trial</Link>
-          </Button>
+          <a href="/auth" className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-8 py-2">
+            Start Free Trial
+          </a>
         </Card>
       </div>
     </AppLayout>

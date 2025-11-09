@@ -1,3 +1,4 @@
+import AppLayout from "@/components/layout/AppLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TradeComparator } from "@/components/analysis/TradeComparator";
 import { BacktestingSystem } from "@/components/analytics/BacktestingSystem";
@@ -29,7 +30,8 @@ export default function TradeAnalysis() {
   });
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
+    <AppLayout>
+      <div className="container mx-auto p-6 max-w-7xl">
         <h1 className="text-3xl font-bold mb-6">Advanced Analytics & Market Intelligence</h1>
 
         <Tabs defaultValue="compare" className="space-y-6">
@@ -109,5 +111,6 @@ export default function TradeAnalysis() {
           </TabsContent>
         </Tabs>
       </div>
+    </AppLayout>
   );
 }

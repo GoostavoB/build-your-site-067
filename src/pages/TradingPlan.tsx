@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import AppLayout from "@/components/layout/AppLayout";
 import { PlanOverview } from "@/components/trading-plan/PlanOverview";
 import { PlanEditor } from "@/components/trading-plan/PlanEditor";
 import { PlanChecklist } from "@/components/trading-plan/PlanChecklist";
@@ -35,7 +36,8 @@ export default function TradingPlan() {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
+    <AppLayout>
+      <div className="container mx-auto p-6 max-w-7xl">
         <div className="flex items-center gap-2 mb-6">
           <BookOpen className="h-8 w-8" />
           <div>
@@ -82,5 +84,6 @@ export default function TradingPlan() {
           </TabsContent>
         </Tabs>
       </div>
+    </AppLayout>
   );
 }

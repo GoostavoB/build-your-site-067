@@ -16,18 +16,42 @@ serve(async (req) => {
   const startTime = Date.now();
 
   try {
+    // 1) Check Authorization header exists
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      console.error('❌ No authorization header');
+      return new Response(
+        JSON.stringify({ error: 'Authentication required', details: 'No authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const authHeader = req.headers.get('Authorization')!;
+    // 2) Verify user token
     const token = authHeader.replace('Bearer ', '');
-    const { data: { user } } = await supabaseClient.auth.getUser(token);
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
+
+    if (userError) {
+      console.error('❌ Auth error:', userError.message);
+      return new Response(
+        JSON.stringify({ error: 'Authentication failed', details: userError.message }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     if (!user) {
-      throw new Error('Unauthorized');
+      console.error('❌ No user found');
+      return new Response(
+        JSON.stringify({ error: 'User not authenticated' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
+
+    console.log('✅ User authenticated:', user.id);
 
     const budget = await checkBudget(supabaseClient, user.id);
     if (budget.blocked) {

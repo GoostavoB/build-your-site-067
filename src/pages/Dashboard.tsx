@@ -801,7 +801,10 @@ const Dashboard = () => {
           : initialInvestment + (stats?.total_pnl || 0);
         widgetProps.onInitialInvestmentUpdate = async (newValue: number) => {
           setInitialInvestment(newValue);
-          // fetchStats will be automatically called via useEffect when initialInvestment changes
+          // Refetch capital log and stats to reflect the change
+          await fetchCapitalLog();
+          await fetchInitialInvestment();
+          await fetchStats();
         };
         break;
       case 'avgROIPerTrade':

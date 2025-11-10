@@ -54,12 +54,36 @@ export const CurrentROIWidget = memo(({
 
     setIsSaving(true);
     try {
-      const { error } = await supabase
+      // Update user_settings
+      const { error: settingsError } = await supabase
         .from('user_settings')
         .update({ initial_investment: newValue })
         .eq('user_id', user.id);
 
-      if (error) throw error;
+      if (settingsError) throw settingsError;
+
+      // Clear existing capital_log entries and create a single entry with the new initial investment
+      // This ensures consistency between user_settings and capital_log
+      const { error: deleteError } = await supabase
+        .from('capital_log')
+        .delete()
+        .eq('user_id', user.id);
+
+      if (deleteError) throw deleteError;
+
+      // Create a new capital_log entry with the initial investment
+      const today = new Date().toISOString().split('T')[0];
+      const { error: insertError } = await supabase
+        .from('capital_log')
+        .insert({
+          user_id: user.id,
+          log_date: today,
+          amount_added: newValue,
+          total_after: newValue,
+          notes: 'Initial capital set'
+        });
+
+      if (insertError) throw insertError;
 
       if (onInitialInvestmentUpdate) {
         onInitialInvestmentUpdate(newValue);
@@ -140,6 +164,9 @@ export const CurrentROIWidget = memo(({
                       />
                       <p className="text-xs text-muted-foreground">
                         {t('widgets.currentBalance')}: <BlurredCurrency amount={currentBalance} className="inline" />
+                      </p>
+                      <p className="text-xs text-yellow-600 dark:text-yellow-500 mt-2 font-medium">
+                        ⚠️ Note: Changing this will reset your Capital Management history and create a new starting point.
                       </p>
                       <p className="text-xs text-muted-foreground mt-2">
                         💡 Tip: Use Capital Management in Settings → Trading to track capital additions over time for accurate ROI calculation.

@@ -262,9 +262,11 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
         {images.length < maxImages && (
           <Card 
             className={cn(
-              "aspect-square flex flex-col items-center justify-center cursor-pointer hover:bg-accent/50 transition-all",
-              images.length === 0 && "h-[180px]",
-              isDragging && "border-primary border-2 bg-accent"
+              "aspect-square flex flex-col items-center justify-center cursor-pointer border-dashed border-2 transition-all",
+              images.length === 0 && "h-[192px]",
+              isDragging 
+                ? "border-primary" 
+                : "border-muted-foreground/20 hover:border-muted-foreground/40"
             )}
             onDragEnter={handleDragEnter}
             onDragOver={handleDragOver}
@@ -280,21 +282,17 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
               id="image-upload"
               disabled={isAnalyzing}
             />
-            <label htmlFor="image-upload" className="cursor-pointer flex flex-col items-center gap-2 p-6 w-full h-full justify-center">
-              <Upload className={cn(
-                "h-10 w-10 transition-colors",
-                isDragging ? "text-primary" : "text-muted-foreground"
-              )} />
-              <p className="text-sm font-medium text-center">
-                {isDragging ? "Drop images here" : "Drag & drop or click to browse"}
+            <label htmlFor="image-upload" className="cursor-pointer flex flex-col items-center gap-4 px-6 py-8 w-full h-full justify-center">
+              <Upload className="h-12 w-12 text-muted-foreground/60" />
+              <p className="text-base font-medium text-foreground text-center">
+                Drop files or click to browse
               </p>
               <p className="text-xs text-muted-foreground text-center">
-                JPEG, PNG, WEBP up to 10MB<br />
-                ({images.length}/{maxImages} images)
+                JPEG, PNG, WEBP • Max 10MB • ({images.length}/{maxImages} images)
               </p>
-              <div className="mt-2 px-3 py-1 rounded-full bg-muted text-xs text-muted-foreground">
-                Max 10 images • 10 trades per image
-              </div>
+              <p className="text-xs text-muted-foreground/80 text-center">
+                Up to 10 images (10 trades per image)
+              </p>
             </label>
           </Card>
         )}

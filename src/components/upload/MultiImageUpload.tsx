@@ -270,10 +270,7 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
 
   return (
     <div className="space-y-6">
-      <div className={cn(
-        "grid gap-4",
-        images.length === 0 ? "grid-cols-1" : "grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
-      )}>
+    <div className="flex flex-wrap gap-4">
         {images.map((image, index) => (
           <Card key={index} className="relative group overflow-hidden border-[#1E242C] bg-[#12161C]">
             <div className="aspect-square relative">

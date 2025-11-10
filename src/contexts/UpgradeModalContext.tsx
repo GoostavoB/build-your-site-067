@@ -1,15 +1,6 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { UpgradeModal, UpgradeSource, UpgradeIllustration } from '@/components/UpgradeModal';
-
-interface UpgradeModalConfig {
-  source: UpgradeSource;
-  title?: string;
-  message?: string;
-  illustration?: UpgradeIllustration;
-  requiredPlan?: 'basic' | 'pro' | 'elite';
-  onPlanSelected?: (planId: string) => void;
-  onDismiss?: () => void;
-}
+import { upgradeModalBus, UpgradeModalConfig } from '@/lib/openUpgradeModal';
 
 interface UpgradeModalContextType {
   openModal: (config: UpgradeModalConfig) => void;
@@ -22,6 +13,14 @@ const UpgradeModalContext = createContext<UpgradeModalContextType | undefined>(u
 export const UpgradeModalProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [config, setConfig] = useState<UpgradeModalConfig | null>(null);
+
+  // Listen to the global event bus
+  useEffect(() => {
+    const unsubscribe = upgradeModalBus.subscribe((modalConfig) => {
+      openModal(modalConfig);
+    });
+    return unsubscribe;
+  }, []);
 
   const openModal = (modalConfig: UpgradeModalConfig) => {
     setConfig(modalConfig);

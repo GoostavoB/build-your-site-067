@@ -1,9 +1,9 @@
 import { Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useTranslation as useI18n } from "react-i18next";
 import { cn } from "@/lib/utils";
+import { openUpgradeModal } from "@/lib/openUpgradeModal";
 
 interface PremiumFeatureLockProps {
   requiredPlan: "pro" | "elite";
@@ -20,7 +20,6 @@ export const PremiumFeatureLock = ({
   className,
   blurAmount = "md"
 }: PremiumFeatureLockProps) => {
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const { i18n } = useI18n();
   const currentLang = i18n.language;
@@ -30,10 +29,15 @@ export const PremiumFeatureLock = ({
     md: "blur-[4px]",
     lg: "blur-[8px]"
   };
-  
+
   const handleUpgrade = () => {
-    const pricingPath = currentLang === 'en' ? '/pricing' : `/${currentLang}/pricing`;
-    navigate(pricingPath);
+    openUpgradeModal({
+      source: 'feature_lock',
+      requiredPlan: requiredPlan,
+      illustration: 'lock',
+      title: requiredPlan === "elite" ? t('premium.eliteFeature') : t('premium.proFeature'),
+      message: t('premium.upgradeMessage', { plan: requiredPlan.charAt(0).toUpperCase() + requiredPlan.slice(1) }),
+    });
   };
 
   if (!isLocked) {

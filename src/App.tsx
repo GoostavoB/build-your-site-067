@@ -5,10 +5,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
+import { UpgradeModalProvider } from "@/contexts/UpgradeModalContext";
 import { AIAssistantProvider } from "@/contexts/AIAssistantContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { BlurProvider } from "@/contexts/BlurContext";
-import { CalmModeProvider } from "@/contexts/CalmModeContext";
+import { CalmModeProvider } from "@/contexts/CalmModeProvider";
 import { DateRangeProvider } from "@/contexts/DateRangeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "next-themes";
@@ -248,6 +249,7 @@ const App = () => (
               <ThemeInitializer />
               <AuthProvider>
                 <SubscriptionProvider>
+                <UpgradeModalProvider>
                 <CalmModeProvider>
                   <CurrencyProvider>
                     <BlurProvider>
@@ -264,6 +266,7 @@ const App = () => (
                     </BlurProvider>
                   </CurrencyProvider>
                 </CalmModeProvider>
+                </UpgradeModalProvider>
                 </SubscriptionProvider>
               </AuthProvider>
             </LanguageProvider>

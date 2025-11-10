@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
+import { useBudgetCheck } from '@/hooks/useBudgetCheck';
+import { openUpgradeModal } from '@/lib/openUpgradeModal';
 
 interface UploadedImage {
   file: File;
@@ -22,6 +24,7 @@ interface MultiImageUploadProps {
 
 export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
   const { user } = useAuth();
+  const { hasCredits, isAdmin } = useBudgetCheck();
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -62,6 +65,17 @@ export function MultiImageUpload({ onTradesExtracted }: MultiImageUploadProps) {
   };
 
   const analyzeImages = async () => {
+    // CLIENT-SIDE CREDIT GUARD: Block batch upload if user has no credits
+    if (!isAdmin && !hasCredits) {
+      openUpgradeModal({
+        source: 'batch_upload_zero_credits',
+        illustration: 'credits',
+        title: 'Out of AI Credits',
+        message: "You've used your monthly AI budget. Upgrade to process multiple images at once.",
+      });
+      return; // Block the batch upload
+    }
+
     setIsAnalyzing(true);
     let totalTrades = 0;
     const allTrades: any[] = [];

@@ -29,6 +29,8 @@ import { AIFeedback } from '@/components/upload/AIFeedback';
 import { runOCR, type OCRResult } from '@/utils/ocrPipeline';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { pageMeta } from '@/utils/seoHelpers';
+import { useBudgetCheck } from '@/hooks/useBudgetCheck';
+import { openUpgradeModal } from '@/lib/openUpgradeModal';
 
 interface ExtractedTrade {
   symbol: string;
@@ -61,6 +63,7 @@ const Upload = () => {
   usePageMeta(pageMeta.upload);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { hasCredits, isAdmin, percentUsed, loading: budgetLoading } = useBudgetCheck();
   const [searchParams] = useSearchParams();
   const editId = searchParams.get('edit');
   const [loading, setLoading] = useState(false);
@@ -372,23 +375,34 @@ const Upload = () => {
 
   const handleConfirmExtraction = async () => {
     if (!extractionPreview || extracting) return;
-    
+
+    // CLIENT-SIDE CREDIT GUARD: Block upload early if user has no credits
+    if (!isAdmin && !hasCredits) {
+      openUpgradeModal({
+        source: 'upload_zero_credits',
+        illustration: 'credits',
+        title: 'Out of AI Credits',
+        message: "You've used your monthly AI budget. Upgrade to continue using automatic trade extraction.",
+      });
+      return; // Block the upload from happening
+    }
+
     // Validate broker is selected
     if (!preSelectedBroker || preSelectedBroker.trim() === '') {
       setBrokerError(true);
-      
+
       // Scroll to broker field
-      brokerFieldRef.current?.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'center' 
+      brokerFieldRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
       });
-      
+
       toast.error('Broker is required', {
         description: 'Please select a broker before extracting trade data'
       });
       return;
     }
-    
+
     // Clear error if validation passes
     setBrokerError(false);
     

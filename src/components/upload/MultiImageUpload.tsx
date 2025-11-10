@@ -320,11 +320,11 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
         {images.length < maxImages && (
           <Card 
             className={cn(
-              "relative aspect-square flex flex-col items-center justify-center cursor-pointer border-dashed border-2 transition-all overflow-hidden",
+              "relative aspect-square flex flex-col items-center justify-center cursor-pointer border-dashed border-2 transition-all overflow-hidden group",
               images.length === 0 && "h-[220px]",
               isDragging 
-                ? "border-primary ring-2 ring-primary/60" 
-                : "border-muted-foreground/10 hover:border-muted-foreground/30"
+                ? "border-primary bg-primary/5 ring-2 ring-primary/40 shadow-lg" 
+                : "border-border/40 hover:border-primary/60 hover:bg-accent/30 hover:shadow-md"
             )}
             onDragEnter={handleDragEnter}
             onDragOver={handleDragOver}
@@ -334,14 +334,16 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
             {/* Drag overlay */}
             {isDragging && (
               <div
-                className="absolute inset-0 z-10 rounded-lg bg-background/80 backdrop-blur-sm ring-2 ring-primary/80 flex items-center justify-center transition-all"
+                className="absolute inset-0 z-10 rounded-xl bg-primary/5 backdrop-blur-sm border-2 border-primary flex items-center justify-center transition-all"
                 role="region"
                 aria-label="Drop files to upload"
                 aria-busy="true"
               >
-                <div className="flex flex-col items-center gap-3">
-                  <Upload className="h-16 w-16 text-primary/80" />
-                  <p className="text-base font-medium">Drop to upload</p>
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Upload className="h-8 w-8 text-primary animate-bounce" />
+                  </div>
+                  <p className="text-base font-semibold text-foreground">Drop to upload</p>
                   <p className="text-xs text-muted-foreground">Up to {maxImages - images.length} more images</p>
                 </div>
               </div>
@@ -364,23 +366,24 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
               
               {/* Main content - centered */}
               <div className="flex flex-col items-center gap-6">
-                <Upload className="h-16 w-16 text-muted-foreground/40" />
+                <div className="w-16 h-16 rounded-full border-2 border-dashed border-muted-foreground/30 group-hover:border-primary/50 flex items-center justify-center transition-colors">
+                  <Upload className="h-7 w-7 text-muted-foreground/60 group-hover:text-primary transition-colors" />
+                </div>
                 
                 <div className="flex flex-col items-center gap-2">
-                  <p className="text-lg font-medium text-foreground">
-                    Upload trade screenshots
+                  <p className="text-base font-medium text-foreground">
+                    Drag files here or click to upload
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Click or drag files here
+                    Up to {maxImages} images • Up to 10 trades each
                   </p>
                 </div>
               </div>
               
               {/* Technical specs - bottom left */}
-              <div className="absolute bottom-4 left-4 text-xs text-muted-foreground/80 leading-relaxed">
-                <div>PNG, JPEG, WEBP</div>
+              <div className="absolute bottom-3 left-3 text-xs text-muted-foreground/70 leading-relaxed">
+                <div>JPG, PNG, PDF</div>
                 <div>Max 10MB per file</div>
-                <div>Up to {maxImages} images • 10 trades each</div>
               </div>
             </label>
           </Card>

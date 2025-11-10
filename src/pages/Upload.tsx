@@ -844,8 +844,8 @@ const Upload = () => {
     <AppLayout>
       <div className="max-w-[1200px] mx-auto space-y-6">
         <Tabs defaultValue="ai-extract" className="w-full">
-          <div className="sticky top-0 z-20 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-            <div className="max-w-[1200px] mx-auto px-4 py-3 flex items-center justify-between gap-4">
+          <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80 border-b shadow-sm">
+            <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-semibold">Upload Trades</h1>
               </div>
@@ -872,18 +872,8 @@ const Upload = () => {
             </div>
           </div>
 
-          <TabsContent value="ai-extract" className="space-y-6">
-            <Card className="p-8 glass">
-              {/* Page header */}
-              <div className="mb-8">
-                <h2 className="text-xl font-semibold mb-2">Extract Trades from Screenshots</h2>
-                <p className="text-sm text-muted-foreground">
-                  Upload up to 10 screenshots. AI will automatically detect and extract all trades.
-                </p>
-              </div>
-
-              {/* Main content grid */}
-              <div className="grid lg:grid-cols-12 gap-8">
+          <TabsContent value="ai-extract" className="space-y-6 px-6 py-6">
+            <div className="grid lg:grid-cols-12 gap-8">
                 {/* Left column - Primary upload area */}
                 <div className="lg:col-span-8 space-y-6">
                   {extractedTrades.length === 0 && (
@@ -900,25 +890,25 @@ const Upload = () => {
 
                 {/* Right column - Supporting information */}
                 {extractedTrades.length === 0 && (
-                  <div className="lg:col-span-4 space-y-6">
+                  <div className="lg:col-span-4 space-y-5">
                     {/* Broker selection */}
-                    <div 
+                    <Card 
                       ref={brokerFieldRef}
                       className={cn(
-                        "p-4 border rounded-lg transition-all duration-300",
+                        "p-5 transition-all duration-300",
                         brokerError 
-                          ? "border-destructive bg-destructive/5" 
-                          : "border-border bg-muted/30"
+                          ? "border-destructive bg-destructive/5 shadow-sm" 
+                          : "border-border/50 bg-card shadow-sm"
                       )}
                     >
                       <Label className={cn(
-                        "text-sm font-medium mb-2 block",
+                        "text-sm font-semibold mb-1 block",
                         brokerError && "text-destructive"
                       )}>
-                        Broker <span className="text-destructive">*</span>
+                        Broker
                       </Label>
-                      <p className="text-xs text-muted-foreground mb-3">
-                        Pre-fills broker field for all extracted trades
+                      <p className="text-xs text-muted-foreground mb-4">
+                        Used for all extracted trades
                       </p>
                       <BrokerSelect 
                         value={preSelectedBroker}
@@ -929,32 +919,53 @@ const Upload = () => {
                         required
                       />
                       {brokerError && (
-                        <p className="text-xs text-destructive mt-2 flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <p className="text-xs text-destructive mt-3 flex items-center gap-1.5">
+                          <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                           </svg>
                           Broker is required
                         </p>
                       )}
-                    </div>
+                    </Card>
 
                     {/* How it works */}
-                    <div className="p-4 border border-border rounded-lg bg-muted/20">
-                      <h3 className="text-sm font-medium mb-3">How it works</h3>
-                      <div className="space-y-2 text-xs text-muted-foreground leading-relaxed">
-                        <p>AI analyzes screenshots and extracts trade data automatically</p>
-                        <p>Review and edit extracted trades before saving</p>
-                        <p>Each trade costs 2 credits to process</p>
+                    <Card className="p-5 border-border/50 bg-card shadow-sm">
+                      <h3 className="text-sm font-semibold mb-4">How it works</h3>
+                      <div className="space-y-3">
+                        <div className="flex gap-3">
+                          <div className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary">1</div>
+                          <p className="text-xs text-muted-foreground leading-relaxed">We scan screenshots and find trades</p>
+                        </div>
+                        <div className="flex gap-3">
+                          <div className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary">2</div>
+                          <p className="text-xs text-muted-foreground leading-relaxed">You review and edit</p>
+                        </div>
+                        <div className="flex gap-3">
+                          <div className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary">3</div>
+                          <p className="text-xs text-muted-foreground leading-relaxed">You save and export</p>
+                        </div>
                       </div>
-                    </div>
+                      <div className="mt-4 pt-4 border-t border-border/50">
+                        <p className="text-xs text-muted-foreground">Each trade uses 2 credits</p>
+                      </div>
+                    </Card>
 
-                    {/* Privacy note */}
-                    <div className="text-xs text-muted-foreground/70 leading-relaxed">
-                      <p>Your screenshots are processed securely and not stored permanently</p>
-                    </div>
+                    {/* Privacy card */}
+                    <Card className="p-5 border-border/50 bg-card shadow-sm">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+                          <svg className="w-4 h-4 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-semibold mb-1">Privacy</h3>
+                          <p className="text-xs text-muted-foreground leading-relaxed">Screenshots are processed securely and not stored</p>
+                        </div>
+                      </div>
+                    </Card>
                   </div>
                 )}
-              </div>
 
               {/* Extracted trades section */}
               {extractedTrades.length > 0 && !extracting && !showSuccess && (
@@ -1294,7 +1305,7 @@ const Upload = () => {
                   }}
                 />
               )}
-            </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="manual">

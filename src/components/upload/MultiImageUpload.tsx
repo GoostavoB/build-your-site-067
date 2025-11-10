@@ -275,45 +275,66 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
         images.length === 0 ? "grid-cols-1" : "grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
       )}>
         {images.map((image, index) => (
-          <Card key={index} className="relative group overflow-hidden">
+          <Card key={index} className="relative group overflow-hidden border-[#1E242C] bg-[#12161C]">
             <div className="aspect-square relative">
               <img
                 src={image.preview}
                 alt={`Upload ${index + 1}`}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleRemoveImage(index)}
-                  disabled={isAnalyzing}
-                  className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
+              
+              {/* Remove button - always visible on mobile, hover on desktop */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleRemoveImage(index)}
+                disabled={isAnalyzing}
+                className="absolute top-2 right-2 h-7 w-7 bg-black/60 hover:bg-black/80 text-white sm:opacity-0 sm:group-hover:opacity-100 transition-opacity z-10"
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+
+              {/* Status overlays */}
               {image.status === 'analyzing' && (
-                <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
+                <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center gap-2">
                   <Loader2 className="h-8 w-8 animate-spin text-primary" aria-label="Analyzing image" />
+                  <p className="text-xs text-muted-foreground">Analyzing...</p>
                 </div>
               )}
               {image.status === 'success' && (
-                <div className="absolute top-2 right-2 bg-primary/90 rounded-full p-1">
-                  <CheckCircle2 className="h-4 w-4 text-primary-foreground" aria-label="Analysis successful" />
+                <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <CheckCircle2 className="h-8 w-8 text-green-500" />
+                  <p className="text-xs font-medium text-white">Extracted</p>
                 </div>
               )}
               {image.status === 'error' && (
-                <div className="absolute top-2 right-2 bg-destructive rounded-full p-1">
-                  <AlertCircle className="h-4 w-4 text-primary-foreground" aria-label="Analysis failed" />
+                <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2">
+                  <AlertCircle className="h-8 w-8 text-destructive" />
+                  <p className="text-xs font-medium text-white">Failed</p>
                 </div>
               )}
             </div>
-            {image.tradesDetected !== undefined && (
-              <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-foreground text-xs p-2 text-center">
-                {image.tradesDetected} {image.tradesDetected === 1 ? 'trade' : 'trades'}
+            
+            {/* Bottom info bar */}
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-3 pt-8">
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1.5">
+                  <ImageIcon className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-white font-medium">
+                    {image.tradesDetected !== undefined 
+                      ? `${image.tradesDetected} ${image.tradesDetected === 1 ? 'trade' : 'trades'}`
+                      : 'Ready to extract'
+                    }
+                  </span>
+                </div>
+                {image.status === 'pending' && (
+                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/20 border border-primary/30">
+                    <span className="text-primary font-semibold">2</span>
+                    <span className="text-primary/80 text-[10px]">credits</span>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </Card>
         ))}
 
@@ -356,32 +377,26 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
               id="image-upload"
               disabled={isAnalyzing}
             />
-            <label htmlFor="image-upload" className="cursor-pointer relative w-full h-full flex items-center justify-center px-6 py-8 text-center">
+            <label htmlFor="image-upload" className="cursor-pointer w-full h-full flex flex-col items-center justify-center p-8 gap-8">
               {/* Counter - top right */}
               <div className="absolute top-4 right-4 text-xs font-medium text-muted-foreground" aria-live="polite">
                 {images.length}/{maxImages}
               </div>
               
-              {/* Main content - centered */}
-              <div className="flex flex-col items-center gap-6 w-full">
-                <div className="w-16 h-16 rounded-full border-2 border-dashed border-muted-foreground/30 group-hover:border-primary/50 flex items-center justify-center transition-colors">
-                  <Upload className="h-7 w-7 text-muted-foreground/60 group-hover:text-primary transition-colors" />
-                </div>
-                
-                <div className="flex flex-col items-center gap-2">
-                  <p className="text-base font-medium text-foreground leading-snug">
-                    Drag files here or click to upload
-                  </p>
-                  <p className="text-sm text-muted-foreground leading-snug">
-                    Up to {maxImages} images • Up to 10 trades each
-                  </p>
-                </div>
+              {/* Icon */}
+              <div className="w-16 h-16 rounded-full border-2 border-dashed border-muted-foreground/30 group-hover:border-primary/50 flex items-center justify-center transition-colors">
+                <Upload className="h-7 w-7 text-muted-foreground/60 group-hover:text-primary transition-colors" />
               </div>
               
-              {/* Technical specs - bottom left */}
-              <div className="absolute bottom-3 left-3 text-xs text-muted-foreground/70 leading-relaxed hidden sm:block">
-                <div>JPG, PNG, PDF</div>
-                <div>Max 10MB per file</div>
+              {/* Text content */}
+              <div className="flex flex-col items-center gap-3 text-center">
+                <p className="text-base font-medium text-foreground">
+                  Drag files here or click to upload
+                </p>
+                <div className="flex flex-col gap-1 text-sm text-muted-foreground">
+                  <p>Up to {maxImages} images • Up to 10 trades each</p>
+                  <p className="text-xs text-muted-foreground/70">JPG, PNG, PDF • Max 10MB per file</p>
+                </div>
               </div>
             </label>
           </Card>

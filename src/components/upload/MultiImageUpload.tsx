@@ -220,7 +220,7 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
       }
 
       setTotalTradesDetected(totalTrades);
-      setCreditsRequired(totalTrades * 2); // 2 credits per trade
+      setCreditsRequired(totalTrades * 1); // 1 credit per trade
       setExtractedTrades(allTrades);
       setShowConfirmation(true);
     } catch (error) {
@@ -317,7 +317,7 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
                   <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black/80 backdrop-blur-sm border border-border/50">
                     <span className="text-xs text-foreground font-medium">Ready to extract</span>
                     <div className="h-3 w-px bg-border/60" />
-                    <span className="text-xs text-primary font-semibold">2 credits</span>
+                    <span className="text-xs text-primary font-semibold">1 credit</span>
                   </div>
                 )}
                 {image.tradesDetected !== undefined && image.status === 'success' && (
@@ -447,7 +447,7 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Cost per trade:</span>
-              <span className="text-muted-foreground">2 credits</span>
+              <span className="text-muted-foreground">1 credit</span>
             </div>
 
             <div className="border-t pt-4">

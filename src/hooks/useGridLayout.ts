@@ -145,7 +145,7 @@ export const useGridLayout = (userId: string | undefined, availableWidgets: stri
     });
   }, []);
 
-  const addWidget = useCallback((widgetId: string) => {
+  const addWidget = useCallback((widgetId: string, shouldSave: boolean = true) => {
     if (positions.find(p => p.id === widgetId)) {
       toast.info('Widget already added');
       return;
@@ -154,11 +154,16 @@ export const useGridLayout = (userId: string | undefined, availableWidgets: stri
     const maxRow = Math.max(0, ...positions.map(p => p.row));
     const newPositions = [...positions, { id: widgetId, column: 0, row: maxRow + 1 }];
     setPositions(newPositions);
-    saveLayout(newPositions);
+    
+    // Only save if explicitly requested (not during customize mode)
+    if (shouldSave) {
+      saveLayout(newPositions);
+    }
+    
     toast.success('Widget added');
   }, [positions, saveLayout]);
 
-  const removeWidget = useCallback(async (widgetId: string) => {
+  const removeWidget = useCallback(async (widgetId: string, shouldSave: boolean = true) => {
     console.log('Removing widget:', widgetId);
     
     // Optimistically update UI immediately
@@ -167,8 +172,10 @@ export const useGridLayout = (userId: string | undefined, availableWidgets: stri
     // Update state first for immediate UI feedback
     setPositions(newPositions);
     
-    // Save to backend
-    await saveLayout(newPositions);
+    // Save to backend only if requested
+    if (shouldSave) {
+      await saveLayout(newPositions);
+    }
     
     toast.success('Widget removed');
   }, [positions, saveLayout]);

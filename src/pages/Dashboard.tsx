@@ -818,6 +818,10 @@ const Dashboard = () => {
       case 'heatmap':
         widgetProps.trades = processedTrades;
         break;
+      case 'rollingTarget':
+        widgetProps.trades = processedTrades;
+        widgetProps.initialInvestment = totalCapitalAdditions > 0 ? totalCapitalAdditions : initialInvestment;
+        break;
     }
 
     return (
@@ -1033,8 +1037,8 @@ const Dashboard = () => {
         <WidgetLibrary
           open={showWidgetLibrary}
           onClose={() => setShowWidgetLibrary(false)}
-          onAddWidget={addWidget}
-          onRemoveWidget={removeWidget}
+          onAddWidget={(widgetId) => addWidget(widgetId, !isCustomizing)}
+          onRemoveWidget={(widgetId) => removeWidget(widgetId, !isCustomizing)}
           activeWidgets={activeWidgets}
         />
         

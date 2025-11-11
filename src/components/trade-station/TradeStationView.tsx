@@ -2,12 +2,16 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { DndContext, DragEndEvent, DragStartEvent, rectIntersection, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { useTradeStationLayout, TradeStationWidgetPosition } from '@/hooks/useTradeStationLayout';
 import { TRADE_STATION_WIDGET_CATALOG } from '@/config/tradeStationWidgetCatalog';
 import { SortableWidget } from '@/components/widgets/SortableWidget';
 import { DropZone } from '@/components/widgets/DropZone';
 import { CustomizeDashboardControls } from '@/components/CustomizeDashboardControls';
 import { WidgetLibrary } from '@/components/widgets/WidgetLibrary';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface TradeStationViewProps {
@@ -27,6 +31,7 @@ interface TradeStationViewProps {
 
 export const TradeStationView = ({ onControlsReady }: TradeStationViewProps = {}) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [showWidgetLibrary, setShowWidgetLibrary] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -151,14 +156,15 @@ export const TradeStationView = ({ onControlsReady }: TradeStationViewProps = {}
     setActiveId(null);
   }, []);
   
-  // Widget renderer
+  // Widget renderer - Rolling target always spans all columns
   const renderWidget = useCallback((widgetId: string) => {
     const widgetConfig = TRADE_STATION_WIDGET_CATALOG[widgetId];
     if (!widgetConfig) return null;
     
     const WidgetComponent = widgetConfig.component;
+    const isRollingTarget = widgetId === 'rollingTarget';
     
-    return (
+    const widget = (
       <SortableWidget
         id={widgetId}
         isEditMode={isCustomizing}
@@ -171,6 +177,13 @@ export const TradeStationView = ({ onControlsReady }: TradeStationViewProps = {}
         />
       </SortableWidget>
     );
+    
+    // Wrap rolling target to span all columns
+    if (isRollingTarget) {
+      return <div className="col-span-full">{widget}</div>;
+    }
+    
+    return widget;
   }, [isCustomizing, removeWidget]);
 
   // Handle customize actions
@@ -225,7 +238,26 @@ export const TradeStationView = ({ onControlsReady }: TradeStationViewProps = {}
   }
   
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 relative">
+      {/* Floating Upload Trade Button */}
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => navigate('/upload')}
+              size="icon"
+              className="fixed top-24 right-6 z-50 h-12 w-12 rounded-full bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all"
+              aria-label="Upload a trade"
+            >
+              <Plus className="h-6 w-6" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            <p>Upload a trade</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
       {/* Dynamic Grid with DnD */}
       <DndContext
         sensors={sensors}
@@ -246,11 +278,17 @@ export const TradeStationView = ({ onControlsReady }: TradeStationViewProps = {}
               <div key={`col-${colIdx}`} className="dashboard-column-free">
                 {Object.entries(grid[colIdx] || {})
                   .sort(([rowA], [rowB]) => parseInt(rowA) - parseInt(rowB))
-                  .map(([row, widgetId]) => (
-                    <div key={widgetId}>
-                      {renderWidget(widgetId)}
-                    </div>
-                  ))}
+                  .map(([row, widgetId]) => {
+                    // Rolling target should only appear in column 0 but span all columns
+                    if (widgetId === 'rollingTarget' && colIdx !== 0) {
+                      return null;
+                    }
+                    return (
+                      <div key={widgetId}>
+                        {renderWidget(widgetId)}
+                      </div>
+                    );
+                  })}
                 {isCustomizing && (
                   <DropZone id={`dropzone-${colIdx}-${Object.keys(grid[colIdx] || {}).length}`} />
                 )}

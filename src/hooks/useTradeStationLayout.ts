@@ -15,12 +15,12 @@ interface TradeStationLayoutData {
 
 // Default widgets for Trade Station
 const DEFAULT_TRADE_STATION_POSITIONS: TradeStationWidgetPosition[] = [
-  { id: 'errorReflection', column: 0, row: 0 },
-  { id: 'quickActions', column: 0, row: 1 },
+  // Row 1: Leverage, Risk, Error Reflection
+  { id: 'simpleLeverage', column: 0, row: 0 },
   { id: 'riskCalculator', column: 1, row: 0 },
-  { id: 'rollingTarget', column: 1, row: 1 },
-  { id: 'dailyLossLock', column: 2, row: 0 },
-  { id: 'simpleLeverage', column: 2, row: 1 },
+  { id: 'errorReflection', column: 2, row: 0 },
+  // Row 2: Rolling Target (spans all columns)
+  { id: 'rollingTarget', column: 0, row: 1 },
 ];
 
 export const useTradeStationLayout = (userId: string | undefined) => {

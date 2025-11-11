@@ -1,7 +1,6 @@
-import { AlertCircle, Calculator, Target, Lock, TrendingUp, Zap } from 'lucide-react';
+import { AlertCircle, Calculator, Target, Lock, TrendingUp } from 'lucide-react';
 import { WidgetConfig } from '@/types/widget';
 import { ErrorReflectionWidget } from '@/components/trade-station/ErrorReflectionWidget';
-import { QuickActionCard } from '@/components/QuickActionCard';
 import { RiskCalculatorV2Widget } from '@/components/trade-station/RiskCalculatorV2Widget';
 import { TradeStationRollingTarget } from '@/components/trade-station/TradeStationRollingTarget';
 import { DailyLossLockStatus } from '@/components/trade-station/DailyLossLockStatus';
@@ -16,15 +15,6 @@ export const TRADE_STATION_WIDGET_CATALOG: Record<string, WidgetConfig> = {
     icon: AlertCircle,
     defaultSize: 'medium',
     component: ErrorReflectionWidget,
-  },
-  quickActions: {
-    id: 'quickActions',
-    title: 'Quick Actions',
-    description: 'Fast access to common trading actions',
-    category: 'overview',
-    icon: Zap,
-    defaultSize: 'small',
-    component: QuickActionCard,
   },
   riskCalculator: {
     id: 'riskCalculator',
@@ -65,10 +55,8 @@ export const TRADE_STATION_WIDGET_CATALOG: Record<string, WidgetConfig> = {
 };
 
 export const DEFAULT_TRADE_STATION_LAYOUT = [
-  'errorReflection',
-  'quickActions',
-  'riskCalculator',
-  'rollingTarget',
-  'dailyLossLock',
   'simpleLeverage',
+  'riskCalculator',
+  'errorReflection',
+  'rollingTarget',
 ];

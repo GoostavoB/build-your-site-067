@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Progress } from '@/components/ui/progress';
@@ -7,8 +7,18 @@ import { useRiskCalculator } from '@/hooks/useRiskCalculator';
 import { useDailyLossLock } from '@/hooks/useDailyLossLock';
 import { useUserSettings } from '@/hooks/useUserSettings';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { WidgetWrapper } from '@/components/widgets/WidgetWrapper';
+import { WidgetProps } from '@/types/widget';
+import { Label } from '@/components/ui/label';
 
-export const DailyLossLockStatus = () => {
+interface DailyLossLockStatusProps extends WidgetProps {}
+
+export const DailyLossLockStatus = ({ 
+  id, 
+  isEditMode, 
+  onRemove, 
+  onExpand 
+}: DailyLossLockStatusProps) => {
   const { calculation } = useRiskCalculator();
   const { isLocked, todaysPnL, remaining, overrideUntil, loading, override } = useDailyLossLock(calculation.dailyLossLimit);
   const { settings, updateSetting } = useUserSettings();
@@ -20,27 +30,32 @@ export const DailyLossLockStatus = () => {
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Daily Loss Lock</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">Loading...</p>
-        </CardContent>
-      </Card>
+      <WidgetWrapper
+        id={id}
+        title="Daily Loss Lock"
+        isEditMode={isEditMode}
+        onRemove={onRemove}
+        onExpand={onExpand}
+      >
+        <p className="text-sm text-muted-foreground">Loading...</p>
+      </WidgetWrapper>
     );
   }
 
   if (isLocked && !overrideUntil) {
     return (
-      <Card className="border-red-500">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Lock className="h-5 w-5 text-red-600" />
-            <CardTitle>Daily Loss Limit Hit</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <WidgetWrapper
+        id={id}
+        title="Daily Loss Limit Hit"
+        isEditMode={isEditMode}
+        onRemove={onRemove}
+        onExpand={onExpand}
+        className="border-red-500"
+        headerActions={
+          <Lock className="h-5 w-5 text-red-600" />
+        }
+      >
+        <div className="space-y-4">
           <div className="rounded-md bg-red-50 p-4 dark:bg-red-950/20">
             <p className="text-sm text-red-600">
               You've reached your daily loss limit of {formatAmount(calculation.dailyLossLimit)}. Trading is paused.
@@ -50,23 +65,32 @@ export const DailyLossLockStatus = () => {
             <Unlock className="h-4 w-4 mr-2" />
             Override for 60 minutes
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </WidgetWrapper>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>Daily Loss Lock</CardTitle>
+    <WidgetWrapper
+      id={id}
+      title="Daily Loss Lock"
+      isEditMode={isEditMode}
+      onRemove={onRemove}
+      onExpand={onExpand}
+      headerActions={
+        <div className="flex items-center gap-2">
+          <Label htmlFor="loss-lock-toggle" className="text-xs text-muted-foreground cursor-pointer">
+            Enable
+          </Label>
           <Switch
+            id="loss-lock-toggle"
             checked={settings.daily_loss_lock_enabled}
             onCheckedChange={(checked) => updateSetting('daily_loss_lock_enabled', checked)}
           />
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+      }
+    >
+      <div className="space-y-4">
         {overrideUntil && (
           <div className="rounded-md border border-amber-500 bg-amber-50 p-3 dark:bg-amber-950/20">
             <div className="flex items-center gap-2">
@@ -107,10 +131,10 @@ export const DailyLossLockStatus = () => {
 
         {!settings.daily_loss_lock_enabled && (
           <p className="text-xs text-muted-foreground">
-            Enable to block trading when daily loss limit is hit.
-          </p>
-        )}
-      </CardContent>
-    </Card>
+          Enable to block trading when daily loss limit is hit.
+        </p>
+      )}
+      </div>
+    </WidgetWrapper>
   );
 };

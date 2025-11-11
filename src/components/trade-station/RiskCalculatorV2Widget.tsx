@@ -1,18 +1,25 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, Lock, Unlock } from 'lucide-react';
 import { useState } from 'react';
 import { useRiskCalculator } from '@/hooks/useRiskCalculator';
 import { useDailyLossLock } from '@/hooks/useDailyLossLock';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { WidgetWrapper } from '@/components/widgets/WidgetWrapper';
+import { WidgetProps } from '@/types/widget';
 
-export const RiskCalculatorV2Widget = () => {
+interface RiskCalculatorV2WidgetProps extends WidgetProps {}
+
+export const RiskCalculatorV2Widget = ({ 
+  id, 
+  isEditMode, 
+  onRemove, 
+  onExpand 
+}: RiskCalculatorV2WidgetProps) => {
   const { formatAmount } = useCurrency();
   const {
     calculation,
@@ -62,23 +69,27 @@ export const RiskCalculatorV2Widget = () => {
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Risk Calculator</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">Loading...</p>
-        </CardContent>
-      </Card>
+      <WidgetWrapper
+        id={id}
+        title="Risk Calculator"
+        isEditMode={isEditMode}
+        onRemove={onRemove}
+        onExpand={onExpand}
+      >
+        <p className="text-muted-foreground">Loading...</p>
+      </WidgetWrapper>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Risk Calculator</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
+    <WidgetWrapper
+      id={id}
+      title="Risk Calculator"
+      isEditMode={isEditMode}
+      onRemove={onRemove}
+      onExpand={onExpand}
+    >
+      <div className="space-y-6">
         {/* Strategy & Base */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
@@ -233,7 +244,7 @@ export const RiskCalculatorV2Widget = () => {
             )}
           </CollapsibleContent>
         </Collapsible>
-      </CardContent>
-    </Card>
+      </div>
+    </WidgetWrapper>
   );
 };

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { GlassCard } from '@/components/ui/glass-card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -10,8 +9,17 @@ import {
   stopPercentFromPrices,
   type Side 
 } from '@/utils/leverageCalculations';
+import { WidgetWrapper } from '@/components/widgets/WidgetWrapper';
+import { WidgetProps } from '@/types/widget';
 
-export const SimpleLeverageWidget = () => {
+interface SimpleLeverageWidgetProps extends WidgetProps {}
+
+export const SimpleLeverageWidget = ({ 
+  id, 
+  isEditMode, 
+  onRemove, 
+  onExpand 
+}: SimpleLeverageWidgetProps) => {
   const [entryPrice, setEntryPrice] = useState('50000');
   const [stopPercent, setStopPercent] = useState('1.0');
   const [stopPrice, setStopPrice] = useState('');
@@ -66,9 +74,13 @@ export const SimpleLeverageWidget = () => {
   };
 
   return (
-    <GlassCard className="p-4">
-      <h3 className="text-lg font-semibold mb-4">Leverage Calculator</h3>
-      
+    <WidgetWrapper
+      id={id}
+      title="Leverage Calculator"
+      isEditMode={isEditMode}
+      onRemove={onRemove}
+      onExpand={onExpand}
+    >
       {/* Side selector */}
       <div className="flex gap-2 mb-4">
         <Button
@@ -171,6 +183,6 @@ export const SimpleLeverageWidget = () => {
           <p className="text-xs text-state-warning">{result.warnings[0]}</p>
         </div>
       )}
-    </GlassCard>
+    </WidgetWrapper>
   );
 };

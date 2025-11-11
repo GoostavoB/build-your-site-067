@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
@@ -10,7 +10,17 @@ import { useState, useEffect } from 'react';
 import { useErrorReflection } from '@/hooks/useErrorReflection';
 import { useUserSettings } from '@/hooks/useUserSettings';
 import { useToast } from '@/hooks/use-toast';
-export const ErrorReflectionWidget = () => {
+import { WidgetWrapper } from '@/components/widgets/WidgetWrapper';
+import { WidgetProps } from '@/types/widget';
+
+interface ErrorReflectionWidgetProps extends WidgetProps {}
+
+export const ErrorReflectionWidget = ({ 
+  id, 
+  isEditMode, 
+  onRemove, 
+  onExpand 
+}: ErrorReflectionWidgetProps) => {
   const {
     errors,
     loading,
@@ -93,29 +103,29 @@ export const ErrorReflectionWidget = () => {
   const displayErrors = errors.slice(0, 3);
   const randomErrors = displayErrors.sort(() => Math.random() - 0.5).slice(0, 3);
   return <TooltipProvider>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-amber-500" />
-              <CardTitle>Error Reflection</CardTitle>
-            </div>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="daily-reminder" className="text-xs text-muted-foreground cursor-pointer">
-                    Daily
-                  </Label>
-                  <Switch id="daily-reminder" checked={settings.error_daily_reminder} onCheckedChange={checked => updateSetting('error_daily_reminder', checked)} />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Show daily reminder with active errors</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <WidgetWrapper
+        id={id}
+        title="Error Reflection"
+        isEditMode={isEditMode}
+        onRemove={onRemove}
+        onExpand={onExpand}
+        headerActions={
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="daily-reminder" className="text-xs text-muted-foreground cursor-pointer">
+                  Daily
+                </Label>
+                <Switch id="daily-reminder" checked={settings.error_daily_reminder} onCheckedChange={checked => updateSetting('error_daily_reminder', checked)} />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Show daily reminder with active errors</p>
+            </TooltipContent>
+          </Tooltip>
+        }
+      >
+        <div className="space-y-4">
           {loading ? <p className="text-muted-foreground text-sm">Loading...</p> : errors.length === 0 ? <div className="text-center py-8 px-4">
               <div className="rounded-full bg-muted w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                 <AlertCircle className="h-8 w-8 text-muted-foreground" />
@@ -190,8 +200,8 @@ export const ErrorReflectionWidget = () => {
                 </Button>
               </div>
             </>}
-        </CardContent>
-      </Card>
+        </div>
+      </WidgetWrapper>
 
       {/* Daily Reminder Modal */}
       <Dialog open={showDailyReminder} onOpenChange={setShowDailyReminder}>

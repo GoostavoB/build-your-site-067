@@ -541,7 +541,7 @@ export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) =>
       )}
 
       {/* Bulk selection toolbar */}
-      {selectedTradeIds.size > 0 && (
+      {filteredTrades.length > 0 && (
         <div 
           className="flex items-center justify-between p-4 rounded-xl"
           style={{
@@ -550,37 +550,49 @@ export const TradeHistory = memo(({ onTradesChange }: TradeHistoryProps = {}) =>
             border: '1px solid rgba(255, 255, 255, 0.08)',
           }}
         >
-          <span className="text-sm text-muted-foreground">
-            {selectedTradeIds.size} trade(s) selected
-          </span>
-          <div className="flex gap-2">
-            {showDeleted ? (
-              <>
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={handleBulkUndelete}
-                >
-                  Restore Selected
-                </Button>
+          <div className="flex items-center gap-3">
+            <Checkbox
+              checked={selectedTradeIds.size === filteredTrades.length && filteredTrades.length > 0}
+              onCheckedChange={toggleAllTrades}
+              aria-label="Select all trades"
+            />
+            <span className="text-sm text-muted-foreground">
+              {selectedTradeIds.size > 0 
+                ? `${selectedTradeIds.size} trade(s) selected`
+                : 'Select all'
+              }
+            </span>
+          </div>
+          {selectedTradeIds.size > 0 && (
+            <div className="flex gap-2">
+              {showDeleted ? (
+                <>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={handleBulkUndelete}
+                  >
+                    Restore Selected
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleBulkDelete}
+                  >
+                    Delete Permanently
+                  </Button>
+                </>
+              ) : (
                 <Button
                   variant="destructive"
                   size="sm"
                   onClick={handleBulkDelete}
                 >
-                  Delete Permanently
+                  Delete Selected
                 </Button>
-              </>
-            ) : (
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={handleBulkDelete}
-              >
-                Delete Selected
-              </Button>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

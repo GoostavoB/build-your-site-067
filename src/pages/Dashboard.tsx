@@ -165,6 +165,8 @@ const Dashboard = () => {
 
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [showWidgetLibrary, setShowWidgetLibrary] = useState(false);
+  // State for Trade Station controls
+  const [tradeStationControls, setTradeStationControls] = useState<any>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selectedColumnCount, setSelectedColumnCount] = useState(3);
   const [originalPositions, setOriginalPositions] = useState<WidgetPosition[]>([]);
@@ -876,27 +878,42 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Customize Dashboard Controls - Only show on Overview tab */}
-        {!loading && stats && stats.total_trades > 0 && activeTab === 'overview' && (
+        {/* Customize Dashboard Controls - Show for Overview and Trade Station tabs */}
+        {!loading && stats && stats.total_trades > 0 && (activeTab === 'overview' || activeTab === 'tradestation') && (
           <div data-tour="dashboard-customization">
-            <CustomizeDashboardControls
-              isCustomizing={isCustomizing}
-              hasChanges={hasLayoutChanges}
-              onStartCustomize={handleStartCustomize}
-              onSave={handleSaveLayout}
-              onCancel={handleCancelCustomize}
-              onReset={resetLayout}
-              onAddWidget={() => {
-                if (!canCustomizeDashboard) {
-                  setShowUpgradePrompt(true);
-                  return;
-                }
-                setShowWidgetLibrary(true);
-              }}
-              columnCount={selectedColumnCount}
-              onColumnCountChange={handleColumnCountChange}
-              widgetCount={positions.length}
-            />
+            {activeTab === 'overview' ? (
+              <CustomizeDashboardControls
+                isCustomizing={isCustomizing}
+                hasChanges={hasLayoutChanges}
+                onStartCustomize={handleStartCustomize}
+                onSave={handleSaveLayout}
+                onCancel={handleCancelCustomize}
+                onReset={resetLayout}
+                onAddWidget={() => {
+                  if (!canCustomizeDashboard) {
+                    setShowUpgradePrompt(true);
+                    return;
+                  }
+                  setShowWidgetLibrary(true);
+                }}
+                columnCount={selectedColumnCount}
+                onColumnCountChange={handleColumnCountChange}
+                widgetCount={positions.length}
+              />
+            ) : tradeStationControls ? (
+              <CustomizeDashboardControls
+                isCustomizing={tradeStationControls.isCustomizing}
+                hasChanges={tradeStationControls.hasChanges}
+                onStartCustomize={tradeStationControls.handleStartCustomize}
+                onSave={tradeStationControls.handleSave}
+                onCancel={tradeStationControls.handleCancel}
+                onReset={tradeStationControls.handleReset}
+                onAddWidget={tradeStationControls.handleAddWidget}
+                columnCount={tradeStationControls.columnCount}
+                onColumnCountChange={tradeStationControls.handleColumnCountChange}
+                widgetCount={tradeStationControls.widgetCount}
+              />
+            ) : null}
           </div>
         )}
 
@@ -924,7 +941,7 @@ const Dashboard = () => {
               </TabsList>
 
               <TabsContent value="tradestation" className="space-y-6">
-                <TradeStationView />
+                <TradeStationView onControlsReady={setTradeStationControls} />
               </TabsContent>
 
               <TabsContent value="overview" className="space-y-6">

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { DndContext, DragEndEvent, DragStartEvent, rectIntersection, DragOverlay, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,7 +10,22 @@ import { CustomizeDashboardControls } from '@/components/CustomizeDashboardContr
 import { WidgetLibrary } from '@/components/widgets/WidgetLibrary';
 import { toast } from 'sonner';
 
-export const TradeStationView = () => {
+interface TradeStationViewProps {
+  onControlsReady?: (controls: {
+    isCustomizing: boolean;
+    hasChanges: boolean;
+    handleStartCustomize: () => void;
+    handleSave: () => void;
+    handleCancel: () => void;
+    handleReset: () => void;
+    handleAddWidget: () => void;
+    columnCount: number;
+    handleColumnCountChange: (count: number) => void;
+    widgetCount: number;
+  }) => void;
+}
+
+export const TradeStationView = ({ onControlsReady }: TradeStationViewProps = {}) => {
   const { user } = useAuth();
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [showWidgetLibrary, setShowWidgetLibrary] = useState(false);
@@ -180,6 +195,27 @@ export const TradeStationView = () => {
     setOriginalPositions([]);
   }, [originalPositions, saveLayout]);
 
+  // Expose controls to parent via callback
+  const controls = useMemo(() => ({
+    isCustomizing,
+    hasChanges,
+    handleStartCustomize,
+    handleSave: handleSaveLayout,
+    handleCancel: handleCancelCustomize,
+    handleReset: resetLayout,
+    handleAddWidget: () => setShowWidgetLibrary(true),
+    columnCount,
+    handleColumnCountChange: updateColumnCount,
+    widgetCount: positions.length,
+  }), [isCustomizing, hasChanges, handleStartCustomize, handleSaveLayout, handleCancelCustomize, resetLayout, columnCount, updateColumnCount, positions.length]);
+
+  // Notify parent when controls are ready
+  useEffect(() => {
+    if (onControlsReady) {
+      onControlsReady(controls);
+    }
+  }, [controls, onControlsReady]);
+
   if (isLoading) {
     return (
       <div className="container mx-auto p-6">
@@ -191,21 +227,7 @@ export const TradeStationView = () => {
   }
   
   return (
-    <div className="container mx-auto p-6 space-y-4">
-      {/* Customize Controls */}
-      <CustomizeDashboardControls
-        isCustomizing={isCustomizing}
-        hasChanges={hasChanges}
-        onStartCustomize={handleStartCustomize}
-        onSave={handleSaveLayout}
-        onCancel={handleCancelCustomize}
-        onReset={resetLayout}
-        onAddWidget={() => setShowWidgetLibrary(true)}
-        columnCount={columnCount}
-        onColumnCountChange={updateColumnCount}
-        widgetCount={positions.length}
-      />
-      
+    <div className="space-y-4">
       {/* Dynamic Grid with DnD */}
       <DndContext
         sensors={sensors}

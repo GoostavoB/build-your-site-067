@@ -21,7 +21,6 @@ const DEFAULT_POSITIONS: WidgetPosition[] = [
   { id: 'spotWallet', column: 1, row: 1 },
   { id: 'topMovers', column: 2, row: 1 },
   { id: 'recentTransactions', column: 0, row: 2 },
-  { id: 'quickActions', column: 1, row: 2 },
   { id: 'capitalGrowth', column: 0, row: 3 },
   { id: 'avgPnLPerTrade', column: 1, row: 3 },
   { id: 'avgPnLPerDay', column: 2, row: 3 },

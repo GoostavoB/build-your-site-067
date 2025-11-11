@@ -1,6 +1,7 @@
 import { RiskCalculatorV2Widget } from './RiskCalculatorV2Widget';
 import { ErrorReflectionWidget } from './ErrorReflectionWidget';
 import { DailyLossLockStatus } from './DailyLossLockStatus';
+import { SimpleLeverageWidget } from './SimpleLeverageWidget';
 
 export const TradeStationView = () => {
   return (
@@ -19,6 +20,7 @@ export const TradeStationView = () => {
         {/* Column 3 - Right */}
         <div className="space-y-6">
           <DailyLossLockStatus />
+          <SimpleLeverageWidget />
         </div>
       </div>
     </div>

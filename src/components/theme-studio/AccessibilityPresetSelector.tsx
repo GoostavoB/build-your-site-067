@@ -28,6 +28,8 @@ export const AccessibilityPresetSelector = () => {
     clearPreset,
     setShowIconsWithColor,
     setLinkUnderlines,
+    applyPresetColors,
+    setApplyPresetColors,
   } = useAccessibilityMode();
   const { theme } = useTheme();
 
@@ -175,6 +177,25 @@ export const AccessibilityPresetSelector = () => {
 
       {/* Toggle Switches */}
       <div className="space-y-2 pt-2 border-t border-border/10">
+        <TooltipProvider>
+          <div className="flex items-center justify-between">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Label htmlFor="apply-colors-compact" className="text-xs text-muted-foreground cursor-pointer">
+                  Use preset colors
+                </Label>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="max-w-[200px]">
+                <p className="text-xs">Keep your current theme colors (off) or replace them with the accessibility palette (on)</p>
+              </TooltipContent>
+            </Tooltip>
+            <Switch
+              id="apply-colors-compact"
+              checked={applyPresetColors}
+              onCheckedChange={setApplyPresetColors}
+            />
+          </div>
+        </TooltipProvider>
         <div className="flex items-center justify-between">
           <Label htmlFor="show-icons-compact" className="text-xs text-muted-foreground cursor-pointer">
             Show Icons

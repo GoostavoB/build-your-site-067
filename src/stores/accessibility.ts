@@ -6,11 +6,13 @@ interface AccessibilityState {
   showIconsWithColor: boolean;
   linkUnderlines: boolean;
   simulation: AccessibilityPreset | null;
+  applyPresetColors: boolean;
   setPreset: (preset: AccessibilityPreset | null) => void;
   clearPreset: () => void;
   setShowIconsWithColor: (show: boolean) => void;
   setLinkUnderlines: (underline: boolean) => void;
   setSimulation: (simulation: AccessibilityPreset | null) => void;
+  setApplyPresetColors: (apply: boolean) => void;
 }
 
 // Initialize from localStorage
@@ -40,11 +42,17 @@ const getInitialSimulation = (): AccessibilityPreset | null => {
   return null;
 };
 
+const getInitialApplyColors = (): boolean => {
+  const saved = localStorage.getItem(ACCESSIBILITY_STORAGE_KEYS.APPLY_COLORS);
+  return saved === 'true'; // default false
+};
+
 export const useAccessibilityStore = create<AccessibilityState>((set) => ({
   preset: getInitialPreset(),
   showIconsWithColor: getInitialShowIcons(),
   linkUnderlines: getInitialLinkUnderlines(),
   simulation: getInitialSimulation(),
+  applyPresetColors: getInitialApplyColors(),
   
   setPreset: (preset) => {
     set({ preset });
@@ -77,5 +85,10 @@ export const useAccessibilityStore = create<AccessibilityState>((set) => ({
     } else {
       localStorage.removeItem(ACCESSIBILITY_STORAGE_KEYS.SIMULATION);
     }
+  },
+  
+  setApplyPresetColors: (apply) => {
+    set({ applyPresetColors: apply });
+    localStorage.setItem(ACCESSIBILITY_STORAGE_KEYS.APPLY_COLORS, String(apply));
   },
 }));

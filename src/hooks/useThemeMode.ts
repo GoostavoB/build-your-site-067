@@ -50,7 +50,7 @@ export function useThemeMode() {
   const [customModes, setCustomModes] = useState<ColorMode[]>([]);
   const { activeSeasonalTheme } = useSeasonalThemes();
   const { user } = useAuth();
-  const { activePresetTheme } = useAccessibilityMode();
+  const { activePresetTheme, applyPresetColors } = useAccessibilityMode();
 
   // Load custom themes from database
   useEffect(() => {
@@ -96,13 +96,13 @@ export function useThemeMode() {
     applyMode(modeToApply);
   }, [customModes]);
 
-  // Re-apply current theme when accessibility preset changes
+  // Re-apply current theme when accessibility preset or apply colors setting changes
   useEffect(() => {
     // Re-apply with current mode so accessibility overrides take effect immediately
     if (currentMode) {
       applyMode(currentMode);
     }
-  }, [activePresetTheme]);
+  }, [activePresetTheme, applyPresetColors]);
 
   // Merge theme with DEFAULT_THEME as fallback
   const mergeWithDefault = (theme: Partial<ColorMode>): ColorMode => {
@@ -136,10 +136,19 @@ export function useThemeMode() {
       // Merge with DEFAULT_THEME for missing tokens
       let mode = mergeWithDefault(foundMode);
       
-      // If accessibility preset is active, override with accessibility colors
+      // If accessibility preset is active, selectively apply tokens
       if (activePresetTheme) {
-        console.info('🎨 Applying accessibility preset:', activePresetTheme.id);
-        mode = mergeWithDefault({ ...mode, ...activePresetTheme });
+        console.info('🎨 Applying accessibility preset:', activePresetTheme.id, 'applyColors:', applyPresetColors);
+        
+        // Always apply semantic state tokens for better accessibility cues
+        const { success, warning, error, info, focus } = activePresetTheme;
+        mode = mergeWithDefault({ ...mode, success, warning, error, info, focus });
+        
+        // Only apply color tokens if user opted in
+        if (applyPresetColors) {
+          const { primary, secondary, accent, profit, loss } = activePresetTheme;
+          mode = mergeWithDefault({ ...mode, primary, secondary, accent, profit, loss });
+        }
       }
 
       // WCAG AA Contrast Validation (4.5:1 minimum)

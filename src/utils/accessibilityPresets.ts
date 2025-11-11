@@ -116,4 +116,5 @@ export const ACCESSIBILITY_STORAGE_KEYS = {
   SHOW_ICONS: 'accessibility:show-icons',
   LINK_UNDERLINES: 'accessibility:link-underlines',
   SIMULATION: 'accessibility:simulation',
+  APPLY_COLORS: 'accessibility:apply-colors',
 } as const;

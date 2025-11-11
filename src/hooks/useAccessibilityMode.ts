@@ -13,11 +13,13 @@ export function useAccessibilityMode() {
     showIconsWithColor,
     linkUnderlines,
     simulation,
+    applyPresetColors,
     setPreset,
     clearPreset,
     setShowIconsWithColor,
     setLinkUnderlines,
     setSimulation,
+    setApplyPresetColors,
   } = useAccessibilityStore();
 
   // Apply link underlines setting
@@ -50,6 +52,7 @@ export function useAccessibilityMode() {
       showIconsWithColor,
       linkUnderlines,
       simulation,
+      applyPresetColors,
     },
     presets: ACCESSIBILITY_PRESETS,
     activePreset: preset,
@@ -62,5 +65,7 @@ export function useAccessibilityMode() {
     setLinkUnderlines,
     simulation,
     setSimulation,
+    applyPresetColors,
+    setApplyPresetColors,
   };
 }

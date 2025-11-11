@@ -5,6 +5,7 @@ import { ArrowLeft, Save } from 'lucide-react';
 import { TradeCard } from './TradeCard';
 import { TradeSummaryBar } from './TradeSummaryBar';
 import { TradeFilters } from './TradeFilters';
+import { SaveConfirmationDialog } from './SaveConfirmationDialog';
 import { useVirtualScroll } from '@/hooks/useVirtualScroll';
 import { useDebounce } from '@/hooks/useDebounce';
 
@@ -44,6 +45,8 @@ export function TradeReviewEditor({
 }: TradeReviewEditorProps) {
   const [editedTrades, setEditedTrades] = useState<Trade[]>(trades.slice(0, maxSelectableTrades));
   const [approvedTrades, setApprovedTrades] = useState<Set<number>>(new Set());
+  const [deletedTrades, setDeletedTrades] = useState<Set<number>>(new Set());
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [brokerFilter, setBrokerFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -118,19 +121,25 @@ export function TradeReviewEditor({
   };
 
   const handleDelete = (index: number) => {
-    const newTrades = editedTrades.filter((_, idx) => idx !== index);
-    setEditedTrades(newTrades);
-    
-    // Update approved trades indices
-    const newApproved = new Set<number>();
-    approvedTrades.forEach(approvedIdx => {
-      if (approvedIdx < index) {
-        newApproved.add(approvedIdx);
-      } else if (approvedIdx > index) {
-        newApproved.add(approvedIdx - 1);
-      }
+    setDeletedTrades(prev => {
+      const newSet = new Set(prev);
+      newSet.add(index);
+      return newSet;
     });
-    setApprovedTrades(newApproved);
+    // Remove from approved if it was approved
+    setApprovedTrades(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(index);
+      return newSet;
+    });
+  };
+
+  const handleRestore = (index: number) => {
+    setDeletedTrades(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(index);
+      return newSet;
+    });
   };
 
   const handleDuplicate = (index: number) => {
@@ -141,27 +150,54 @@ export function TradeReviewEditor({
   };
 
   const handleSave = () => {
-    const tradesToSave = editedTrades.filter((_, index) => approvedTrades.has(index));
+    setShowSaveDialog(true);
+  };
+
+  const handleConfirmSave = () => {
+    const tradesToSave = editedTrades.filter((_, index) => 
+      approvedTrades.has(index) && !deletedTrades.has(index)
+    );
+    setShowSaveDialog(false);
     onSave(tradesToSave);
   };
 
   const handleSelectAll = () => {
-    if (approvedTrades.size === editedTrades.length) {
-      // Deselect all
+    // Count non-deleted trades
+    const nonDeletedIndices = editedTrades
+      .map((_, index) => index)
+      .filter(index => !deletedTrades.has(index));
+    
+    const allNonDeletedApproved = nonDeletedIndices.every(index => approvedTrades.has(index));
+    
+    if (allNonDeletedApproved && nonDeletedIndices.length > 0) {
+      // Deselect all non-deleted
       setApprovedTrades(new Set());
     } else {
-      // Select all
-      setApprovedTrades(new Set(editedTrades.map((_, index) => index)));
+      // Select all non-deleted
+      setApprovedTrades(new Set(nonDeletedIndices));
     }
   };
+
+  // Count non-deleted trades for display
+  const activeTradesCount = editedTrades.filter((_, index) => !deletedTrades.has(index)).length;
+  const approvedNonDeletedCount = Array.from(approvedTrades).filter(index => !deletedTrades.has(index)).length;
 
   return (
     <div className="w-full max-w-[1200px] mx-auto space-y-6 py-6 pb-32">
       {/* Summary Bar */}
       <TradeSummaryBar
-        totalTrades={editedTrades.length}
+        totalTrades={activeTradesCount}
         approvedIndices={approvedTrades}
         trades={editedTrades}
+      />
+
+      {/* Save Confirmation Dialog */}
+      <SaveConfirmationDialog
+        open={showSaveDialog}
+        onOpenChange={setShowSaveDialog}
+        approvedCount={approvedNonDeletedCount}
+        deletedCount={deletedTrades.size}
+        onConfirm={handleConfirmSave}
       />
 
       {/* Select All Control */}
@@ -176,19 +212,20 @@ export function TradeReviewEditor({
         >
           <div className="flex items-center gap-3">
             <Checkbox
-              checked={approvedTrades.size === editedTrades.length && editedTrades.length > 0}
+              checked={approvedNonDeletedCount === activeTradesCount && activeTradesCount > 0}
               onCheckedChange={handleSelectAll}
               aria-label="Select all trades"
             />
             <span className="text-sm font-medium">
-              {approvedTrades.size === editedTrades.length && editedTrades.length > 0
+              {approvedNonDeletedCount === activeTradesCount && activeTradesCount > 0
                 ? 'All trades selected'
                 : 'Select all trades'
               }
             </span>
           </div>
           <span className="text-sm text-muted-foreground">
-            {approvedTrades.size} of {editedTrades.length} approved
+            {approvedNonDeletedCount} of {activeTradesCount} approved
+            {deletedTrades.size > 0 && ` • ${deletedTrades.size} deleted`}
           </span>
         </div>
       )}
@@ -202,10 +239,12 @@ export function TradeReviewEditor({
               trade={trade}
               index={originalIndex}
               isApproved={approvedTrades.has(originalIndex)}
+              isDeleted={deletedTrades.has(originalIndex)}
               onTradeChange={(field, value) => handleTradeChange(originalIndex, field, value)}
               onApprove={() => handleApprove(originalIndex)}
               onDelete={() => handleDelete(originalIndex)}
               onDuplicate={() => handleDuplicate(originalIndex)}
+              onRestore={() => handleRestore(originalIndex)}
             />
           ))}
         </div>
@@ -232,16 +271,17 @@ export function TradeReviewEditor({
               Cancel
             </Button>
             <p className="text-sm text-muted-foreground">
-              {approvedTrades.size} of {editedTrades.length} trades selected
+              {approvedNonDeletedCount} of {activeTradesCount} trades selected
+              {deletedTrades.size > 0 && ` • ${deletedTrades.size} deleted`}
             </p>
           </div>
           <Button
             onClick={handleSave}
-            disabled={approvedTrades.size === 0}
+            disabled={approvedNonDeletedCount === 0}
             className="gap-2"
           >
             <Save className="h-4 w-4" />
-            Save {approvedTrades.size} Trade{approvedTrades.size !== 1 ? 's' : ''}
+            Save {approvedNonDeletedCount} Trade{approvedNonDeletedCount !== 1 ? 's' : ''}
           </Button>
         </div>
       </div>

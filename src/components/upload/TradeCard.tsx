@@ -34,20 +34,24 @@ interface TradeCardProps {
   trade: Trade;
   index: number;
   isApproved: boolean;
+  isDeleted?: boolean;
   onTradeChange: (field: string, value: any) => void;
   onApprove: () => void;
   onDelete: () => void;
   onDuplicate: () => void;
+  onRestore?: () => void;
 }
 
 export function TradeCard({
   trade,
   index,
   isApproved,
+  isDeleted = false,
   onTradeChange,
   onApprove,
   onDelete,
   onDuplicate,
+  onRestore,
 }: TradeCardProps) {
   const [localTrade, setLocalTrade] = useState(trade);
   const debouncedTrade = useDebounce(localTrade, 300);
@@ -75,6 +79,80 @@ export function TradeCard({
     if (!date) return '';
     return new Date(date).toISOString().slice(0, 16);
   };
+
+  // If deleted, show only minimized header
+  if (isDeleted) {
+    return (
+      <Card 
+        className="border-[#1E242C] bg-[#12161C]/50 overflow-hidden transition-all opacity-60"
+        style={{ backgroundColor: '#12161C' }}
+      >
+        <div className="px-6 py-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <span className="text-sm font-semibold text-[#A6B1BB] shrink-0">#{index + 1}</span>
+            
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-xs text-[#A6B1BB] shrink-0">
+                {trade.opened_at ? new Date(trade.opened_at).toLocaleDateString() : 'No date'}
+              </span>
+              {trade.opened_at && (
+                <span className="text-xs text-[#A6B1BB]">
+                  {new Date(trade.opened_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              )}
+            </div>
+
+            <span className="text-base font-bold text-[#EAEFF4] truncate">{symbol}</span>
+            
+            <Badge 
+              className={cn(
+                "rounded-full px-2.5 py-0.5 text-xs font-medium shrink-0",
+                trade.side === 'long' 
+                  ? "bg-green-500/20 text-green-400 hover:bg-green-500/30" 
+                  : "bg-red-500/20 text-red-400 hover:bg-red-500/30"
+              )}
+            >
+              {trade.side || 'N/A'}
+            </Badge>
+
+            <div className="flex items-center gap-4 ml-auto shrink-0">
+              <div className="text-right">
+                <div className="text-xs text-[#A6B1BB]">P&L</div>
+                <div className={cn(
+                  "text-sm font-bold",
+                  (trade.profit_loss || 0) >= 0 ? "text-green-400" : "text-red-400"
+                )}>
+                  ${trade.profit_loss?.toFixed(2) || '0.00'}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-[#A6B1BB]">ROI</div>
+                <div className={cn(
+                  "text-sm font-bold",
+                  (trade.roi_percent || 0) >= 0 ? "text-green-400" : "text-red-400"
+                )}>
+                  {trade.roi_percent?.toFixed(2) || '0.00'}%
+                </div>
+              </div>
+              <Badge className="rounded-full px-2.5 py-0.5 text-xs font-medium bg-red-500/20 text-red-400">
+                Deleted
+              </Badge>
+              {onRestore && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onRestore}
+                  className="rounded-xl border-[#2A3038] text-green-400 hover:bg-green-500/10 hover:border-green-500/50"
+                >
+                  Restore
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card 

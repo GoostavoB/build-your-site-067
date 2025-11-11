@@ -96,9 +96,9 @@ export const RollingTargetWidget = memo(({
   initialInvestment,
 }: RollingTargetWidgetProps) => {
   const [settings, setSettings] = useState<WidgetSettings>({
-    targetPercent: 5,
+    targetPercent: 1,
     mode: 'per-day',
-    carryOverCap: 10, // 2 * targetPercent by default
+    carryOverCap: 2, // 2 * targetPercent by default
     suggestionMethod: 'median',
     suggestionsEnabled: true,
     rolloverWeekends: true,

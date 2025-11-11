@@ -2,6 +2,8 @@ import { RiskCalculatorV2Widget } from './RiskCalculatorV2Widget';
 import { ErrorReflectionWidget } from './ErrorReflectionWidget';
 import { DailyLossLockStatus } from './DailyLossLockStatus';
 import { SimpleLeverageWidget } from './SimpleLeverageWidget';
+import { TradeStationRollingTarget } from './TradeStationRollingTarget';
+import { QuickActionCard } from '@/components/QuickActionCard';
 
 export const TradeStationView = () => {
   return (
@@ -10,11 +12,13 @@ export const TradeStationView = () => {
         {/* Column 1 - Left widgets */}
         <div className="space-y-6">
           <ErrorReflectionWidget />
+          <QuickActionCard />
         </div>
 
         {/* Column 2 - Center (wide) */}
         <div className="space-y-6">
           <RiskCalculatorV2Widget />
+          <TradeStationRollingTarget />
         </div>
 
         {/* Column 3 - Right */}

@@ -294,7 +294,6 @@ export const DEFAULT_DASHBOARD_LAYOUT = [
   'recentTransactions',
   'topMovers',
   'aiInsights',
-  'quickActions',
 ];
 
 /**

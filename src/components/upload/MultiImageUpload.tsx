@@ -310,7 +310,7 @@ setExtractedTrades([]);
     <div className="space-y-6">
     <div className="flex flex-wrap gap-4">
         {images.map((image, index) => (
-          <Card key={index} className="relative group overflow-hidden border-[#1E242C] bg-[#12161C] w-[280px]">
+          <Card key={index} className="relative group overflow-hidden w-[280px]">
             <div className="aspect-video relative">
               <img
                 src={image.preview}
@@ -384,10 +384,10 @@ setExtractedTrades([]);
         {images.length < maxImages && (
           <Card 
             className={cn(
-              "relative w-[280px] h-[157px] rounded-[14px] flex flex-col items-center justify-center cursor-pointer border-dashed border-2 transition-all overflow-hidden group bg-[#12161C]",
+              "relative w-[280px] h-[157px] rounded-[14px] flex flex-col items-center justify-center cursor-pointer border-dashed border-2 transition-all overflow-hidden group bg-muted/30",
               isDragging 
-                ? "border-[#3B82F6] bg-[#3B82F6]/10 ring-2 ring-[#3B82F6]/40 shadow-lg" 
-                : "border-[#1E242C] hover:border-[#3B82F6]/70 hover:shadow-md"
+                ? "border-primary bg-primary/10 ring-2 ring-primary/40 shadow-lg" 
+                : "border-border hover:border-primary/70 hover:bg-muted/50 hover:shadow-md"
             )}
             onDragEnter={handleDragEnter}
             onDragOver={handleDragOver}
@@ -397,14 +397,14 @@ setExtractedTrades([]);
             {/* Drag overlay */}
             {isDragging && (
               <div
-                className="absolute inset-0 z-10 pointer-events-none rounded-[14px] bg-[#3B82F6]/10 backdrop-blur-sm border-2 border-[#3B82F6] ring-2 ring-[#3B82F6]/40 flex items-center justify-center transition-all"
+                className="absolute inset-0 z-10 pointer-events-none rounded-[14px] bg-primary/10 backdrop-blur-sm border-2 border-primary ring-2 ring-primary/40 flex items-center justify-center transition-all"
                 role="region"
                 aria-label="Drop files to upload"
                 aria-busy="true"
               >
                 <div className="flex flex-col items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-[#3B82F6]/20 flex items-center justify-center">
-                    <Upload className="h-8 w-8 text-[#3B82F6] animate-bounce" />
+                  <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
+                    <Upload className="h-8 w-8 text-primary animate-bounce" />
                   </div>
                   <p className="text-base font-semibold text-foreground">Drop to upload</p>
                 </div>
@@ -433,7 +433,7 @@ setExtractedTrades([]);
               
               {/* Text content */}
               <div className="flex flex-col gap-1 text-left">
-                <p className="text-sm font-medium text-foreground">
+                <p className="text-sm font-medium">
                   Drag files or click to upload
                 </p>
                 <p className="text-xs text-muted-foreground">

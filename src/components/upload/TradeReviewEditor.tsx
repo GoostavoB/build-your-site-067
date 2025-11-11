@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowLeft, Save } from 'lucide-react';
 import { TradeCard } from './TradeCard';
 import { TradeSummaryBar } from './TradeSummaryBar';
@@ -144,6 +145,16 @@ export function TradeReviewEditor({
     onSave(tradesToSave);
   };
 
+  const handleSelectAll = () => {
+    if (approvedTrades.size === editedTrades.length) {
+      // Deselect all
+      setApprovedTrades(new Set());
+    } else {
+      // Select all
+      setApprovedTrades(new Set(editedTrades.map((_, index) => index)));
+    }
+  };
+
   return (
     <div className="w-full max-w-[1200px] mx-auto space-y-6 py-6 pb-32">
       {/* Summary Bar */}
@@ -152,6 +163,35 @@ export function TradeReviewEditor({
         approvedIndices={approvedTrades}
         trades={editedTrades}
       />
+
+      {/* Select All Control */}
+      {editedTrades.length > 0 && (
+        <div 
+          className="flex items-center justify-between p-4 rounded-xl"
+          style={{
+            background: 'rgba(255, 255, 255, 0.02)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <Checkbox
+              checked={approvedTrades.size === editedTrades.length && editedTrades.length > 0}
+              onCheckedChange={handleSelectAll}
+              aria-label="Select all trades"
+            />
+            <span className="text-sm font-medium">
+              {approvedTrades.size === editedTrades.length && editedTrades.length > 0
+                ? 'All trades selected'
+                : 'Select all trades'
+              }
+            </span>
+          </div>
+          <span className="text-sm text-muted-foreground">
+            {approvedTrades.size} of {editedTrades.length} approved
+          </span>
+        </div>
+      )}
 
       {/* Trade List */}
       {filteredTrades.length > 0 ? (

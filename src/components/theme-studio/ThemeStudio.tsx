@@ -11,6 +11,7 @@ import { CustomThemeManager } from './CustomThemeManager';
 import { SeasonalThemeBanner } from './SeasonalThemeBanner';
 import { AIThemeSuggestion } from './AIThemeSuggestion';
 import { BackgroundLightnessSlider } from './BackgroundLightnessSlider';
+import { AccessibilityPresetSelector } from './AccessibilityPresetSelector';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 export const ThemeStudio = () => {
@@ -37,6 +38,9 @@ export const ThemeStudio = () => {
 
           {/* Background Lightness Slider */}
           <BackgroundLightnessSlider />
+
+          {/* Accessibility Presets */}
+          <AccessibilityPresetSelector />
 
           <ScrollArea className="h-[500px]">
             <div className="space-y-6 py-4">

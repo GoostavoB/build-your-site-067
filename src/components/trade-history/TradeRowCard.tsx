@@ -89,7 +89,7 @@ export const TradeRowCard = memo(({
 
         {/* Symbol badge */}
         <div className="flex items-center gap-2 min-w-[100px]">
-          <TokenIcon symbol={trade.symbol} size="sm" />
+          <TokenIcon symbol={trade.symbol} size="xs" />
           <div>
             <div className={cn(
               "font-semibold text-foreground",

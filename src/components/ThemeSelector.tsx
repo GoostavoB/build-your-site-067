@@ -90,11 +90,11 @@ export const ThemeSelector = () => {
                       {theme.description}
                     </p>
                     
-                    {/* Unlock Requirement */}
+                    {/* Tier Badge */}
                     <Badge variant={theme.isUnlocked ? "default" : "secondary"} className="text-xs">
-                      {theme.unlockRequirement.type === 'level' 
-                        ? `Level ${theme.unlockRequirement.value}`
-                        : theme.unlockRequirement.value.toString().replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
+                      {theme.requiredTier === 'free' || theme.requiredTier === 'basic' 
+                        ? 'Starter' 
+                        : theme.requiredTier.charAt(0).toUpperCase() + theme.requiredTier.slice(1)
                       }
                     </Badge>
                   </div>

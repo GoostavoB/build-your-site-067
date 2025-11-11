@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { PRESET_THEMES } from '@/utils/themePresets';
-import { ALL_ADVANCED_THEMES } from '@/utils/advancedThemePresets';
+import { UNIFIED_THEMES } from '@/utils/unifiedThemes';
 import { ColorMode } from '@/hooks/useThemeMode';
 
 /**
@@ -52,7 +51,7 @@ export const ThemeInitializer = () => {
     }
     
     // Find and apply the theme immediately
-    const allModes = [...PRESET_THEMES, ...ALL_ADVANCED_THEMES, ...customModes];
+    const allModes = [...UNIFIED_THEMES, ...customModes];
     const mode = allModes.find(m => m.id === savedMode);
     
     if (mode) {

@@ -5,13 +5,16 @@ import { useState } from 'react';
 import { CreditCard, Lock, Rocket, TrendingUp, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export type UpgradeIllustration = 'credits' | 'lock' | 'rocket' | 'chart';
+export type UpgradeIllustration = 'credits' | 'lock' | 'rocket' | 'chart' | 'palette';
 export type UpgradeSource =
   | 'upload_zero_credits'
   | 'feature_lock'
   | 'rate_limit'
   | 'manual'
-  | 'batch_upload_zero_credits';
+  | 'batch_upload_zero_credits'
+  | 'theme_locked'
+  | 'custom_theme_locked'
+  | 'background_color_locked';
 
 interface UpgradeModalProps {
   open: boolean;
@@ -29,6 +32,7 @@ const illustrations = {
   lock: Lock,
   rocket: Rocket,
   chart: TrendingUp,
+  palette: Sparkles,
 };
 
 const defaultTitles: Record<UpgradeSource, string> = {
@@ -37,6 +41,9 @@ const defaultTitles: Record<UpgradeSource, string> = {
   feature_lock: 'Premium Feature',
   rate_limit: 'Rate Limit Reached',
   manual: 'Upgrade Your Plan',
+  theme_locked: 'Unlock Premium Themes',
+  custom_theme_locked: 'Create Custom Themes',
+  background_color_locked: 'Background Color Control',
 };
 
 const defaultMessages: Record<UpgradeSource, string> = {
@@ -45,6 +52,9 @@ const defaultMessages: Record<UpgradeSource, string> = {
   feature_lock: 'This feature requires a premium subscription. Upgrade to unlock advanced analytics and insights.',
   rate_limit: "You've reached your hourly limit. Upgrade for higher limits and priority processing.",
   manual: 'Choose a plan that fits your trading journey.',
+  theme_locked: 'This theme requires a premium subscription.',
+  custom_theme_locked: 'Custom themes require a premium subscription.',
+  background_color_locked: 'Background color control is available for Elite users.',
 };
 
 export const UpgradeModal = ({

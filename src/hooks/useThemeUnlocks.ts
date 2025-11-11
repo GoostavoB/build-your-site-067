@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { UNIFIED_THEMES, getThemeById, ThemeTier } from '@/utils/unifiedThemes';
+import { useUserTier } from './useUserTier';
 
 export interface UnlockableTheme {
   id: string;
@@ -11,10 +13,7 @@ export interface UnlockableTheme {
     secondary: string;
     accent: string;
   };
-  unlockRequirement: {
-    type: 'level' | 'rank' | 'achievement' | 'default';
-    value: string | number;
-  };
+  requiredTier: ThemeTier;
   isUnlocked: boolean;
 }
 
@@ -43,23 +42,9 @@ const hslToHex = (hsl: string): string => {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 };
 
-// Import unified themes
-import { UNIFIED_THEMES, isThemeUnlocked as checkUnlock } from '@/utils/unifiedThemes';
-
-const THEME_CATALOG: Omit<UnlockableTheme, 'isUnlocked'>[] = UNIFIED_THEMES.map(theme => ({
-  id: theme.id,
-  name: theme.name,
-  description: theme.description,
-  previewColors: {
-    primary: hslToHex(theme.primary),
-    secondary: hslToHex(theme.secondary),
-    accent: hslToHex(theme.accent),
-  },
-  unlockRequirement: theme.unlockRequirement,
-}));
-
 export const useThemeUnlocks = () => {
   const { user } = useAuth();
+  const { tier } = useUserTier();
   const [themes, setThemes] = useState<UnlockableTheme[]>([]);
   const [activeTheme, setActiveTheme] = useState<string>('default');
   const [loading, setLoading] = useState(true);
@@ -68,63 +53,49 @@ export const useThemeUnlocks = () => {
     if (user) {
       fetchUnlocks();
     }
-  }, [user]);
+  }, [user, tier]);
 
   const fetchUnlocks = async () => {
     if (!user) return;
 
     try {
-      // Fetch user progression
-      const { data: progression } = await supabase
-        .from('user_xp_levels')
-        .select('current_level')
-        .eq('user_id', user.id)
-        .single();
-
-      const { data: userProgression } = await supabase
-        .from('user_progression')
-        .select('rank')
-        .eq('user_id', user.id)
-        .single();
-
       // Fetch user preferences
       const { data: preferences } = await supabase
         .from('user_customization_preferences')
-        .select('active_theme, unlocked_themes')
+        .select('active_theme')
         .eq('user_id', user.id)
         .single();
 
-      const currentLevel = progression?.current_level || 1;
-      const currentRank = userProgression?.rank || 'rookie_trader';
-      const unlockedThemes = preferences?.unlocked_themes || ['default'];
       const activeThemeId = preferences?.active_theme || 'default';
-
       setActiveTheme(activeThemeId);
 
-      // Check which themes are unlocked
-      const themesWithUnlocks = THEME_CATALOG.map(theme => {
-        let isUnlocked = unlockedThemes.includes(theme.id);
-        
-        if (!isUnlocked) {
-          if (theme.unlockRequirement.type === 'default') {
-            isUnlocked = true; // Default themes are always unlocked
-          } else if (theme.unlockRequirement.type === 'level') {
-            isUnlocked = currentLevel >= (theme.unlockRequirement.value as number);
-          } else if (theme.unlockRequirement.type === 'rank') {
-            const rankOrder = ['rookie_trader', 'active_trader', 'consistent_trader', 'pro_trader', 'elite_trader', 'legend_trader'];
-            const requiredRankIndex = rankOrder.indexOf(theme.unlockRequirement.value as string);
-            const currentRankIndex = rankOrder.indexOf(currentRank);
-            isUnlocked = currentRankIndex >= requiredRankIndex;
-          }
-        }
+      // Map themes with unlock status based on tier
+      const themeTier = tier as ThemeTier;
+      const tierHierarchy: ThemeTier[] = ['free', 'basic', 'pro', 'elite'];
+      const userTierIndex = tierHierarchy.indexOf(themeTier);
 
-        return { ...theme, isUnlocked };
+      const themesWithUnlockStatus: UnlockableTheme[] = UNIFIED_THEMES.map(theme => {
+        const requiredTierIndex = tierHierarchy.indexOf(theme.requiredTier);
+        const isUnlocked = userTierIndex >= requiredTierIndex;
+
+        return {
+          id: theme.id,
+          name: theme.name,
+          description: theme.description,
+          previewColors: {
+            primary: hslToHex(theme.primary),
+            secondary: hslToHex(theme.secondary),
+            accent: hslToHex(theme.accent),
+          },
+          requiredTier: theme.requiredTier,
+          isUnlocked,
+        };
       });
 
-      setThemes(themesWithUnlocks);
+      setThemes(themesWithUnlockStatus);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching theme unlocks:', error);
-    } finally {
       setLoading(false);
     }
   };
@@ -132,28 +103,39 @@ export const useThemeUnlocks = () => {
   const activateTheme = async (themeId: string) => {
     if (!user) return;
 
-    const theme = themes.find(t => t.id === themeId);
-    if (!theme?.isUnlocked) return;
+    const theme = getThemeById(themeId);
+    if (!theme) {
+      console.error('Theme not found:', themeId);
+      return;
+    }
 
     try {
-      // Update active theme in database
+      // Update user preferences
       const { error } = await supabase
         .from('user_customization_preferences')
         .upsert({
           user_id: user.id,
-          active_theme: themeId
+          active_theme: themeId,
+          updated_at: new Date().toISOString(),
         }, {
           onConflict: 'user_id'
         });
 
-      if (!error) {
-        setActiveTheme(themeId);
-        // Apply theme to document
-        document.documentElement.setAttribute('data-theme', themeId);
-      }
+      if (error) throw error;
+
+      setActiveTheme(themeId);
+
+      // Apply theme to document
+      document.documentElement.setAttribute('data-theme', themeId);
+      console.log('✅ Theme activated:', themeId);
     } catch (error) {
       console.error('Error activating theme:', error);
+      throw error;
     }
+  };
+
+  const refresh = () => {
+    fetchUnlocks();
   };
 
   return {
@@ -161,6 +143,6 @@ export const useThemeUnlocks = () => {
     activeTheme,
     loading,
     activateTheme,
-    refresh: fetchUnlocks
+    refresh,
   };
 };

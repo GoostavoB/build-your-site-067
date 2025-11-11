@@ -3096,6 +3096,42 @@ export type Database = {
         }
         Relationships: []
       }
+      themes: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          is_custom: boolean | null
+          name: string
+          tokens: Json
+          updated_at: string | null
+          user_id: string
+          version: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_custom?: boolean | null
+          name: string
+          tokens: Json
+          updated_at?: string | null
+          user_id: string
+          version?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_custom?: boolean | null
+          name?: string
+          tokens?: Json
+          updated_at?: string | null
+          user_id?: string
+          version?: number | null
+        }
+        Relationships: []
+      }
       tier_preview_unlocks: {
         Row: {
           id: string
@@ -3952,6 +3988,8 @@ export type Database = {
           calm_mode_enabled: boolean
           created_at: string
           custom_background: string | null
+          custom_theme_count: number | null
+          custom_themes: Json | null
           haptic_feedback_enabled: boolean
           id: string
           last_theme_notification_date: string | null
@@ -3970,6 +4008,8 @@ export type Database = {
           calm_mode_enabled?: boolean
           created_at?: string
           custom_background?: string | null
+          custom_theme_count?: number | null
+          custom_themes?: Json | null
           haptic_feedback_enabled?: boolean
           id?: string
           last_theme_notification_date?: string | null
@@ -3988,6 +4028,8 @@ export type Database = {
           calm_mode_enabled?: boolean
           created_at?: string
           custom_background?: string | null
+          custom_theme_count?: number | null
+          custom_themes?: Json | null
           haptic_feedback_enabled?: boolean
           id?: string
           last_theme_notification_date?: string | null
@@ -4621,7 +4663,7 @@ export type Database = {
       user_xp_levels: {
         Row: {
           created_at: string
-          current_level: number
+          current_level: number | null
           current_xp: number
           id: string
           last_xp_earned_at: string | null
@@ -4632,7 +4674,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          current_level?: number
+          current_level?: number | null
           current_xp?: number
           id?: string
           last_xp_earned_at?: string | null
@@ -4643,7 +4685,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          current_level?: number
+          current_level?: number | null
           current_xp?: number
           id?: string
           last_xp_earned_at?: string | null

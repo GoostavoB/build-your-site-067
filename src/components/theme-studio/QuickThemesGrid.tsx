@@ -1,7 +1,6 @@
 import { useThemeMode, ColorMode } from '@/hooks/useThemeMode';
 import { ThemePreviewCard } from './ThemePreviewCard';
-import { PRESET_THEMES } from '@/utils/themePresets';
-import { ALL_ADVANCED_THEMES } from '@/utils/advancedThemePresets';
+import { UNIFIED_THEMES } from '@/utils/unifiedThemes';
 import { useThemeUnlocks } from '@/hooks/useThemeUnlocks';
 import { toast } from 'sonner';
 
@@ -14,7 +13,7 @@ export const QuickThemesGrid = () => {
     
     if (!theme?.isUnlocked) {
       toast.error('This theme is locked', {
-        description: `Unlock requirement: ${theme?.unlockRequirement.type} ${theme?.unlockRequirement.value}`
+        description: `Unlock requirement: ${theme?.requiredTier}`
       });
       return;
     }
@@ -28,7 +27,7 @@ export const QuickThemesGrid = () => {
     console.log('✅ Theme activated:', themeId);
   };
 
-  const allThemes = [...PRESET_THEMES, ...ALL_ADVANCED_THEMES];
+  const allThemes = [...UNIFIED_THEMES];
   const unlockedThemes = allThemes.filter(t => 
     themes.find(ut => ut.id === t.id)?.isUnlocked
   );

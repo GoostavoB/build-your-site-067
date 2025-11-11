@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ColorMode } from './useThemeMode';
-import { PRESET_THEMES } from '@/utils/themePresets';
-import { ALL_ADVANCED_THEMES } from '@/utils/advancedThemePresets';
+import { UNIFIED_THEMES } from '@/utils/unifiedThemes';
 
 interface ThemeSuggestion {
   theme: ColorMode;
@@ -15,7 +14,7 @@ export const useAIThemeSuggestions = () => {
 
   const suggestion = useMemo((): ThemeSuggestion | null => {
     const hour = new Date().getHours();
-    const allThemes = [...PRESET_THEMES, ...ALL_ADVANCED_THEMES];
+    const allThemes = [...UNIFIED_THEMES];
 
     // Time-based suggestions
     if (hour >= 22 || hour < 6) {

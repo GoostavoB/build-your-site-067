@@ -4,8 +4,6 @@ import { AppSidebar } from './AppSidebar';
 import { UserMenu } from './UserMenu';
 import { useReminderNotifications } from '@/hooks/useReminderNotifications';
 import { useSidebarState } from '@/hooks/useSidebarState';
-import { LanguageToggle } from '@/components/LanguageToggle';
-import { KeyboardShortcutsHelp } from '@/components/KeyboardShortcutsHelp';
 import { ThemeStudio } from '@/components/theme-studio/ThemeStudio';
 import { ThemeUnlockNotification } from '@/components/theme-studio/ThemeUnlockNotification';
 import { MobileNav } from '@/components/mobile/MobileNav';
@@ -53,15 +51,9 @@ const AppLayout = ({
             {/* Right: Icon Buttons */}
             <div className="flex items-center gap-2">
               <CurrencySelector />
-              <BlurToggle variant="icon" />
-              <KeyboardShortcutsHelp />
-              <LanguageToggle />
-              <div data-tour="theme-toggle">
-                <ThemeStudio />
-              </div>
-              <div data-tour="settings">
-                <UserMenu />
-              </div>
+              <BlurToggle />
+              <ThemeStudio />
+              <UserMenu />
             </div>
           </header>
 
@@ -72,9 +64,7 @@ const AppLayout = ({
             </div>
             <div className="flex items-center gap-1">
               <CurrencySelector />
-              <BlurToggle variant="icon" />
-              <KeyboardShortcutsHelp />
-              <LanguageToggle />
+              <BlurToggle />
               <ThemeStudio />
               <UserMenu />
             </div>

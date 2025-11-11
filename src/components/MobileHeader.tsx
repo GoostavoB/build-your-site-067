@@ -1,7 +1,7 @@
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
-import { LanguageToggle } from "@/components/LanguageToggle";
+
 import { ThemeStudio } from "@/components/theme-studio/ThemeStudio";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
@@ -70,7 +70,6 @@ export const MobileHeader = () => {
           >
             {t('navigation.signIn')}
           </Button>
-          <LanguageToggle />
           {!isPublicRoute && <ThemeStudio />}
         </nav>
 
@@ -125,10 +124,6 @@ export const MobileHeader = () => {
                 </div>
 
                 <div className="pt-6 border-t border-border/50 flex flex-col gap-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Language</span>
-                    <LanguageToggle />
-                  </div>
                   {!isPublicRoute && (
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Theme</span>

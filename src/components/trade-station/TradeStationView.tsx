@@ -144,18 +144,19 @@ export const TradeStationView = () => {
     const WidgetComponent = widgetConfig.component;
     
     return (
-      <SortableWidget
-        key={widgetId}
-        id={widgetId}
-        isEditMode={isCustomizing}
-        onRemove={() => removeWidget(widgetId)}
-      >
-        <WidgetComponent 
+      <div key={widgetId} className={isCustomizing ? 'widget-edit-mode' : ''}>
+        <SortableWidget
           id={widgetId}
-          isEditMode={isCustomizing} 
-          onRemove={() => removeWidget(widgetId)} 
-        />
-      </SortableWidget>
+          isEditMode={isCustomizing}
+          onRemove={() => removeWidget(widgetId)}
+        >
+          <WidgetComponent 
+            id={widgetId}
+            isEditMode={isCustomizing} 
+            onRemove={() => removeWidget(widgetId)} 
+          />
+        </SortableWidget>
+      </div>
     );
   }, [isCustomizing, removeWidget]);
 

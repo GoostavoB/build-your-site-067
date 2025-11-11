@@ -491,6 +491,22 @@
     }
   }
 
+  /* Widget edit mode styling */
+  .widget-edit-mode {
+    position: relative;
+  }
+
+  .widget-edit-mode::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.15), transparent);
+    animation: shimmer-sweep 3s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+  }
+
   @keyframes shimmer-sweep {
     0% {
       transform: translateX(-100%);

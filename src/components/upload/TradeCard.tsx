@@ -23,8 +23,7 @@ interface Trade {
   roi_percent?: number;
   opened_at?: string;
   closed_at?: string;
-  strategy?: string;
-  setup_tags?: string[];
+  setup?: string;
   error_tags?: string[];
   notes?: string;
   broker?: string;
@@ -392,8 +391,8 @@ export function TradeCard({
         {/* Full Width - Strategy, Mistakes & Notes */}
         <div className="col-span-2 space-y-4">
           <StrategyTagSelector
-            selectedStrategies={localTrade.setup_tags || []}
-            onChange={(strategies) => handleLocalChange('setup_tags', strategies)}
+            selectedStrategies={localTrade.setup ? [localTrade.setup] : []}
+            onChange={(strategies) => handleLocalChange('setup', strategies[0] || null)}
           />
 
           <MistakeTagSelector

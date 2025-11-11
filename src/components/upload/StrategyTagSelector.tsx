@@ -39,22 +39,20 @@ export function StrategyTagSelector({ selectedStrategies, onChange }: StrategyTa
 
   const handleAddStrategy = () => {
     const trimmed = newStrategy.trim();
-    if (trimmed && !selectedStrategies.includes(trimmed)) {
-      onChange([...selectedStrategies, trimmed]);
+    if (trimmed) {
+      onChange([trimmed]);
       setNewStrategy("");
+      setIsOpen(false);
     }
   };
 
-  const toggleStrategy = (strategy: string) => {
-    if (selectedStrategies.includes(strategy)) {
-      onChange(selectedStrategies.filter(s => s !== strategy));
-    } else {
-      onChange([...selectedStrategies, strategy]);
-    }
+  const selectStrategy = (strategy: string) => {
+    onChange([strategy]);
+    setIsOpen(false);
   };
 
-  const removeStrategy = (strategy: string) => {
-    onChange(selectedStrategies.filter(s => s !== strategy));
+  const removeStrategy = () => {
+    onChange([]);
   };
 
   return (
@@ -85,7 +83,7 @@ export function StrategyTagSelector({ selectedStrategies, onChange }: StrategyTa
 
               {userStrategies && userStrategies.length > 0 && (
                 <div>
-                  <Label className="text-xs text-[#A6B1BB] mb-2 block">Previous Strategies</Label>
+                  <Label className="text-xs text-[#A6B1BB] mb-2 block">Previous Strategies (Select One)</Label>
                   <ScrollArea className="h-[120px] rounded border border-[#2A3038] p-2">
                     <div className="flex flex-wrap gap-1.5">
                       {userStrategies.map((strategy) => (
@@ -93,7 +91,7 @@ export function StrategyTagSelector({ selectedStrategies, onChange }: StrategyTa
                           key={strategy}
                           variant={selectedStrategies.includes(strategy) ? "default" : "outline"}
                           className="cursor-pointer bg-primary/10 hover:bg-primary/20 border-primary/30 text-xs"
-                          onClick={() => toggleStrategy(strategy)}
+                          onClick={() => selectStrategy(strategy)}
                         >
                           {strategy}
                         </Badge>
@@ -107,21 +105,16 @@ export function StrategyTagSelector({ selectedStrategies, onChange }: StrategyTa
         </Popover>
       </div>
 
-      {/* Selected Strategies Display */}
+      {/* Selected Strategy Display */}
       {selectedStrategies.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
-          {selectedStrategies.map((strategy) => (
-            <Badge
-              key={strategy}
-              className="bg-primary/20 text-primary-foreground border-primary/30 text-xs"
-            >
-              {strategy}
-              <X
-                className="h-3 w-3 ml-1 cursor-pointer"
-                onClick={() => removeStrategy(strategy)}
-              />
-            </Badge>
-          ))}
+          <Badge className="bg-primary/20 text-primary-foreground border-primary/30 text-xs">
+            {selectedStrategies[0]}
+            <X
+              className="h-3 w-3 ml-1 cursor-pointer"
+              onClick={removeStrategy}
+            />
+          </Badge>
         </div>
       )}
     </div>

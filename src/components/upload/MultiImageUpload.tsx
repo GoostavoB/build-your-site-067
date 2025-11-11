@@ -40,7 +40,11 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
   const [maxSelectableTrades, setMaxSelectableTrades] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [estimatedTimeRemaining, setEstimatedTimeRemaining] = useState(0);
   const dragCounter = useRef(0);
+  const imageProcessStartTime = useRef<number>(0);
+  const imageProcessTimes = useRef<number[]>([]);
 
   // Global drag listeners for reliable drag feedback
   useEffect(() => {
@@ -163,12 +167,24 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
     }
 
     setIsAnalyzing(true);
+    setCurrentImageIndex(0);
+    imageProcessTimes.current = [];
     let totalTrades = 0;
     const allTrades: any[] = [];
 
     try {
       // Analyze each image with OCR preprocessing
       for (let i = 0; i < images.length; i++) {
+        setCurrentImageIndex(i + 1);
+        imageProcessStartTime.current = Date.now();
+        
+        // Calculate estimated time remaining based on average processing time
+        if (imageProcessTimes.current.length > 0) {
+          const avgTime = imageProcessTimes.current.reduce((a, b) => a + b, 0) / imageProcessTimes.current.length;
+          const remainingImages = images.length - i;
+          setEstimatedTimeRemaining(Math.ceil((avgTime * remainingImages) / 1000));
+        }
+        
         const image = images[i];
         setImages(prev => prev.map((img, idx) => 
           idx === i ? { ...img, status: 'analyzing' } : img
@@ -223,6 +239,10 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
           const result = await response.json();
           const tradesFound = Array.isArray(result.trades) ? result.trades.length : 0;
           
+          // Record processing time for this image
+          const processingTime = Date.now() - imageProcessStartTime.current;
+          imageProcessTimes.current.push(processingTime);
+          
           totalTrades += tradesFound;
           if (Array.isArray(result.trades)) {
             allTrades.push(...result.trades);
@@ -258,6 +278,8 @@ onReviewStart?.();
       toast.error('Failed to analyze images');
     } finally {
       setIsAnalyzing(false);
+      setCurrentImageIndex(0);
+      setEstimatedTimeRemaining(0);
     }
   };
 
@@ -449,32 +471,61 @@ setExtractedTrades([]);
       </div>
 
       {images.length > 0 && (
-        <div className="flex items-center justify-between gap-3">
-          <Button
-            variant="outline"
-            onClick={() => setShowClearConfirm(true)}
-            disabled={isAnalyzing}
-          >
-            Clear all
-          </Button>
-          <Button
-            onClick={analyzeImages}
-            disabled={isAnalyzing || images.some(img => img.status === 'analyzing')}
-            className="flex-1"
-          >
-            {isAnalyzing ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Extracting...
-              </>
-            ) : (
-              <>
-                <ImageIcon className="mr-2 h-4 w-4" />
-                Extract Trades
-              </>
-            )}
-          </Button>
-        </div>
+        <>
+          {/* Progress Indicator */}
+          {isAnalyzing && (
+            <Card className="p-4 border-primary/20 bg-primary/5">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-medium">
+                    Processing image {currentImageIndex} of {images.length}
+                  </span>
+                  {estimatedTimeRemaining > 0 && (
+                    <span className="text-muted-foreground">
+                      ~{estimatedTimeRemaining}s remaining
+                    </span>
+                  )}
+                </div>
+                <div className="relative w-full h-2 bg-muted rounded-full overflow-hidden">
+                  <div 
+                    className="absolute inset-y-0 left-0 bg-primary transition-all duration-500 ease-out"
+                    style={{ width: `${(currentImageIndex / images.length) * 100}%` }}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Analyzing screenshots and extracting trades...
+                </p>
+              </div>
+            </Card>
+          )}
+          
+          <div className="flex items-center justify-between gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setShowClearConfirm(true)}
+              disabled={isAnalyzing}
+            >
+              Clear all
+            </Button>
+            <Button
+              onClick={analyzeImages}
+              disabled={isAnalyzing || images.some(img => img.status === 'analyzing')}
+              className="flex-1"
+            >
+              {isAnalyzing ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Extracting...
+                </>
+              ) : (
+                <>
+                  <ImageIcon className="mr-2 h-4 w-4" />
+                  Extract Trades
+                </>
+              )}
+            </Button>
+          </div>
+        </>
       )}
 
       {/* Trade Review Editor - Full Page */}

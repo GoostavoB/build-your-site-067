@@ -7,6 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/layout/AppLayout';
@@ -123,6 +124,7 @@ const Upload = () => {
   const [ocrResult, setOcrResult] = useState<OCRResult | null>(null);
   const [ocrRunning, setOcrRunning] = useState(false);
   const [brokerError, setBrokerError] = useState(false);
+  const [skipBrokerSelection, setSkipBrokerSelection] = useState(false);
   const brokerFieldRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
     symbol: '',
@@ -840,14 +842,17 @@ const Upload = () => {
                 setSavedTradesCount(trades.length);
                 setShowSuccess(true);
                 toast.success(`Imported ${trades.length} trade${trades.length !== 1 ? 's' : ''}!`);
-              }} maxImages={10} preSelectedBroker={preSelectedBroker} onReviewStart={() => setIsReviewing(true)} onReviewEnd={() => setIsReviewing(false)} />}
+              }} maxImages={10} preSelectedBroker={preSelectedBroker} skipBrokerSelection={skipBrokerSelection} onBrokerError={() => {
+                setBrokerError(true);
+                brokerFieldRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }} onReviewStart={() => setIsReviewing(true)} onReviewEnd={() => setIsReviewing(false)} />}
                 </div>
 
                 {/* Right column - Supporting information */}
                 {extractedTrades.length === 0 && <div className="lg:col-span-4 space-y-5">
                     {/* Broker selection */}
-                    <Card ref={brokerFieldRef} className={cn("p-5 transition-all duration-300", brokerError ? "border-destructive bg-destructive/5 shadow-sm" : "border-border/50 bg-card shadow-sm")}>
-                      <Label className={cn("text-sm font-semibold mb-1 block", brokerError && "text-destructive")}>
+                    <Card ref={brokerFieldRef} className={cn("p-5 transition-all duration-300", brokerError && !skipBrokerSelection && "border-destructive bg-destructive/5 shadow-sm animate-shake")}>
+                      <Label className={cn("text-sm font-semibold mb-1 block", brokerError && !skipBrokerSelection && "text-destructive")}>
                         Broker
                       </Label>
                       <p className="text-xs text-muted-foreground mb-4">
@@ -859,15 +864,33 @@ const Upload = () => {
                           setPreSelectedBroker(value);
                           setBrokerError(false);
                         }} 
-                        required 
-                        error={brokerError}
+                        required={!skipBrokerSelection}
+                        error={brokerError && !skipBrokerSelection}
                       />
-                      {brokerError && <p className="text-xs text-destructive mt-3 flex items-center gap-1.5">
+                      {brokerError && !skipBrokerSelection && <p className="text-xs text-destructive mt-3 flex items-center gap-1.5">
                           <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                           </svg>
                           Broker is required
                         </p>}
+                      
+                      {/* Skip broker checkbox */}
+                      <div className="flex items-start gap-2 mt-4 pt-4 border-t border-border/50">
+                        <Checkbox
+                          id="skipBroker"
+                          checked={skipBrokerSelection}
+                          onCheckedChange={(checked) => {
+                            setSkipBrokerSelection(checked === true);
+                            if (checked) {
+                              setBrokerError(false);
+                            }
+                          }}
+                          className="mt-0.5"
+                        />
+                        <label htmlFor="skipBroker" className="text-xs text-muted-foreground cursor-pointer select-none leading-relaxed">
+                          Extract without broker selection (assign during review)
+                        </label>
+                      </div>
                     </Card>
 
                     {/* How it works */}

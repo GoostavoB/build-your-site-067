@@ -23,11 +23,13 @@ interface MultiImageUploadProps {
   onTradesExtracted: (trades: any[]) => void;
   maxImages?: number;
   preSelectedBroker?: string;
+  skipBrokerSelection?: boolean;
+  onBrokerError?: () => void;
   onReviewStart?: () => void;
   onReviewEnd?: () => void;
 }
 
-export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelectedBroker = '', onReviewStart, onReviewEnd }: MultiImageUploadProps) {
+export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelectedBroker = '', skipBrokerSelection = false, onBrokerError, onReviewStart, onReviewEnd }: MultiImageUploadProps) {
   const { user } = useAuth();
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -154,8 +156,9 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
   };
 
   const analyzeImages = async () => {
-    if (!preSelectedBroker || preSelectedBroker.trim() === '') {
-      toast.error('Please select a broker first');
+    if (!skipBrokerSelection && (!preSelectedBroker || preSelectedBroker.trim() === '')) {
+      toast.error('Please select a broker or enable "Extract without broker selection"');
+      onBrokerError?.();
       return;
     }
 
@@ -207,7 +210,7 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
                 ocrConfidence: ocrResult?.confidence,
                 imageHash: ocrResult?.imageHash,
                 perceptualHash: ocrResult?.perceptualHash,
-                broker: preSelectedBroker
+                broker: skipBrokerSelection ? null : preSelectedBroker
               }),
             }
           );

@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { useDebounce } from '@/hooks/useDebounce';
 import { StrategyTagSelector } from './StrategyTagSelector';
 import { MistakeTagSelector } from './MistakeTagSelector';
+import { EmotionTagSelector } from './EmotionTagSelector';
 
 interface Trade {
   symbol?: string;
@@ -25,6 +26,7 @@ interface Trade {
   closed_at?: string;
   setup?: string;
   error_tags?: string[];
+  emotion_tags?: string[];
   notes?: string;
   broker?: string;
   leverage?: number;
@@ -388,7 +390,7 @@ export function TradeCard({
           </div>
         </div>
 
-        {/* Full Width - Strategy, Mistakes & Notes */}
+        {/* Full Width - Strategy, Mistakes, Emotions & Notes */}
         <div className="col-span-2 space-y-4">
           <StrategyTagSelector
             selectedStrategies={localTrade.setup ? [localTrade.setup] : []}
@@ -398,6 +400,11 @@ export function TradeCard({
           <MistakeTagSelector
             selectedMistakes={localTrade.error_tags || []}
             onChange={(mistakes) => handleLocalChange('error_tags', mistakes)}
+          />
+
+          <EmotionTagSelector
+            selectedEmotions={localTrade.emotion_tags || []}
+            onChange={(emotions) => handleLocalChange('emotion_tags', emotions)}
           />
 
           <div>

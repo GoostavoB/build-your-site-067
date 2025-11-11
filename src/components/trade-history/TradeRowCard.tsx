@@ -9,6 +9,7 @@ import { TokenIcon } from '@/components/TokenIcon';
 import { BlurredCurrency, BlurredPercent } from '@/components/ui/BlurredValue';
 import { getFinancialColor } from '@/lib/utils';
 import { cn } from '@/lib/utils';
+import { GlassCard } from '@/components/ui/glass-card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,20 +48,14 @@ export const TradeRowCard = memo(({
   const hasNotes = !!trade.notes;
   
   return (
-    <div 
+    <GlassCard 
+      variant="default"
+      hover
       className={cn(
-        "group relative rounded-xl transition-all duration-300",
-        "backdrop-blur-[12px] border",
-        "shadow-[0_4px_24px_rgba(0,0,0,0.35)]",
-        "hover:shadow-[0_8px_28px_rgba(0,0,0,0.35)]",
+        "group relative transition-all duration-300",
         isDeleted ? 'opacity-50' : '',
         density === 'compact' ? 'p-3' : 'p-4',
       )}
-      style={{
-        background: 'white',
-        borderColor: 'rgba(0, 0, 0, 0.1)',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)',
-      }}
     >
       {/* Main row content */}
       <div className="flex items-center gap-3">
@@ -253,10 +248,7 @@ export const TradeRowCard = memo(({
       {/* Expanded panel */}
       {isExpanded && (
         <div 
-          className="mt-4 pt-4 space-y-3 animate-in slide-in-from-top-2 duration-200"
-          style={{
-            borderTop: '1px solid rgba(0, 0, 0, 0.1)',
-          }}
+          className="mt-4 pt-4 space-y-3 animate-in slide-in-from-top-2 duration-200 border-t border-border/50"
         >
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div>
@@ -298,7 +290,7 @@ export const TradeRowCard = memo(({
           </div>
         </div>
       )}
-    </div>
+    </GlassCard>
   );
 });
 

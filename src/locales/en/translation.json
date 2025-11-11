@@ -1503,6 +1503,9 @@
       "title": "Avg ROI Per Trade",
       "description": "Average ROI across all trades"
     },
+    "avgMetrics": {
+      "title": "Avg P&L & ROI"
+    },
     "capitalGrowth": {
       "title": "Capital Growth",
       "description": "Visualize your capital growth over time"
@@ -1571,6 +1574,7 @@
     "initialCapitalLabel": "Initial Capital ($)",
     "currentBalance": "Current balance",
     "tradingDays": "trading days",
+    "totalTrades": "trades",
     "avgROIAcross": "Average ROI across {{count}} trades",
     "avgPnLDescription": "Average profit/loss per executed trade",
     "newTrade": "New Trade",

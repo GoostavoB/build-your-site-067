@@ -724,6 +724,7 @@ const Dashboard = () => {
         widgetProps.winRate = stats?.win_rate || 0;
         widgetProps.wins = winningTrades;
         widgetProps.losses = losingTrades;
+        widgetProps.totalTrades = stats?.total_trades || 0;
         break;
       case 'totalTrades':
         widgetProps.totalTrades = stats?.total_trades || 0;
@@ -812,6 +813,10 @@ const Dashboard = () => {
       case 'rollingTarget':
         widgetProps.trades = processedTrades;
         widgetProps.initialInvestment = totalCapitalAdditions > 0 ? totalCapitalAdditions : initialInvestment;
+        break;
+      case 'combinedPnLROI':
+        widgetProps.avgPnLPerTrade = stats?.avg_pnl_per_trade || 0;
+        widgetProps.avgROIPerTrade = stats?.avg_roi_per_trade || 0;
         break;
     }
 

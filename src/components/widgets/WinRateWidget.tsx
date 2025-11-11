@@ -9,6 +9,7 @@ interface WinRateWidgetProps extends WidgetProps {
   winRate: number;
   wins: number;
   losses: number;
+  totalTrades: number;
 }
 
 export const WinRateWidget = memo(({
@@ -19,6 +20,7 @@ export const WinRateWidget = memo(({
   winRate,
   wins,
   losses,
+  totalTrades,
 }: WinRateWidgetProps) => {
   const { t } = useTranslation();
   
@@ -42,10 +44,13 @@ export const WinRateWidget = memo(({
             {formatPercent(winRate)}
           </p>
           
-          <div className="flex items-center gap-3 text-sm">
-            <span className="text-neon-green font-medium">{wins}W</span>
-            <span className="text-muted-foreground">/</span>
-            <span className="text-neon-red font-medium">{losses}L</span>
+          <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center gap-3">
+              <span className="text-neon-green font-medium">{wins}W</span>
+              <span className="text-muted-foreground">/</span>
+              <span className="text-neon-red font-medium">{losses}L</span>
+            </div>
+            <span className="text-muted-foreground">{totalTrades} {t('widgets.totalTrades')}</span>
           </div>
         </div>
       </div>

@@ -31,6 +31,7 @@ import { AvgPnLPerDayWidget } from '@/components/widgets/AvgPnLPerDayWidget';
 import { CurrentROIWidget } from '@/components/widgets/CurrentROIWidget';
 import { AvgROIPerTradeWidget } from '@/components/widgets/AvgROIPerTradeWidget';
 import { CapitalGrowthWidget } from '@/components/widgets/CapitalGrowthWidget';
+import { CombinedPnLROIWidget } from '@/components/widgets/CombinedPnLROIWidget';
 import { BehaviorAnalytics } from '@/components/insights/BehaviorAnalytics';
 import { CostEfficiencyPanel } from '@/components/insights/CostEfficiencyPanel';
 import { PerformanceHighlights } from '@/components/insights/PerformanceHighlights';
@@ -273,27 +274,31 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
     component: RollingTargetWidget,
     requiresData: ['trades', 'stats'],
   },
+
+  combinedPnLROI: {
+    id: 'combinedPnLROI',
+    title: 'Avg P&L & ROI',
+    description: 'Average P&L and ROI per trade combined',
+    category: 'performance',
+    icon: BarChart3,
+    defaultSize: 'small',
+    component: CombinedPnLROIWidget,
+    requiresData: ['stats'],
+  },
 };
 
 /**
  * Default dashboard layout for new users - simplified to just widget IDs in order
+ * First line: Total ROI, Win Rate (with total trades), Avg PnL per day
+ * Second line: Capital Growth, Top Movers, Combined Avg PnL/ROI per trade
  */
 export const DEFAULT_DASHBOARD_LAYOUT = [
-  'totalBalance',
-  'spotWallet',
-  'winRate',
-  'totalTrades',
-  'goals',
-  'avgPnLPerTrade',
-  'avgPnLPerDay',
   'currentROI',
-  'avgROIPerTrade',
+  'winRate',
+  'avgPnLPerDay',
   'capitalGrowth',
-  'portfolioOverview',
-  'heatmap',
-  'recentTransactions',
   'topMovers',
-  'aiInsights',
+  'combinedPnLROI',
 ];
 
 /**

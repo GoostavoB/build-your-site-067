@@ -23,6 +23,16 @@ export interface TradeStationSettings {
   
   // Daily Loss Lock
   daily_loss_lock_enabled: boolean;
+  
+  // Rolling Target Tracker
+  rolling_target_percent: number;
+  rolling_target_mode: 'per-day' | 'rolling';
+  rolling_target_carryover_cap: number;
+  rolling_target_suggestion_method: 'median' | 'risk-aware';
+  rolling_target_suggestions_enabled: boolean;
+  rolling_target_rollover_weekends: boolean;
+  rolling_target_last_suggestion_date: string | null;
+  rolling_target_dismissed_suggestion: boolean;
 }
 
 export const useUserSettings = () => {
@@ -41,6 +51,14 @@ export const useUserSettings = () => {
     preflight_required: false,
     preflight_calendar_url: null,
     daily_loss_lock_enabled: false,
+    rolling_target_percent: 1.0,
+    rolling_target_mode: 'per-day',
+    rolling_target_carryover_cap: 2.0,
+    rolling_target_suggestion_method: 'median',
+    rolling_target_suggestions_enabled: true,
+    rolling_target_rollover_weekends: true,
+    rolling_target_last_suggestion_date: null,
+    rolling_target_dismissed_suggestion: false,
   });
   const [loading, setLoading] = useState(true);
 
@@ -77,6 +95,14 @@ export const useUserSettings = () => {
           preflight_required: data.preflight_required || false,
           preflight_calendar_url: data.preflight_calendar_url,
           daily_loss_lock_enabled: data.daily_loss_lock_enabled || false,
+          rolling_target_percent: data.rolling_target_percent || 1.0,
+          rolling_target_mode: (data.rolling_target_mode || 'per-day') as 'per-day' | 'rolling',
+          rolling_target_carryover_cap: data.rolling_target_carryover_cap || 2.0,
+          rolling_target_suggestion_method: (data.rolling_target_suggestion_method || 'median') as 'median' | 'risk-aware',
+          rolling_target_suggestions_enabled: data.rolling_target_suggestions_enabled ?? true,
+          rolling_target_rollover_weekends: data.rolling_target_rollover_weekends ?? true,
+          rolling_target_last_suggestion_date: data.rolling_target_last_suggestion_date,
+          rolling_target_dismissed_suggestion: data.rolling_target_dismissed_suggestion || false,
         });
       }
     } catch (error) {

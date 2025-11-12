@@ -4424,6 +4424,14 @@ export type Database = {
           risk_strategy: string | null
           risk_swing_pct: number | null
           risk_worst_streak: number | null
+          rolling_target_carryover_cap: number | null
+          rolling_target_dismissed_suggestion: boolean | null
+          rolling_target_last_suggestion_date: string | null
+          rolling_target_mode: string | null
+          rolling_target_percent: number | null
+          rolling_target_rollover_weekends: boolean | null
+          rolling_target_suggestion_method: string | null
+          rolling_target_suggestions_enabled: boolean | null
           sidebar_style: string | null
           streak_reminders_enabled: boolean | null
           theme: string | null
@@ -4483,6 +4491,14 @@ export type Database = {
           risk_strategy?: string | null
           risk_swing_pct?: number | null
           risk_worst_streak?: number | null
+          rolling_target_carryover_cap?: number | null
+          rolling_target_dismissed_suggestion?: boolean | null
+          rolling_target_last_suggestion_date?: string | null
+          rolling_target_mode?: string | null
+          rolling_target_percent?: number | null
+          rolling_target_rollover_weekends?: boolean | null
+          rolling_target_suggestion_method?: string | null
+          rolling_target_suggestions_enabled?: boolean | null
           sidebar_style?: string | null
           streak_reminders_enabled?: boolean | null
           theme?: string | null
@@ -4542,6 +4558,14 @@ export type Database = {
           risk_strategy?: string | null
           risk_swing_pct?: number | null
           risk_worst_streak?: number | null
+          rolling_target_carryover_cap?: number | null
+          rolling_target_dismissed_suggestion?: boolean | null
+          rolling_target_last_suggestion_date?: string | null
+          rolling_target_mode?: string | null
+          rolling_target_percent?: number | null
+          rolling_target_rollover_weekends?: boolean | null
+          rolling_target_suggestion_method?: string | null
+          rolling_target_suggestions_enabled?: boolean | null
           sidebar_style?: string | null
           streak_reminders_enabled?: boolean | null
           theme?: string | null

@@ -1,7 +1,8 @@
-import { memo, useState, useMemo, useEffect } from 'react';
+import { memo, useState, useMemo } from 'react';
 import { WidgetWrapper } from './WidgetWrapper';
 import { Trade } from '@/types/trade';
 import { formatCurrency, formatPercent } from '@/utils/formatNumber';
+import { useRollingTargetSettings, type SuggestionMethod } from '@/hooks/useRollingTargetSettings';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -64,9 +65,6 @@ interface RollingTargetWidgetProps {
   initialInvestment: number;
 }
 
-type TrackingMode = 'rolling' | 'per-day';
-type SuggestionMethod = 'median' | 'risk-aware';
-
 interface DailyData {
   date: string;
   startCapital: number;
@@ -79,15 +77,6 @@ interface DailyData {
   returnPercent: number;
 }
 
-interface WidgetSettings {
-  targetPercent: number;
-  mode: TrackingMode;
-  carryOverCap: number;
-  suggestionMethod: SuggestionMethod;
-  suggestionsEnabled: boolean;
-  rolloverWeekends: boolean;
-}
-
 export const RollingTargetWidget = memo(({
   id,
   isEditMode,
@@ -95,18 +84,15 @@ export const RollingTargetWidget = memo(({
   trades,
   initialInvestment,
 }: RollingTargetWidgetProps) => {
-  const [settings, setSettings] = useState<WidgetSettings>({
-    targetPercent: 1,
-    mode: 'per-day',
-    carryOverCap: 2, // 2 * targetPercent by default
-    suggestionMethod: 'median',
-    suggestionsEnabled: true,
-    rolloverWeekends: true,
-  });
+  const { 
+    settings, 
+    loading: settingsLoading,
+    updateSetting, 
+    applySuggestion: applySettingsSuggestion,
+    dismissSuggestion: dismissSettingsSuggestion 
+  } = useRollingTargetSettings();
 
   const [showSettings, setShowSettings] = useState(false);
-  const [dismissedSuggestion, setDismissedSuggestion] = useState(false);
-  const [lastSuggestionDate, setLastSuggestionDate] = useState<string | null>(null);
 
   // Calculate daily data
   const dailyData = useMemo<DailyData[]>(() => {
@@ -125,7 +111,7 @@ export const RollingTargetWidget = memo(({
     const endDate = parseISO(sortedTrades[sortedTrades.length - 1].closed_at!);
     const totalDays = differenceInDays(endDate, startDate) + 1;
     
-    const p = settings.targetPercent / 100;
+    const p = (settings?.targetPercent || 1) / 100;
 
     // Group trades by day
     sortedTrades.forEach(trade => {
@@ -159,13 +145,13 @@ export const RollingTargetWidget = memo(({
       day.plannedCapital = initialInvestment * Math.pow(1 + p, dayIndex + 1);
       
       // Calculate required today for rolling mode
-      if (settings.mode === 'rolling') {
+      if (settings?.mode === 'rolling') {
         const plannedForToday = initialInvestment * Math.pow(1 + p, dayIndex + 1);
         day.requiredToday = Math.max(0, plannedForToday - day.endCapital);
         day.headroom = Math.max(0, day.endCapital - plannedForToday);
         
         // Apply carry-over cap
-        const capAmount = (settings.carryOverCap / 100) * day.startCapital;
+        const capAmount = ((settings?.carryOverCap || 2) / 100) * day.startCapital;
         day.requiredToday = Math.min(day.requiredToday, capAmount);
       } else {
         // Per-day mode: fixed percent of current capital
@@ -181,14 +167,14 @@ export const RollingTargetWidget = memo(({
     });
 
     return daysArray;
-  }, [trades, initialInvestment, settings.targetPercent, settings.mode, settings.carryOverCap]);
+  }, [trades, initialInvestment, settings?.targetPercent, settings?.mode, settings?.carryOverCap]);
 
   // Calculate today's required PnL
   const todayData = useMemo(() => {
     if (dailyData.length === 0) return null;
     
     const lastDay = dailyData[dailyData.length - 1];
-    const p = settings.targetPercent / 100;
+    const p = (settings?.targetPercent || 1) / 100;
     const daysSinceStart = dailyData.length;
     
     const plannedCapital = initialInvestment * Math.pow(1 + p, daysSinceStart);
@@ -198,7 +184,7 @@ export const RollingTargetWidget = memo(({
     let headroom = 0;
     let isAhead = false;
     
-    if (settings.mode === 'rolling') {
+    if (settings?.mode === 'rolling') {
       const nextPlanned = initialInvestment * Math.pow(1 + p, daysSinceStart + 1);
       const needed = nextPlanned - actualCapital;
       
@@ -208,7 +194,7 @@ export const RollingTargetWidget = memo(({
         requiredToday = 0;
       } else {
         requiredToday = needed;
-        const capAmount = (settings.carryOverCap / 100) * actualCapital;
+        const capAmount = ((settings?.carryOverCap || 2) / 100) * actualCapital;
         requiredToday = Math.min(requiredToday, capAmount);
       }
     } else {
@@ -232,18 +218,18 @@ export const RollingTargetWidget = memo(({
       forecast6Months,
       forecast1Year,
     };
-  }, [dailyData, settings.mode, settings.targetPercent, settings.carryOverCap, initialInvestment]);
+  }, [dailyData, settings?.mode, settings?.targetPercent, settings?.carryOverCap, initialInvestment]);
 
   // Adaptive suggestion logic
   const suggestedPercent = useMemo(() => {
-    if (!settings.suggestionsEnabled || dailyData.length < 20) return null;
+    if (!settings?.suggestionsEnabled || dailyData.length < 20) return null;
     
     const last20Days = dailyData.slice(-20);
     const returns = last20Days.map(d => d.returnPercent / 100);
     
     let suggestion = 0;
     
-    if (settings.suggestionMethod === 'median') {
+    if (settings?.suggestionMethod === 'median') {
       const sorted = [...returns].sort((a, b) => a - b);
       const mid = Math.floor(sorted.length * 0.6); // 60th percentile
       suggestion = sorted[mid] * 100;
@@ -268,30 +254,22 @@ export const RollingTargetWidget = memo(({
     const shouldSuggest = hitRate < 0.5 || consistentlyBehind;
     
     // Check cooldown (7 days)
-    if (lastSuggestionDate) {
-      const daysSince = differenceInDays(new Date(), parseISO(lastSuggestionDate));
+    if (settings?.lastSuggestionDate) {
+      const daysSince = differenceInDays(new Date(), parseISO(settings.lastSuggestionDate));
       if (daysSince < 7) return null;
     }
     
-    return shouldSuggest && !dismissedSuggestion ? suggestion : null;
-  }, [dailyData, settings.suggestionMethod, settings.suggestionsEnabled, dismissedSuggestion, lastSuggestionDate]);
+    return shouldSuggest && !settings?.dismissedSuggestion ? suggestion : null;
+  }, [dailyData, settings?.suggestionMethod, settings?.suggestionsEnabled, settings?.dismissedSuggestion, settings?.lastSuggestionDate]);
 
   const applySuggestion = () => {
     if (suggestedPercent) {
-      setSettings(prev => ({ 
-        ...prev, 
-        targetPercent: Number(suggestedPercent.toFixed(2)),
-        carryOverCap: Number((suggestedPercent * 2).toFixed(2))
-      }));
-      setLastSuggestionDate(new Date().toISOString());
-      setDismissedSuggestion(false);
-      toast.success(`Target updated to ${suggestedPercent.toFixed(2)}%`);
+      applySettingsSuggestion(Number(suggestedPercent.toFixed(2)));
     }
   };
 
   const dismissSuggestion = () => {
-    setDismissedSuggestion(true);
-    toast.info('Suggestion dismissed');
+    dismissSettingsSuggestion();
   };
 
   // Chart data
@@ -388,10 +366,8 @@ export const RollingTargetWidget = memo(({
                   </TooltipProvider>
                 </div>
                 <Select
-                  value={settings.mode}
-                  onValueChange={(value: TrackingMode) => 
-                    setSettings(prev => ({ ...prev, mode: value }))
-                  }
+                  value={settings?.mode || 'per-day'}
+                  onValueChange={(value) => updateSetting('mode', value as any)}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -422,17 +398,12 @@ export const RollingTargetWidget = memo(({
                   step="0.1"
                   min="0.1"
                   max="20"
-                  value={settings.targetPercent}
-                  onChange={(e) => 
-                    setSettings(prev => ({ 
-                      ...prev, 
-                      targetPercent: Number(e.target.value) 
-                    }))
-                  }
+                  value={settings?.targetPercent || 1}
+                  onChange={(e) => updateSetting('targetPercent', Number(e.target.value))}
                 />
               </div>
 
-              {settings.mode === 'rolling' && (
+              {settings?.mode === 'rolling' && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Label>Carry-Over Cap (%)</Label>
@@ -450,15 +421,10 @@ export const RollingTargetWidget = memo(({
                   <Input
                     type="number"
                     step="0.5"
-                    min={settings.targetPercent}
-                    max={settings.targetPercent * 5}
-                    value={settings.carryOverCap}
-                    onChange={(e) => 
-                      setSettings(prev => ({ 
-                        ...prev, 
-                        carryOverCap: Number(e.target.value) 
-                      }))
-                    }
+                    min={settings?.targetPercent || 1}
+                    max={(settings?.targetPercent || 1) * 5}
+                    value={settings?.carryOverCap || 2}
+                    onChange={(e) => updateSetting('carryOverCap', Number(e.target.value))}
                   />
                   <p className="text-xs text-muted-foreground">
                     Maximum daily requirement as % of current capital
@@ -481,14 +447,12 @@ export const RollingTargetWidget = memo(({
                   </TooltipProvider>
                 </div>
                 <Switch
-                  checked={settings.suggestionsEnabled}
-                  onCheckedChange={(checked) =>
-                    setSettings(prev => ({ ...prev, suggestionsEnabled: checked }))
-                  }
+                  checked={settings?.suggestionsEnabled ?? true}
+                  onCheckedChange={(checked) => updateSetting('suggestionsEnabled', checked)}
                 />
               </div>
 
-              {settings.suggestionsEnabled && (
+              {settings?.suggestionsEnabled && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Label>Suggestion Method</Label>
@@ -507,10 +471,8 @@ export const RollingTargetWidget = memo(({
                     </TooltipProvider>
                   </div>
                   <Select
-                    value={settings.suggestionMethod}
-                    onValueChange={(value: SuggestionMethod) =>
-                      setSettings(prev => ({ ...prev, suggestionMethod: value }))
-                    }
+                    value={settings?.suggestionMethod || 'median'}
+                    onValueChange={(value) => updateSetting('suggestionMethod', value as SuggestionMethod)}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -552,10 +514,8 @@ export const RollingTargetWidget = memo(({
                   </TooltipProvider>
                 </div>
                 <Switch
-                  checked={settings.rolloverWeekends}
-                  onCheckedChange={(checked) =>
-                    setSettings(prev => ({ ...prev, rolloverWeekends: checked }))
-                  }
+                  checked={settings?.rolloverWeekends ?? true}
+                  onCheckedChange={(checked) => updateSetting('rolloverWeekends', checked)}
                 />
               </div>
             </div>

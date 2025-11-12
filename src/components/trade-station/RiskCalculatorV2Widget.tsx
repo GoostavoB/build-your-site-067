@@ -4,10 +4,10 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Lock, Unlock } from 'lucide-react';
-import { useState } from 'react';
 import { useRiskCalculator } from '@/hooks/useRiskCalculator';
 import { useDailyLossLock } from '@/hooks/useDailyLossLock';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useUserSettings } from '@/hooks/useUserSettings';
 import { WidgetWrapper } from '@/components/widgets/WidgetWrapper';
 import { WidgetProps } from '@/types/widget';
 
@@ -20,6 +20,7 @@ export const RiskCalculatorV2Widget = ({
   onExpand 
 }: RiskCalculatorV2WidgetProps) => {
   const { formatAmount } = useCurrency();
+  const { settings, updateSetting } = useUserSettings();
   const {
     calculation,
     riskPercent,
@@ -39,10 +40,8 @@ export const RiskCalculatorV2Widget = ({
 
   const { isLocked, overrideUntil, override } = useDailyLossLock(calculation.dailyLossLimit);
 
-  const [strategy, setStrategy] = useState<'scalp' | 'day' | 'swing' | 'position'>('day');
-
-  const handleStrategyChange = (value: 'scalp' | 'day' | 'swing' | 'position') => {
-    setStrategy(value);
+  const handleStrategyChange = async (value: 'scalp' | 'day' | 'swing' | 'position') => {
+    await updateSetting('risk_strategy', value);
     // Apply recommendations based on strategy
     const recommendations = {
       scalp: 0.5,
@@ -92,7 +91,7 @@ export const RiskCalculatorV2Widget = ({
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Strategy</Label>
-            <Select value={strategy} onValueChange={handleStrategyChange}>
+            <Select value={settings.risk_strategy} onValueChange={handleStrategyChange}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>

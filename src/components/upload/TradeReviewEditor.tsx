@@ -7,6 +7,7 @@ import { TradeSummaryBar } from './TradeSummaryBar';
 import { TradeFilters } from './TradeFilters';
 import { SaveConfirmationDialog } from './SaveConfirmationDialog';
 import { BulkDeleteDialog } from './BulkDeleteDialog';
+import { PendingTradesDialog } from './PendingTradesDialog';
 import { useVirtualScroll } from '@/hooks/useVirtualScroll';
 import { useDebounce } from '@/hooks/useDebounce';
 
@@ -48,6 +49,7 @@ export function TradeReviewEditor({
   const [approvedTrades, setApprovedTrades] = useState<Set<number>>(new Set());
   const [deletedTrades, setDeletedTrades] = useState<Set<number>>(new Set());
   const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showPendingDialog, setShowPendingDialog] = useState(false);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [brokerFilter, setBrokerFilter] = useState('all');
@@ -156,7 +158,16 @@ export function TradeReviewEditor({
   };
 
   const handleSave = () => {
-    setShowSaveDialog(true);
+    // Check for pending trades (not approved and not deleted)
+    const pendingIndices = editedTrades
+      .map((_, index) => index)
+      .filter(index => !approvedTrades.has(index) && !deletedTrades.has(index));
+    
+    if (pendingIndices.length > 0) {
+      setShowPendingDialog(true);
+    } else {
+      setShowSaveDialog(true);
+    }
   };
 
   const handleConfirmSave = () => {
@@ -206,6 +217,49 @@ export function TradeReviewEditor({
     setSessionMistakes(prev => new Set(prev).add(mistake));
   };
 
+  const handleQuickApprove = (index: number) => {
+    setApprovedTrades(prev => new Set(prev).add(index));
+    
+    // Check if there are still pending trades after this approval
+    setTimeout(() => {
+      const stillPending = editedTrades
+        .map((_, i) => i)
+        .filter(i => !approvedTrades.has(i) && !deletedTrades.has(i) && i !== index);
+      
+      if (stillPending.length === 0) {
+        setShowPendingDialog(false);
+        setShowSaveDialog(true);
+      }
+    }, 0);
+  };
+
+  const handleQuickRemove = (index: number) => {
+    setDeletedTrades(prev => new Set(prev).add(index));
+    
+    // Check if there are still pending trades after this removal
+    setTimeout(() => {
+      const stillPending = editedTrades
+        .map((_, i) => i)
+        .filter(i => !approvedTrades.has(i) && !deletedTrades.has(i) && i !== index);
+      
+      if (stillPending.length === 0) {
+        setShowPendingDialog(false);
+        setShowSaveDialog(true);
+      }
+    }, 0);
+  };
+
+  const handleEditPending = () => {
+    setShowPendingDialog(false);
+  };
+
+  // Get pending trades for dialog
+  const pendingTrades = useMemo(() => {
+    return editedTrades
+      .map((trade, index) => ({ trade, index }))
+      .filter(({ index }) => !approvedTrades.has(index) && !deletedTrades.has(index));
+  }, [editedTrades, approvedTrades, deletedTrades]);
+
   // Count non-deleted trades for display
   const activeTradesCount = editedTrades.filter((_, index) => !deletedTrades.has(index)).length;
   const approvedNonDeletedCount = Array.from(approvedTrades).filter(index => !deletedTrades.has(index)).length;
@@ -217,6 +271,16 @@ export function TradeReviewEditor({
         totalTrades={activeTradesCount}
         approvedIndices={approvedTrades}
         trades={editedTrades}
+      />
+
+      {/* Pending Trades Dialog */}
+      <PendingTradesDialog
+        open={showPendingDialog}
+        onOpenChange={setShowPendingDialog}
+        pendingTrades={pendingTrades}
+        onApproveAndSave={handleQuickApprove}
+        onRemoveAndSave={handleQuickRemove}
+        onEdit={handleEditPending}
       />
 
       {/* Save Confirmation Dialog */}

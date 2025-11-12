@@ -72,9 +72,9 @@ export function BulkDeleteDialog({
                   <span className="text-sm text-[#A6B1BB]">$</span>
                   <Input
                     type="text"
-                    value={negativePnl === 0 ? '' : Math.abs(negativePnl)}
+                    value={negativePnl === 0 ? '' : negativePnl.toFixed(2)}
                     onChange={(e) => {
-                      const inputValue = e.target.value;
+                      const inputValue = e.target.value.replace(/[^0-9.-]/g, '');
                       if (inputValue === '' || inputValue === '-') {
                         setNegativePnl(0);
                       } else {
@@ -84,16 +84,22 @@ export function BulkDeleteDialog({
                         }
                       }
                     }}
-                    placeholder="0"
-                    className="w-20 h-7 text-sm text-center bg-[#12161C] border-[#2A3038] text-red-400"
+                    onBlur={(e) => {
+                      const value = parseFloat(e.target.value.replace(/[^0-9.-]/g, ''));
+                      if (!isNaN(value)) {
+                        setNegativePnl(-Math.abs(value));
+                      }
+                    }}
+                    placeholder="-0.00"
+                    className="w-24 h-7 text-sm text-center bg-[#12161C] border-[#2A3038] text-red-400"
                   />
                   <span className="text-sm text-[#A6B1BB]">to $</span>
                   <Input
                     type="text"
-                    value={positivePnl === 0 ? '' : positivePnl}
+                    value={positivePnl === 0 ? '' : positivePnl.toFixed(2)}
                     onChange={(e) => {
-                      const inputValue = e.target.value;
-                      if (inputValue === '' || inputValue === '-') {
+                      const inputValue = e.target.value.replace(/[^0-9.]/g, '');
+                      if (inputValue === '') {
                         setPositivePnl(0);
                       } else {
                         const value = parseFloat(inputValue);
@@ -102,8 +108,14 @@ export function BulkDeleteDialog({
                         }
                       }
                     }}
-                    placeholder="0"
-                    className="w-20 h-7 text-sm text-center bg-[#12161C] border-[#2A3038] text-green-400"
+                    onBlur={(e) => {
+                      const value = parseFloat(e.target.value.replace(/[^0-9.]/g, ''));
+                      if (!isNaN(value)) {
+                        setPositivePnl(Math.abs(value));
+                      }
+                    }}
+                    placeholder="0.00"
+                    className="w-24 h-7 text-sm text-center bg-[#12161C] border-[#2A3038] text-green-400"
                   />
                 </div>
                 <Button

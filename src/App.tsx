@@ -99,6 +99,7 @@ const Testimonials = lazy(() => import("./pages/Testimonials"));
 const ChangelogPage = lazy(() => import("./pages/ChangelogPage"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const FeaturesPage = lazy(() => import("./pages/FeaturesPage"));
+const ErrorAnalytics = lazy(() => import("./pages/ErrorAnalytics"));
 
 // Loading fallback
 const PageLoader = () => (
@@ -231,6 +232,7 @@ const AppRoutes = () => {
         <Route path="/changelog" element={<PublicPageThemeWrapper><ChangelogPage /></PublicPageThemeWrapper>} />
         <Route path="/how-it-works" element={<PublicPageThemeWrapper><HowItWorks /></PublicPageThemeWrapper>} />
         <Route path="/features" element={<PublicPageThemeWrapper><FeaturesPage /></PublicPageThemeWrapper>} />
+        <Route path="/error-analytics" element={<ProtectedRoute><ErrorAnalytics /></ProtectedRoute>} />
         <Route path="/custom/:pageId" element={<ProtectedRoute><CustomPage /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>

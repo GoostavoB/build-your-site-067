@@ -3,7 +3,7 @@ import {
   BarChart3, Upload, TrendingUp, Target, Brain, Trophy, Settings2, BookOpen, HelpCircle, 
   LineChart, LogOut, Zap, RefreshCw, Wallet, Receipt, BookMarked, Users, GitCompare, 
   Shield, FileBarChart, ClipboardList, Calendar, Bell, FileText, ChevronDown, Search,
-  Plus, Archive, Star, Flame, Award, PieChart, Heart, Image, Download, Info
+  Plus, Archive, Star, Flame, Award, PieChart, Heart, Image, Download, Info, AlertCircle
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Logo } from '@/components/Logo';
@@ -107,6 +107,7 @@ export function AppSidebar() {
         { title: t('navigation.tradingPlan'), url: '/trading-plan', icon: ClipboardList, iconName: 'ClipboardList', keywords: ['plan', 'strategy', 'rules', 'checklist', 'discipline', 'guidelines', 'framework', 'methodology', 'approach', 'system', 'process', 'routine', 'setup', 'prepare', 'playbook'] },
         { title: t('navigation.goals'), url: '/goals', icon: Target, iconName: 'Target', keywords: ['goals', 'targets', 'objectives', 'milestones', 'achievements', 'ambitions', 'progress', 'tracking', 'completion', 'roadmap', 'plans', 'aim', 'ambition', 'success', 'kpi'] },
         { title: t('navigation.psychology'), url: '/psychology', icon: Brain, iconName: 'Brain', keywords: ['psychology', 'emotions', 'mental', 'mindset', 'behavior', 'feelings', 'emotional', 'state', 'mood', 'trader', 'discipline', 'confidence', 'fear', 'greed', 'patience', 'stress', 'anxiety', 'timeline', 'log', 'patterns', 'analysis', 'bias', 'thinking', 'cognition', 'calm', 'mind', 'mental health', 'wellbeing', 'self-awareness'] },
+        { title: 'Error Analytics', url: '/error-analytics', icon: AlertCircle, iconName: 'AlertCircle', keywords: ['errors', 'mistakes', 'analytics', 'cost', 'analysis', 'impact', 'reflection', 'tracking', 'improvement', 'losses', 'patterns', 'frequent', 'costly', 'learn', 'avoid', 'tags'] },
       ],
     },
     {

@@ -6,8 +6,9 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { AlertCircle, Plus, Clock, Archive, Trash2, Edit, AlertTriangle } from 'lucide-react';
+import { AlertCircle, Plus, Clock, Archive, Trash2, Edit, AlertTriangle, ExternalLink } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useErrorReflection } from '@/hooks/useErrorReflection';
 import { useUserSettings } from '@/hooks/useUserSettings';
 import { useToast } from '@/hooks/use-toast';
@@ -48,6 +49,7 @@ export const ErrorReflectionWidget = ({
   const [newErrorText, setNewErrorText] = useState('');
   const [editingError, setEditingError] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
+  const navigate = useNavigate();
 
   // Check for daily reminder on mount
   useEffect(() => {
@@ -218,8 +220,14 @@ export const ErrorReflectionWidget = ({
               </div>
 
               <div className="flex gap-2 pt-2">
-                <Button variant="outline" size="sm" className="flex-1">
-                  View all ({errors.length})
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex-1 gap-2"
+                  onClick={() => navigate('/error-analytics')}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  View Analytics
                 </Button>
                 <Button size="sm" className="flex-1 gap-2" onClick={() => setShowAddDialog(true)}>
                   <Plus className="h-4 w-4" />

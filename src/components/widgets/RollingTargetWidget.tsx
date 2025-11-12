@@ -216,6 +216,11 @@ export const RollingTargetWidget = memo(({
       isAhead = false;
     }
     
+    // Calculate forecasts based on current progress
+    const forecast30Days = actualCapital * Math.pow(1 + p, 30);
+    const forecast6Months = actualCapital * Math.pow(1 + p, 180);
+    const forecast1Year = actualCapital * Math.pow(1 + p, 365);
+    
     return {
       requiredToday,
       headroom,
@@ -223,6 +228,9 @@ export const RollingTargetWidget = memo(({
       actualCapital,
       plannedCapital: plannedCapital,
       deviation: actualCapital - plannedCapital,
+      forecast30Days,
+      forecast6Months,
+      forecast1Year,
     };
   }, [dailyData, settings.mode, settings.targetPercent, settings.carryOverCap, initialInvestment]);
 
@@ -584,6 +592,18 @@ export const RollingTargetWidget = memo(({
                   <p className="text-xs text-muted-foreground">
                     Today's minimum to stay on track: $0
                   </p>
+                  <div className="flex items-center gap-2 mt-3 flex-wrap">
+                    <span className="text-xs text-muted-foreground">Forecasts:</span>
+                    <Badge variant="secondary" className="text-xs">
+                      30d: {formatCurrency(todayData.forecast30Days)}
+                    </Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      6m: {formatCurrency(todayData.forecast6Months)}
+                    </Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      1y: {formatCurrency(todayData.forecast1Year)}
+                    </Badge>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -591,7 +611,7 @@ export const RollingTargetWidget = memo(({
                     <Target className="h-5 w-5 text-primary" />
                     <p className="text-sm font-medium">Today to stay on track</p>
                   </div>
-                  <div className="flex items-center justify-between">
+                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Required PnL</span>
                     <span className="text-2xl font-bold text-primary">
                       {formatCurrency(todayData.requiredToday)}
@@ -612,6 +632,18 @@ export const RollingTargetWidget = memo(({
                       </Tooltip>
                     </TooltipProvider>
                   )}
+                  <div className="flex items-center gap-2 mt-3 flex-wrap">
+                    <span className="text-xs text-muted-foreground">Forecasts:</span>
+                    <Badge variant="secondary" className="text-xs">
+                      30d: {formatCurrency(todayData.forecast30Days)}
+                    </Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      6m: {formatCurrency(todayData.forecast6Months)}
+                    </Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      1y: {formatCurrency(todayData.forecast1Year)}
+                    </Badge>
+                  </div>
                 </div>
               )}
             </div>

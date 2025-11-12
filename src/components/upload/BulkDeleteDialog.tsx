@@ -71,25 +71,39 @@ export function BulkDeleteDialog({
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-[#A6B1BB]">$</span>
                   <Input
-                    type="number"
-                    value={negativePnl}
+                    type="text"
+                    value={negativePnl === 0 ? '' : Math.abs(negativePnl)}
                     onChange={(e) => {
-                      const value = parseFloat(e.target.value) || 0;
-                      setNegativePnl(Math.min(0, value));
+                      const inputValue = e.target.value;
+                      if (inputValue === '' || inputValue === '-') {
+                        setNegativePnl(0);
+                      } else {
+                        const value = parseFloat(inputValue);
+                        if (!isNaN(value)) {
+                          setNegativePnl(-Math.abs(value));
+                        }
+                      }
                     }}
+                    placeholder="0"
                     className="w-20 h-7 text-sm text-center bg-[#12161C] border-[#2A3038] text-red-400"
-                    step="0.5"
                   />
                   <span className="text-sm text-[#A6B1BB]">to $</span>
                   <Input
-                    type="number"
-                    value={positivePnl}
+                    type="text"
+                    value={positivePnl === 0 ? '' : positivePnl}
                     onChange={(e) => {
-                      const value = parseFloat(e.target.value) || 0;
-                      setPositivePnl(Math.max(0, value));
+                      const inputValue = e.target.value;
+                      if (inputValue === '' || inputValue === '-') {
+                        setPositivePnl(0);
+                      } else {
+                        const value = parseFloat(inputValue);
+                        if (!isNaN(value)) {
+                          setPositivePnl(Math.abs(value));
+                        }
+                      }
                     }}
+                    placeholder="0"
                     className="w-20 h-7 text-sm text-center bg-[#12161C] border-[#2A3038] text-green-400"
-                    step="0.5"
                   />
                 </div>
                 <Button

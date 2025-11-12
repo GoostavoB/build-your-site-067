@@ -644,7 +644,9 @@ const Upload = () => {
           margin: finalTrade.margin,
           opened_at: finalTrade.opened_at,
           closed_at: finalTrade.closed_at,
-          period_of_day: finalTrade.period_of_day,
+          period_of_day: finalTrade.period_of_day && ['morning', 'afternoon', 'night'].includes(finalTrade.period_of_day) 
+            ? finalTrade.period_of_day 
+            : 'morning',
           duration_days: finalTrade.duration_days,
           duration_hours: finalTrade.duration_hours,
           duration_minutes: finalTrade.duration_minutes,
@@ -756,7 +758,9 @@ const Upload = () => {
       margin: parseFloat(formData.margin) || null,
       opened_at: formData.opened_at || null,
       closed_at: formData.closed_at || null,
-      period_of_day: formData.period_of_day,
+      period_of_day: formData.period_of_day && ['morning', 'afternoon', 'night'].includes(formData.period_of_day) 
+        ? formData.period_of_day 
+        : 'morning',
       pnl: pnl,
       roi: roi,
       profit_loss: pnl,
@@ -1421,7 +1425,9 @@ const Upload = () => {
             margin: finalTrade.margin,
             opened_at: finalTrade.opened_at,
             closed_at: finalTrade.closed_at,
-            period_of_day: finalTrade.period_of_day,
+            period_of_day: finalTrade.period_of_day && ['morning', 'afternoon', 'night'].includes(finalTrade.period_of_day) 
+              ? finalTrade.period_of_day 
+              : 'morning',
             duration_days: finalTrade.duration_days,
             duration_hours: finalTrade.duration_hours,
             duration_minutes: finalTrade.duration_minutes,
@@ -1508,7 +1514,9 @@ const Upload = () => {
             margin: finalTrade.margin,
             opened_at: finalTrade.opened_at,
             closed_at: finalTrade.closed_at,
-            period_of_day: finalTrade.period_of_day,
+            period_of_day: finalTrade.period_of_day && ['morning', 'afternoon', 'night'].includes(finalTrade.period_of_day) 
+              ? finalTrade.period_of_day 
+              : 'morning',
             duration_days: finalTrade.duration_days,
             duration_hours: finalTrade.duration_hours,
             duration_minutes: finalTrade.duration_minutes,

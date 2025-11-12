@@ -82,7 +82,7 @@ export const useRiskCalculator = () => {
     else if (base === 'profit') baseValue = profitOnly;
 
     const riskPerTrade = (baseValue * riskPercent) / 100;
-    const dailyLossLimit = (currentEquity * dailyLossPercent) / 100;
+    const dailyLossLimit = (baseValue * dailyLossPercent) / 100;
 
     let positionSize: number | undefined;
     let exposure: number | undefined;

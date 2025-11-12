@@ -31,12 +31,12 @@ export function useExchangeRates() {
         .eq('id', 'latest')
         .maybeSingle();
 
-      // If cache exists and is less than 10 minutes old, use it
+      // If cache exists and is less than 1 hour old, use it
       if (cached && !error) {
         const cacheAge = Date.now() - new Date(cached.updated_at).getTime();
-        const tenMinutes = 10 * 60 * 1000;
+        const oneHour = 60 * 60 * 1000;
         
-        if (cacheAge < tenMinutes) {
+        if (cacheAge < oneHour) {
           console.log('Using cached exchange rates');
           return cached.rates as unknown as ExchangeRates;
         }
@@ -62,9 +62,9 @@ export function useExchangeRates() {
 
       return data.data;
     },
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
-    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
-    refetchOnWindowFocus: true,
+    staleTime: 30 * 60 * 1000, // Consider data fresh for 30 minutes
+    gcTime: 60 * 60 * 1000, // Keep in cache for 1 hour
+    refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes
+    refetchOnWindowFocus: false, // Don't refetch on window focus to reduce API calls
   });
 }

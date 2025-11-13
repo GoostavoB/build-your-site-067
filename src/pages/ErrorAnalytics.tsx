@@ -93,7 +93,11 @@ export default function ErrorAnalytics() {
 
     tradesWithErrors.forEach((trade) => {
       const errorTags = trade.error_tags || [];
-      const pnl = trade.pnl || 0;
+      // Calculate net PnL (including fees)
+      const pnl = (trade.pnl || 0);
+      const fundingFee = trade.funding_fee || 0;
+      const tradingFee = trade.trading_fee || 0;
+      const netPnL = pnl - Math.abs(fundingFee) - Math.abs(tradingFee);
       const tradeDate = trade.trade_date || trade.created_at;
 
       errorTags.forEach((tag) => {
@@ -109,7 +113,7 @@ export default function ErrorAnalytics() {
 
         const impact = impactMap.get(tag)!;
         impact.totalOccurrences++;
-        impact.totalPnL += pnl;
+        impact.totalPnL += netPnL;
         if (tradeDate > impact.lastOccurrence) {
           impact.lastOccurrence = tradeDate;
         }

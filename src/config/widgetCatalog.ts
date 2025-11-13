@@ -363,6 +363,7 @@ export const getWidgetsByCategory = (category: string) => {
  * Get all widget categories
  */
 export const WIDGET_CATEGORIES = [
+  { id: 'all', label: 'All', description: 'Browse all available widgets' },
   { id: 'overview', label: 'Overview', description: 'Essential dashboard metrics' },
   { id: 'trading', label: 'Trading', description: 'Win rate, trades, and performance' },
   { id: 'portfolio', label: 'Portfolio', description: 'Holdings and allocation' },

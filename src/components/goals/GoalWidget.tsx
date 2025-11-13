@@ -1,12 +1,26 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Target, TrendingUp, Calendar, AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Target, TrendingUp, Calendar, AlertTriangle, Edit, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext';
 import { BlurredCurrency, BlurredPercent } from '@/components/ui/BlurredValue';
+import { CreateGoalDialog } from './CreateGoalDialog';
+import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface GoalProjection {
   daily_progress: number;
@@ -19,8 +33,10 @@ interface GoalProjection {
 
 export function GoalWidget() {
   const { user } = useAuth();
+  const [editingGoal, setEditingGoal] = useState<any>(null);
+  const [deletingGoalId, setDeletingGoalId] = useState<string | null>(null);
 
-  const { data: goals = [] } = useQuery({
+  const { data: goals = [], refetch, isLoading, isError } = useQuery({
     queryKey: ['goals-widget', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -60,9 +76,25 @@ export function GoalWidget() {
     enabled: goals.length > 0,
   });
 
-  if (goals.length === 0) {
-    return null;
-  }
+  const handleDelete = async () => {
+    if (!deletingGoalId) return;
+
+    try {
+      const { error } = await supabase
+        .from('trading_goals')
+        .delete()
+        .eq('id', deletingGoalId);
+      
+      if (error) throw error;
+      toast.success("Goal deleted successfully");
+      refetch();
+    } catch (error) {
+      console.error('Error deleting goal:', error);
+      toast.error("Failed to delete goal");
+    } finally {
+      setDeletingGoalId(null);
+    }
+  };
 
   const formatValue = (value: number, type: string) => {
     switch (type) {
@@ -81,16 +113,74 @@ export function GoalWidget() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <Card className="col-span-full">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              Active Goals
+            </CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="animate-pulse space-y-4">
+            <div className="h-24 bg-muted rounded-lg" />
+            <div className="h-24 bg-muted rounded-lg" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Card className="col-span-full">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              Active Goals
+            </CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground text-center py-4">
+            Failed to load goals. Please try again.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="col-span-full">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Target className="h-5 w-5" />
-          Active Goals
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Target className="h-5 w-5" />
+            Active Goals
+          </CardTitle>
+          <CreateGoalDialog 
+            onGoalCreated={refetch}
+            editingGoal={editingGoal}
+            onClose={() => setEditingGoal(null)}
+          />
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {goals.map((goal) => {
+        {goals.length === 0 ? (
+          <div className="text-center py-8">
+            <Target className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+            <h3 className="font-semibold mb-2">No Active Goals</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Start tracking your trading objectives
+            </p>
+            <CreateGoalDialog onGoalCreated={refetch} />
+          </div>
+        ) : (
+          goals.map((goal) => {
           const progress = Math.min(100, (goal.current_value / goal.target_value) * 100);
           const projection = projections?.find(p => p.goalId === goal.id)?.projection;
           const isOnTrack = projection?.on_track ?? true;
@@ -110,9 +200,27 @@ export function GoalWidget() {
                     )}
                   </div>
                 </div>
-                {!isOnTrack && (
-                  <AlertTriangle className="h-5 w-5 text-destructive" />
-                )}
+                <div className="flex items-center gap-1">
+                  {!isOnTrack && (
+                    <AlertTriangle className="h-5 w-5 text-destructive mr-2" />
+                  )}
+                  <Button 
+                    size="icon" 
+                    variant="ghost" 
+                    className="h-8 w-8"
+                    onClick={() => setEditingGoal(goal)}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    size="icon" 
+                    variant="ghost" 
+                    className="h-8 w-8 text-destructive hover:text-destructive"
+                    onClick={() => setDeletingGoalId(goal.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
               
               <Progress value={progress} className="h-2" />
@@ -142,8 +250,24 @@ export function GoalWidget() {
               )}
             </div>
           );
-        })}
+        })
+        )}
       </CardContent>
+
+      <AlertDialog open={!!deletingGoalId} onOpenChange={() => setDeletingGoalId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Goal</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this goal? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }

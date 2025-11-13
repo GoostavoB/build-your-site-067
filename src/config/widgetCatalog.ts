@@ -274,16 +274,8 @@ export const WIDGET_CATALOG: Record<string, WidgetConfig> = {
     requiresData: [],
   },
 
-  rollingTarget: {
-    id: 'rollingTarget',
-    title: 'Rolling Target Tracker',
-    description: 'Daily compounding target with carry-over and adaptive suggestions',
-    category: 'performance',
-    icon: TrendingDown,
-    defaultSize: 'xlarge',
-    component: RollingTargetWidget,
-    requiresData: ['trades', 'stats'],
-  },
+  // rollingTarget removed - it's a Trade Station specific widget with wrapper
+  // Users can still add it from Trade Station where it's properly configured
 
   combinedPnLROI: {
     id: 'combinedPnLROI',

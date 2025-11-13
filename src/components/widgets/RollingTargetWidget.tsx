@@ -81,8 +81,8 @@ export const RollingTargetWidget = memo(({
   id,
   isEditMode,
   onRemove,
-  trades,
-  initialInvestment,
+  trades = [],  // Add default empty array to prevent crashes
+  initialInvestment = 0,  // Add default value to prevent crashes
 }: RollingTargetWidgetProps) => {
   const { 
     settings, 

@@ -3,6 +3,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { memo, useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ErrorBoundary } from './ErrorBoundary';
 
 interface SortableWidgetProps {
   id: string;
@@ -76,10 +77,12 @@ export const SortableWidget = memo(({ id, children, isEditMode, onRemove }: Sort
         </Button>
       )}
       
-      {/* Wrap children in measurable content div for masonry */}
+      {/* Wrap children in measurable content div for masonry with error boundary */}
       <div className="widget-content group">
         <div className={isDragging ? 'pointer-events-none' : ''}>
-          {children}
+          <ErrorBoundary widgetId={id}>
+            {children}
+          </ErrorBoundary>
         </div>
       </div>
     </div>

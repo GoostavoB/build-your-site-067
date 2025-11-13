@@ -58,10 +58,10 @@ const TRADE_STATION_SPECIFIC_WIDGETS: Record<string, WidgetConfig> = {
 };
 
 // Merge Trade Station specific widgets with ALL main catalog widgets
-// This allows users to add ANY widget to Trade Station
+// Trade Station specific widgets take precedence (override main catalog)
 export const TRADE_STATION_WIDGET_CATALOG: Record<string, WidgetConfig> = {
-  ...TRADE_STATION_SPECIFIC_WIDGETS,
   ...WIDGET_CATALOG,
+  ...TRADE_STATION_SPECIFIC_WIDGETS,
 };
 
 export const DEFAULT_TRADE_STATION_LAYOUT = [

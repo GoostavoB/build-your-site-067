@@ -35,7 +35,7 @@ export const RiskCalculatorV2Widget = ({
     updateBase,
     setEntryPrice,
     setStopPrice,
-    setDailyLossPercent,
+    updateDailyLossPercent,
   } = useRiskCalculator();
 
   const { isLocked, overrideUntil, override } = useDailyLossLock(calculation.dailyLossLimit);
@@ -166,7 +166,7 @@ export const RiskCalculatorV2Widget = ({
           <div className="space-y-2">
             <Slider
               value={[dailyLossPercent]}
-              onValueChange={([v]) => setDailyLossPercent(v)}
+              onValueChange={([v]) => updateDailyLossPercent(v)}
               min={0}
               max={10}
               step={0.1}
@@ -178,7 +178,7 @@ export const RiskCalculatorV2Widget = ({
                 <Input
                   type="number"
                   value={dailyLossPercent}
-                  onChange={(e) => setDailyLossPercent(parseFloat(e.target.value) || 0)}
+                  onChange={(e) => updateDailyLossPercent(parseFloat(e.target.value) || 0)}
                   min={0}
                   max={10}
                   step={0.1}

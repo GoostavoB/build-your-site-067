@@ -140,6 +140,18 @@ export const useRiskCalculator = () => {
     }
   };
 
+  const updateDailyLossPercent = async (value: number) => {
+    const clamped = Math.max(0, Math.min(10, value));
+    setDailyLossPercent(clamped);
+
+    if (user) {
+      await supabase
+        .from('user_settings')
+        .update({ daily_loss_percent: clamped })
+        .eq('user_id', user.id);
+    }
+  };
+
   return {
     calculation,
     riskPercent,
@@ -154,7 +166,7 @@ export const useRiskCalculator = () => {
     updateBase,
     setEntryPrice,
     setStopPrice,
-    setDailyLossPercent,
+    updateDailyLossPercent,
     reload: loadData,
   };
 };

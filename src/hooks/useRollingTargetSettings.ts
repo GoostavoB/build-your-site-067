@@ -1,4 +1,4 @@
-import { useUserSettings } from './useUserSettings';
+import { useUserSettings, TradeStationSettings } from './useUserSettings';
 import { toast } from 'sonner';
 
 export type TrackingMode = 'rolling' | 'per-day';
@@ -34,9 +34,20 @@ export const useRollingTargetSettings = () => {
     value: RollingTargetSettings[K]
   ) => {
     try {
-      // Map UI keys to database keys
-      const dbKey = `rolling_target_${key.replace(/([A-Z])/g, '_$1').toLowerCase()}` as any;
-      await updateSetting(dbKey, value);
+      // Direct mapping to database columns
+      const keyMap: Record<keyof RollingTargetSettings, keyof TradeStationSettings> = {
+        targetPercent: 'rolling_target_percent',
+        mode: 'rolling_target_mode',
+        carryOverCap: 'rolling_target_carryover_cap',
+        suggestionMethod: 'rolling_target_suggestion_method',
+        suggestionsEnabled: 'rolling_target_suggestions_enabled',
+        rolloverWeekends: 'rolling_target_rollover_weekends',
+        lastSuggestionDate: 'rolling_target_last_suggestion_date',
+        dismissedSuggestion: 'rolling_target_dismissed_suggestion',
+      };
+      
+      const dbKey = keyMap[key];
+      await updateSetting(dbKey, value as any);
     } catch (error) {
       console.error('Error updating rolling target setting:', error);
       toast.error('Failed to save setting');

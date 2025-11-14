@@ -135,20 +135,27 @@ export const RollingTargetWidget = memo(({
 
     // Calculate cumulative values and planned path
     const daysArray: DailyData[] = [];
-    let dayIndex = 0;
+    
+    // Get first date for calendar day calculation
+    const sortedDates = Array.from(dailyMap.keys()).sort();
+    const firstDate = parseISO(sortedDates[0]);
 
     dailyMap.forEach((day, dateStr) => {
+      // Calculate calendar days from start (not just trading days)
+      const currentDate = parseISO(dateStr);
+      const calendarDaysFromStart = differenceInDays(currentDate, firstDate);
+      
       // Set start capital based on previous day's end capital (or initial investment for first day)
       day.startCapital = currentCapital;
       day.endCapital = day.startCapital + day.pnl;
       day.returnPercent = day.startCapital > 0 ? (day.pnl / day.startCapital) * 100 : 0;
       
-      // Planned path: C0 * (1 + p)^n
-      day.plannedCapital = initialInvestment * Math.pow(1 + p, dayIndex + 1);
+      // Planned path: C0 * (1 + p)^n where n is CALENDAR days from start
+      day.plannedCapital = initialInvestment * Math.pow(1 + p, calendarDaysFromStart + 1);
       
       // Calculate required today for rolling mode
       if (settings?.mode === 'rolling') {
-        const plannedForToday = initialInvestment * Math.pow(1 + p, dayIndex + 1);
+        const plannedForToday = initialInvestment * Math.pow(1 + p, calendarDaysFromStart + 1);
         day.requiredToday = Math.max(0, plannedForToday - day.endCapital);
         day.headroom = Math.max(0, day.endCapital - plannedForToday);
         
@@ -165,7 +172,6 @@ export const RollingTargetWidget = memo(({
       
       daysArray.push(day);
       currentCapital = day.endCapital; // Update for next day
-      dayIndex++;
     });
 
     return daysArray;

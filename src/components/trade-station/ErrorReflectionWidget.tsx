@@ -44,7 +44,6 @@ export const ErrorReflectionWidget = ({
     toast
   } = useToast();
   const [showDailyReminder, setShowDailyReminder] = useState(false);
-  const [showPnLPrompt, setShowPnLPrompt] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newErrorText, setNewErrorText] = useState('');
   const [editingError, setEditingError] = useState<string | null>(null);
@@ -71,23 +70,12 @@ export const ErrorReflectionWidget = ({
       });
     }
   }, [settings.error_clean_sheet_enabled]);
-
-  // Check for negative P&L prompt
-  useEffect(() => {
-    if (settings.error_pnl_prompt_enabled) {
-      const threshold = settings.error_pnl_threshold_type === 'percent' ? todaysPnL / 100 * settings.error_pnl_threshold_value : settings.error_pnl_threshold_value;
-      if (todaysPnL < -Math.abs(threshold)) {
-        setShowPnLPrompt(true);
-      }
-    }
-  }, [todaysPnL, settings.error_pnl_prompt_enabled, settings.error_pnl_threshold_value, settings.error_pnl_threshold_type]);
   const handleAddError = async () => {
     if (!newErrorText.trim()) return;
     try {
       await addError(newErrorText.trim());
       setNewErrorText('');
       setShowAddDialog(false);
-      setShowPnLPrompt(false);
       toast({
         title: 'Error logged',
         description: 'Your reflection has been saved.'
@@ -279,28 +267,6 @@ export const ErrorReflectionWidget = ({
             <Button className="flex-1" onClick={handleDismissDailyReminder}>
               Dismiss
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Negative P&L Prompt */}
-      <Dialog open={showPnLPrompt} onOpenChange={setShowPnLPrompt}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Log Your Error?</DialogTitle>
-            <DialogDescription>
-              Your P&L is now ${todaysPnL.toFixed(2)}. Consider logging what went wrong:
-            </DialogDescription>
-          </DialogHeader>
-          <Textarea value={newErrorText} onChange={e => setNewErrorText(e.target.value)} placeholder="What happened?" autoFocus rows={4} />
-          <DialogFooter>
-            <Button variant="outline" onClick={() => {
-            setShowPnLPrompt(false);
-            setNewErrorText('');
-          }}>
-              Dismiss
-            </Button>
-            <Button onClick={handleAddError}>Save</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

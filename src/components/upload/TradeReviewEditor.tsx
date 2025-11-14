@@ -50,6 +50,8 @@ interface TradeReviewEditorProps {
   creditsRequired: number;
   imagesProcessed: number;
   duplicateMap?: Map<number, DuplicateCheckResult>;
+  initialDeletedTrades?: Set<number>;
+  initialOverriddenDuplicates?: Set<number>;
   onSave: (trades: Trade[]) => void;
   onCancel: () => void;
 }
@@ -60,13 +62,15 @@ export function TradeReviewEditor({
   creditsRequired,
   imagesProcessed,
   duplicateMap,
+  initialDeletedTrades,
+  initialOverriddenDuplicates,
   onSave,
   onCancel,
 }: TradeReviewEditorProps) {
   const [editedTrades, setEditedTrades] = useState<Trade[]>(trades.slice(0, maxSelectableTrades));
   const [approvedTrades, setApprovedTrades] = useState<Set<number>>(new Set());
-  const [deletedTrades, setDeletedTrades] = useState<Set<number>>(new Set());
-  const [overriddenDuplicates, setOverriddenDuplicates] = useState<Set<number>>(new Set());
+  const [deletedTrades, setDeletedTrades] = useState<Set<number>>(initialDeletedTrades || new Set());
+  const [overriddenDuplicates, setOverriddenDuplicates] = useState<Set<number>>(initialOverriddenDuplicates || new Set());
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [showPendingDialog, setShowPendingDialog] = useState(false);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);

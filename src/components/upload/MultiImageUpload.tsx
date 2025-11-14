@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { runOCR } from '@/utils/ocrPipeline';
 import { TradeReviewEditor } from './TradeReviewEditor';
+import { DuplicateReviewDialog } from './DuplicateReviewDialog';
 import { checkForDuplicates } from '@/utils/duplicateDetection';
 import type { DuplicateCheckResult } from '@/utils/duplicateDetection';
 import { retryWithBackoff, isRetryableError } from '@/utils/retryWithBackoff';
@@ -38,6 +39,7 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
   const [totalTradesDetected, setTotalTradesDetected] = useState(0);
   const [creditsRequired, setCreditsRequired] = useState(0);
   const [extractedTrades, setExtractedTrades] = useState<any[]>([]);
@@ -47,6 +49,8 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [estimatedTimeRemaining, setEstimatedTimeRemaining] = useState(0);
   const [duplicateMap, setDuplicateMap] = useState<Map<number, DuplicateCheckResult>>(new Map());
+  const [initialDeletedTrades, setInitialDeletedTrades] = useState<Set<number>>();
+  const [initialOverriddenDuplicates, setInitialOverriddenDuplicates] = useState<Set<number>>();
   const dragCounter = useRef(0);
   const imageProcessStartTime = useRef<number>(0);
   const imageProcessTimes = useRef<number[]>([]);
@@ -440,8 +444,13 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
         }
       }
 
-      setShowConfirmation(true);
-      onReviewStart?.();
+      // Show duplicate review dialog if duplicates found, otherwise go straight to confirmation
+      if (duplicateCount > 0) {
+        setShowDuplicateDialog(true);
+      } else {
+        setShowConfirmation(true);
+        onReviewStart?.();
+      }
     } catch (error) {
       toast.error('Failed to analyze images');
     } finally {
@@ -793,6 +802,25 @@ setExtractedTrades([]);
         </>
       )}
 
+      {/* Duplicate Review Dialog */}
+      <DuplicateReviewDialog
+        open={showDuplicateDialog}
+        duplicates={duplicateMap}
+        trades={extractedTrades}
+        onConfirm={(keepIndices, removeIndices) => {
+          setInitialDeletedTrades(removeIndices);
+          setInitialOverriddenDuplicates(keepIndices);
+          setShowDuplicateDialog(false);
+          setShowConfirmation(true);
+          onReviewStart?.();
+        }}
+        onCancel={() => {
+          setShowDuplicateDialog(false);
+          setExtractedTrades([]);
+          setDuplicateMap(new Map());
+        }}
+      />
+
       {/* Trade Review Editor - Full Page */}
       {showConfirmation && (
 <TradeReviewEditor
@@ -801,6 +829,8 @@ setExtractedTrades([]);
   creditsRequired={creditsRequired}
   imagesProcessed={images.filter(img => img.status === 'success').length}
   duplicateMap={duplicateMap}
+  initialDeletedTrades={initialDeletedTrades}
+  initialOverriddenDuplicates={initialOverriddenDuplicates}
   onSave={handleSaveTrades}
   onCancel={() => { setShowConfirmation(false); onReviewEnd?.(); }}
 />

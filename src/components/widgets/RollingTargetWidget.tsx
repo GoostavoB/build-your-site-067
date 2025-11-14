@@ -792,6 +792,21 @@ export const RollingTargetWidget = memo(({
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div className="flex items-center justify-end gap-1 cursor-help">
+                              <span>%</span>
+                              <Info className="h-3 w-3 text-muted-foreground" />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">Daily return percentage based on that day's starting capital</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </th>
+                    <th className="text-right p-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center justify-end gap-1 cursor-help">
                               <span>Actual</span>
                               <Info className="h-3 w-3 text-muted-foreground" />
                             </div>
@@ -841,6 +856,9 @@ export const RollingTargetWidget = memo(({
                       <td className={`text-right p-2 font-medium ${day.pnl >= 0 ? 'text-profit' : 'text-loss'}`}>
                         {formatCurrency(day.pnl)}
                       </td>
+                      <td className={`text-right p-2 font-medium ${day.returnPercent >= 0 ? 'text-profit' : 'text-loss'}`}>
+                        {day.returnPercent >= 0 ? '+' : ''}{formatPercent(day.returnPercent)}
+                      </td>
                       <td className="text-right p-2">{formatCurrency(day.endCapital)}</td>
                       <td className="text-right p-2 text-muted-foreground">{formatCurrency(day.plannedCapital)}</td>
                       <td className="text-right p-2 font-medium">
@@ -860,6 +878,21 @@ export const RollingTargetWidget = memo(({
                   <tr>
                     <th className="text-left p-2">Date</th>
                     <th className="text-right p-2">PnL</th>
+                    <th className="text-right p-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center justify-end gap-1 cursor-help">
+                              <span>%</span>
+                              <Info className="h-3 w-3 text-muted-foreground" />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">Daily return percentage based on that day's starting capital</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </th>
                     <th className="text-right p-2">
                       <TooltipProvider>
                         <Tooltip>
@@ -913,6 +946,9 @@ export const RollingTargetWidget = memo(({
                       <td className="p-2">{format(parseISO(day.date), 'MMM dd, yyyy')}</td>
                       <td className={`text-right p-2 font-medium ${day.pnl >= 0 ? 'text-profit' : 'text-loss'}`}>
                         {formatCurrency(day.pnl)}
+                      </td>
+                      <td className={`text-right p-2 font-medium ${day.returnPercent >= 0 ? 'text-profit' : 'text-loss'}`}>
+                        {day.returnPercent >= 0 ? '+' : ''}{formatPercent(day.returnPercent)}
                       </td>
                       <td className="text-right p-2">{formatCurrency(day.endCapital)}</td>
                       <td className="text-right p-2 text-muted-foreground">{formatCurrency(day.plannedCapital)}</td>

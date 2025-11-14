@@ -265,10 +265,10 @@ export const TradeStationView = ({ onControlsReady }: TradeStationViewProps = {}
       const winningTrades = trades.filter(t => (t.profit_loss || 0) > 0).length;
       const avgDuration = trades.reduce((sum, t) => sum + (t.duration_minutes || 0), 0) / (trades.length || 1);
 
-      // Calculate total calendar days from first to last trade
+      // Calculate total calendar days from first to last trade (based on when trades were opened)
       let tradingDaySpan = 0;
       if (trades.length > 0) {
-        const tradeDates = trades.map(t => new Date(t.trade_date).getTime());
+        const tradeDates = trades.map(t => new Date(t.opened_at || t.trade_date).getTime());
         const firstTradeDate = Math.min(...tradeDates);
         const lastTradeDate = Math.max(...tradeDates);
         const daysDifference = Math.ceil((lastTradeDate - firstTradeDate) / (1000 * 60 * 60 * 24));
@@ -298,9 +298,9 @@ export const TradeStationView = ({ onControlsReady }: TradeStationViewProps = {}
         currentROI = ((currentBalance - baseCapital) / baseCapital) * 100;
       }
       
-      // Calculate average ROI per trade - FIXED CALCULATION
-      const avgROIPerTrade = baseCapital > 0 && trades.length > 0
-        ? (avgPnLPerTrade / baseCapital) * 100
+      // Calculate average ROI per trade by averaging individual trade ROIs
+      const avgROIPerTrade = trades.length > 0
+        ? trades.reduce((sum, t) => sum + (t.roi || 0), 0) / trades.length
         : 0;
 
       setStats({

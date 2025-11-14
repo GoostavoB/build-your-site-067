@@ -58,9 +58,9 @@ export const analyzeHourlyPerformance = (trades: Trade[]): TimeBasedPerformance[
       hourlyData[hour] = { wins: 0, losses: 0, pnl: 0 };
     }
     
-    if ((t.pnl || 0) > 0) hourlyData[hour].wins++;
+    if ((t.profit_loss || 0) > 0) hourlyData[hour].wins++;
     else hourlyData[hour].losses++;
-    hourlyData[hour].pnl += t.pnl || 0;
+    hourlyData[hour].pnl += t.profit_loss || 0;
   });
   
   return Object.entries(hourlyData).map(([hour, data]) => ({
@@ -85,9 +85,9 @@ export const analyzeDayPerformance = (trades: Trade[]): DayPerformance[] => {
       dayData[day] = { wins: 0, losses: 0, pnl: 0 };
     }
     
-    if ((t.pnl || 0) > 0) dayData[day].wins++;
+    if ((t.profit_loss || 0) > 0) dayData[day].wins++;
     else dayData[day].losses++;
-    dayData[day].pnl += t.pnl || 0;
+    dayData[day].pnl += t.profit_loss || 0;
   });
   
   return Object.entries(dayData).map(([day, data]) => ({
@@ -113,9 +113,9 @@ export const findBestWorstDays = (trades: Trade[]): { best: BestWorstDay | null;
       dailyData[date] = { pnl: 0, trades: 0, wins: 0 };
     }
     
-    dailyData[date].pnl += t.pnl || 0;
+    dailyData[date].pnl += t.profit_loss || 0;
     dailyData[date].trades++;
-    if ((t.pnl || 0) > 0) dailyData[date].wins++;
+    if ((t.profit_loss || 0) > 0) dailyData[date].wins++;
   });
   
   const days = Object.entries(dailyData).map(([date, data]) => ({
@@ -144,9 +144,9 @@ export const getTopAssets = (trades: Trade[], limit: number = 3): Array<{ symbol
       assetData[symbol] = { wins: 0, losses: 0, totalPnL: 0 };
     }
     
-    if ((t.pnl || 0) > 0) assetData[symbol].wins++;
+    if ((t.profit_loss || 0) > 0) assetData[symbol].wins++;
     else assetData[symbol].losses++;
-    assetData[symbol].totalPnL += t.pnl || 0;
+    assetData[symbol].totalPnL += t.profit_loss || 0;
   });
   
   const assets = Object.entries(assetData).map(([symbol, data]) => ({
@@ -178,7 +178,7 @@ export const calculateFeeImpactMetrics = (trades: Trade[]) => {
     return sum + (t.trading_fee || 0) + (t.funding_fee || 0);
   }, 0);
   
-  const totalGrossPnL = trades.reduce((sum, t) => sum + Math.abs(t.pnl || 0), 0);
+  const totalGrossPnL = trades.reduce((sum, t) => sum + Math.abs(t.profit_loss || 0), 0);
   
   const feeImpactOnPnL = totalGrossPnL > 0 ? (totalFees / totalGrossPnL) * 100 : 0;
   const totalVolume = trades.reduce((sum, t) => {

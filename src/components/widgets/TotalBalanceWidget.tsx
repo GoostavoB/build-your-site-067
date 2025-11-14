@@ -11,6 +11,7 @@ interface TotalBalanceWidgetProps extends WidgetProps {
   totalBalance: number;
   change24h?: number;
   changePercent24h?: number;
+  tradingDays?: number;
 }
 
 export const TotalBalanceWidget = memo(({
@@ -21,6 +22,7 @@ export const TotalBalanceWidget = memo(({
   totalBalance,
   change24h = 0,
   changePercent24h = 0,
+  tradingDays = 0,
 }: TotalBalanceWidgetProps) => {
   const { t } = useTranslation();
   const isPositive = change24h >= 0;
@@ -57,7 +59,7 @@ export const TotalBalanceWidget = memo(({
               }`}>
                 {isPositive ? '+' : ''}<BlurredCurrency amount={change24h} className="inline" /> ({formatPercent(changePercent24h)})
               </span>
-              <span className="text-xs text-muted-foreground">All Time</span>
+              <span className="text-xs text-muted-foreground">{tradingDays}d</span>
             </div>
           )}
         </div>

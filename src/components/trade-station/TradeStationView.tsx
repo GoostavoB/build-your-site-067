@@ -384,6 +384,7 @@ export const TradeStationView = ({ onControlsReady }: TradeStationViewProps = {}
         widgetProps.changePercent24h = totalInvestedCapital > 0 
           ? ((stats?.total_pnl || 0) / totalInvestedCapital) * 100 
           : 0;
+        widgetProps.tradingDays = stats?.trading_days || 0;
         break;
       case 'winRate':
         const winningTrades = processedTrades.filter(t => (t.profit_loss || 0) > 0).length;

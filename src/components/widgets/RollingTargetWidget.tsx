@@ -150,8 +150,8 @@ export const RollingTargetWidget = memo(({
       day.endCapital = day.startCapital + day.pnl;
       day.returnPercent = day.startCapital > 0 ? (day.pnl / day.startCapital) * 100 : 0;
       
-      // Planned path: C0 * (1 + p)^n where n is CALENDAR days from start
-      day.plannedCapital = initialInvestment * Math.pow(1 + p, calendarDaysFromStart + 1);
+      // Planned = what you SHOULD end the day with (start capital + target growth)
+      day.plannedCapital = day.startCapital * (1 + p);
       
       // Calculate required today for rolling mode
       if (settings?.mode === 'rolling') {
@@ -168,6 +168,7 @@ export const RollingTargetWidget = memo(({
         day.headroom = Math.max(0, day.pnl - day.requiredToday);
       }
       
+      // Deviation = did you hit today's target?
       day.deviation = day.endCapital - day.plannedCapital;
       
       daysArray.push(day);
@@ -303,12 +304,15 @@ export const RollingTargetWidget = memo(({
       .reduce((sum, d) => sum + d.requiredToday, 0) / Math.max(1, daysBehind);
     
     const lastDay = dailyData[dailyData.length - 1];
-    // Current status based on cumulative deviation (not just today's performance)
+    // Current status based on most recent day's performance
     const currentStatus = lastDay.deviation >= 0 ? 'ahead' : 'behind';
-    const driftPercent = lastDay.plannedCapital > 0 
-      ? (lastDay.deviation / lastDay.plannedCapital) * 100 
+    
+    // Cumulative drift = sum of all daily deviations
+    const totalDrift = dailyData.reduce((sum, d) => sum + d.deviation, 0);
+    const driftPercent = lastDay.startCapital > 0 
+      ? (totalDrift / (lastDay.startCapital * dailyData.length)) * 100 
       : 0;
-    const driftAmount = Math.abs(lastDay.deviation);
+    const driftAmount = Math.abs(totalDrift);
     
     return {
       currentStatus,
@@ -865,7 +869,7 @@ export const RollingTargetWidget = memo(({
                       <td className={`text-right p-2 font-medium ${day.returnPercent >= 0 ? 'text-profit' : 'text-loss'}`}>
                         {day.returnPercent >= 0 ? '+' : ''}{formatPercent(day.returnPercent)}
                       </td>
-                      <td className="text-right p-2">{formatCurrency(day.endCapital)}</td>
+                      <td className="text-right p-2">{formatCurrency(day.startCapital)}</td>
                       <td className="text-right p-2 text-muted-foreground">{formatCurrency(day.plannedCapital)}</td>
                       <td className="text-right p-2 font-medium">
                         {day.requiredToday > 0 ? formatCurrency(day.requiredToday) : '-'}
@@ -909,7 +913,7 @@ export const RollingTargetWidget = memo(({
                             </div>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p className="max-w-xs">Your actual total capital at end of this day</p>
+                            <p className="max-w-xs">Your starting capital at beginning of this day</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -924,7 +928,7 @@ export const RollingTargetWidget = memo(({
                             </div>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p className="max-w-xs">Target capital based on {settings?.targetPercent || 1}% daily compound growth from initial investment</p>
+                            <p className="max-w-xs">Target ending capital for this day (Actual + {settings?.targetPercent || 1}% growth)</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -956,7 +960,7 @@ export const RollingTargetWidget = memo(({
                       <td className={`text-right p-2 font-medium ${day.returnPercent >= 0 ? 'text-profit' : 'text-loss'}`}>
                         {day.returnPercent >= 0 ? '+' : ''}{formatPercent(day.returnPercent)}
                       </td>
-                      <td className="text-right p-2">{formatCurrency(day.endCapital)}</td>
+                      <td className="text-right p-2">{formatCurrency(day.startCapital)}</td>
                       <td className="text-right p-2 text-muted-foreground">{formatCurrency(day.plannedCapital)}</td>
                       <td className={`text-right p-2 font-medium ${day.deviation >= 0 ? 'text-profit' : 'text-loss'}`}>
                         {day.deviation >= 0 ? '+' : ''}{formatCurrency(day.deviation)}

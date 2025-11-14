@@ -12,6 +12,7 @@ import { runOCR } from '@/utils/ocrPipeline';
 import { TradeReviewEditor } from './TradeReviewEditor';
 import { checkForDuplicates } from '@/utils/duplicateDetection';
 import type { DuplicateCheckResult } from '@/utils/duplicateDetection';
+import { retryWithBackoff, isRetryableError } from '@/utils/retryWithBackoff';
 
 interface UploadedImage {
   file: File;
@@ -235,33 +236,70 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
             reader.readAsDataURL(image.file);
           });
 
-          // Extract trades from image with retry flag
-          const response = await fetch(
-            `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/extract-trade-info`,
+          // Extract trades from image with retry and exponential backoff
+          const result = await retryWithBackoff(
+            async () => {
+              const response = await fetch(
+                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/extract-trade-info`,
+                {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${session.access_token}`,
+                  },
+                  body: JSON.stringify({ 
+                    imageBase64,
+                    ocrText: ocrResult?.text,
+                    ocrConfidence: ocrResult?.confidence,
+                    imageHash: ocrResult?.imageHash,
+                    perceptualHash: ocrResult?.perceptualHash,
+                    broker: skipBrokerSelection ? null : preSelectedBroker,
+                    forceDeepModel: retryMode // Tell backend to use deep model regardless of OCR quality
+                  }),
+                }
+              );
+
+              if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                const error = new Error(errorData.error || 'Failed to analyze image') as any;
+                error.status = response.status;
+                
+                // Only retry if error is retryable
+                if (!isRetryableError(error)) {
+                  throw error;
+                }
+                throw error;
+              }
+
+              return await response.json();
+            },
             {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${session.access_token}`,
-              },
-              body: JSON.stringify({ 
-                imageBase64,
-                ocrText: ocrResult?.text,
-                ocrConfidence: ocrResult?.confidence,
-                imageHash: ocrResult?.imageHash,
-                perceptualHash: ocrResult?.perceptualHash,
-                broker: skipBrokerSelection ? null : preSelectedBroker,
-                forceDeepModel: retryMode // Tell backend to use deep model regardless of OCR quality
-              }),
+              maxRetries: 3,
+              initialDelay: 1000,
+              maxDelay: 10000,
+              onRetry: (attempt, error, nextDelay) => {
+                console.log(`🔄 Retry attempt ${attempt} for image ${i + 1}:`, error.message);
+                console.log(`⏳ Waiting ${Math.round(nextDelay / 1000)}s before retry...`);
+                
+                // Update image status to show retry in progress
+                setImages(prev => prev.map((img, idx) => 
+                  idx === i ? { 
+                    ...img, 
+                    status: 'analyzing',
+                    error: `Retry ${attempt}/3 (${error.message})`,
+                    retryCount: attempt
+                  } : img
+                ));
+                
+                // Show toast for first retry only
+                if (attempt === 1) {
+                  toast.info(`Retrying image ${i + 1}...`, {
+                    description: 'Network issue detected, retrying automatically',
+                  });
+                }
+              }
             }
           );
-
-          if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || 'Failed to analyze image');
-          }
-
-          const result = await response.json();
           const tradesFound = Array.isArray(result.trades) ? result.trades.length : 0;
           
           // Record processing time for this image
@@ -286,23 +324,29 @@ export function MultiImageUpload({ onTradesExtracted, maxImages = 10, preSelecte
           
           // Create user-friendly error message
           let friendlyError = 'Analysis failed';
+          const wasRetried = (error as any).retriesExhausted || false;
+          
           if (error instanceof Error) {
             const errorMsg = error.message.toLowerCase();
             
             if (errorMsg.includes('rate limit')) {
-              friendlyError = 'Too many requests. Please wait a moment and try again.';
+              friendlyError = 'Rate limit exceeded (retried 3 times). Please wait and try again.';
             } else if (errorMsg.includes('credits') || errorMsg.includes('budget')) {
               friendlyError = 'AI credits exhausted. Please upgrade or wait for next month.';
             } else if (errorMsg.includes('timeout') || errorMsg.includes('ocr timeout')) {
-              friendlyError = 'Image processing took too long. Try a clearer screenshot.';
+              friendlyError = wasRetried 
+                ? 'Processing timeout (retried 3 times). Try a clearer screenshot.'
+                : 'Image processing took too long. Try a clearer screenshot.';
             } else if (errorMsg.includes('too large') || errorMsg.includes('10mb')) {
               friendlyError = 'Image is too large (max 10MB). Please compress it.';
             } else if (errorMsg.includes('parse') || errorMsg.includes('invalid json')) {
-              friendlyError = 'Could not extract trade data. Try a clearer screenshot.';
+              friendlyError = wasRetried
+                ? 'Could not extract trade data (retried 3 times). Try a clearer screenshot.'
+                : 'Could not extract trade data. Try a clearer screenshot.';
             } else if (errorMsg.includes('no trade') || errorMsg.includes('not found')) {
               friendlyError = 'No trades found in this image. Make sure it shows trade data.';
             } else if (error.message.length < 100) {
-              friendlyError = error.message;
+              friendlyError = wasRetried ? `${error.message} (retried 3 times)` : error.message;
             }
           }
           
@@ -607,6 +651,12 @@ setExtractedTrades([]);
                   <CheckCircle2 className="h-4 w-4 text-blue-500" />
                   <p className="text-xs text-muted-foreground">
                     <span className="font-medium text-foreground">AI duplicate protection</span> – you're never charged for duplicate trades
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-purple-500" />
+                  <p className="text-xs text-muted-foreground">
+                    <span className="font-medium text-foreground">Auto-retry with backoff</span> – network issues handled automatically
                   </p>
                 </div>
               </div>

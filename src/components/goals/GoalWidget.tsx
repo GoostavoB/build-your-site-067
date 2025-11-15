@@ -35,9 +35,10 @@ interface GoalProjection {
 
 interface GoalWidgetProps {
   includeFeesInPnL?: boolean;
+  tradesOverride?: Array<{ trade_date: string | null; opened_at?: string | null; pnl?: number | null; profit_loss?: number | null; roi?: number | null; funding_fee?: number | null; trading_fee?: number | null }>;
 }
 
-export function GoalWidget({ includeFeesInPnL = true }: GoalWidgetProps) {
+export function GoalWidget({ includeFeesInPnL = true, tradesOverride }: GoalWidgetProps) {
   const { user } = useAuth();
   const { dateRange } = useDateRange();
   const [editingGoal, setEditingGoal] = useState<any>(null);
@@ -60,13 +61,13 @@ export function GoalWidget({ includeFeesInPnL = true }: GoalWidgetProps) {
     enabled: !!user,
   });
 
-  // Fetch trades for projection calculations
+  // Fetch trades for projection calculations (skipped if override supplied)
   const { data: allTrades = [] } = useQuery({
     queryKey: ['trades-for-projection', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('trades')
-        .select('trade_date, opened_at, pnl, profit_loss, roi')
+        .select('trade_date, opened_at, pnl, profit_loss, roi, funding_fee, trading_fee')
         .eq('user_id', user!.id)
         .not('trade_date', 'is', null)
         .order('trade_date', { ascending: true });
@@ -74,20 +75,21 @@ export function GoalWidget({ includeFeesInPnL = true }: GoalWidgetProps) {
       if (error) throw error;
       return data || [];
     },
-    enabled: !!user,
+    enabled: !!user && !(tradesOverride && tradesOverride.length > 0),
   });
 
-  // Apply date range filter to trades
+  // Apply date range filter to trades (prefer override if provided)
   const trades = useMemo(() => {
-    if (!dateRange?.from || !allTrades.length) return allTrades;
+    const source = (tradesOverride && tradesOverride.length > 0) ? tradesOverride : allTrades;
+    if (!dateRange?.from || !source.length) return source;
     
-    return allTrades.filter(trade => {
-      const tradeDate = new Date(trade.trade_date || trade.opened_at);
+    return source.filter(trade => {
+      const tradeDate = new Date((trade as any).trade_date || (trade as any).opened_at);
       const from = dateRange.from!;
       const to = dateRange.to || new Date();
       return tradeDate >= from && tradeDate <= to;
     });
-  }, [allTrades, dateRange]);
+  }, [allTrades, tradesOverride, dateRange]);
 
   // Compute current values for all goal types based on calculation mode and timeframe
   const { data: currentValues } = useQuery({

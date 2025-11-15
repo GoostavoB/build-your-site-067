@@ -56,12 +56,14 @@ function normalizeSymbol(symbol?: string): string {
 }
 
 /**
- * Checks if two timestamps are within a tolerance window (15 minutes default)
+ * Checks if two timestamps are exactly the same (down to the second)
  */
 function areTimestampsClose(date1?: string, date2?: string, toleranceMinutes = 15): boolean {
   if (!date1 || !date2) return false;
-  const diff = Math.abs(new Date(date1).getTime() - new Date(date2).getTime());
-  return diff < toleranceMinutes * 60000;
+  // Exact match required - no tolerance
+  const time1 = new Date(date1).getTime();
+  const time2 = new Date(date2).getTime();
+  return time1 === time2;
 }
 
 /**
@@ -77,19 +79,14 @@ function areSameDay(date1?: string, date2?: string): boolean {
 }
 
 /**
- * Checks if two numbers are close (absolute diff <= 0.5 OR relative diff <= 0.5%)
+ * Checks if two numbers are exactly equal (no tolerance)
  */
 function areNumbersClose(num1?: number, num2?: number): boolean {
   if (num1 === undefined || num2 === undefined) return false;
-  if (num1 === 0 && num2 === 0) return true;
-  
-  const absDiff = Math.abs(num1 - num2);
-  if (absDiff <= 0.5) return true; // Absolute tolerance
-  
-  const avg = (Math.abs(num1) + Math.abs(num2)) / 2;
-  if (avg === 0) return absDiff === 0;
-  
-  return (absDiff / avg) <= 0.005; // 0.5% relative tolerance
+  // Exact match required - round to 2 decimals for comparison
+  const rounded1 = Math.round(num1 * 100) / 100;
+  const rounded2 = Math.round(num2 * 100) / 100;
+  return rounded1 === rounded2;
 }
 
 /**
@@ -220,8 +217,8 @@ export function isDuplicateTrade(
   // Calculate match percentage
   const matchPercentage = totalChecks > 0 ? matchScore / totalChecks : 0;
 
-  // Relaxed threshold: 60% match and at least 2 matching fields
-  const isDuplicate = matchPercentage >= 0.6 && matchScore >= 2;
+  // Strict threshold: 100% match required - all fields must match exactly
+  const isDuplicate = matchPercentage === 1.0 && totalChecks >= 3;
 
   return {
     isDuplicate,

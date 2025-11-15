@@ -871,6 +871,7 @@ const Dashboard = () => {
         break;
       case 'goals':
         widgetProps.includeFeesInPnL = includeFeesInPnL;
+        widgetProps.tradesOverride = processedTrades;
         break;
       // Trade Station widgets - pass required props
       case 'errorReflection':
